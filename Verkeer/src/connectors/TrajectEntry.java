@@ -11,10 +11,10 @@ package connectors;
  */
 public class TrajectEntry {
     public String name;
-    public float startCoordinateLatitude;
-    public float startCoordinateLongitude;
-    public float endCoordinateLatitude;
-    public float endCoordinateLongitude;
+    public double startCoordinateLatitude;
+    public double startCoordinateLongitude;
+    public double endCoordinateLatitude;
+    public double endCoordinateLongitude;
 
     /**
      * 
@@ -24,13 +24,18 @@ public class TrajectEntry {
      * @param endCoordinateLatitude
      * @param endCoordinateLongitude 
      */
-    public TrajectEntry(String name, float startCoordinateLatitude, float startCoordinateLongitude, float endCoordinateLatitude, float endCoordinateLongitude) {
+    public TrajectEntry(String name, double startCoordinateLatitude, double startCoordinateLongitude, double endCoordinateLatitude, double endCoordinateLongitude) {
         this.name = name;
         this.startCoordinateLatitude = startCoordinateLatitude;
         this.startCoordinateLongitude = startCoordinateLongitude;
         this.endCoordinateLatitude = endCoordinateLatitude;
         this.endCoordinateLongitude = endCoordinateLongitude;
     }
+    
+    /**
+     * 
+     */
+    public TrajectEntry(){}
 
     /**
      * Returns the name of the traject.
@@ -46,49 +51,49 @@ public class TrajectEntry {
 
     /**
      * Returns the latitude of the starting point.
-     * @return float with latitude of starting point
+     * @return double with latitude of starting point
      */
-    public float getStartCoordinateLatitude() {
+    public double getStartCoordinateLatitude() {
         return startCoordinateLatitude;
     }
 
-    public void setStartCoordinateLatitude(float startCoordinateLatitude) {
+    public void setStartCoordinateLatitude(double startCoordinateLatitude) {
         this.startCoordinateLatitude = startCoordinateLatitude;
     }
 
     /**
      * Returns the longitude of the starting point.
-     * @return float with longitude of starting point
+     * @return double with longitude of starting point
      */
-    public float getStartCoordinateLongitude() {
+    public double getStartCoordinateLongitude() {
         return startCoordinateLongitude;
     }
     
-    public void setStartCoordinateLongitude(float startCoordinateLongitude) {
+    public void setStartCoordinateLongitude(double startCoordinateLongitude) {
         this.startCoordinateLongitude = startCoordinateLongitude;
     }
 
     /**
      * Returns the latitude of the end point.
-     * @return float with latitude of end point
+     * @return double with latitude of end point
      */
-    public float getEndCoordinateLatitude() {
+    public double getEndCoordinateLatitude() {
         return endCoordinateLatitude;
     }
 
-    public void setEndCoordinateLatitude(float endCoordinateLatitude) {
+    public void setEndCoordinateLatitude(double endCoordinateLatitude) {
         this.endCoordinateLatitude = endCoordinateLatitude;
     }
 
     /**
      * Returns the longitude of the end point.
-     * @return float with longitude of end point
+     * @return double with longitude of end point
      */
-    public float getEndCoordinateLongitude() {
+    public double getEndCoordinateLongitude() {
         return endCoordinateLongitude;
     }
 
-    public void setEndCoordinateLongitude(float endCoordinateLongitude) {
+    public void setEndCoordinateLongitude(double endCoordinateLongitude) {
         this.endCoordinateLongitude = endCoordinateLongitude;
     }
     

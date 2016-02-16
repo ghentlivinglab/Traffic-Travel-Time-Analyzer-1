@@ -28,6 +28,14 @@ public class TravelTimeEntry {
         this.traject = traject;
         this.provider = provider;
     }
+    
+    /**
+     * 
+     */
+    public TravelTimeEntry(){
+        this.traject = new TrajectEntry();
+        this.provider = new ProviderEntry();
+    }
 
     /**
      * Returns the time of the measurement.

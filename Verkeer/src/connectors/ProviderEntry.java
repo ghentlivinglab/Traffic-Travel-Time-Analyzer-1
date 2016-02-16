@@ -16,6 +16,11 @@ public class ProviderEntry {
     }
 
     /**
+     * 
+     */
+    ProviderEntry() {}
+
+    /**
      * Returns the databaseId of the provider
      * @return integer with databaseId
      */
