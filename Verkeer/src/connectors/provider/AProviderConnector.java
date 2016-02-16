@@ -3,9 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package verkeer;
+package connectors.provider;
 
 import java.util.List;
+import connectors.database.IDbConnector;
+import connectors.ProviderEntry;
+import connectors.TrajectEntry;
+import connectors.TravelTimeEntry;
 
 /**
  *

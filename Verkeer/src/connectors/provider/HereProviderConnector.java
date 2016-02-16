@@ -3,9 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package verkeer;
+package connectors.provider;
 
+import connectors.provider.AProviderConnector;
 import java.util.List;
+import connectors.database.IDbConnector;
+import connectors.TrajectEntry;
 
 /**
  *
@@ -18,7 +21,8 @@ public class HereProviderConnector extends AProviderConnector {
         String providerName = "Here";
         this.providerEntry = dbConnector.getProvider(providerName);
     }
-
+    
+    @Override
     public void triggerUpdate(){
         // TODO
     }
