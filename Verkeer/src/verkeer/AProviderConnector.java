@@ -12,9 +12,9 @@ import java.util.List;
  * @author Simon
  */
 public abstract class AProviderConnector {
-    private IDbConnector dbConnector;
-    private List<TrajectEntry> trajecten;
-    private int providerId;
+    protected IDbConnector dbConnector;
+    protected List<TrajectEntry> trajecten;
+    protected ProviderEntry providerEntry;
     
     public AProviderConnector(List<TrajectEntry> trajecten, IDbConnector dbConnector){
         this.trajecten = trajecten;
