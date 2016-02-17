@@ -9,12 +9,14 @@ package connectors;
  *
  * @author Simon
  */
-public class TrajectEntry {
+public class RouteEntry {
     public String name;
     public double startCoordinateLatitude;
     public double startCoordinateLongitude;
     public double endCoordinateLatitude;
     public double endCoordinateLongitude;
+    public int lenght;
+    public int idealTravelTime;
 
     /**
      * 
@@ -22,20 +24,24 @@ public class TrajectEntry {
      * @param startCoordinateLatitude
      * @param startCoordinateLongitude
      * @param endCoordinateLatitude
-     * @param endCoordinateLongitude 
+     * @param endCoordinateLongitude
+     * @param lenght
+     * @param idealTravelTime 
      */
-    public TrajectEntry(String name, double startCoordinateLatitude, double startCoordinateLongitude, double endCoordinateLatitude, double endCoordinateLongitude) {
+    public RouteEntry(String name, double startCoordinateLatitude, double startCoordinateLongitude, double endCoordinateLatitude, double endCoordinateLongitude, int lenght, int idealTravelTime) {
         this.name = name;
         this.startCoordinateLatitude = startCoordinateLatitude;
         this.startCoordinateLongitude = startCoordinateLongitude;
         this.endCoordinateLatitude = endCoordinateLatitude;
         this.endCoordinateLongitude = endCoordinateLongitude;
+        this.lenght = lenght;
+        this.idealTravelTime = idealTravelTime;
     }
     
     /**
      * 
      */
-    public TrajectEntry(){}
+    public RouteEntry(){}
 
     /**
      * Returns the name of the traject.
@@ -96,5 +102,30 @@ public class TrajectEntry {
     public void setEndCoordinateLongitude(double endCoordinateLongitude) {
         this.endCoordinateLongitude = endCoordinateLongitude;
     }
+    
+    /**
+     * Returns the lenght of the route.
+     * @return integer with lenght of the route in meters
+     */
+    public int getLenght() {
+        return lenght;
+    }
+
+    public void setLenght(int lenght) {
+        this.lenght = lenght;
+    }
+
+    /**
+     * Returns the ideal travel time of the route for the provider.
+     * @return integer with ideal travel time in seconds
+     */
+    public int getIdealTravelTime() {
+        return idealTravelTime;
+    }
+
+    public void setIdealTravelTime(int idealTravelTime) {
+        this.idealTravelTime = idealTravelTime;
+    }
+    
     
 }
