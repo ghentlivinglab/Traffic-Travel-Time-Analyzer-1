@@ -5,19 +5,15 @@
  */
 package connectors.provider;
 
-import com.owlike.genson.Genson;
-import com.owlike.genson.stream.ObjectReader;
 import connectors.RouteEntry;
 import connectors.database.IDbConnector;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  *
@@ -67,13 +63,13 @@ public class GoogleProviderConnector extends AProviderConnector {
         urlBuilder.append("?key=");
         urlBuilder.append(API_KEY);
         urlBuilder.append("&origin=");
-        urlBuilder.append(traject.startCoordinateLatitude);
+        urlBuilder.append(traject.getStartCoordinateLatitude());
         urlBuilder.append(",");
-        urlBuilder.append(traject.startCoordinateLongitude);
+        urlBuilder.append(traject.getStartCoordinateLongitude());
         urlBuilder.append("&destination=");
-        urlBuilder.append(traject.endCoordinateLatitude);
+        urlBuilder.append(traject.getEndCoordinateLatitude());
         urlBuilder.append(",");
-        urlBuilder.append(traject.endCoordinateLongitude);
+        urlBuilder.append(traject.getEndCoordinateLongitude());
 
         URL url = new URL(urlBuilder.toString());
 

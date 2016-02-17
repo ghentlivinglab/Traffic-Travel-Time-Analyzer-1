@@ -5,27 +5,29 @@
  */
 package connectors;
 
+import java.sql.Date;
+
 /**
  *
  * @author Simon
  */
 public class DataEntry {
-    private int timestamp;
-    private int travelTime;
-    private RouteEntry traject;
+    private Date timestamp;
+    private double travelTime;
+    private RouteEntry route;
     private ProviderEntry provider;
 
     /**
      * 
      * @param timestamp time of the measurement
-     * @param travelTime estimated duration of the traject
-     * @param traject traject of the measurement
+     * @param travelTime estimated duration of the route
+     * @param route route of the measurement
      * @param provider provider of the measurement
      */
-    public DataEntry(int timestamp, int travelTime, RouteEntry traject, ProviderEntry provider) {
+    public DataEntry(Date timestamp, double travelTime, RouteEntry route, ProviderEntry provider) {
         this.timestamp = timestamp;
         this.travelTime = travelTime;
-        this.traject = traject;
+        this.route = route;
         this.provider = provider;
     }
     
@@ -33,7 +35,7 @@ public class DataEntry {
      * 
      */
     public DataEntry(){
-        this.traject = new RouteEntry();
+        this.route = new RouteEntry();
         this.provider = new ProviderEntry();
     }
 
@@ -41,11 +43,11 @@ public class DataEntry {
      * Returns the time of the measurement.
      * @return integer with time in seconds
      */
-    public int getTimestamp() {
+    public Date getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(int timestamp) {
+    public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -53,7 +55,7 @@ public class DataEntry {
      * Returns the duration of the trip of this measurement.
      * @return integer with time in seconds
      */
-    public int getTravelTime() {
+    public double getTravelTime() {
         return travelTime;
     }
 
@@ -63,14 +65,14 @@ public class DataEntry {
 
     /**
      * Returns the RouteEntry-object of this measurement.
-     * @return  RouteEntry with traject-info
+     * @return  RouteEntry with route-info
      */
-    public RouteEntry getTraject() {
-        return traject;
+    public RouteEntry getRoute() {
+        return route;
     }
 
-    public void setTraject(RouteEntry traject) {
-        this.traject = traject;
+    public void setRoute(RouteEntry route) {
+        this.route = route;
     }
 
     /**
