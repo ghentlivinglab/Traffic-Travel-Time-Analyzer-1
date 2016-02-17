@@ -15,6 +15,8 @@ public class RouteEntry {
     public double startCoordinateLongitude;
     public double endCoordinateLatitude;
     public double endCoordinateLongitude;
+    public int lenght;
+    public int idealTravelTime;
 
     /**
      * 
@@ -22,14 +24,18 @@ public class RouteEntry {
      * @param startCoordinateLatitude
      * @param startCoordinateLongitude
      * @param endCoordinateLatitude
-     * @param endCoordinateLongitude 
+     * @param endCoordinateLongitude
+     * @param lenght
+     * @param idealTravelTime 
      */
-    public RouteEntry(String name, double startCoordinateLatitude, double startCoordinateLongitude, double endCoordinateLatitude, double endCoordinateLongitude) {
+    public RouteEntry(String name, double startCoordinateLatitude, double startCoordinateLongitude, double endCoordinateLatitude, double endCoordinateLongitude, int lenght, int idealTravelTime) {
         this.name = name;
         this.startCoordinateLatitude = startCoordinateLatitude;
         this.startCoordinateLongitude = startCoordinateLongitude;
         this.endCoordinateLatitude = endCoordinateLatitude;
         this.endCoordinateLongitude = endCoordinateLongitude;
+        this.lenght = lenght;
+        this.idealTravelTime = idealTravelTime;
     }
     
     /**
@@ -96,5 +102,30 @@ public class RouteEntry {
     public void setEndCoordinateLongitude(double endCoordinateLongitude) {
         this.endCoordinateLongitude = endCoordinateLongitude;
     }
+    
+    /**
+     * Returns the lenght of the route.
+     * @return integer with lenght of the route in meters
+     */
+    public int getLenght() {
+        return lenght;
+    }
+
+    public void setLenght(int lenght) {
+        this.lenght = lenght;
+    }
+
+    /**
+     * Returns the ideal travel time of the route for the provider.
+     * @return integer with ideal travel time in seconds
+     */
+    public int getIdealTravelTime() {
+        return idealTravelTime;
+    }
+
+    public void setIdealTravelTime(int idealTravelTime) {
+        this.idealTravelTime = idealTravelTime;
+    }
+    
     
 }

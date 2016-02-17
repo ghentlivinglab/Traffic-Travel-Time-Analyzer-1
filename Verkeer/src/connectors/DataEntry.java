@@ -9,7 +9,7 @@ package connectors;
  *
  * @author Simon
  */
-public class TravelTimeEntry {
+public class DataEntry {
     private int timestamp;
     private int travelTime;
     private RouteEntry traject;
@@ -22,7 +22,7 @@ public class TravelTimeEntry {
      * @param traject traject of the measurement
      * @param provider provider of the measurement
      */
-    public TravelTimeEntry(int timestamp, int travelTime, RouteEntry traject, ProviderEntry provider) {
+    public DataEntry(int timestamp, int travelTime, RouteEntry traject, ProviderEntry provider) {
         this.timestamp = timestamp;
         this.travelTime = travelTime;
         this.traject = traject;
@@ -32,7 +32,7 @@ public class TravelTimeEntry {
     /**
      * 
      */
-    public TravelTimeEntry(){
+    public DataEntry(){
         this.traject = new RouteEntry();
         this.provider = new ProviderEntry();
     }
@@ -62,8 +62,8 @@ public class TravelTimeEntry {
     }
 
     /**
-     * Returns the TrajectEntry-object of this measurement.
-     * @return  TrajectEntry with traject-info
+     * Returns the RouteEntry-object of this measurement.
+     * @return  RouteEntry with traject-info
      */
     public RouteEntry getTraject() {
         return traject;
