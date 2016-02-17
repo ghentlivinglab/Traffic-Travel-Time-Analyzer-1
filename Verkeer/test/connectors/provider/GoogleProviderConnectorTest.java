@@ -6,7 +6,6 @@
 package connectors.provider;
 
 import connectors.RouteEntry;
-import connectors.TravelTimeEntry;
 import connectors.database.DummyDbConnector;
 import java.net.MalformedURLException;
 import java.net.URL;

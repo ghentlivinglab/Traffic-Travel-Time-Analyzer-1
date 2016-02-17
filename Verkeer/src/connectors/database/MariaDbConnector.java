@@ -6,7 +6,7 @@
 package connectors.database;
 
 import connectors.ProviderEntry;
-import connectors.TravelTimeEntry;
+import connectors.DataEntry;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -43,7 +43,7 @@ public class MariaDbConnector implements IDbConnector{
     }
     
     @Override
-    public void insert(TravelTimeEntry entry)  {
+    public void insert(DataEntry entry)  {
         try(Connection conn = getConnection()){
             PreparedStatement p = conn.prepareStatement(INSERT_TTE);
         } catch (SQLException ex) {

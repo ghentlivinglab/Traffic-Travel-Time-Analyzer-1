@@ -5,14 +5,13 @@
  */
 package connectors.database;
 
-import connectors.ProviderEntry;
-import connectors.TravelTimeEntry;
+import connectors.*;
 
 /**
  *
  * @author Simon
  */
 public interface IDbConnector {
-    public void insert(TravelTimeEntry entry);
+    public void insert(DataEntry entry);
     public ProviderEntry findByName(String name);
 }

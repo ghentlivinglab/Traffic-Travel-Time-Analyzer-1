@@ -9,7 +9,7 @@ import java.util.List;
 import connectors.database.IDbConnector;
 import connectors.ProviderEntry;
 import connectors.RouteEntry;
-import connectors.TravelTimeEntry;
+import connectors.DataEntry;
 
 /**
  *
@@ -25,7 +25,7 @@ public abstract class AProviderConnector {
         this.dbConnector = dbConnector;
     }
     public abstract void triggerUpdate();
-    public void saveToDb(TravelTimeEntry entry){
+    public void saveToDb(DataEntry entry){
         dbConnector.insert(entry);
     }
 }
