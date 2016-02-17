@@ -6,7 +6,7 @@
 package connectors.database;
 
 import connectors.ProviderEntry;
-import connectors.TravelTimeEntry;
+import connectors.DataEntry;
 
 /**
  *
@@ -15,7 +15,7 @@ import connectors.TravelTimeEntry;
 public class DummyDbConnector implements IDbConnector{
 
     @Override
-    public void storeInDb(TravelTimeEntry entry) {
+    public void storeInDb(DataEntry entry) {
         
     }
 

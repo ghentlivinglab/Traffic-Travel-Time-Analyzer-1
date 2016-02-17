@@ -6,18 +6,16 @@
 package connectors.provider;
 
 import com.owlike.genson.Genson;
-import com.owlike.genson.stream.ObjectReader;
-import connectors.TrajectEntry;
+import connectors.RouteEntry;
 import connectors.database.IDbConnector;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
-import java.util.logging.Logger;
+import java.util.Map;
 
 /**
  *
@@ -31,7 +29,7 @@ public class GoogleProviderConnector extends AProviderConnector {
     //     private final static String API_KEY = ; // Robin-Key
     //     private final static String API_KEY = ; // Simon-Key
 
-    public GoogleProviderConnector(List<TrajectEntry> trajecten, IDbConnector dbConnector) {
+    public GoogleProviderConnector(List<RouteEntry> trajecten, IDbConnector dbConnector) {
         super(trajecten, dbConnector);
         String providerName = "Google Maps";
         this.providerEntry = dbConnector.getProvider(providerName);
@@ -40,7 +38,7 @@ public class GoogleProviderConnector extends AProviderConnector {
     @Override
     public void triggerUpdate() {
         //throw new UnsupportedOperationException("Not supported yet.");
-        for (TrajectEntry traject : trajecten) {
+        for (RouteEntry traject : trajecten) {
             try {
                 URL url = generateURL(traject);
                 URLConnection connection = url.openConnection();
@@ -51,8 +49,6 @@ public class GoogleProviderConnector extends AProviderConnector {
                     System.out.println(inputLine);
                 }
                 in.close();
-                
-                
 
             } catch (MalformedURLException e) { // exception when url invalid
 
@@ -62,7 +58,7 @@ public class GoogleProviderConnector extends AProviderConnector {
         }
     }
 
-    protected URL generateURL(TrajectEntry traject) throws MalformedURLException {
+    protected URL generateURL(RouteEntry traject) throws MalformedURLException {
         StringBuilder urlBuilder = new StringBuilder(API_URL);
         urlBuilder.append("?key=");
         urlBuilder.append(API_KEY);
@@ -81,4 +77,16 @@ public class GoogleProviderConnector extends AProviderConnector {
 
     }
 
+    public void fetchDataFromJSON(String json) throws TrajectUnavailableException {
+        Genson genson = new Genson();
+        Map<String, Object> map = genson.deserialize(json, Map.class);
+        if (!map.get("status").equals("OK")) {
+            throw new TrajectUnavailableException((String) map.get("status"));
+        }
+        List<Object> routes = (List<Object>) map.get("routes");
+        List<Object> legs = (List<Object>) ((Map<String, Object>) routes.get(0)).get("legs");
+
+        int x = 0;
+
+    }
 }

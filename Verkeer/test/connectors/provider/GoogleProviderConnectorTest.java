@@ -5,8 +5,7 @@
  */
 package connectors.provider;
 
-import connectors.TrajectEntry;
-import connectors.TravelTimeEntry;
+import connectors.RouteEntry;
 import connectors.database.DummyDbConnector;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -24,14 +23,14 @@ import static org.junit.Assert.*;
  * @author jarno
  */
 public class GoogleProviderConnectorTest {
-    static List<TrajectEntry> trajecten;
+    static List<RouteEntry> trajecten;
 
     public GoogleProviderConnectorTest() {
     }
 
     @BeforeClass
     public static void setUpClass() {
-        TrajectEntry traject = new TrajectEntry();
+        RouteEntry traject = new RouteEntry();
         traject.setName("R40 Drongensesteenweg -> Palinghuizen");
         traject.setStartCoordinateLatitude(51.0560905);
         traject.setStartCoordinateLongitude(3.6951634);

@@ -8,7 +8,7 @@ package connectors.provider;
 import connectors.provider.AProviderConnector;
 import java.util.List;
 import connectors.database.IDbConnector;
-import connectors.TrajectEntry;
+import connectors.RouteEntry;
 
 /**
  *
@@ -16,7 +16,7 @@ import connectors.TrajectEntry;
  */
 public class HereProviderConnector extends AProviderConnector {
     
-    public HereProviderConnector(List<TrajectEntry> trajecten, IDbConnector dbConnector) {
+    public HereProviderConnector(List<RouteEntry> trajecten, IDbConnector dbConnector) {
         super(trajecten, dbConnector);
         String providerName = "Here";
         this.providerEntry = dbConnector.getProvider(providerName);

@@ -6,13 +6,13 @@
 package connectors.database;
 
 import connectors.ProviderEntry;
-import connectors.TravelTimeEntry;
+import connectors.DataEntry;
 
 /**
  *
  * @author Simon
  */
 public interface IDbConnector {
-    public void storeInDb(TravelTimeEntry entry);
+    public void storeInDb(DataEntry entry);
     public ProviderEntry getProvider(String name);
 }
