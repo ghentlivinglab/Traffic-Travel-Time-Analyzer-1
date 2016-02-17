@@ -13,6 +13,6 @@ import connectors.DataEntry;
  * @author Simon
  */
 public interface IDbConnector {
-    public void storeInDb(DataEntry entry);
-    public ProviderEntry getProvider(String name);
+    public void insert(DataEntry entry);
+    public ProviderEntry findByName(String name);
 }
