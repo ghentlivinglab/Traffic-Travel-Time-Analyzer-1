@@ -13,6 +13,6 @@ import connectors.TravelTimeEntry;
  * @author Simon
  */
 public interface IDbConnector {
-    public void storeInDb(TravelTimeEntry entry);
-    public ProviderEntry getProvider(String name);
+    public void insert(TravelTimeEntry entry);
+    public ProviderEntry findByName(String name);
 }

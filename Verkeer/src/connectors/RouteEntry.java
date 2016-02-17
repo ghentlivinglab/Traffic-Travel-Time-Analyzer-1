@@ -9,7 +9,7 @@ package connectors;
  *
  * @author Simon
  */
-public class TrajectEntry {
+public class RouteEntry {
     public String name;
     public double startCoordinateLatitude;
     public double startCoordinateLongitude;
@@ -24,7 +24,7 @@ public class TrajectEntry {
      * @param endCoordinateLatitude
      * @param endCoordinateLongitude 
      */
-    public TrajectEntry(String name, double startCoordinateLatitude, double startCoordinateLongitude, double endCoordinateLatitude, double endCoordinateLongitude) {
+    public RouteEntry(String name, double startCoordinateLatitude, double startCoordinateLongitude, double endCoordinateLatitude, double endCoordinateLongitude) {
         this.name = name;
         this.startCoordinateLatitude = startCoordinateLatitude;
         this.startCoordinateLongitude = startCoordinateLongitude;
@@ -35,7 +35,7 @@ public class TrajectEntry {
     /**
      * 
      */
-    public TrajectEntry(){}
+    public RouteEntry(){}
 
     /**
      * Returns the name of the traject.

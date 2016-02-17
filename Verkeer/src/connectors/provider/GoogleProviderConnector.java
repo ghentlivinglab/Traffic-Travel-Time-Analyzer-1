@@ -7,7 +7,7 @@ package connectors.provider;
 
 import com.owlike.genson.Genson;
 import com.owlike.genson.stream.ObjectReader;
-import connectors.TrajectEntry;
+import connectors.RouteEntry;
 import connectors.database.IDbConnector;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,16 +31,16 @@ public class GoogleProviderConnector extends AProviderConnector {
     //     private final static String API_KEY = ; // Robin-Key
     //     private final static String API_KEY = ; // Simon-Key
 
-    public GoogleProviderConnector(List<TrajectEntry> trajecten, IDbConnector dbConnector) {
+    public GoogleProviderConnector(List<RouteEntry> trajecten, IDbConnector dbConnector) {
         super(trajecten, dbConnector);
         String providerName = "Google Maps";
-        this.providerEntry = dbConnector.getProvider(providerName);
+        this.providerEntry = dbConnector.findByName(providerName);
     }
 
     @Override
     public void triggerUpdate() {
         //throw new UnsupportedOperationException("Not supported yet.");
-        for (TrajectEntry traject : trajecten) {
+        for (RouteEntry traject : trajecten) {
             try {
                 URL url = generateURL(traject);
                 URLConnection connection = url.openConnection();
@@ -62,7 +62,7 @@ public class GoogleProviderConnector extends AProviderConnector {
         }
     }
 
-    protected URL generateURL(TrajectEntry traject) throws MalformedURLException {
+    protected URL generateURL(RouteEntry traject) throws MalformedURLException {
         StringBuilder urlBuilder = new StringBuilder(API_URL);
         urlBuilder.append("?key=");
         urlBuilder.append(API_KEY);

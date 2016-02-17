@@ -8,7 +8,7 @@ package connectors.provider;
 import java.util.List;
 import connectors.database.IDbConnector;
 import connectors.ProviderEntry;
-import connectors.TrajectEntry;
+import connectors.RouteEntry;
 import connectors.TravelTimeEntry;
 
 /**
@@ -17,15 +17,15 @@ import connectors.TravelTimeEntry;
  */
 public abstract class AProviderConnector {
     protected IDbConnector dbConnector;
-    protected List<TrajectEntry> trajecten;
+    protected List<RouteEntry> trajecten;
     protected ProviderEntry providerEntry;
     
-    public AProviderConnector(List<TrajectEntry> trajecten, IDbConnector dbConnector){
+    public AProviderConnector(List<RouteEntry> trajecten, IDbConnector dbConnector){
         this.trajecten = trajecten;
         this.dbConnector = dbConnector;
     }
     public abstract void triggerUpdate();
     public void saveToDb(TravelTimeEntry entry){
-        dbConnector.storeInDb(entry);
+        dbConnector.insert(entry);
     }
 }

@@ -15,12 +15,12 @@ import connectors.TravelTimeEntry;
 public class DummyDbConnector implements IDbConnector{
 
     @Override
-    public void storeInDb(TravelTimeEntry entry) {
+    public void insert(TravelTimeEntry entry) {
         
     }
 
     @Override
-    public ProviderEntry getProvider(String name) {
+    public ProviderEntry findByName(String name) {
         return new ProviderEntry(0, "null");
     }
     
