@@ -26,6 +26,6 @@ public abstract class AProviderConnector {
     }
     public abstract void triggerUpdate();
     public void saveToDb(DataEntry entry){
-        dbConnector.storeInDb(entry);
+        dbConnector.insert(entry);
     }
 }

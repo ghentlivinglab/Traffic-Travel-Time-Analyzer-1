@@ -10,13 +10,14 @@ package connectors;
  * @author Simon
  */
 public class RouteEntry {
-    public String name;
-    public double startCoordinateLatitude;
-    public double startCoordinateLongitude;
-    public double endCoordinateLatitude;
-    public double endCoordinateLongitude;
-    public int lenght;
-    public int idealTravelTime;
+    private int id;
+    private String name;
+    private double startCoordinateLatitude;
+    private double startCoordinateLongitude;
+    private double endCoordinateLatitude;
+    private double endCoordinateLongitude;
+    private int lenght;
+    private int idealTravelTime;
 
     /**
      * 
@@ -126,6 +127,20 @@ public class RouteEntry {
     public void setIdealTravelTime(int idealTravelTime) {
         this.idealTravelTime = idealTravelTime;
     }
+
+    /**
+     * Returns the id of the route
+     * @return integer with id of the route
+     */
+    
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+    
     
     
 }

@@ -5,8 +5,8 @@
  */
 package connectors.database;
 
-import connectors.ProviderEntry;
 import connectors.DataEntry;
+import connectors.ProviderEntry;
 
 /**
  *
@@ -15,12 +15,12 @@ import connectors.DataEntry;
 public class DummyDbConnector implements IDbConnector{
 
     @Override
-    public void storeInDb(DataEntry entry) {
+    public void insert(DataEntry entry) {
         
     }
 
     @Override
-    public ProviderEntry getProvider(String name) {
+    public ProviderEntry findByName(String name) {
         return new ProviderEntry(0, "null");
     }
     
