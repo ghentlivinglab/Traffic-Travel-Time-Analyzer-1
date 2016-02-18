@@ -6,6 +6,7 @@
 package connectors.database;
 
 import connectors.*;
+import java.sql.Date;
 
 /**
  *
@@ -13,5 +14,11 @@ import connectors.*;
  */
 public interface IDbConnector {
     public void insert(DataEntry entry);
-    public ProviderEntry findByName(String name);
+    public void insert(RouteEntry entry);
+    public void insert(ProviderEntry entry);
+    public ProviderEntry    findProviderEntryByName(String name);
+    public ProviderEntry    findProviderEntryByID(int id);
+    public RouteEntry       findRouteEntryByName(String name);
+    public RouteEntry       findRouteEntryByID(int id);
+    public DataEntry        findDataEntryByID(int routeId, int providerId, Date timestamp);
 }

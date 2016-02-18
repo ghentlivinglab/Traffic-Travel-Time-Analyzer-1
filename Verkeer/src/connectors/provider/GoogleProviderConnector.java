@@ -30,7 +30,7 @@ public class GoogleProviderConnector extends AProviderConnector {
     public GoogleProviderConnector(List<RouteEntry> trajecten, IDbConnector dbConnector) {
         super(trajecten, dbConnector);
         String providerName = "Google Maps";
-        this.providerEntry = dbConnector.findByName(providerName);
+        this.providerEntry = dbConnector.findProviderEntryByName(providerName);
     }
 
     @Override

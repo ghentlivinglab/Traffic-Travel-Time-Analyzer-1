@@ -19,7 +19,7 @@ public class HereProviderConnector extends AProviderConnector {
     public HereProviderConnector(List<RouteEntry> trajecten, IDbConnector dbConnector) {
         super(trajecten, dbConnector);
         String providerName = "Here";
-        this.providerEntry = dbConnector.findByName(providerName);
+        this.providerEntry = dbConnector.findProviderEntryByName(providerName);
     }
     
     @Override
