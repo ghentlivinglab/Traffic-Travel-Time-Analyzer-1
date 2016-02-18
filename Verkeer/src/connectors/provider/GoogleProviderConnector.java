@@ -5,6 +5,7 @@
  */
 package connectors.provider;
 
+import com.owlike.genson.Genson;
 import connectors.RouteEntry;
 import connectors.database.IDbConnector;
 import java.io.BufferedReader;
@@ -14,6 +15,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -47,8 +49,6 @@ public class GoogleProviderConnector extends AProviderConnector {
                     System.out.println(inputLine);
                 }
                 in.close();
-                
-                
 
             } catch (MalformedURLException e) { // exception when url invalid
 
@@ -77,4 +77,16 @@ public class GoogleProviderConnector extends AProviderConnector {
 
     }
 
+    public void fetchDataFromJSON(String json) throws TrajectUnavailableException {
+        Genson genson = new Genson();
+        Map<String, Object> map = genson.deserialize(json, Map.class);
+        if (!map.get("status").equals("OK")) {
+            throw new TrajectUnavailableException((String) map.get("status"));
+        }
+        List<Object> routes = (List<Object>) map.get("routes");
+        List<Object> legs = (List<Object>) ((Map<String, Object>) routes.get(0)).get("legs");
+
+        int x = 0;
+
+    }
 }

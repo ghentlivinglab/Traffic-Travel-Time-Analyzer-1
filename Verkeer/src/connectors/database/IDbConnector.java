@@ -5,7 +5,9 @@
  */
 package connectors.database;
 
-import connectors.*;
+import connectors.ProviderEntry;
+import connectors.DataEntry;
+import connectors.RouteEntry;
 import java.sql.Date;
 
 /**
