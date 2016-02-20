@@ -56,7 +56,6 @@ public class GoogleProviderConnector extends AProviderConnector {
 
         }
     }
-
     /**
      * Generates the URL to call the Google API for this route.
      *
@@ -129,6 +128,5 @@ public class GoogleProviderConnector extends AProviderConnector {
             }
         }
         return data;
-
     }
 }

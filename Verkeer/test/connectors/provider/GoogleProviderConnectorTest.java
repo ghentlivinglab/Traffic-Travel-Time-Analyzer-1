@@ -65,7 +65,7 @@ public class GoogleProviderConnectorTest {
             fail("malformed url");
         }
     }
-    
+
     @Test
     public void connectionTest(){
         try{

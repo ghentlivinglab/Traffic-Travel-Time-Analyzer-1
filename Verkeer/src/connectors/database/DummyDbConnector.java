@@ -29,12 +29,10 @@ public class DummyDbConnector implements IDbConnector{
 
     @Override
     public void insert(RouteEntry entry) {
-        
     }
 
     @Override
     public void insert(ProviderEntry entry) {
-        
     }
 
     @Override
