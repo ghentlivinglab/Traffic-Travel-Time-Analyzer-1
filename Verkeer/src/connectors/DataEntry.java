@@ -86,4 +86,9 @@ public class DataEntry {
     public void setProvider(ProviderEntry provider) {
         this.provider = provider;
     }
+    
+    @Override
+    public String toString(){
+        return "DataEntry {\n\troute: \""+route.getName()+"\",\n\ttime: "+timestamp+",\n\ttravelTime: "+travelTime+",\n\tprovider: \""+provider.getName()+"\"\n}";
+    }
 }
