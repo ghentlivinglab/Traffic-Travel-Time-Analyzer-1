@@ -65,9 +65,14 @@ public class GoogleProviderConnectorTest {
             fail("malformed url");
         }
     }
+    
     @Test
     public void connectionTest(){
+        try{
         GoogleProviderConnector connector = new GoogleProviderConnector(trajecten, new DummyDbConnector());
         connector.triggerUpdate();
-    }
+        
+    } catch(Exception e){ // connection can only fail if
+        fail(e.getMessage());
+    }}
 }

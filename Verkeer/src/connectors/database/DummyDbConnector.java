@@ -23,37 +23,37 @@ public class DummyDbConnector implements IDbConnector{
 
     @Override
     public void insert(RouteEntry entry) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+       
     }
 
     @Override
     public void insert(ProviderEntry entry) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
 
     @Override
     public ProviderEntry findProviderEntryByName(String name) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new ProviderEntry();
     }
 
     @Override
     public ProviderEntry findProviderEntryByID(int id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+       return new ProviderEntry();
     }
 
     @Override
     public RouteEntry findRouteEntryByName(String name) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new RouteEntry();
     }
 
     @Override
     public RouteEntry findRouteEntryByID(int id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new RouteEntry();
     }
 
     @Override
     public DataEntry findDataEntryByID(int routeId, int providerId, Date timestamp) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new DataEntry();
     }
     
 }

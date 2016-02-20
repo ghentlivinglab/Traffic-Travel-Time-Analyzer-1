@@ -18,7 +18,7 @@ public class ProviderEntry {
     /**
      * 
      */
-    ProviderEntry() {}
+    public ProviderEntry() {}
 
     /**
      * Returns the databaseId of the provider
