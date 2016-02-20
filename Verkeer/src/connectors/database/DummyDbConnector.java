@@ -9,13 +9,19 @@ import connectors.DataEntry;
 import connectors.ProviderEntry;
 import connectors.RouteEntry;
 import java.sql.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
  * @author jarno
  */
 public class DummyDbConnector implements IDbConnector{
-
+    private Map<Integer, ProviderEntry> providerEntries;
+    
+    public DummyDbConnector(){
+        providerEntries = new HashMap<>();
+    }
     @Override
     public void insert(DataEntry entry) {
         
@@ -33,12 +39,18 @@ public class DummyDbConnector implements IDbConnector{
 
     @Override
     public ProviderEntry findProviderEntryByName(String name) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        for (ProviderEntry value : providerEntries.values()) {
+            if (value.getName().equals(name)){
+                return value;
+            }
+        }
+        ProviderEntry n = new ProviderEntry(providerEntries.size(), name);
+        return n;
     }
 
     @Override
     public ProviderEntry findProviderEntryByID(int id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return providerEntries.get(id);
     }
 
     @Override
