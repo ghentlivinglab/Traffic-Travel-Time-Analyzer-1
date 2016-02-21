@@ -51,9 +51,9 @@ public class MariaDbConnector implements IDbConnector{
                 connection = DriverManager.getConnection(URL,USER,PASSWORD);
             }
         }catch (ClassNotFoundException e){
-            
+            System.out.println("getConnection() FOUT! ClassNotFoundException");
         }catch (SQLException e){
-            System.err.println("getConnection() FOUT!");
+            System.err.println("getConnection() FOUT! SQLException");
         }
         return connection;
     }
@@ -107,8 +107,8 @@ public class MariaDbConnector implements IDbConnector{
             PreparedStatement p = conn.prepareStatement(SELECT_PE_NAME);
             p.setString(1, name);
             ResultSet rs = p.executeQuery();
-            rs.next();
-            ret = new ProviderEntry(rs.getInt("id"), rs.getString("name"));
+            if(rs.next())
+                ret = new ProviderEntry(rs.getInt("id"), rs.getString("name"));
             
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -122,8 +122,9 @@ public class MariaDbConnector implements IDbConnector{
             PreparedStatement p = conn.prepareStatement(SELECT_PE_ID);
             p.setInt(1, id);
             ResultSet rs = p.executeQuery();
-            rs.next();
-            ret = new ProviderEntry(rs.getInt("id"), rs.getString("name"));
+            if(rs.next())
+                ret = new ProviderEntry(rs.getInt("id"), rs.getString("name"));
+            
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -137,8 +138,9 @@ public class MariaDbConnector implements IDbConnector{
             PreparedStatement p = conn.prepareStatement(SELECT_RE_NAME);
             p.setString(1, name);
             ResultSet rs = p.executeQuery();
-            rs.next();
-            ret = new RouteEntry(rs.getString("name"), rs.getDouble("startlat"), rs.getDouble("startlong"), rs.getDouble("endlat"), rs.getDouble("endlong"), rs.getInt("length"), 0);
+            if(rs.next())
+                ret = new RouteEntry(rs.getString("name"), rs.getDouble("startlat"), rs.getDouble("startlong"), rs.getDouble("endlat"), rs.getDouble("endlong"), rs.getInt("length"), 0);
+        
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -150,8 +152,8 @@ public class MariaDbConnector implements IDbConnector{
             PreparedStatement p = conn.prepareStatement(SELECT_RE_ID);
             p.setInt(1, id);
             ResultSet rs = p.executeQuery();
-            rs.next();
-            ret = new RouteEntry(rs.getString("name"), rs.getDouble("startlat"), rs.getDouble("startlong"), rs.getDouble("endlat"), rs.getDouble("endlong"), rs.getInt("length"), 0);
+            if(rs.next())
+                ret = new RouteEntry(rs.getString("name"), rs.getDouble("startlat"), rs.getDouble("startlong"), rs.getDouble("endlat"), rs.getDouble("endlong"), rs.getInt("length"), 0);
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -166,16 +168,17 @@ public class MariaDbConnector implements IDbConnector{
             p.setInt(2, providerId);
             p.setDate(3, timestamp);
             ResultSet rs = p.executeQuery();
-            rs.next();
-            ret = new DataEntry();
-            ret.setTravelTime(rs.getInt("traveltime"));
-            if(deep){
-                RouteEntry route = findRouteEntryByID(routeId);
-                ProviderEntry prov = findProviderEntryByID(providerId);
-                if(route != null) ret.setRoute(route);
-                if(prov != null) ret.setProvider(prov);
+            if(rs.next()){
+                ret = new DataEntry();
+                ret.setTravelTime(rs.getInt("traveltime"));
+                ret.setTimestamp(rs.getDate("timestamp"));
+                if(deep){
+                    RouteEntry route = findRouteEntryByID(routeId);
+                    ProviderEntry prov = findProviderEntryByID(providerId);
+                    if(route != null) ret.setRoute(route);
+                    if(prov != null) ret.setProvider(prov);
+                }
             }
-            ret.setTimestamp(rs.getDate("timestamp"));
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -185,7 +188,7 @@ public class MariaDbConnector implements IDbConnector{
         return findDataEntryByID(routeId, providerId, timestamp, false);
     }
     
-    public Collection<DataEntry> findDataEntryByID(int routeId, int providerId, Date from, Date to){
+    public Collection<DataEntry> findDataEntryBetween(int routeId, int providerId, Date from, Date to){
         ArrayList<DataEntry> ret = new ArrayList<>();
         try(Connection conn = getConnection()){
             PreparedStatement p = conn.prepareStatement(SELECT_DE_BETWEEN);
