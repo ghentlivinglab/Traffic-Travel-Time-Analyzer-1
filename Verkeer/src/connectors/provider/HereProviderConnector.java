@@ -59,6 +59,7 @@ public class HereProviderConnector extends AProviderConnector {
                 @Override
                 public void onThrowable(Throwable t){
                     // Something wrong happened.
+                    //t.getMessage();
                 }
             });
             buzyRequests.add(f);
@@ -78,7 +79,18 @@ public class HereProviderConnector extends AProviderConnector {
             
             return new DataEntry(new Date(2016,2,1), travelTime, traject, this.providerEntry);
         } catch (Exception ex){
-            throw new TrajectUnavailableException("Unreadable HERE Json data.");
+            String msg;
+            try{
+                Genson genson = new Genson();
+                Map<String, Object> map = genson.deserialize(json, Map.class);
+                String type = (String) map.get("type");
+                String subtype = (String) map.get("subtype");
+                String details = (String) map.get("details");
+                msg = type+" ("+subtype+"): "+details;
+            } catch (Exception ex2){
+                msg = "JSON data unreadable (expected other structure)";
+            }
+            throw new TrajectUnavailableException(msg);
         }
     }
     protected String generateURL(RouteEntry traject) {

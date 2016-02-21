@@ -33,7 +33,7 @@ public class HereProviderConnectorTest {
     public static void setUpClass() {
         RouteEntry traject = new RouteEntry();
         traject.setName("R40 Drongensesteenweg -> Palinghuizen");
-        traject.setStartCoordinateLatitude(551.0560905);
+        traject.setStartCoordinateLatitude(51.0560905);
         traject.setStartCoordinateLongitude(3.6951634);
         traject.setEndCoordinateLatitude(51.0663037);
         traject.setEndCoordinateLongitude(3.6996797);
@@ -71,7 +71,8 @@ public class HereProviderConnectorTest {
             } catch (ExecutionException ex) {
                 //Logger.getLogger(HereProviderConnectorTest.class.getName()).log(Level.SEVERE, null, ex);
                 // Logger logs zijn veel te onduidelijk. Even uitgecomment.
-                fail("ConnectionTest Failed: ExecutionException. Error while processing HTTP request (parsing json, ...).");
+                System.out.println(ex.getCause().getCause().getMessage());
+                fail("ExecutionException");
             }
         }
     }
