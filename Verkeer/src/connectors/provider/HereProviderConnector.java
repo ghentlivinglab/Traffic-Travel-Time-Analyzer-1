@@ -76,8 +76,8 @@ public class HereProviderConnector extends AProviderConnector {
             Map<String, Object> route0 = (Map<String, Object>) route.get(0);
             Map<String, Object> summary = (Map<String, Object>) route0.get("summary");
             int travelTime = toIntExact((long) summary.get("trafficTime"));
-            
-            return new DataEntry(new Date(2016,2,1), travelTime, traject, this.providerEntry);
+                    
+            return new DataEntry(travelTime, traject, this.providerEntry);
         } catch (Exception ex){
             String msg;
             try{

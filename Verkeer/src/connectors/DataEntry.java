@@ -6,6 +6,7 @@
 package connectors;
 
 import java.sql.Date;
+import java.util.Calendar;
 
 /**
  *
@@ -30,6 +31,18 @@ public class DataEntry {
         this.route = route;
         this.provider = provider;
     }
+    /**
+     * Convenient constructor. Uses 'now' as timestamp
+     * @param travelTime estimated duration of the route
+     * @param route route of the measurement
+     * @param provider provider of the measurement
+     */
+    public DataEntry(int travelTime, RouteEntry route, ProviderEntry provider) {
+        this.setTimestampNow();
+        this.travelTime = travelTime;
+        this.route = route;
+        this.provider = provider;
+    }
     
     /**
      * 
@@ -49,6 +62,18 @@ public class DataEntry {
 
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
+    }
+    
+    public final void setTimestampNow(){ 
+        // create a java calendar instance
+        Calendar calendar = Calendar.getInstance();
+
+        // get a java date (java.util.Date) from the Calendar instance.
+        // this java date will represent the current date, or "now".
+        java.util.Date currentDate = calendar.getTime();
+
+        // now, create a java.sql.Date from the java.util.Date
+        this.timestamp = new java.sql.Date(currentDate.getTime());
     }
 
     /**
