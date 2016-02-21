@@ -52,8 +52,16 @@ public class HereProviderConnector extends AProviderConnector {
 
                 @Override
                 public DataEntry onCompleted(Response response) throws Exception{
-                    // Do something with the Response
-                    return fetchDataFromJSON(response.getResponseBody(), traject);
+                    // 200 OK Statuscode
+                    if (response.getStatusCode() == 200){
+                        return fetchDataFromJSON(response.getResponseBody(), traject);
+                    }
+                    // Er ging iets fout
+                    // Statuscodes later uitbreiden met: 
+                    // https://developer.here.com/rest-apis/documentation/traffic/topics/http-status-codes.html
+                    
+                    String msg = fetchErrorFromJSON(response.getResponseBody());
+                    throw new TrajectUnavailableException(msg);
                 }
 
                 @Override
@@ -79,20 +87,25 @@ public class HereProviderConnector extends AProviderConnector {
                     
             return new DataEntry(travelTime, traject, this.providerEntry);
         } catch (Exception ex){
-            String msg;
-            try{
-                Genson genson = new Genson();
-                Map<String, Object> map = genson.deserialize(json, Map.class);
-                String type = (String) map.get("type");
-                String subtype = (String) map.get("subtype");
-                String details = (String) map.get("details");
-                msg = type+" ("+subtype+"): "+details;
-            } catch (Exception ex2){
-                msg = "JSON data unreadable (expected other structure)";
-            }
-            throw new TrajectUnavailableException(msg);
+            throw new TrajectUnavailableException("JSON data unreadable (expected other structure)");
         }
     }
+    
+    public String fetchErrorFromJSON(String json){
+        try{
+            // Try to read a HERE error. (HERE specific error structure)
+            Genson genson = new Genson();
+            Map<String, Object> map = genson.deserialize(json, Map.class);
+            String type = (String) map.get("type");
+            String subtype = (String) map.get("subtype");
+            String details = (String) map.get("details");
+            return type+" ("+subtype+"): "+details;
+        } catch (Exception ex2){
+            // Not expected ERROR JSON data
+            return "JSON ERROR data unreadable (expected other structure)";
+        }
+    }
+    
     protected String generateURL(RouteEntry traject) {
         StringBuilder urlBuilder = new StringBuilder(API_URL);
         urlBuilder.append("?app_code=");

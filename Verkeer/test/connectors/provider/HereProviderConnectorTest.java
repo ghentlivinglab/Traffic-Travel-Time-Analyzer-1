@@ -31,13 +31,22 @@ public class HereProviderConnectorTest {
 
     @BeforeClass
     public static void setUpClass() {
+        trajecten = new ArrayList<>();
+
         RouteEntry traject = new RouteEntry();
         traject.setName("R40 Drongensesteenweg -> Palinghuizen");
         traject.setStartCoordinateLatitude(51.0560905);
         traject.setStartCoordinateLongitude(3.6951634);
         traject.setEndCoordinateLatitude(51.0663037);
         traject.setEndCoordinateLongitude(3.6996797);
-        trajecten = new ArrayList<>();
+        trajecten.add(traject);
+        
+        traject = new RouteEntry();
+        traject.setName("R40 Drongensesteenweg -> Palinghuizen - kopie");
+        traject.setStartCoordinateLatitude(51.0560905);
+        traject.setStartCoordinateLongitude(3.6951634);
+        traject.setEndCoordinateLatitude(51.0663037);
+        traject.setEndCoordinateLongitude(3.6996797);
         trajecten.add(traject);
     }
 
