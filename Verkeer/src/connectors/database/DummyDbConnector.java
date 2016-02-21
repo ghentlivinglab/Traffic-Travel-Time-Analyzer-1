@@ -9,7 +9,9 @@ import connectors.DataEntry;
 import connectors.ProviderEntry;
 import connectors.RouteEntry;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -18,17 +20,20 @@ import java.util.Map;
  */
 public class DummyDbConnector implements IDbConnector{
     private Map<Integer, ProviderEntry> providerEntries;
+    private List<DataEntry> dataEntries;
     
     public DummyDbConnector(){
         providerEntries = new HashMap<>();
+        dataEntries = new ArrayList<>();
     }
     @Override
     public void insert(DataEntry entry) {
-        
+        dataEntries.add(entry);
     }
 
     @Override
     public void insert(RouteEntry entry) {
+
     }
 
     @Override
