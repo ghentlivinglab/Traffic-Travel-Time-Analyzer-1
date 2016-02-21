@@ -13,7 +13,7 @@ import java.sql.Date;
  */
 public class DataEntry {
     private Date timestamp;
-    private double travelTime;
+    private int travelTime;
     private RouteEntry route;
     private ProviderEntry provider;
 
@@ -24,7 +24,7 @@ public class DataEntry {
      * @param route route of the measurement
      * @param provider provider of the measurement
      */
-    public DataEntry(Date timestamp, double travelTime, RouteEntry route, ProviderEntry provider) {
+    public DataEntry(Date timestamp, int travelTime, RouteEntry route, ProviderEntry provider) {
         this.timestamp = timestamp;
         this.travelTime = travelTime;
         this.route = route;
@@ -55,7 +55,7 @@ public class DataEntry {
      * Returns the duration of the trip of this measurement.
      * @return integer with time in seconds
      */
-    public double getTravelTime() {
+    public int getTravelTime() {
         return travelTime;
     }
 
@@ -85,5 +85,10 @@ public class DataEntry {
 
     public void setProvider(ProviderEntry provider) {
         this.provider = provider;
+    }
+    
+    @Override
+    public String toString(){
+        return "DataEntry {\n\troute: \""+route.getName()+"\",\n\ttime: "+timestamp+",\n\ttravelTime: "+travelTime+",\n\tprovider: \""+provider.getName()+"\"\n}";
     }
 }
