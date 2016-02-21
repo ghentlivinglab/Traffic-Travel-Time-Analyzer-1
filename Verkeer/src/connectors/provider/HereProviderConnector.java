@@ -43,10 +43,13 @@ public class HereProviderConnector extends AProviderConnector {
     
     @Override
     public void triggerUpdate(){
+        buzyRequests = new ArrayList<>();
         for (RouteEntry traject : trajecten) {
             String url = generateURL(traject);
             AsyncHttpClient asyncHttpClient;
             asyncHttpClient = new AsyncHttpClient();
+            IDbConnector connector = this.dbConnector;
+            
             Future<DataEntry> f = asyncHttpClient.prepareGet(url).execute(
                new AsyncCompletionHandler<DataEntry>(){
 
@@ -54,7 +57,9 @@ public class HereProviderConnector extends AProviderConnector {
                 public DataEntry onCompleted(Response response) throws Exception{
                     // 200 OK Statuscode
                     if (response.getStatusCode() == 200){
-                        return fetchDataFromJSON(response.getResponseBody(), traject);
+                        DataEntry data = fetchDataFromJSON(response.getResponseBody(), traject);
+                        connector.insert(data);
+                        return data;
                     }
                     // Er ging iets fout
                     // Statuscodes later uitbreiden met: 
@@ -67,7 +72,6 @@ public class HereProviderConnector extends AProviderConnector {
                 @Override
                 public void onThrowable(Throwable t){
                     // Something wrong happened.
-                    //t.getMessage();
                 }
             });
             buzyRequests.add(f);
