@@ -63,16 +63,17 @@ public class HereProviderConnectorTest {
     }
 
     @Test
-    public void connectionTest(){
+    public void returnTest(){
         HereProviderConnector connector = new HereProviderConnector(trajecten, new DummyDbConnector());
         connector.triggerUpdate();
+        
+        // Wait for all threads to complete, read their return data (= DataEntry)
         for (Future<DataEntry> hashRequest : connector.buzyRequests) {
             try {
                 DataEntry data = hashRequest.get();
                 if (data == null){
                     fail("DataEntry is null");
                 }
-                System.out.println(data);
             } catch (InterruptedException ex) {
                 //Logger.getLogger(HereProviderConnectorTest.class.getName()).log(Level.SEVERE, null, ex);
                 // Logger logs zijn veel te onduidelijk. Even uitgecomment.
@@ -83,6 +84,24 @@ public class HereProviderConnectorTest {
                 System.out.println(ex.getCause().getCause().getMessage());
                 fail("ExecutionException");
             }
+        }
+    }
+    @Test
+    public void insertDatabaseTest() throws InterruptedException, ExecutionException{
+        DummyDbConnector dummy = new DummyDbConnector();
+        int loops = 4;
+        HereProviderConnector connector = new HereProviderConnector(trajecten, dummy);
+        
+        for (int i = 0; i<loops; i++){
+            connector.triggerUpdate();
+            // Wait for all threads to complete
+            for (Future<DataEntry> hashRequest : connector.buzyRequests) {
+                hashRequest.get();
+            }
+        }
+        // Check database count
+        if (dummy.getDataEntriesSize() != trajecten.size()*loops){
+            fail("Expected "+(trajecten.size()*loops)+" dataEntries, "+dummy.getDataEntriesSize()+" given.");
         }
     }
 }

@@ -27,7 +27,7 @@ public class HereProviderConnector extends AProviderConnector {
     protected final static String API_CODE = "P9NBNrOmdjYg25hufPPb9Q"; // Simon-Key
 
     /**
-     * List of all Future instances (check java.util.concurrent library). 
+     * List of all Future instances from last triggerUpdate (check java.util.concurrent library). 
      * ± sort of threads
      * Use f.get(); to wait the thread to finish and return its value Future<ReturnType>
      * Used in the test classes to wait for the threads to finish and return its DataEntry (or null if failed)

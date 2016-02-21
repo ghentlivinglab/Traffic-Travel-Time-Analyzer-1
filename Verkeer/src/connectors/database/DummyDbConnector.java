@@ -71,4 +71,10 @@ public class DummyDbConnector implements IDbConnector{
         return new DataEntry();
     }
     
+    /**
+     * Dummy only, for testing
+     */
+    public int getDataEntriesSize(){
+        return dataEntries.size();
+    }
 }
