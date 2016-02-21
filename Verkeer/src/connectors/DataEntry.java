@@ -6,6 +6,8 @@
 package connectors;
 
 import java.sql.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 /**
@@ -114,6 +116,10 @@ public class DataEntry {
     
     @Override
     public String toString(){
-        return "DataEntry {\n\troute: \""+route.getName()+"\",\n\ttime: "+timestamp+",\n\ttravelTime: "+travelTime+",\n\tprovider: \""+provider.getName()+"\"\n}";
+        // Convert Timestamp in readable string
+        DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        String reportDate = df.format(timestamp);
+
+        return "DataEntry {\n\troute: \""+route+"\",\n\ttimestamp: \""+reportDate+"\",\n\ttravelTime: "+travelTime+",\n\tprovider: \""+provider.getName()+"\"\n}";
     }
 }
