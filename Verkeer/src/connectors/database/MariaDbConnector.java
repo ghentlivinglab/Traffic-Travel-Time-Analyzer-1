@@ -40,6 +40,7 @@ public class MariaDbConnector implements IDbConnector{
     
     private final String SELECT_RE_NAME = "SELECT * FROM routes WHERE name=?;";
     private final String SELECT_RE_ID = "SELECT * FROM routes WHERE id=?;";
+    private final String SELECT_RE = "SELECT * FROM routes;";
     
     private final String SELECT_DE = "SELECT * FROM  trafficdata WHERE routeID=? AND providerID=? AND timestamp=?;";
     private final String SELECT_DE_BETWEEN = "SELECT * FROM trafficdata WHERE routeID=? and providerID=? AND timestamp BETWEEN ? AND ?;";
@@ -99,7 +100,7 @@ public class MariaDbConnector implements IDbConnector{
         }
     }
     
-    //Select operation
+    //Select operations
     @Override
     public ProviderEntry findProviderEntryByName(String name) {
         ProviderEntry ret = null;
@@ -132,6 +133,7 @@ public class MariaDbConnector implements IDbConnector{
     }
     //Opgelet! Het veld traveltime is hier niet ingevuld.
     // Indien niet gevonden wordt er null teruggegeven.
+    @Override
     public RouteEntry findRouteEntryByName(String name) {
         RouteEntry ret = null;
         try(Connection conn = getConnection()){
@@ -146,6 +148,7 @@ public class MariaDbConnector implements IDbConnector{
         }
         return ret;
     }
+    @Override
     public RouteEntry findRouteEntryByID(int id) {
         RouteEntry ret = null;
         try(Connection conn = getConnection()){
@@ -184,10 +187,11 @@ public class MariaDbConnector implements IDbConnector{
         }
         return ret;
     }
+    @Override
     public DataEntry findDataEntryByID(int routeId, int providerId, Date timestamp) {
         return findDataEntryByID(routeId, providerId, timestamp, false);
     }
-    
+    @Override
     public Collection<DataEntry> findDataEntryBetween(int routeId, int providerId, Date from, Date to){
         ArrayList<DataEntry> ret = new ArrayList<>();
         try(Connection conn = getConnection()){
@@ -202,6 +206,27 @@ public class MariaDbConnector implements IDbConnector{
                 d.setTimestamp(rs.getDate("timestamp"));
                 d.setTravelTime(rs.getInt("traveltime"));
                 ret.add(d);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return ret;
+    }
+    public Collection<RouteEntry> findAllRouteEntries(){
+        Collection<RouteEntry> ret = new ArrayList<>();
+        try(Connection conn = getConnection()){
+            PreparedStatement p = conn.prepareStatement(SELECT_RE);
+            ResultSet rs = p.executeQuery();
+            while(rs.next()){
+                RouteEntry r = new RouteEntry();
+                r.setId(rs.getInt("id"));
+                r.setLenght(rs.getInt("length"));
+                r.setName(rs.getString("name"));
+                r.setStartCoordinateLatitude(rs.getDouble("startlat"));
+                r.setStartCoordinateLongitude(rs.getDouble("startlong"));
+                r.setEndCoordinateLatitude(rs.getDouble("endlat"));
+                r.setEndCoordinateLongitude(rs.getDouble("endlong"));
+                ret.add(r);
             }
         } catch (SQLException ex) {
             ex.printStackTrace();

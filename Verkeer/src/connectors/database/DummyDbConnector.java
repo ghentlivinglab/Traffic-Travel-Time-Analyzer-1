@@ -10,6 +10,7 @@ import connectors.ProviderEntry;
 import connectors.RouteEntry;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,5 +77,15 @@ public class DummyDbConnector implements IDbConnector{
      */
     public int getDataEntriesSize(){
         return dataEntries.size();
+    }
+
+    @Override
+    public Collection<DataEntry> findDataEntryBetween(int routeId, int providerId, Date from, Date to) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Collection<RouteEntry> findAllRouteEntries() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

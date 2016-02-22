@@ -9,6 +9,7 @@ import connectors.ProviderEntry;
 import connectors.DataEntry;
 import connectors.RouteEntry;
 import java.sql.Date;
+import java.util.Collection;
 
 /**
  *
@@ -23,4 +24,6 @@ public interface IDbConnector {
     public RouteEntry       findRouteEntryByName(String name);
     public RouteEntry       findRouteEntryByID(int id);
     public DataEntry        findDataEntryByID(int routeId, int providerId, Date timestamp);
+    public Collection<DataEntry> findDataEntryBetween(int routeId, int providerId, Date from, Date to);
+    public Collection<RouteEntry> findAllRouteEntries();
 }
