@@ -27,10 +27,11 @@ import java.util.logging.Logger;
  */
 public class WazeProviderConnector extends AProviderConnector {
     protected final static String API_URL = "https://route.cit.api.here.com/routing/7.2/calculateroute.json";
-    protected final static String API_ID = "Oi5A1NSbw7OiI5aehvYR"; // Simon-Key
-    protected final static String API_CODE = "P9NBNrOmdjYg25hufPPb9Q"; // Simon-Key
+    protected final static String USERNAME = "VerkeerGent"; // Simon-Key
+    protected final static String PASSWORD = "Paswoord1"; // Simon-Key
     protected Cookie csrf;
     protected Cookie web_session;
+    protected boolean loggedIn = false;
     
     protected final static int BID = 147; // Hardcoded momenteel
 
@@ -86,12 +87,14 @@ public class WazeProviderConnector extends AProviderConnector {
         BoundRequestBuilder request = asyncHttpClient.prepareGet("https://www.waze.com/login/get");
         this.setHeaders(request);
         
+
         Future<Response> f = request.execute(
            new AsyncCompletionHandler<Response>(){
             @Override
             public Response onCompleted(Response response) throws Exception{
                 System.out.println("GET LOGIN RESPONSE: "+response.getStatusCode());
-                System.out.println(response.getResponseBody());
+                saveTokens(response);
+                parseGetLoginJSON(response.getResponseBody());
                 
                 return response;
             }
@@ -125,7 +128,7 @@ public class WazeProviderConnector extends AProviderConnector {
         BoundRequestBuilder request = asyncHttpClient.preparePost("https://www.waze.com/login/create");
         this.setHeaders(request);
         request.addHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-        request.setBody("user_id=VerkeerGent&password=Paswoord1");
+        request.setBody("user_id="+USERNAME+"&password="+PASSWORD);
 
         Request q = request.build();
         
@@ -135,6 +138,8 @@ public class WazeProviderConnector extends AProviderConnector {
             @Override
             public Response onCompleted(Response response) throws Exception{
                 System.out.println("CREATE LOGIN RESPONSE: "+response.getStatusCode());
+                saveTokens(response);
+
                 return response;
             }
 
@@ -149,12 +154,16 @@ public class WazeProviderConnector extends AProviderConnector {
     public void triggerUpdate(){
         buzyRequests = new ArrayList<>();
         try {
-            Response r = this.getLogin();
-            saveTokens(r);
-            r = this.createLogin();
-            saveTokens(r);
-            r = this.getLogin();
-            saveTokens(r);
+            this.getLogin();
+            if (!this.loggedIn){
+                this.createLogin();
+            }
+            this.getLogin();
+            if (!this.loggedIn){
+                System.out.println("Failed login!");
+                return;
+            }
+            
             this.getData();
             //buzyRequests.add(f);
         } catch (InterruptedException ex) {
@@ -180,37 +189,23 @@ public class WazeProviderConnector extends AProviderConnector {
         }
     }
     
-    public String fetchErrorFromJSON(String json){
+    public void parseGetLoginJSON(String json){
         try{
             // Try to read a HERE error. (HERE specific error structure)
             Genson genson = new Genson();
             Map<String, Object> map = genson.deserialize(json, Map.class);
-            String type = (String) map.get("type");
-            String subtype = (String) map.get("subtype");
-            String details = (String) map.get("details");
-            return type+" ("+subtype+"): "+details;
+            Map<String, Object> reply =  (Map<String, Object>) map.get("reply");
+            long userid = (long) reply.get("user_id");
+            this.loggedIn = (boolean) reply.get("login");
+            String message = (String) reply.get("message");
+            long error = (long) reply.get("user_id");
+            long rank = (long) reply.get("user_id");
+            String full_name = (String) reply.get("full_name"); 
         } catch (Exception ex2){
             // Not expected ERROR JSON data
-            return "JSON ERROR data unreadable (expected other structure)";
+            
+            System.out.println("Unexpected JSON format from getLogin: "+ex2.getMessage()+" - "+json);
         }
     }
     
-    protected String generateURL(RouteEntry traject) {
-        StringBuilder urlBuilder = new StringBuilder(API_URL);
-        urlBuilder.append("?app_code=");
-        urlBuilder.append(API_CODE);
-        urlBuilder.append("&app_id=");
-        urlBuilder.append(API_ID);
-        urlBuilder.append("&waypoint0=");
-        urlBuilder.append(traject.getStartCoordinateLatitude());
-        urlBuilder.append(",");
-        urlBuilder.append(traject.getStartCoordinateLongitude());
-        urlBuilder.append("&waypoint1=");
-        urlBuilder.append(traject.getEndCoordinateLatitude());
-        urlBuilder.append(",");
-        urlBuilder.append(traject.getEndCoordinateLongitude());
-        urlBuilder.append("&mode=shortest;car;traffic:enabled");
-        urlBuilder.append("&departure=now");
-        return urlBuilder.toString();
-    }
 }
