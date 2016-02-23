@@ -81,8 +81,7 @@ public class MariaDbConnector implements IDbConnector{
     public void insert(ProviderEntry entry){
         try{
             PreparedStatement p = connection.prepareStatement(prop.getProperty("INSERT_PE"));
-            p.setInt    ( 1, entry.getId());
-            p.setString ( 2, entry.getName());
+            p.setString ( 1, entry.getName());
             p.executeUpdate();
         } catch (SQLException ex) {
             ex.printStackTrace();
