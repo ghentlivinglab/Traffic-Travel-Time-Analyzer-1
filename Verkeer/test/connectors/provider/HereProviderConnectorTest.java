@@ -61,10 +61,10 @@ public class HereProviderConnectorTest {
         }
     }
 
-    /*@Test
+    @Test
     public void insertDatabaseTest() throws InterruptedException, ExecutionException {
         DummyDbConnector dummy = new DummyDbConnector();
-        int loops = 4;
+        int loops = 0;
         HereProviderConnector connector = new HereProviderConnector(dummy);
 
         for (int i = 0; i < loops; i++) {
@@ -78,5 +78,5 @@ public class HereProviderConnectorTest {
         if (dummy.getDataEntriesSize() != connector.routes.size() * loops) {
             fail("Expected " + (connector.routes.size() * loops) + " dataEntries, " + dummy.getDataEntriesSize() + " given.");
         }
-    }*/
+    }
 }
