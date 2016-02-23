@@ -1,15 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package connectors.provider;
 
 import connectors.DataEntry;
-import connectors.RouteEntry;
 import connectors.database.DummyDbConnector;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.junit.After;
@@ -19,10 +11,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-/**
- *
- * @author Simon
- */
 public class HereProviderConnectorTest {
 
     public HereProviderConnectorTest() {
@@ -30,7 +18,7 @@ public class HereProviderConnectorTest {
 
     @BeforeClass
     public static void setUpClass() {
-        
+
     }
 
     @AfterClass
@@ -46,15 +34,15 @@ public class HereProviderConnectorTest {
     }
 
     @Test
-    public void returnTest(){
-        HereProviderConnector connector = new HereProviderConnector( new DummyDbConnector());
+    public void returnTest() {
+        HereProviderConnector connector = new HereProviderConnector(new DummyDbConnector());
         connector.triggerUpdate();
-        
+
         // Wait for all threads to complete, read their return data (= DataEntry)
         for (Future<DataEntry> hashRequest : connector.buzyRequests) {
             try {
                 DataEntry data = hashRequest.get();
-                if (data == null){
+                if (data == null) {
                     fail("DataEntry is null");
                 }
             } catch (InterruptedException ex) {
@@ -69,13 +57,14 @@ public class HereProviderConnectorTest {
             }
         }
     }
+
     @Test
-    public void insertDatabaseTest() throws InterruptedException, ExecutionException{
+    public void insertDatabaseTest() throws InterruptedException, ExecutionException {
         DummyDbConnector dummy = new DummyDbConnector();
         int loops = 4;
         HereProviderConnector connector = new HereProviderConnector(dummy);
-        
-        for (int i = 0; i<loops; i++){
+
+        for (int i = 0; i < loops; i++) {
             connector.triggerUpdate();
             // Wait for all threads to complete
             for (Future<DataEntry> hashRequest : connector.buzyRequests) {
@@ -83,8 +72,8 @@ public class HereProviderConnectorTest {
             }
         }
         // Check database count
-        if (dummy.getDataEntriesSize() != connector.trajecten.size()*loops){
-            fail("Expected "+(connector.trajecten.size()*loops)+" dataEntries, "+dummy.getDataEntriesSize()+" given.");
+        if (dummy.getDataEntriesSize() != connector.routes.size() * loops) {
+            fail("Expected " + (connector.routes.size() * loops) + " dataEntries, " + dummy.getDataEntriesSize() + " given.");
         }
     }
 }

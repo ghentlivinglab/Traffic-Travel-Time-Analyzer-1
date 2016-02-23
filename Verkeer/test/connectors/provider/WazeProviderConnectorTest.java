@@ -6,10 +6,7 @@
 package connectors.provider;
 
 import connectors.DataEntry;
-import connectors.RouteEntry;
 import connectors.database.DummyDbConnector;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.junit.After;
@@ -30,7 +27,7 @@ public class WazeProviderConnectorTest {
 
     @BeforeClass
     public static void setUpClass() {
-        
+
     }
 
     @AfterClass
@@ -46,15 +43,15 @@ public class WazeProviderConnectorTest {
     }
 
     @Test
-    public void returnTest(){
-        WazeProviderConnector connector = new WazeProviderConnector( new DummyDbConnector());
+    public void returnTest() {
+        WazeProviderConnector connector = new WazeProviderConnector(new DummyDbConnector());
         connector.triggerUpdate();
-        
+
         // Wait for all threads to complete, read their return data (= DataEntry)
         for (Future<DataEntry> hashRequest : connector.buzyRequests) {
             try {
                 DataEntry data = hashRequest.get();
-                if (data == null){
+                if (data == null) {
                     fail("DataEntry is null");
                 }
             } catch (InterruptedException ex) {

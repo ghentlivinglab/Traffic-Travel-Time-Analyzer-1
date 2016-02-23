@@ -172,7 +172,7 @@ public class WazeProviderConnector extends AProviderConnector {
             Logger.getLogger(WazeProviderConnector.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    public DataEntry fetchDataFromJSON(String json, RouteEntry traject) throws TrajectUnavailableException {
+    public DataEntry fetchDataFromJSON(String json, RouteEntry traject) throws RouteUnavailableException {
         try{
             Genson genson = new Genson();
             Map<String, Object> map = genson.deserialize(json, Map.class);
@@ -185,7 +185,7 @@ public class WazeProviderConnector extends AProviderConnector {
                     
             return new DataEntry(travelTime, traject, this.providerEntry);
         } catch (Exception ex){
-            throw new TrajectUnavailableException("JSON data unreadable (expected other structure)");
+            throw new RouteUnavailableException("JSON data unreadable (expected other structure)");
         }
     }
     
