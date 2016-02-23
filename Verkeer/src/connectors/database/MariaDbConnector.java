@@ -104,6 +104,12 @@ public class MariaDbConnector implements IDbConnector{
     }
     
     //Select operations
+    
+    /**
+     * Zoekt de ProviderEntry op in de database. Als deze niet bestaat, maakt hij een nieuwe aan en geeft deze terug.
+     * @param name
+     * @return ProviderEntry uit de database, of een nieuw aangemaakte
+     */
     @Override
     public ProviderEntry findProviderEntryByName(String name) {
         ProviderEntry ret = null;
@@ -116,6 +122,11 @@ public class MariaDbConnector implements IDbConnector{
             rs.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
+        }
+        if (ret == null){
+            ret = new ProviderEntry();
+            ret.setName(name);
+            insert(ret);
         }
         return ret;
     }
