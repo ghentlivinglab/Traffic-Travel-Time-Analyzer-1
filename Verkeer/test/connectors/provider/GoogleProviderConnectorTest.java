@@ -23,6 +23,7 @@ import static org.junit.Assert.*;
  * @author jarno
  */
 public class GoogleProviderConnectorTest {
+
     static List<RouteEntry> trajecten;
 
     public GoogleProviderConnectorTest() {
@@ -51,29 +52,26 @@ public class GoogleProviderConnectorTest {
     @After
     public void tearDown() {
     }
-    
+
     /**
      * Test to see if URL-creation is ok
      */
     @Test
     public void URLCreationTest() {
-        try {
-            URL correctURL = new URL(GoogleProviderConnector.API_URL+"?key="+GoogleProviderConnector.API_KEY+"&origin=51.0560905,3.6951634&destination=51.0663037,3.6996797");
-            GoogleProviderConnector connector = new GoogleProviderConnector(new DummyDbConnector());
-            // TODO: 'trajecten' is slechts een tijdelijke placeholder.
-            assertEquals(connector.generateURL(trajecten.get(0)),correctURL);
-        } catch (MalformedURLException e) {
-            fail("malformed url");
-        }
+        String correctURL = GoogleProviderConnector.API_URL + "?key=" + GoogleProviderConnector.API_KEY + "&origin=51.0560905,3.6951634&destination=51.0663037,3.6996797";
+        GoogleProviderConnector connector = new GoogleProviderConnector(new DummyDbConnector());
+        // TODO: 'trajecten' is slechts een tijdelijke placeholder.
+        assertEquals(connector.generateURL(trajecten.get(0)), correctURL);
     }
 
     @Test
-    public void connectionTest(){
-        try{
-        GoogleProviderConnector connector = new GoogleProviderConnector(new DummyDbConnector());
-        connector.triggerUpdate();
-        
-    } catch(Exception e){ // connection can only fail if
-        fail(e.getMessage());
-    }}
+    public void connectionTest() {
+        try {
+            GoogleProviderConnector connector = new GoogleProviderConnector(new DummyDbConnector());
+            connector.triggerUpdate();
+
+        } catch (Exception e) { // connection can only fail if
+            fail(e.getMessage());
+        }
+    }
 }
