@@ -5,7 +5,7 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 18/02/2016,12:45,14:00,School,Communicatie,Module 4: eindwerken schrijven,,Verplichte contacturen
 20/02/2016,10:00,14:30,Thuis,Projectwerk,HereConnectorProvider klasse schrijven. Line endings problemen oplossen.,1,
 21/02/2016,22:00,23:30,Thuis,Projectwerk,HereConnectorProvider afgewerkt + dummy methodes,1,
-23/02/2016,8:15,12:30,School,Projectwerk,,,
+23/02/2016,8:15,12:30,School,Projectwerk,WazeConnector: geen scraper maar via api,,
 23/02/2016,18:00,18:30,Thuis,Projectwerk,WazeConnector afgewerkt,6,
 23/02/2016,20:30,22:30,Thuis,Projectwerk,WazeConnector verfijnen + mariaDB fixes + mariaDB routes in database,6,zie ook #18 #19
 25/02/2016,13:30,15:00,School,Communicatie,Module 4: eindwerken schrijven,,Verplichte contacturen
