@@ -68,10 +68,10 @@ public class MariaDbConnector implements IDbConnector{
     public void insert(DataEntry entry)  {
         try{
             PreparedStatement p = connection.prepareStatement(prop.getProperty("INSERT_DE"));
-            p.setInt( 1, entry.getProvider().getId());
-            p.setInt( 2, entry.getRoute().getId());
+            p.setInt( 1, entry.getRoute().getId());
+            p.setInt( 2, entry.getProvider().getId());
             p.setDate(3, entry.getTimestamp());
-            p.setDouble(4, entry.getTravelTime());
+            p.setInt(4, entry.getTravelTime());
             p.executeUpdate();
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -159,8 +159,10 @@ public class MariaDbConnector implements IDbConnector{
             PreparedStatement p = connection.prepareStatement(prop.getProperty("SELECT_RE_ID"));
             p.setInt(1, id);
             ResultSet rs = p.executeQuery();
-            if(rs.next())
+            if(rs.next()){
                 ret = new RouteEntry(rs.getString("name"), rs.getDouble("startlat"), rs.getDouble("startlong"), rs.getDouble("endlat"), rs.getDouble("endlong"), rs.getInt("length"), 0);
+                ret.setId(id);
+            }
             rs.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
