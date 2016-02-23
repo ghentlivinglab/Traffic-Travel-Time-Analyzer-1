@@ -6,12 +6,9 @@
 package connectors.provider;
 
 import connectors.DataEntry;
-import connectors.RouteEntry;
 import connectors.database.DummyDbConnector;
 import connectors.database.IDbConnector;
 import connectors.database.MariaDbConnector;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.junit.After;
@@ -32,7 +29,7 @@ public class WazeProviderConnectorTest {
 
     @BeforeClass
     public static void setUpClass() {
-        
+
     }
 
     @AfterClass
@@ -52,8 +49,7 @@ public class WazeProviderConnectorTest {
         IDbConnector db = new MariaDbConnector();
         WazeProviderConnector connector = new WazeProviderConnector(db);
         connector.triggerUpdate();
-        
-        
+
         // Wait for all threads to complete, read their return data (= DataEntry)
         for (Future<Boolean> hashRequest : connector.buzyRequests) {
             try {
@@ -88,8 +84,8 @@ public class WazeProviderConnectorTest {
             }
         }
         // Check database count
-        if (dummy.getDataEntriesSize() != connector.trajecten.size()*loops){
-            fail("Expected "+(connector.trajecten.size()*loops)+" dataEntries, "+dummy.getDataEntriesSize()+" given.");
+        if (dummy.getDataEntriesSize() != connector.routes.size()*loops){
+            fail("Expected "+(connector.routes.size()*loops)+" dataEntries, "+dummy.getDataEntriesSize()+" given.");
         }
     }
 

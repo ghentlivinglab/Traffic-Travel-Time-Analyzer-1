@@ -16,16 +16,33 @@ import java.util.Collection;
  * @author Simon
  */
 public abstract class AProviderConnector {
+
     protected IDbConnector dbConnector;
-    protected Collection<RouteEntry> trajecten;
+    protected Collection<RouteEntry> routes;
     protected ProviderEntry providerEntry;
-    
-    public AProviderConnector(IDbConnector dbConnector){
+
+    /**
+     * Constructs a new abstract ProviderConnector with an IDbConnector to write
+     * data to storage
+     *
+     * @param dbConnector connector to write DataEntry to
+     */
+    public AProviderConnector(IDbConnector dbConnector) {
         this.dbConnector = dbConnector;
-        this.trajecten = dbConnector.findAllRouteEntries();
+        this.routes = dbConnector.findAllRouteEntries();
     }
+
+    /**
+     * Makes the ProviderConnector fetch data from provider
+     */
     public abstract void triggerUpdate();
-    public void saveToDb(DataEntry entry){
+
+    /**
+     * Saves the generated info to the IDbConnector
+     *
+     * @param entry
+     */
+    public void saveToDb(DataEntry entry) {
         dbConnector.insert(entry);
     }
 }

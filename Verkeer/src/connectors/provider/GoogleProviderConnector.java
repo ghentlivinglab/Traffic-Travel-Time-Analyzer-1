@@ -12,13 +12,6 @@ import com.owlike.genson.Genson;
 import connectors.DataEntry;
 import connectors.RouteEntry;
 import connectors.database.IDbConnector;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.sql.Date;
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -44,26 +37,32 @@ public class GoogleProviderConnector extends AProviderConnector {
      */
     protected List<Future<DataEntry>> buzyRequests;
 
+    /**
+     * Constructs a new GoogleProviderConnector with an IDbConnector to write
+     * data to storage
+     *
+     * @param dbConnector connector to write DataEntry to
+     */
     public GoogleProviderConnector(IDbConnector dbConnector) {
         super(dbConnector);
         String providerName = "Google Maps";
-        this.providerEntry = dbConnector.findProviderEntryByName(providerName);
+        this.providerEntry = dbConnector.findProviderEntryByName(providerName); // gets the provider-information from the database
     }
 
     @Override
     public void triggerUpdate() {
-        for (RouteEntry route : trajecten) {
+        for (RouteEntry route : routes) {
             String url = generateURL(route);
             AsyncHttpClient asyncHttpClient;
-            asyncHttpClient = new AsyncHttpClient();
+            asyncHttpClient = new AsyncHttpClient(); // create http client
 
             IDbConnector connector = this.dbConnector;
 
             Future<DataEntry> f = asyncHttpClient.prepareGet(url).execute(new AsyncCompletionHandler<DataEntry>() {
                 @Override
                 public DataEntry onCompleted(Response response) throws Exception {
-                    if(response.getStatusCode()== 200){
-                        Map<String,Object> rawData = fetchDataFromJSON(response.getResponseBody());
+                    if (response.getStatusCode() == 200) {// status == OK
+                        Map<String, Object> rawData = fetchDataFromJSON(response.getResponseBody());
                         DataEntry data = processData(route, rawData);
                         connector.insert(data);
                         return data;
@@ -80,50 +79,55 @@ public class GoogleProviderConnector extends AProviderConnector {
     /**
      * Generates the URL to call the Google API for this route.
      *
-     * @param traject
-     * @return
-     * @throws MalformedURLException
+     * @param route current route for which to get the information
+     * @return String that contains the URL to get info about current route
      */
-    protected String generateURL(RouteEntry traject) {
+    protected String generateURL(RouteEntry route) {
         StringBuilder urlBuilder = new StringBuilder(API_URL);
         urlBuilder.append("?key=");
         urlBuilder.append(API_KEY);
         urlBuilder.append("&origin=");
-        urlBuilder.append(traject.getStartCoordinateLatitude());
+        urlBuilder.append(route.getStartCoordinateLatitude());
         urlBuilder.append(",");
-        urlBuilder.append(traject.getStartCoordinateLongitude());
+        urlBuilder.append(route.getStartCoordinateLongitude());
         urlBuilder.append("&destination=");
-        urlBuilder.append(traject.getEndCoordinateLatitude());
+        urlBuilder.append(route.getEndCoordinateLatitude());
         urlBuilder.append(",");
-        urlBuilder.append(traject.getEndCoordinateLongitude());
+        urlBuilder.append(route.getEndCoordinateLongitude());
 
         return urlBuilder.toString();
 
     }
 
     /**
+     * Extracts the data from the JSON and generates a Map with all the info
+     * from it.
+     * <p>
+ If dataset is invalid, this wil throw a RouteUnavailableException
      *
-     * @param json
-     * @throws TrajectUnavailableException if data is invalid
-     * @return Map<String,Object> Google-dataset about current route
+     * @param json String which contains the JSON-object
+     * @throws RouteUnavailableException if data is not valid
+     * @return Google-dataset about current route
      */
-    protected Map<String, Object> fetchDataFromJSON(String json) throws TrajectUnavailableException {
+    protected Map<String, Object> fetchDataFromJSON(String json) throws RouteUnavailableException {
         Genson genson = new Genson();
         Map<String, Object> map = genson.deserialize(json, Map.class);
         if (!map.get("status").equals("OK")) { // google data is not correct
-            throw new TrajectUnavailableException((String) map.get("status"));
+            throw new RouteUnavailableException((String) map.get("status"));
         }
         return map;
     }
 
     /**
+     * Processes the raw JSON-data into a DataEntry
      *
-     * @param route
-     * @param rawData
-     * @return
+     * @param route RouteEntry that contains the information about the current
+     * route
+     * @param rawData Map&lt;String,Object&gt; that contains the raw JSON-data
+     * @return Entry that contains all the data about current route
      */
     protected DataEntry processData(RouteEntry route, Map<String, Object> rawData) {
-        DataEntry data = new DataEntry(new Timestamp(System.currentTimeMillis()), -1, route, providerEntry);
+        DataEntry data = new DataEntry(-1, route, providerEntry);
         // get all routes
         List<Object> routes = (List<Object>) rawData.get("routes");
 

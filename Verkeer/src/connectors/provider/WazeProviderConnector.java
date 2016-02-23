@@ -23,8 +23,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -263,7 +261,7 @@ public class WazeProviderConnector extends AProviderConnector {
 
         buzyRequests.add(future);
     }
-    public boolean callApi() throws InterruptedException, ExecutionException, TrajectUnavailableException, IOException{
+    public boolean callApi() throws InterruptedException, ExecutionException, RouteUnavailableException, IOException{
         // Structuur zodanig om aantal requests te beperken
         if (bid == 0){
             if (!this.areCookiesSet()){
@@ -304,7 +302,7 @@ public class WazeProviderConnector extends AProviderConnector {
         }
         return true;
     }
-    public List<DataEntry> fetchDataFromJSON(String json) throws TrajectUnavailableException {
+    public List<DataEntry> fetchDataFromJSON(String json) throws RouteUnavailableException {
         try{
             Genson genson = new Genson();
             Map<String, Object> map = genson.deserialize(json, Map.class);
@@ -352,7 +350,7 @@ public class WazeProviderConnector extends AProviderConnector {
             
             return entries;
         } catch (Exception ex){
-            throw new TrajectUnavailableException("JSON data unreadable (expected other structure)");
+            throw new RouteUnavailableException("JSON data unreadable (expected other structure)");
         }
     }
     
