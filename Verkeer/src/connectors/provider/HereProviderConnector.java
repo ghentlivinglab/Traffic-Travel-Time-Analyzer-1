@@ -62,7 +62,7 @@ public class HereProviderConnector extends AProviderConnector {
                         return data;
                     }
                     // Er ging iets fout
-                    // Statuscodes later uitbreiden met: 
+                    // TODO: Statuscodes later uitbreiden met: 
                     // https://developer.here.com/rest-apis/documentation/traffic/topics/http-status-codes.html
                     
                     String msg = fetchErrorFromJSON(response.getResponseBody());
