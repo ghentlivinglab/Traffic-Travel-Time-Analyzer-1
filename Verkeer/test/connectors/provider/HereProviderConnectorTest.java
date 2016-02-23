@@ -24,30 +24,13 @@ import static org.junit.Assert.*;
  * @author Simon
  */
 public class HereProviderConnectorTest {
-    static List<RouteEntry> trajecten;
 
     public HereProviderConnectorTest() {
     }
 
     @BeforeClass
     public static void setUpClass() {
-        trajecten = new ArrayList<>();
-
-        RouteEntry traject = new RouteEntry();
-        traject.setName("R40 Drongensesteenweg -> Palinghuizen");
-        traject.setStartCoordinateLatitude(51.0560905);
-        traject.setStartCoordinateLongitude(3.6951634);
-        traject.setEndCoordinateLatitude(51.0663037);
-        traject.setEndCoordinateLongitude(3.6996797);
-        trajecten.add(traject);
         
-        traject = new RouteEntry();
-        traject.setName("R40 Drongensesteenweg -> Palinghuizen - kopie");
-        traject.setStartCoordinateLatitude(51.0560905);
-        traject.setStartCoordinateLongitude(3.6951634);
-        traject.setEndCoordinateLatitude(51.0663037);
-        traject.setEndCoordinateLongitude(3.6996797);
-        trajecten.add(traject);
     }
 
     @AfterClass
@@ -64,7 +47,7 @@ public class HereProviderConnectorTest {
 
     @Test
     public void returnTest(){
-        HereProviderConnector connector = new HereProviderConnector(trajecten, new DummyDbConnector());
+        HereProviderConnector connector = new HereProviderConnector( new DummyDbConnector());
         connector.triggerUpdate();
         
         // Wait for all threads to complete, read their return data (= DataEntry)
@@ -90,7 +73,7 @@ public class HereProviderConnectorTest {
     public void insertDatabaseTest() throws InterruptedException, ExecutionException{
         DummyDbConnector dummy = new DummyDbConnector();
         int loops = 4;
-        HereProviderConnector connector = new HereProviderConnector(trajecten, dummy);
+        HereProviderConnector connector = new HereProviderConnector(dummy);
         
         for (int i = 0; i<loops; i++){
             connector.triggerUpdate();
@@ -100,8 +83,8 @@ public class HereProviderConnectorTest {
             }
         }
         // Check database count
-        if (dummy.getDataEntriesSize() != trajecten.size()*loops){
-            fail("Expected "+(trajecten.size()*loops)+" dataEntries, "+dummy.getDataEntriesSize()+" given.");
+        if (dummy.getDataEntriesSize() != connector.trajecten.size()*loops){
+            fail("Expected "+(connector.trajecten.size()*loops)+" dataEntries, "+dummy.getDataEntriesSize()+" given.");
         }
     }
 }

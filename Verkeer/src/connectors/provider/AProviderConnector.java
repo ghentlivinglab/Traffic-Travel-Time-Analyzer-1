@@ -5,11 +5,11 @@
  */
 package connectors.provider;
 
-import java.util.List;
 import connectors.database.IDbConnector;
 import connectors.ProviderEntry;
 import connectors.RouteEntry;
 import connectors.DataEntry;
+import java.util.Collection;
 
 /**
  *
@@ -17,12 +17,12 @@ import connectors.DataEntry;
  */
 public abstract class AProviderConnector {
     protected IDbConnector dbConnector;
-    protected List<RouteEntry> trajecten;
+    protected Collection<RouteEntry> trajecten;
     protected ProviderEntry providerEntry;
     
-    public AProviderConnector(List<RouteEntry> trajecten, IDbConnector dbConnector){
-        this.trajecten = trajecten;
+    public AProviderConnector(IDbConnector dbConnector){
         this.dbConnector = dbConnector;
+        this.trajecten = dbConnector.findAllRouteEntries();
     }
     public abstract void triggerUpdate();
     public void saveToDb(DataEntry entry){

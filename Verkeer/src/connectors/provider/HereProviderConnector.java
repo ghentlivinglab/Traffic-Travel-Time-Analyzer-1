@@ -34,8 +34,8 @@ public class HereProviderConnector extends AProviderConnector {
      */
     protected List<Future<DataEntry>> buzyRequests;
             
-    public HereProviderConnector(List<RouteEntry> trajecten, IDbConnector dbConnector) {
-        super(trajecten, dbConnector);
+    public HereProviderConnector(IDbConnector dbConnector) {
+        super(dbConnector);
         buzyRequests = new ArrayList<>();
         String providerName = "Here";
         this.providerEntry = dbConnector.findProviderEntryByName(providerName);
@@ -62,7 +62,7 @@ public class HereProviderConnector extends AProviderConnector {
                         return data;
                     }
                     // Er ging iets fout
-                    // Statuscodes later uitbreiden met: 
+                    // TODO: Statuscodes later uitbreiden met: 
                     // https://developer.here.com/rest-apis/documentation/traffic/topics/http-status-codes.html
                     
                     String msg = fetchErrorFromJSON(response.getResponseBody());

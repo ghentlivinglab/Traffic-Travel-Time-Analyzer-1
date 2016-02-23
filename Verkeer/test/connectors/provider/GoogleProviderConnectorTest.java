@@ -59,7 +59,8 @@ public class GoogleProviderConnectorTest {
     public void URLCreationTest() {
         try {
             URL correctURL = new URL(GoogleProviderConnector.API_URL+"?key="+GoogleProviderConnector.API_KEY+"&origin=51.0560905,3.6951634&destination=51.0663037,3.6996797");
-            GoogleProviderConnector connector = new GoogleProviderConnector(trajecten, new DummyDbConnector());
+            GoogleProviderConnector connector = new GoogleProviderConnector(new DummyDbConnector());
+            // TODO: 'trajecten' is slechts een tijdelijke placeholder.
             assertEquals(connector.generateURL(trajecten.get(0)),correctURL);
         } catch (MalformedURLException e) {
             fail("malformed url");
@@ -69,7 +70,7 @@ public class GoogleProviderConnectorTest {
     @Test
     public void connectionTest(){
         try{
-        GoogleProviderConnector connector = new GoogleProviderConnector(trajecten, new DummyDbConnector());
+        GoogleProviderConnector connector = new GoogleProviderConnector(new DummyDbConnector());
         connector.triggerUpdate();
         
     } catch(Exception e){ // connection can only fail if

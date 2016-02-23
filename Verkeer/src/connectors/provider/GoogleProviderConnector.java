@@ -30,8 +30,8 @@ public class GoogleProviderConnector extends AProviderConnector {
     //     private final static String API_KEY = ; // Robin-Key
     //     private final static String API_KEY = ; // Simon-Key
 
-    public GoogleProviderConnector(List<RouteEntry> trajecten, IDbConnector dbConnector) {
-        super(trajecten, dbConnector);
+    public GoogleProviderConnector(IDbConnector dbConnector) {
+        super(dbConnector);
         String providerName = "Google Maps";
         this.providerEntry = dbConnector.findProviderEntryByName(providerName);
     }
