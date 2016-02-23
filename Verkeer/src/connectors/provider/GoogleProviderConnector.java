@@ -5,6 +5,9 @@
  */
 package connectors.provider;
 
+import com.ning.http.client.AsyncCompletionHandler;
+import com.ning.http.client.AsyncHttpClient;
+import com.ning.http.client.Response;
 import com.owlike.genson.Genson;
 import connectors.DataEntry;
 import connectors.RouteEntry;
@@ -17,6 +20,7 @@ import java.net.URLConnection;
 import java.sql.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Future;
 
 /**
  *
@@ -30,6 +34,15 @@ public class GoogleProviderConnector extends AProviderConnector {
     //     private final static String API_KEY = ; // Robin-Key
     //     private final static String API_KEY = ; // Simon-Key
 
+    /**
+     * List of all Future instances from last triggerUpdate (check
+     * java.util.concurrent library). ± sort of threads Use f.get(); to wait the
+     * thread to finish and return its value Future<ReturnType>
+     * Used in the test classes to wait for the threads to finish and return its
+     * DataEntry (or null if failed)
+     */
+    protected List<Future<DataEntry>> buzyRequests;
+
     public GoogleProviderConnector(List<RouteEntry> trajecten, IDbConnector dbConnector) {
         super(trajecten, dbConnector);
         String providerName = "Google Maps";
@@ -38,24 +51,31 @@ public class GoogleProviderConnector extends AProviderConnector {
 
     @Override
     public void triggerUpdate() {
-        //throw new UnsupportedOperationException("Not supported yet.");
         for (RouteEntry route : trajecten) {
-            try {
-                URL url = generateURL(route);
-                URLConnection connection = url.openConnection();
-                connection.connect();
-                Map<String, Object> rawData = fetchDataFromJSON(connection.getInputStream());
-                DataEntry data = processData(route, rawData);
-                dbConnector.insert(data);
-            } catch (TrajectUnavailableException e) { // exception when returned data is invalid
-                // TODO exception handling
-            } catch (MalformedURLException e) { // exception when url invalid
+            String url = generateURL(route);
+            AsyncHttpClient asyncHttpClient;
+            asyncHttpClient = new AsyncHttpClient();
 
-            } catch (IOException e) { // exception when connection failed
-            }
+            IDbConnector connector = this.dbConnector;
 
+            Future<DataEntry> f = asyncHttpClient.prepareGet(url).execute(new AsyncCompletionHandler<DataEntry>() {
+                @Override
+                public DataEntry onCompleted(Response response) throws Exception {
+                    if(response.getStatusCode()== 200){
+                        Map<String,Object> rawData = fetchDataFromJSON(response.getResponseBody());
+                        DataEntry data = processData(route, rawData);
+                        connector.insert(data);
+                        return data;
+                    }
+                    // Er ging iets fout
+                    // TODO: Statuscodes later uitbreiden met: 
+                    // https://developer.here.com/rest-apis/documentation/traffic/topics/http-status-codes.html
+                    throw new Exception();
+                }
+            });
         }
     }
+
     /**
      * Generates the URL to call the Google API for this route.
      *
@@ -63,7 +83,7 @@ public class GoogleProviderConnector extends AProviderConnector {
      * @return
      * @throws MalformedURLException
      */
-    protected URL generateURL(RouteEntry traject) throws MalformedURLException {
+    protected String generateURL(RouteEntry traject) {
         StringBuilder urlBuilder = new StringBuilder(API_URL);
         urlBuilder.append("?key=");
         urlBuilder.append(API_KEY);
@@ -76,9 +96,7 @@ public class GoogleProviderConnector extends AProviderConnector {
         urlBuilder.append(",");
         urlBuilder.append(traject.getEndCoordinateLongitude());
 
-        URL url = new URL(urlBuilder.toString());
-
-        return url;
+        return urlBuilder.toString();
 
     }
 
@@ -88,7 +106,7 @@ public class GoogleProviderConnector extends AProviderConnector {
      * @throws TrajectUnavailableException if data is invalid
      * @return Map<String,Object> Google-dataset about current route
      */
-    protected Map<String, Object> fetchDataFromJSON(InputStream json) throws TrajectUnavailableException {
+    protected Map<String, Object> fetchDataFromJSON(String json) throws TrajectUnavailableException {
         Genson genson = new Genson();
         Map<String, Object> map = genson.deserialize(json, Map.class);
         if (!map.get("status").equals("OK")) { // google data is not correct
