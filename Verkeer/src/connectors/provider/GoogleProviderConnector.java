@@ -18,6 +18,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -122,7 +123,7 @@ public class GoogleProviderConnector extends AProviderConnector {
      * @return
      */
     protected DataEntry processData(RouteEntry route, Map<String, Object> rawData) {
-        DataEntry data = new DataEntry(new Date(System.currentTimeMillis()), -1, route, providerEntry);
+        DataEntry data = new DataEntry(new Timestamp(System.currentTimeMillis()), -1, route, providerEntry);
         // get all routes
         List<Object> routes = (List<Object>) rawData.get("routes");
 

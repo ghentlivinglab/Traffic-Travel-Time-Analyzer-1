@@ -70,7 +70,7 @@ public class MariaDbConnector implements IDbConnector{
             PreparedStatement p = connection.prepareStatement(prop.getProperty("INSERT_DE"));
             p.setInt( 1, entry.getRoute().getId());
             p.setInt( 2, entry.getProvider().getId());
-            p.setDate(3, entry.getTimestamp());
+            p.setTimestamp(3, entry.getTimestamp());
             p.setInt(4, entry.getTravelTime());
             p.executeUpdate();
         } catch (SQLException ex) {
@@ -181,7 +181,7 @@ public class MariaDbConnector implements IDbConnector{
             if(rs.next()){
                 ret = new DataEntry();
                 ret.setTravelTime(rs.getInt("traveltime"));
-                ret.setTimestamp(rs.getDate("timestamp"));
+                ret.setTimestamp(rs.getTimestamp("timestamp"));
                 if(deep){
                     RouteEntry route = findRouteEntryByID(routeId);
                     ProviderEntry prov = findProviderEntryByID(providerId);
@@ -211,7 +211,7 @@ public class MariaDbConnector implements IDbConnector{
             ResultSet rs = p.executeQuery();
             while(rs.next()){
                 DataEntry d = new DataEntry();
-                d.setTimestamp(rs.getDate("timestamp"));
+                d.setTimestamp(rs.getTimestamp("timestamp"));
                 d.setTravelTime(rs.getInt("traveltime"));
                 ret.add(d);
             }

@@ -5,7 +5,7 @@
  */
 package connectors;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -15,7 +15,7 @@ import java.util.Calendar;
  * @author Simon
  */
 public class DataEntry {
-    private Date timestamp;
+    private Timestamp timestamp;
     private int travelTime;
     private RouteEntry route;
     private ProviderEntry provider;
@@ -27,7 +27,7 @@ public class DataEntry {
      * @param route route of the measurement
      * @param provider provider of the measurement
      */
-    public DataEntry(Date timestamp, int travelTime, RouteEntry route, ProviderEntry provider) {
+    public DataEntry(Timestamp timestamp, int travelTime, RouteEntry route, ProviderEntry provider) {
         this.timestamp = timestamp;
         this.travelTime = travelTime;
         this.route = route;
@@ -58,11 +58,11 @@ public class DataEntry {
      * Returns the time of the measurement.
      * @return integer with time in seconds
      */
-    public Date getTimestamp() {
+    public Timestamp getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Date timestamp) {
+    public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
     }
     
@@ -75,7 +75,7 @@ public class DataEntry {
         java.util.Date currentDate = calendar.getTime();
 
         // now, create a java.sql.Date from the java.util.Date
-        this.timestamp = new java.sql.Date(currentDate.getTime());
+        this.timestamp = new Timestamp(currentDate.getTime());
     }
 
     /**
