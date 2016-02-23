@@ -51,11 +51,11 @@ public class WazeProviderConnectorTest {
         connector.triggerUpdate();
         
         // Wait for all threads to complete, read their return data (= DataEntry)
-        for (Future<DataEntry> hashRequest : connector.buzyRequests) {
+        for (Future<Boolean> hashRequest : connector.buzyRequests) {
             try {
-                DataEntry data = hashRequest.get();
-                if (data == null){
-                    fail("DataEntry is null");
+                Boolean data = hashRequest.get();
+                if (!data){
+                    fail("Request mislukt");
                 }
             } catch (InterruptedException ex) {
                 //Logger.getLogger(HereProviderConnectorTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -67,6 +67,25 @@ public class WazeProviderConnectorTest {
                 System.out.println(ex.getCause().getCause().getMessage());
                 fail("ExecutionException");
             }
+        }
+    }
+    
+    @Test
+    public void insertDatabaseTest() throws InterruptedException, ExecutionException{
+        DummyDbConnector dummy = new DummyDbConnector();
+        int loops = 0;
+        WazeProviderConnector connector = new WazeProviderConnector(dummy);
+        
+        for (int i = 0; i<loops; i++){
+            connector.triggerUpdate();
+            // Wait for all threads to complete
+            for (Future<Boolean> hashRequest : connector.buzyRequests) {
+                hashRequest.get();
+            }
+        }
+        // Check database count
+        if (dummy.getDataEntriesSize() != connector.trajecten.size()*loops){
+            fail("Expected "+(connector.trajecten.size()*loops)+" dataEntries, "+dummy.getDataEntriesSize()+" given.");
         }
     }
 
