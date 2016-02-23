@@ -43,8 +43,8 @@ public class GoogleProviderConnector extends AProviderConnector {
      */
     protected List<Future<DataEntry>> buzyRequests;
 
-    public GoogleProviderConnector(List<RouteEntry> trajecten, IDbConnector dbConnector) {
-        super(trajecten, dbConnector);
+    public GoogleProviderConnector(IDbConnector dbConnector) {
+        super(dbConnector);
         String providerName = "Google Maps";
         this.providerEntry = dbConnector.findProviderEntryByName(providerName);
     }

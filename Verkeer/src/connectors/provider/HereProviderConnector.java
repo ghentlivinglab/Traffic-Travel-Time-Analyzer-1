@@ -34,8 +34,8 @@ public class HereProviderConnector extends AProviderConnector {
      */
     protected List<Future<DataEntry>> buzyRequests;
             
-    public HereProviderConnector(List<RouteEntry> trajecten, IDbConnector dbConnector) {
-        super(trajecten, dbConnector);
+    public HereProviderConnector(IDbConnector dbConnector) {
+        super(dbConnector);
         buzyRequests = new ArrayList<>();
         String providerName = "Here";
         this.providerEntry = dbConnector.findProviderEntryByName(providerName);
