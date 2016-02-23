@@ -26,7 +26,7 @@ import java.util.Properties;
  * @author Robin
  */
 public class MariaDbConnector implements IDbConnector{
-    Connection connection = null;
+    Connection connection;
     
     public Properties prop;
     
@@ -44,13 +44,14 @@ public class MariaDbConnector implements IDbConnector{
         }catch( IOException ee){
             System.err.println("database.properties kon niet geladen worden.");
         }
+        connection = getConnection();
     }
  
     private Connection getConnection(){
         try{
             Class.forName("com.mysql.jdbc.Driver");
             if(connection == null){
-                System.out.println(prop.getProperty("URL"));
+                System.out.print("Connecting to: "+prop.getProperty("URL"));
                 connection = DriverManager.getConnection(prop.getProperty("URL"),prop.getProperty("USER"),prop.getProperty("PASSWORD"));
             }
         }catch (ClassNotFoundException e){
@@ -58,14 +59,15 @@ public class MariaDbConnector implements IDbConnector{
         }catch (SQLException e){
             System.err.println("getConnection() FOUT! SQLException");
         }
+        System.out.println("\t[Done]\n");
         return connection;
     }
        
     //Insert operations
     @Override
     public void insert(DataEntry entry)  {
-        try(Connection conn = getConnection()){
-            PreparedStatement p = conn.prepareStatement(prop.getProperty("INSERT_DE"));
+        try{
+            PreparedStatement p = connection.prepareStatement(prop.getProperty("INSERT_DE"));
             p.setInt( 1, entry.getProvider().getId());
             p.setInt( 2, entry.getRoute().getId());
             p.setDate(3, entry.getTimestamp());
@@ -77,8 +79,8 @@ public class MariaDbConnector implements IDbConnector{
     }
     @Override
     public void insert(ProviderEntry entry){
-        try(Connection conn = getConnection()){
-            PreparedStatement p = conn.prepareStatement(prop.getProperty("INSERT_PE"));
+        try{
+            PreparedStatement p = connection.prepareStatement(prop.getProperty("INSERT_PE"));
             p.setInt    ( 1, entry.getId());
             p.setString ( 2, entry.getName());
             p.executeUpdate();
@@ -88,8 +90,8 @@ public class MariaDbConnector implements IDbConnector{
     }
     @Override
     public void insert(RouteEntry entry){
-        try(Connection conn = getConnection()){
-            PreparedStatement p = conn.prepareStatement(prop.getProperty("INSERT_RE"));
+        try{
+            PreparedStatement p = connection.prepareStatement(prop.getProperty("INSERT_RE"));
             p.setInt    (1, entry.getLenght());
             p.setString (2, entry.getName());
             p.setDouble (3, entry.getStartCoordinateLatitude());
@@ -106,13 +108,13 @@ public class MariaDbConnector implements IDbConnector{
     @Override
     public ProviderEntry findProviderEntryByName(String name) {
         ProviderEntry ret = null;
-        try(Connection conn = getConnection()){
-            PreparedStatement p = conn.prepareStatement(prop.getProperty("SELECT_PE_NAME"));
+        try{
+            PreparedStatement p = connection.prepareStatement(prop.getProperty("SELECT_PE_NAME"));
             p.setString(1, name);
             ResultSet rs = p.executeQuery();
             if(rs.next())
                 ret = new ProviderEntry(rs.getInt("id"), rs.getString("name"));
-            
+            rs.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -121,13 +123,13 @@ public class MariaDbConnector implements IDbConnector{
     @Override
     public ProviderEntry findProviderEntryByID(int id) {
         ProviderEntry ret = null;
-        try(Connection conn = getConnection()){
-            PreparedStatement p = conn.prepareStatement(prop.getProperty("SELECT_PE_ID"));
+        try{
+            PreparedStatement p = connection.prepareStatement(prop.getProperty("SELECT_PE_ID"));
             p.setInt(1, id);
             ResultSet rs = p.executeQuery();
             if(rs.next())
                 ret = new ProviderEntry(rs.getInt("id"), rs.getString("name"));
-            
+            rs.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -138,13 +140,13 @@ public class MariaDbConnector implements IDbConnector{
     @Override
     public RouteEntry findRouteEntryByName(String name) {
         RouteEntry ret = null;
-        try(Connection conn = getConnection()){
-            PreparedStatement p = conn.prepareStatement(prop.getProperty("SELECT_RE_NAME"));
+        try{
+            PreparedStatement p = connection.prepareStatement(prop.getProperty("SELECT_RE_NAME"));
             p.setString(1, name);
             ResultSet rs = p.executeQuery();
             if(rs.next())
                 ret = new RouteEntry(rs.getString("name"), rs.getDouble("startlat"), rs.getDouble("startlong"), rs.getDouble("endlat"), rs.getDouble("endlong"), rs.getInt("length"), 0);
-        
+            rs.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -153,12 +155,13 @@ public class MariaDbConnector implements IDbConnector{
     @Override
     public RouteEntry findRouteEntryByID(int id) {
         RouteEntry ret = null;
-        try(Connection conn = getConnection()){
-            PreparedStatement p = conn.prepareStatement(prop.getProperty("SELECT_RE_ID"));
+        try{
+            PreparedStatement p = connection.prepareStatement(prop.getProperty("SELECT_RE_ID"));
             p.setInt(1, id);
             ResultSet rs = p.executeQuery();
             if(rs.next())
                 ret = new RouteEntry(rs.getString("name"), rs.getDouble("startlat"), rs.getDouble("startlong"), rs.getDouble("endlat"), rs.getDouble("endlong"), rs.getInt("length"), 0);
+            rs.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -167,8 +170,8 @@ public class MariaDbConnector implements IDbConnector{
     //Als deep op true is ingesteld worden ook de RouteEntry en ProviderEntry objecten opgehaald en geïnitialiseerd.
     public DataEntry findDataEntryByID(int routeId, int providerId, Date timestamp, boolean deep) {
         DataEntry ret = null;
-        try(Connection conn = getConnection()){
-            PreparedStatement p = conn.prepareStatement(prop.getProperty("SELECT_DE"));
+        try{
+            PreparedStatement p = connection.prepareStatement(prop.getProperty("SELECT_DE"));
             p.setInt(1, routeId);
             p.setInt(2, providerId);
             p.setDate(3, timestamp);
@@ -184,6 +187,7 @@ public class MariaDbConnector implements IDbConnector{
                     if(prov != null) ret.setProvider(prov);
                 }
             }
+            rs.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -196,8 +200,8 @@ public class MariaDbConnector implements IDbConnector{
     @Override
     public Collection<DataEntry> findDataEntryBetween(int routeId, int providerId, Date from, Date to){
         ArrayList<DataEntry> ret = new ArrayList<>();
-        try(Connection conn = getConnection()){
-            PreparedStatement p = conn.prepareStatement(prop.getProperty("SELECT_DE_BETWEEN"));
+        try{
+            PreparedStatement p = connection.prepareStatement(prop.getProperty("SELECT_DE_BETWEEN"));
             p.setInt(1, routeId);
             p.setInt(2, providerId);
             p.setDate(3, from);
@@ -209,6 +213,7 @@ public class MariaDbConnector implements IDbConnector{
                 d.setTravelTime(rs.getInt("traveltime"));
                 ret.add(d);
             }
+            rs.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -216,8 +221,8 @@ public class MariaDbConnector implements IDbConnector{
     }
     public Collection<RouteEntry> findAllRouteEntries(){
         Collection<RouteEntry> ret = new ArrayList<>();
-        try(Connection conn = getConnection()){
-            PreparedStatement p = conn.prepareStatement(prop.getProperty("SELECT_RE"));
+        try{
+            PreparedStatement p = connection.prepareStatement(prop.getProperty("SELECT_RE"));
             ResultSet rs = p.executeQuery();
             while(rs.next()){
                 RouteEntry r = new RouteEntry();
@@ -230,6 +235,7 @@ public class MariaDbConnector implements IDbConnector{
                 r.setEndCoordinateLongitude(rs.getDouble("endlong"));
                 ret.add(r);
             }
+            rs.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
