@@ -17,6 +17,7 @@ import java.io.IOException;
 import static java.lang.Math.toIntExact;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -80,7 +81,10 @@ public class WazeProviderConnector extends AProviderConnector {
      */
     private RouteEntry getRouteFromWazeRouteId(int wazeRouteId){
         // TODO: ID mapping implementeren op één of andere magische manier
-        return new RouteEntry("Waze Route Id "+wazeRouteId, 0.0, 0.0, 0.0, 0.0, 0, 0);
+        if (wazeRouteId < 4069 || wazeRouteId > 4098){
+            return null;
+        }
+        return dbConnector.findRouteEntryByID(wazeRouteId-4068);
     }
     
     /**
@@ -144,7 +148,6 @@ public class WazeProviderConnector extends AProviderConnector {
             @Override
             public Response onCompleted(Response response) throws Exception{
                 System.out.println("GET DATA RESPONSE: "+response.getStatusCode());
-                System.out.println(response.getResponseBody());
                 if (response.getStatusCode() == 403){
                     loggedIn = false;
                 }
@@ -307,11 +310,14 @@ public class WazeProviderConnector extends AProviderConnector {
             Map<String, Object> map = genson.deserialize(json, Map.class);
             List<DataEntry> entries = new ArrayList<>();
             List<Object> routes = (List<Object>) map.get("routes");
+            
+            Map<Integer, RouteEntry> myRoutes = new TreeMap<>();
             for(Object r : routes){
                 Map<String, Object> route = (Map<String, Object>) r;
                 // Hier haal ik nog extra optionele data op die we niet meteen gebruiken
                 // Kan handig zijn voor later
                 int time = toIntExact((long) route.get("time"));
+                int htime = toIntExact((long) route.get("historicTime"));
                 int id = toIntExact((long) route.get("id"));
                 int jamlevel = toIntExact((long) route.get("jamLevel"));
                 int length = toIntExact((long) route.get("length"));
@@ -319,9 +325,30 @@ public class WazeProviderConnector extends AProviderConnector {
                 String toName = (String) route.get("toName");
                 String fromName = (String) route.get("fromName");
                 
-                DataEntry entry = new DataEntry(time, getRouteFromWazeRouteId(id), providerEntry);
-                entries.add(entry);
+                List<Object> line = (List<Object>) route.get("line");
+                Map<String, Object> s = (Map<String, Object>) line.get(0);
+                double sx = (double) s.get("x");
+                double sy = (double) s.get("y");
+                Map<String, Object> e = (Map<String, Object>) line.get(line.size()-1);
+                double ex = (double) e.get("x");
+                double ey = (double) e.get("y");
+                
+                /*RouteEntry d = new RouteEntry(name, sy, sx, ey, ex, length, htime);
+                myRoutes.put(id, d);*/
+                
+                RouteEntry routeEntry = getRouteFromWazeRouteId(id);
+                System.out.println(routeEntry.getId()+"\t\t\t"+routeEntry+"\t\t\t"+providerEntry.getId());
+                if (routeEntry != null){
+                    DataEntry entry = new DataEntry(time, routeEntry, providerEntry);
+                    entries.add(entry);
+                }
             }
+            /*for (Map.Entry<Integer, RouteEntry> entrySet : myRoutes.entrySet()) {
+                Integer key = entrySet.getKey();
+                RouteEntry value = entrySet.getValue();
+                
+                System.out.println(key+"."+ value);
+            }*/
             
             return entries;
         } catch (Exception ex){

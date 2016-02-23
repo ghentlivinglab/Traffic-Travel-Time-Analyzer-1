@@ -8,6 +8,8 @@ package connectors.provider;
 import connectors.DataEntry;
 import connectors.RouteEntry;
 import connectors.database.DummyDbConnector;
+import connectors.database.IDbConnector;
+import connectors.database.MariaDbConnector;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -47,8 +49,10 @@ public class WazeProviderConnectorTest {
 
     @Test
     public void returnTest(){
-        WazeProviderConnector connector = new WazeProviderConnector( new DummyDbConnector());
+        IDbConnector db = new MariaDbConnector();
+        WazeProviderConnector connector = new WazeProviderConnector(db);
         connector.triggerUpdate();
+        
         
         // Wait for all threads to complete, read their return data (= DataEntry)
         for (Future<Boolean> hashRequest : connector.buzyRequests) {
