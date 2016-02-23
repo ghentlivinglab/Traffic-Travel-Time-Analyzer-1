@@ -2,6 +2,8 @@ package connectors.provider;
 
 import connectors.DataEntry;
 import connectors.database.DummyDbConnector;
+import connectors.database.IDbConnector;
+import connectors.database.MariaDbConnector;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.junit.After;
@@ -35,7 +37,8 @@ public class HereProviderConnectorTest {
 
     @Test
     public void returnTest() {
-        HereProviderConnector connector = new HereProviderConnector(new DummyDbConnector());
+        IDbConnector db = new MariaDbConnector();
+        HereProviderConnector connector = new HereProviderConnector(db);
         connector.triggerUpdate();
 
         // Wait for all threads to complete, read their return data (= DataEntry)
@@ -58,7 +61,7 @@ public class HereProviderConnectorTest {
         }
     }
 
-    @Test
+    /*@Test
     public void insertDatabaseTest() throws InterruptedException, ExecutionException {
         DummyDbConnector dummy = new DummyDbConnector();
         int loops = 4;
@@ -75,5 +78,5 @@ public class HereProviderConnectorTest {
         if (dummy.getDataEntriesSize() != connector.routes.size() * loops) {
             fail("Expected " + (connector.routes.size() * loops) + " dataEntries, " + dummy.getDataEntriesSize() + " given.");
         }
-    }
+    }*/
 }
