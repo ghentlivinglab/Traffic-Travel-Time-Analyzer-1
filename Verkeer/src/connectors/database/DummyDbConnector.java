@@ -12,6 +12,7 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -86,6 +87,24 @@ public class DummyDbConnector implements IDbConnector{
 
     @Override
     public Collection<RouteEntry> findAllRouteEntries() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        ArrayList<RouteEntry> trajecten = new ArrayList<>();
+
+        RouteEntry traject = new RouteEntry();
+        traject.setName("R40 Drongensesteenweg -> Palinghuizen");
+        traject.setStartCoordinateLatitude(51.0560905);
+        traject.setStartCoordinateLongitude(3.6951634);
+        traject.setEndCoordinateLatitude(51.0663037);
+        traject.setEndCoordinateLongitude(3.6996797);
+        trajecten.add(traject);
+        
+        traject = new RouteEntry();
+        traject.setName("R40 Drongensesteenweg -> Palinghuizen - kopie");
+        traject.setStartCoordinateLatitude(51.0560905);
+        traject.setStartCoordinateLongitude(3.6951634);
+        traject.setEndCoordinateLatitude(51.0663037);
+        traject.setEndCoordinateLongitude(3.6996797);
+        trajecten.add(traject);
+        
+        return trajecten;
     }
 }
