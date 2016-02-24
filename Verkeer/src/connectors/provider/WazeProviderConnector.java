@@ -264,9 +264,7 @@ public class WazeProviderConnector extends AProviderConnector {
     public boolean callApi() throws InterruptedException, ExecutionException, RouteUnavailableException, IOException{
         // Structuur zodanig om aantal requests te beperken
         if (bid == 0){
-            if (!this.areCookiesSet()){
-                this.getLogin();
-            }
+            this.getLogin();
             if (!loggedIn){
                 Response r = this.createLogin();
                 if (r.getStatusCode() != 200){
