@@ -12,6 +12,7 @@ import com.owlike.genson.Genson;
 import connectors.DataEntry;
 import connectors.RouteEntry;
 import connectors.database.IDbConnector;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -51,6 +52,7 @@ public class GoogleProviderConnector extends AProviderConnector {
 
     @Override
     public void triggerUpdate() {
+        buzyRequests = new ArrayList<>();
         for (RouteEntry route : routes) {
             String url = generateURL(route);
             AsyncHttpClient asyncHttpClient;
@@ -73,6 +75,7 @@ public class GoogleProviderConnector extends AProviderConnector {
                     throw new Exception();
                 }
             });
+            buzyRequests.add(f);
         }
     }
 
