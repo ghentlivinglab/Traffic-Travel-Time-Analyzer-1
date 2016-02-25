@@ -65,11 +65,11 @@ public class PollThread extends Thread{
             } catch (InterruptedException ex) {
                 Logger.getLogger(PollThread.class.getName()).log(Level.SEVERE, null, ex);
             }
-            //System.out.println("Triggering updates: "+updateCounter++);
+            //System.out.println("Triggering updates: "+updateCounter);
             for(AProviderConnector a : providers){
                 a.triggerUpdate();
             }
-            
+            updateCounter++;
         }
     }
     
