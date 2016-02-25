@@ -1,14 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package connectors.provider;
 
 import connectors.RouteEntry;
 import connectors.database.DummyDbConnector;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
@@ -18,10 +11,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-/**
- *
- * @author jarno
- */
 public class GoogleProviderConnectorTest {
 
     static List<RouteEntry> trajecten;
@@ -29,6 +18,9 @@ public class GoogleProviderConnectorTest {
     public GoogleProviderConnectorTest() {
     }
 
+    /**
+     * add a route to check the information from
+     */
     @BeforeClass
     public static void setUpClass() {
         RouteEntry traject = new RouteEntry();
@@ -64,6 +56,9 @@ public class GoogleProviderConnectorTest {
         assertEquals(connector.generateURL(trajecten.get(0)), correctURL);
     }
 
+    /**
+     * test if a request goes through
+     */
     @Test
     public void connectionTest() {
         try {

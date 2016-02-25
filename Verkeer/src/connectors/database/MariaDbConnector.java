@@ -68,10 +68,10 @@ public class MariaDbConnector implements IDbConnector{
     public void insert(DataEntry entry)  {
         try{
             PreparedStatement p = connection.prepareStatement(prop.getProperty("INSERT_DE"));
-            p.setInt( 1, entry.getProvider().getId());
-            p.setInt( 2, entry.getRoute().getId());
-            p.setDate(3, entry.getTimestamp());
-            p.setDouble(4, entry.getTravelTime());
+            p.setInt( 1, entry.getRoute().getId());
+            p.setInt( 2, entry.getProvider().getId());
+            p.setTimestamp(3, entry.getTimestamp());
+            p.setInt(4, entry.getTravelTime());
             p.executeUpdate();
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -81,8 +81,7 @@ public class MariaDbConnector implements IDbConnector{
     public void insert(ProviderEntry entry){
         try{
             PreparedStatement p = connection.prepareStatement(prop.getProperty("INSERT_PE"));
-            p.setInt    ( 1, entry.getId());
-            p.setString ( 2, entry.getName());
+            p.setString ( 1, entry.getName());
             p.executeUpdate();
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -105,6 +104,12 @@ public class MariaDbConnector implements IDbConnector{
     }
     
     //Select operations
+    
+    /**
+     * Zoekt de ProviderEntry op in de database. Als deze niet bestaat, maakt hij een nieuwe aan en geeft deze terug.
+     * @param name
+     * @return ProviderEntry uit de database, of een nieuw aangemaakte
+     */
     @Override
     public ProviderEntry findProviderEntryByName(String name) {
         ProviderEntry ret = null;
@@ -117,6 +122,11 @@ public class MariaDbConnector implements IDbConnector{
             rs.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
+        }
+        if (ret == null){
+            ret = new ProviderEntry();
+            ret.setName(name);
+            insert(ret);
         }
         return ret;
     }
@@ -159,8 +169,10 @@ public class MariaDbConnector implements IDbConnector{
             PreparedStatement p = connection.prepareStatement(prop.getProperty("SELECT_RE_ID"));
             p.setInt(1, id);
             ResultSet rs = p.executeQuery();
-            if(rs.next())
+            if(rs.next()){
                 ret = new RouteEntry(rs.getString("name"), rs.getDouble("startlat"), rs.getDouble("startlong"), rs.getDouble("endlat"), rs.getDouble("endlong"), rs.getInt("length"), 0);
+                ret.setId(id);
+            }
             rs.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -179,7 +191,7 @@ public class MariaDbConnector implements IDbConnector{
             if(rs.next()){
                 ret = new DataEntry();
                 ret.setTravelTime(rs.getInt("traveltime"));
-                ret.setTimestamp(rs.getDate("timestamp"));
+                ret.setTimestamp(rs.getTimestamp("timestamp"));
                 if(deep){
                     RouteEntry route = findRouteEntryByID(routeId);
                     ProviderEntry prov = findProviderEntryByID(providerId);
@@ -209,7 +221,7 @@ public class MariaDbConnector implements IDbConnector{
             ResultSet rs = p.executeQuery();
             while(rs.next()){
                 DataEntry d = new DataEntry();
-                d.setTimestamp(rs.getDate("timestamp"));
+                d.setTimestamp(rs.getTimestamp("timestamp"));
                 d.setTravelTime(rs.getInt("traveltime"));
                 ret.add(d);
             }
