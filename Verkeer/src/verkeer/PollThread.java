@@ -30,8 +30,8 @@ public class PollThread extends Thread{
     IDbConnector dbcon;
     
     int updateCounter = 0;
-    
     public PollThread() {
+        setDaemon(true);
         try {
             prop = new Properties();
             InputStream is = getClass().getClassLoader().getResourceAsStream("verkeer/app.properties");
@@ -47,7 +47,8 @@ public class PollThread extends Thread{
             try {
                 Class clazz = Class.forName(prop.getProperty("provider"+i));
                 Constructor ctor = clazz.getConstructor(IDbConnector.class);
-                AProviderConnector id = (AProviderConnector) ctor.newInstance(dbcon);
+                AProviderConnector a = (AProviderConnector) ctor.newInstance(dbcon);
+                //providers.add(a);
             } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                 Logger.getLogger(PollThread.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -61,13 +62,14 @@ public class PollThread extends Thread{
         while(true){
             try {
                 //Thread.sleep(300000);   //5min
-                Thread.sleep(10000);    //10s
+                Thread.sleep(Long.parseLong(prop.getProperty("pollinterval")));    //10s
             } catch (InterruptedException ex) {
                 Logger.getLogger(PollThread.class.getName()).log(Level.SEVERE, null, ex);
             }
             //System.out.println("Triggering updates: "+updateCounter);
             for(AProviderConnector a : providers){
                 a.triggerUpdate();
+                //System.out.println("Provider klaar");
             }
             updateCounter++;
         }
