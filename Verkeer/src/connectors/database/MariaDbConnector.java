@@ -24,6 +24,7 @@ import java.util.Properties;
 /**
  *
  * @author Robin
+ * Test
  */
 public class MariaDbConnector implements IDbConnector{
     Connection connection;
