@@ -9,7 +9,7 @@ package connectors.database;
 import connectors.DataEntry;
 import connectors.ProviderEntry;
 import connectors.RouteEntry;
-import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.Collection;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -150,7 +150,7 @@ public class MariaDbConnectorTest {
         System.out.println("findDataEntryByID");
         int routeId = 0;
         int providerId = 0;
-        Date timestamp = null;
+        Timestamp timestamp = null;
         boolean deep = false;
         MariaDbConnector instance = new MariaDbConnector();
         DataEntry expResult = null;
@@ -168,7 +168,7 @@ public class MariaDbConnectorTest {
         System.out.println("findDataEntryByID");
         int routeId = 0;
         int providerId = 0;
-        Date timestamp = null;
+        Timestamp timestamp = null;
         MariaDbConnector instance = new MariaDbConnector();
         DataEntry expResult = null;
         DataEntry result = instance.findDataEntryByID(routeId, providerId, timestamp);
@@ -185,8 +185,8 @@ public class MariaDbConnectorTest {
         System.out.println("findDataEntryBetween");
         int routeId = 0;
         int providerId = 0;
-        Date from = null;
-        Date to = null;
+        Timestamp from = null;
+        Timestamp to = null;
         MariaDbConnector instance = new MariaDbConnector();
         Collection<DataEntry> expResult = null;
         Collection<DataEntry> result = instance.findDataEntryBetween(routeId, providerId, from, to);
