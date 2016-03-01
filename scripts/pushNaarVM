@@ -1,0 +1,8 @@
+ssh root@localhost -p 122 'rm -rf /root/verkeer'
+tar -zcvf archive.tar.gz /cygdrive/d/My\ Documents/NetBeansProjects/verkeer-1/Verkeer/dist
+scp -P 122 'archive.tar.gz' root@localhost:/root
+ssh root@localhost -p 122 /bin/bash << EOF 
+	tar -zxvf archive.tar.gz;
+	mv /root/cygdrive/d/My\ Documents/NetBeansProjects/verkeer-1/Verkeer/dist/ /root/verkeer;
+	rm -rf /root/cygdrive /root/archive.tar.gz;
+EOF
