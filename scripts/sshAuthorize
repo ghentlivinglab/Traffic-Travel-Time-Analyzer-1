@@ -1,0 +1,5 @@
+echo "GEWOON ENTER BLIJVEN DRUKKEN, GEEN PASSWOORD NODIG EN AL DIENE ZEVER. HET IS MAAR LOKAAL ;)"
+ssh-keygen -t rsa
+echo "vul sebiet het wachtwoord 'root' in van de VM"
+ssh-copy-id root@localhost -p 122
+echo "KLAAR"
