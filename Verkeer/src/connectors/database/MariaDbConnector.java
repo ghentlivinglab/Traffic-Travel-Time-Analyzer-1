@@ -12,7 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
-import java.sql.Date;
+import java.sql.Timestamp;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -24,6 +24,7 @@ import java.util.Properties;
 /**
  *
  * @author Robin
+ 
  */
 public class MariaDbConnector implements IDbConnector{
     Connection connection;
@@ -233,13 +234,13 @@ public class MariaDbConnector implements IDbConnector{
      * @param deep whether or not the ProviderEntry and RouteEntry objects should be initialized.
      * @return DataEntry
      */
-    public DataEntry findDataEntryByID(int routeId, int providerId, Date timestamp, boolean deep) {
+    public DataEntry findDataEntryByID(int routeId, int providerId, Timestamp timestamp, boolean deep) {
         DataEntry ret = null;
         try{
             PreparedStatement p = connection.prepareStatement(prop.getProperty("SELECT_DE"));
             p.setInt(1, routeId);
             p.setInt(2, providerId);
-            p.setDate(3, timestamp);
+            p.setTimestamp(3, timestamp);
             ResultSet rs = p.executeQuery();
             if(rs.next()){
                 ret = new DataEntry();
@@ -267,7 +268,7 @@ public class MariaDbConnector implements IDbConnector{
      * @return DataEntry
      */
     @Override
-    public DataEntry findDataEntryByID(int routeId, int providerId, Date timestamp) {
+    public DataEntry findDataEntryByID(int routeId, int providerId, Timestamp timestamp) {
         return findDataEntryByID(routeId, providerId, timestamp, false);
     }
     /**
@@ -280,14 +281,14 @@ public class MariaDbConnector implements IDbConnector{
      * @return Collection of DataEntry objects
      */
     @Override
-    public Collection<DataEntry> findDataEntryBetween(int routeId, int providerId, Date from, Date to){
+    public Collection<DataEntry> findDataEntryBetween(int routeId, int providerId, Timestamp from, Timestamp to){
         ArrayList<DataEntry> ret = new ArrayList<>();
         try{
             PreparedStatement p = connection.prepareStatement(prop.getProperty("SELECT_DE_BETWEEN"));
             p.setInt(1, routeId);
             p.setInt(2, providerId);
-            p.setDate(3, from);
-            p.setDate(4, to);
+            p.setTimestamp(3, from);
+            p.setTimestamp(4, to);
             ResultSet rs = p.executeQuery();
             while(rs.next()){
                 DataEntry d = new DataEntry();
