@@ -1,0 +1,14 @@
+Het eerste da je gaat nodig hebben op Windows is een Unix achtige shell zodat je commando's hebt zoals ssh, scp, ... .
+Hetgeen ik gebruik is Cygwin. --> https://www.cygwin.com/
+
+Downloaden, installeren en als hij vraagt welke packages er geinstalleerd moeten worden neem je NET -> openssh.
+Als je al cygwin had maar ssh niet werkt, dan moet je opnieuw de installer uitvoeren en bovenstaande package installeren.
+
+Het eerste scriptje (sshAuthorize) moet je met die Cygwin64Terminal uitvoeren met het volgende commando:
+  sh path_to_file
+Dit gaat ervoor zorgen da je geen wachtwoord meer nodig hebt om een ssh verbinding te maken met je VM.
+
+Als je de inhoud van de 'dist' folder van ons project wil overzetten naar je VM moet je het tweede scriptje uitvoeren.
+Er zijn twee regels die je moet aanpassen (2 & 6) waar ik een absoluut pad gebruik naar mijn projectfolder. Das normaal voor u anders.
+
+Als het nie zou werken dan moet je t maar laten weten, maar voor mij werkt dit perfect =)
