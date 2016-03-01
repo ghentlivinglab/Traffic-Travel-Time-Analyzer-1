@@ -33,18 +33,18 @@ public class ConsoleParser {
         }
         boolean keepRunning = true;
         while(keepRunning){
-            String command = console.readLine("Verkeer@localhost: $ ");
+            String command = console.readLine(" $ ");
             if(command.equals("exit")){
                 System.exit(2);
             }else if(command.equals("status")){
                 printStatus();
             }else{
                 String words[] = command.split(" ");
-                if(words[0].equals("props")){
+                if(words[0].equals("properties")){
                     if(words.length >= 2)
                         properties(words);
                     else
-                        System.out.println("  Usage: props db|app");
+                        System.out.println("  Usage: properties db|app get|set propertyname propertyvalue");
                 }
             }
             //To be continued..
@@ -64,12 +64,18 @@ public class ConsoleParser {
             }else if(command.length>=3&&command[2].equals("set")){
                 changePropertiesDatabase(command);
             }else{
-                System.out.println("  Usage props db get|set");
+                System.out.println("  Usage: properties db|app get|set propertyname propertyvalue");
             }
         }else if(command[1].equals("app")){
-            System.out.println("app properties");
+            if(command.length>=3&&command[2].equals("get")){
+                showPropertiesApp(command);
+            }else if(command.length>=3&&command[2].equals("set")){
+                System.out.println("  Nog niet geimplementeerd");
+            }else{
+                System.out.println("  Usage: properties db|app get|set propertyname propertyvalue");
+            }
         }else{
-            System.out.println("  Usage: properties db|app");
+            System.out.println("  Usage: properties db|app get|set propertyname propertyvalue");
         }
     }
 
@@ -90,9 +96,28 @@ public class ConsoleParser {
             Logger.getLogger(ConsoleParser.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    private void showPropertiesApp(String[] command){
+        try {
+            Properties prop = new Properties();
+            InputStream is = getClass().getClassLoader().getResourceAsStream("verkeer/app.properties");
+            prop.load(is);
+            int size = command.length;
+            for(int i=3; i<size; i++){
+                String value = prop.getProperty(command[i]);
+                if(value  != null)
+                    System.out.println(command[i]+"="+value);
+                else
+                    System.out.println("  No such property. (providerCount, pollinterval)");
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(ConsoleParser.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
 
     private void changePropertiesDatabase(String[] command) {
-        try {
+        /*try {
+            
             Properties prop = new Properties();
             InputStream is = getClass().getClassLoader().getResourceAsStream("connectors/database/database.properties");
             
@@ -107,9 +132,10 @@ public class ConsoleParser {
                 prop.setProperty(command[3], command[4]);
                 prop.store(out, null);
                 out.close();
-            }
-        } catch (IOException ex) {
+            }*/
+            System.out.println("  Nog niet geimplementeerd.");
+        /*} catch (IOException ex) {
             Logger.getLogger(ConsoleParser.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        }*/
     }
 }
