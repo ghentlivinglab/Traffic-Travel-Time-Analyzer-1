@@ -13,8 +13,8 @@ public class Verkeer {
         t.setDaemon(true);
         t.start();
         
-        ConsoleParser cp = new ConsoleParser(t);
-        cp.processCommandLineInput();
+        //ConsoleParser cp = new ConsoleParser(t);
+        //cp.processCommandLineInput();
         
     }
 }
