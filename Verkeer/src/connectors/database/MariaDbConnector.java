@@ -29,41 +29,65 @@ public class MariaDbConnector implements IDbConnector{
     Connection connection;
     
     public Properties prop;
+    public String conn_str;
     
+    /** 
+     * Creates a new instance of MariaDbConnector.
+     * The connection parameters can be changed by modifying the properties file: connectors/database/database.properties
+     */
     public MariaDbConnector() {
         try{
             prop = new Properties();
             InputStream propsFile = getClass().getClassLoader().getResourceAsStream("connectors/database/database.properties");
             if(propsFile == null){
-                System.err.println("database.properties kon niet geladen worden.");
+                System.err.println("connectors/database/database.properties kon niet geladen worden.");
             }else{
                 prop.load(propsFile);
             }
         }catch( FileNotFoundException e){
-            System.err.println("database.properties niet gevonden.");
+            System.err.println("connectors/database/database.properties niet gevonden.");
         }catch( IOException ee){
-            System.err.println("database.properties kon niet geladen worden.");
+            System.err.println("connectors/database/database.properties kon niet geladen worden.");
         }
-        connection = getConnection();
+        initConnectionURL();
+        initConnection();
     }
- 
-    private Connection getConnection(){
+    /**
+     * Initializes the connection string with the parameters from the properties file.
+     */
+    private void initConnectionURL(){
+        StringBuilder sb = new StringBuilder();
+        sb.append(prop.getProperty("PREFIX"));
+        sb.append(prop.getProperty("IP"));
+        sb.append(":");
+        sb.append(prop.getProperty("PORT"));
+        sb.append("/");
+        sb.append(prop.getProperty("DATABASE"));
+        conn_str=sb.toString();
+    }
+    /**
+     * Initializes the Connection object.
+     * If no connection could be established, a ConnectionException is thrown.
+     */
+    private void initConnection()/* CODE VOOR EXCEPTIESSSSSSSS */{
         try{
             Class.forName("com.mysql.jdbc.Driver");
             if(connection == null){
-                System.out.print("Connecting to: "+prop.getProperty("URL"));
-                connection = DriverManager.getConnection(prop.getProperty("URL"),prop.getProperty("USER"),prop.getProperty("PASSWORD"));
+                System.out.print("Connecting to: "+conn_str);
+                connection = DriverManager.getConnection(conn_str,prop.getProperty("USER"),prop.getProperty("PASSWORD"));
             }
         }catch (ClassNotFoundException e){
-            System.out.println("getConnection() FOUT! ClassNotFoundException");
+            System.out.println("\n SQL Driver could not be loaded. Check all libraries are provided.");
         }catch (SQLException e){
-            System.err.println("getConnection() FOUT! SQLException");
+            System.out.println("\n Could not establish a connection with the mysql server on "+ conn_str);
         }
         System.out.println("\t[Done]\n");
-        return connection;
     }
        
-    //Insert operations
+    /**
+     * Inserts a DataEntry object in the database
+     * @param entry The DataEntry to insert in de database
+     */
     @Override
     public void insert(DataEntry entry)  {
         try{
@@ -77,6 +101,10 @@ public class MariaDbConnector implements IDbConnector{
             ex.printStackTrace();
         }
     }
+    /**
+     * Inserts a ProviderEntry object in the database
+     * @param entry The ProviderEntry to insert in de database
+     */
     @Override
     public void insert(ProviderEntry entry){
         try{
@@ -87,6 +115,10 @@ public class MariaDbConnector implements IDbConnector{
             ex.printStackTrace();
         }
     }
+    /**
+     * Inserts a RouteEntry object in the database
+     * @param entry The RouteEntry to insert in de database
+     */
     @Override
     public void insert(RouteEntry entry){
         try{
@@ -106,9 +138,9 @@ public class MariaDbConnector implements IDbConnector{
     //Select operations
     
     /**
-     * Zoekt de ProviderEntry op in de database. Als deze niet bestaat, maakt hij een nieuwe aan en geeft deze terug.
-     * @param name
-     * @return ProviderEntry uit de database, of een nieuw aangemaakte
+     * Finds a provider based on its name. When no entry is found, a new entry is inserted in the database.
+     * @param name that identifies the provider.
+     * @return ProviderEntry that was found or inserted.
      */
     @Override
     public ProviderEntry findProviderEntryByName(String name) {
@@ -130,6 +162,12 @@ public class MariaDbConnector implements IDbConnector{
         }
         return ret;
     }
+    /**
+     * Finds a provider based on its name. When no entry is found, nothing is inserted in the database.
+     * (in contrast to findProviderEntryByName)
+     * @param id that identifies the provider.
+     * @return ProviderEntry that was found or null if no provider exists with this name.
+     */
     @Override
     public ProviderEntry findProviderEntryByID(int id) {
         ProviderEntry ret = null;
@@ -145,8 +183,11 @@ public class MariaDbConnector implements IDbConnector{
         }
         return ret;
     }
-    //Opgelet! Het veld traveltime is hier niet ingevuld.
-    // Indien niet gevonden wordt er null teruggegeven.
+    /**
+     * Finds a route based on its name.
+     * @param name that identifies the route.
+     * @return RouteEntry that was found.
+     */
     @Override
     public RouteEntry findRouteEntryByName(String name) {
         RouteEntry ret = null;
@@ -162,6 +203,11 @@ public class MariaDbConnector implements IDbConnector{
         }
         return ret;
     }
+    /**
+     * Finds a route based on its id.
+     * @param id that identifies the route.
+     * @return RouteEntry that was found.
+     */
     @Override
     public RouteEntry findRouteEntryByID(int id) {
         RouteEntry ret = null;
@@ -179,7 +225,14 @@ public class MariaDbConnector implements IDbConnector{
         }
         return ret;
     }
-    //Als deep op true is ingesteld worden ook de RouteEntry en ProviderEntry objecten opgehaald en geïnitialiseerd.
+    /**
+     * Finds the traveltime for a certain route, provider and time.
+     * @param routeId that identifies the route
+     * @param providerId that identifies the provider
+     * @param timestamp on which this data was recorded
+     * @param deep whether or not the ProviderEntry and RouteEntry objects should be initialized.
+     * @return DataEntry
+     */
     public DataEntry findDataEntryByID(int routeId, int providerId, Date timestamp, boolean deep) {
         DataEntry ret = null;
         try{
@@ -205,10 +258,27 @@ public class MariaDbConnector implements IDbConnector{
         }
         return ret;
     }
+    /**
+     * Finds the traveltime for a certain route, provider and time.
+     * If the RouteEntry and ProviderEntry references need to be initialized use findDataEntryByID(int routeId, int providerId, Date timestamp, boolean deep)
+     * @param routeId that identifies the route
+     * @param providerId that identifies the provider
+     * @param timestamp on which this data was recorded
+     * @return DataEntry
+     */
     @Override
     public DataEntry findDataEntryByID(int routeId, int providerId, Date timestamp) {
         return findDataEntryByID(routeId, providerId, timestamp, false);
     }
+    /**
+     * Finds all the DataEntry's for a certain route and provider who were recorded between two timestamps.
+     * Both timestamps are included.
+     * @param routeId that identifies the route
+     * @param providerId that identifies the provider
+     * @param from 
+     * @param to
+     * @return Collection of DataEntry objects
+     */
     @Override
     public Collection<DataEntry> findDataEntryBetween(int routeId, int providerId, Date from, Date to){
         ArrayList<DataEntry> ret = new ArrayList<>();
@@ -231,6 +301,10 @@ public class MariaDbConnector implements IDbConnector{
         }
         return ret;
     }
+    /**
+     * Finds all routes stored in the database
+     * @return Collection of RouteEntry objects
+     */
     public Collection<RouteEntry> findAllRouteEntries(){
         Collection<RouteEntry> ret = new ArrayList<>();
         try{

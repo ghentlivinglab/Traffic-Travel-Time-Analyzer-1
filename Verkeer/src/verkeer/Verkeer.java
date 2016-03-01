@@ -9,7 +9,6 @@ public class Verkeer {
     public static void main(String[] args) {
         System.out.println("Launching application.");
         
-        
         PollThread t = new PollThread();
         t.start();
         
