@@ -67,7 +67,7 @@ public class DummyDbConnector implements IDbConnector{
 
     @Override
     public RouteEntry findRouteEntryByName(String name) {
-        RouteEntry ret = new RouteEntry();
+        RouteEntry ret = null;
         for(RouteEntry value : routeEntries){
             if(value.getName().equals(name)){
                 ret = value;
@@ -78,7 +78,7 @@ public class DummyDbConnector implements IDbConnector{
 
     @Override
     public RouteEntry findRouteEntryByID(int id) {
-        RouteEntry ret = new RouteEntry();
+        RouteEntry ret = null;
         for(RouteEntry value : routeEntries){
             if(value.getId() == id){
                 ret = value;

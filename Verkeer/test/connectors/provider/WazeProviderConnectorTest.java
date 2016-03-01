@@ -73,7 +73,8 @@ public class WazeProviderConnectorTest {
     @Test
     public void insertDatabaseTest() throws InterruptedException, ExecutionException{
         DummyDbConnector dummy = new DummyDbConnector();
-        int loops = 0;
+        int voor = dummy.getDataEntriesSize();
+        int loops = 1;
         WazeProviderConnector connector = new WazeProviderConnector(dummy);
         
         for (int i = 0; i<loops; i++){
@@ -84,8 +85,8 @@ public class WazeProviderConnectorTest {
             }
         }
         // Check database count
-        if (dummy.getDataEntriesSize() != connector.routes.size()*loops){
-            fail("Expected "+(connector.routes.size()*loops)+" dataEntries, "+dummy.getDataEntriesSize()+" given.");
+        if (dummy.getDataEntriesSize()-voor != connector.routes.size()*loops){
+            fail("Expected "+(connector.routes.size()*loops)+" dataEntries, "+(dummy.getDataEntriesSize()-voor)+" given.");
         }
     }
 
