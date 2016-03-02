@@ -12,4 +12,7 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 25/02/16,13:30,15:00,School,Communicatie,Module 4: eindwerken schrijven,,Verplichte contacturen
 25/02/16,15:15,17:45,School,Projectwerk,Analysedocumentatie afwerken,,
 28/02/16,14:00,15:00,Thuis,Projectwerk,Coyote connector-klasse,9,problemen met SSL-connectie opzetten
-01/03/16,08:15,12:30,School,Projectwerk,Coyote connector-klasse,9,SSL-problemen in Java-project proberen oplossen maar mislukt. Starten met perl-project
+01/03/16,08:15,12:30,School,Projectwerk,Coyote connector-klasse,9,SSL-problemen in Java-project proberen oplossen maar mislukt. Starten met Perl-project
+01/03/16,17:00,18:30,Thuis,Projectwerk,Coyote connector,9,opfrissen Perl en eerste aanzet
+02/03/16,08:00,10:30,Thuis,Projectwerk,Coyote connector,9,connectie opzetten met webserver
+02/03/16,20:00,21:00,Thuis,Projectwerk,Coyote connector,9,opzoeken library om JSON in Perl te verwerken en aanleren gebruik van gekozen library
