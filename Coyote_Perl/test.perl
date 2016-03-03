@@ -1,4 +1,4 @@
-use warnings;
+#use warnings;
 
 use JSON qw( decode_json );
 # to use this library, make sure it is installed in your Perl-system
@@ -9,6 +9,8 @@ use JSON qw( decode_json );
 # global variables #
 ####################
 
+$PROVIDER_ID = "";
+$PROVIDER_NAME = "Coyote";
 $MAIN_URL = "https://maps.coyotesystems.com/traffic/index.php";
 $DATA_URL = "https://maps.coyotesystems.com/traffic/ajax/get_perturbation_list.ajax.php";
 $HEADER_FILE = "header.txt";
@@ -22,8 +24,14 @@ $PASSWORD = "50c20b94";
 
 my $cookie = login();
 system "curl -s --header \"" . $cookie . "\" -o \"" . $DATA_FILE . "\" " . $DATA_URL;
-my $routes = processJSON();
-
+my $routes = processJSON(time);
+for $route (keys %{$routes}){
+	print "$routes->{$route}{route_name}\n";
+	%entry = %{$routes->{$route}};
+	for $key (keys %entry){
+		print "-- $key => $entry{$key}\n";
+	}
+}
 
 
 ###############
@@ -62,6 +70,8 @@ sub login {
 ####	- 
 ####	- returns an hashmap with all route-entries as hashmap
 sub processJSON {
+	#gets the moment that the data was gathered
+	my $timestamp = $_[0];
 
 	#get the json in memory
 	open(JSONDATA,$DATA_FILE);
@@ -71,11 +81,34 @@ sub processJSON {
 
 	# decode json-string to native Perl-structure
 	my %data = %{ decode_json( $json) };
+	%routes = %{$data{"Gand"}};
 
 	my %entries;
-	
-	foreach my $key (keys %{$data{"Gand"}}){
-		print " $key => $entries{$key}\n";
+	my $test_id=0;
+	# process each route
+	foreach my $key (keys %routes){
+		my $route_id=$test_id;
+		$test_id++;
+		my $startlat;
+		my $startlon;
+		my $endlat;
+		my $endlon;
+
+		my %entry = (
+			provider_name => $PROVIDER_NAME,
+			provider_id => $PROVIDER_ID,
+			timestamp => $timestamp,
+			route_id => $route_id,
+			route_name => $key,
+			normal_time => $routes{$key}{'normal_time'},
+			real_time => $routes{$key}{'real_time'},
+			length => $routes{$key}{'length'},
+			startlat=> $startlat,
+			startlon=> $startlon,
+			endlat=> $endlat,
+			endlon=> $endlon,
+			);
+		$entries{$route_id}=\%entry;
 	}
 
 
