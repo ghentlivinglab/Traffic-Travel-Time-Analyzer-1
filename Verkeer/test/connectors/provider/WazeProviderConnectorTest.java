@@ -6,6 +6,7 @@
 package connectors.provider;
 
 import connectors.DataEntry;
+import connectors.database.ConnectionException;
 import connectors.database.DummyDbConnector;
 import connectors.database.IDbConnector;
 import connectors.database.MariaDbConnector;
@@ -45,7 +46,7 @@ public class WazeProviderConnectorTest {
     }
 
     @Test
-    public void returnTest(){
+    public void returnTest() throws ConnectionException{
         IDbConnector db = new MariaDbConnector();
         WazeProviderConnector connector = new WazeProviderConnector(db);
         connector.triggerUpdate();
