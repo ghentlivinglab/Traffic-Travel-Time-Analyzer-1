@@ -11,10 +11,18 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 23/02/2016,20:15,23:00,Thuis,afwerken DummyDbConnectore en werking github wat uittesten,,,github problemen oplossen
 25/02/2016,13:30,15:00,School,Communicatie,Module 4: eindwerken schrijven,,Verplichte contacturen
 25/02/2016,15:15,17:45,School,Projectwerk,,,
-,,,,,,,
-,,,,,,,
-,,,,,,,
-,,,,,,,
-,,,,,,,
-,,,,,,,
-,,,,,,,
+26/02/2016,09:45,12:00,Thuis,Proberen pushen naar branch. Github werkt tegen met detached head,,,
+27/02/2016,10:15,12:15,Thuis,github eindelijk kunnen committen,,,
+27/02/2016,19:45,20:45,Thuis,Opzoeken hoe project naar Proxy krijgen,,22,
+28/02/2016,10:45,13:10,Thuis,Project executable jar maken en kijken voor exporteren,,22,
+28/02/2016,13:45,14:35,Thuis,Project naar proxy proberen krijgen,,22,
+28/02/2016,17:20,20:45,Thuis,Script zoeken om project naar Proxy te krijgen,,22,
+01/03/2016,08:15,12:30,School,Contacturen,,22,Script via ssh en scp van een zip naar proxy en VM sturen
+01/03/2016,19:15,22:25,Thuis,Uitzoeken hoe best logging realiseren,,,
+02/03/2016,10:25,12:00,Thuis,Logging beginnen programmeren,,,
+02/03/2016,18:45,20:50,Thuis,Verderwerken logging,,,
+03/03/2016,13:30,17:45,School,communicatieles & contacturen,,,
+03/03/2016,20:45,23:30,Thuis,verderwerken logging,,,
+04/03/2016,11:00,16:30,Thuis,Afwerken logging,,,probleem met duplicate logging 
+04/03/2016,19:00,21:20,Thuis,Afwerken geheel na logging,,,probleem met logbestanden
+04/03/2016,22:40,01:00,Thuis,Merken van lokaal naar master,,,Github merge die lastig doet
