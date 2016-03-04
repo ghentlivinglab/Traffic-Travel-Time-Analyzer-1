@@ -35,11 +35,10 @@ public class ConsoleParser {
                 System.exit(2);
             }else if(command.equals("status")){
                 printStatus();
-            }else{
-                String words[] = command.split(" ");
-                if(words[0].equals("properties")){
-                    printProperties();
-                }
+            }else if(command.equals("properties")){
+                printProperties();
+            }else if(command.equals("start")){
+                pollThread.start();
             }
             //To be continued..
         }

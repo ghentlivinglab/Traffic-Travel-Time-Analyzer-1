@@ -6,6 +6,7 @@
 
 package verkeer;
 
+import connectors.database.ConnectionException;
 import connectors.database.IDbConnector;
 import connectors.database.MariaDbConnector;
 import connectors.provider.AProviderConnector;
@@ -37,24 +38,28 @@ public class PollThread extends Thread{
             InputStream is = getClass().getClassLoader().getResourceAsStream("verkeer/app.properties");
             prop.load(is);
         } catch (IOException ex) {
-            System.err.println("app.properties kon niet geladen worden.");
+            //System.err.println("app.properties kon niet geladen worden.");
         }
         providers = new ArrayList<>();
-        dbcon = new MariaDbConnector();
-        System.out.println("Number of providers to instantiate: "+prop.getProperty("providerCount"));
-        for(int i=0; i<Integer.parseInt(prop.getProperty("providerCount")); i++){
-            System.out.print("  - "+prop.getProperty("provider"+i));
-            try {
-                Class clazz = Class.forName(prop.getProperty("provider"+i));
-                Constructor ctor = clazz.getConstructor(IDbConnector.class);
-                AProviderConnector a = (AProviderConnector) ctor.newInstance(dbcon);
-                providers.add(a);
-            } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                Logger.getLogger(PollThread.class.getName()).log(Level.SEVERE, null, ex);
+        try{
+            dbcon = new MariaDbConnector();
+            System.out.println("Number of providers to instantiate: "+prop.getProperty("providerCount"));
+            for(int i=0; i<Integer.parseInt(prop.getProperty("providerCount")); i++){
+                System.out.print("  - "+prop.getProperty("provider"+i));
+                try {
+                    Class clazz = Class.forName(prop.getProperty("provider"+i));
+                    Constructor ctor = clazz.getConstructor(IDbConnector.class);
+                    AProviderConnector a = (AProviderConnector) ctor.newInstance(dbcon);
+                    providers.add(a);
+                } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                    Logger.getLogger(PollThread.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                System.out.println("\t\t[LOADED] !");
             }
-            System.out.println("\t\t[LOADED] !");
+            System.out.println("");
+        }catch(ConnectionException e){
+            System.out.println("\n"+e.getMessage());
         }
-        System.out.println("");
     }
     
     @Override

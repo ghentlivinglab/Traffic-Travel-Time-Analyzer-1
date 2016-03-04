@@ -35,8 +35,9 @@ public class MariaDbConnector implements IDbConnector{
     /** 
      * Creates a new instance of MariaDbConnector.
      * The connection parameters can be changed by modifying the properties file: connectors/database/database.properties
+     * @throws connectors.database.ConnectionException
      */
-    public MariaDbConnector() {
+    public MariaDbConnector() throws ConnectionException {
         try{
             prop = new Properties();
             InputStream propsFile = getClass().getClassLoader().getResourceAsStream("connectors/database/database.properties");
@@ -70,7 +71,7 @@ public class MariaDbConnector implements IDbConnector{
      * Initializes the Connection object.
      * If no connection could be established, a ConnectionException is thrown.
      */
-    private void initConnection()/* CODE VOOR EXCEPTIESSSSSSSS */{
+    private void initConnection() throws ConnectionException{
         try{
             Class.forName("com.mysql.jdbc.Driver");
             if(connection == null){
@@ -80,7 +81,7 @@ public class MariaDbConnector implements IDbConnector{
         }catch (ClassNotFoundException e){
             System.out.println("\n SQL Driver could not be loaded. Check all libraries are provided.");
         }catch (SQLException e){
-            System.out.println("\n Could not establish a connection with the mysql server on "+ conn_str);
+            throw new ConnectionException();
         }
         System.out.println("\t[Done]\n");
     }
