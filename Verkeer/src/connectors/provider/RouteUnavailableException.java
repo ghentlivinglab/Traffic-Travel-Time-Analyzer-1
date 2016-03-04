@@ -14,12 +14,12 @@ public class RouteUnavailableException extends Exception implements MyLogger{
 
     public RouteUnavailableException(String message) {
         super(message);
-        routeUnavailabeLog();
+        routeUnavailabeLog(message);
     }
 
     public RouteUnavailableException(String message, Throwable cause) {
         super(message, cause);
-        routeUnavailabeLog();
+        routeUnavailabeLog(message);
     }
 
     public RouteUnavailableException(Throwable cause) {
@@ -34,6 +34,10 @@ public class RouteUnavailableException extends Exception implements MyLogger{
 
     public void routeUnavailabeLog(){
         doLog(Level.WARNING, "Route niet beschikbaar.");
+    }
+    
+    public void routeUnavailabeLog(String message){
+        doLog(Level.WARNING, "Route niet beschikbaar. " + message);
     }
     
     @Override
