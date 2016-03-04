@@ -6,6 +6,7 @@
 
 package verkeer;
 
+import connectors.database.ConnectionException;
 import connectors.database.IDbConnector;
 import connectors.database.MariaDbConnector;
 import connectors.provider.AProviderConnector;
@@ -40,22 +41,25 @@ public class PollThread extends Thread implements MyLogger{
             doLog(Level.WARNING, "app.properties kon niet geladen worden.");
         }
         providers = new ArrayList<>();
-        dbcon = new MariaDbConnector();
-        doLog(Level.INFO, "Number of providers to instantiate: "+prop.getProperty("providerCount"));
-        for(int i=0; i<Integer.parseInt(prop.getProperty("providerCount")); i++){
-            doLog(Level.INFO, "  - "+prop.getProperty("provider"+i));
-            try {
-                Class clazz = Class.forName(prop.getProperty("provider"+i));
-                Constructor ctor = clazz.getConstructor(IDbConnector.class);
-                AProviderConnector a = (AProviderConnector) ctor.newInstance(dbcon);
-                providers.add(a);
-            } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                doLog(Level.WARNING, ex.getMessage());
-                System.err.println(ex.getMessage());
+        try{
+            dbcon = new MariaDbConnector();
+            doLog(Level.INFO, "Number of providers to instantiate: "+prop.getProperty("providerCount"));
+            for(int i=0; i<Integer.parseInt(prop.getProperty("providerCount")); i++){
+                doLog(Level.INFO, "  - "+prop.getProperty("provider"+i));
+                try {
+                    Class clazz = Class.forName(prop.getProperty("provider"+i));
+                    Constructor ctor = clazz.getConstructor(IDbConnector.class);
+                    AProviderConnector a = (AProviderConnector) ctor.newInstance(dbcon);
+                    providers.add(a);
+                } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                    doLog(Level.WARNING, ex.getMessage());
+                    System.err.println(ex.getMessage());
+                }
+                doLog(Level.INFO, "  - "+prop.getProperty("provider"+i) + "\t\t[LOADED] !");
             }
-            doLog(Level.INFO, "  - "+prop.getProperty("provider"+i) + "\t\t[LOADED] !");
+        }catch(ConnectionException e){
+            System.out.println("\n"+e.getMessage());
         }
-        System.out.println("");
     }
     
     @Override
@@ -66,6 +70,7 @@ public class PollThread extends Thread implements MyLogger{
             } catch (InterruptedException ex) {
                 doLog(Level.SEVERE, ex.getMessage());
             }
+            System.out.println("\nTriggering update "+updateCounter);
             for(AProviderConnector a : providers){
                 a.triggerUpdate();
             }

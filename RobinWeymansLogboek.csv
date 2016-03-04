@@ -5,7 +5,10 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 17/02/16,11:00,13:00,Kot,Projectwerk,Ontwerp databank in orde brengen (tabellen aanmaken ..),,
 17/02/16,13:00,16:00,Kot,Projectwerk,Programmeren van DAO,,
 18/02/16,13:30,15:00,School,Communicatie,Module 4: eindwerken schrijven,,Verplichte contacturen
-18/02/16,15:15,17:45,School,Projectwerk,,,
-23/02/16,8:15,12:30,School,Projectwerk,,,
+18/02/16,15:15,17:45,School,Projectwerk,Afwerken van MariaDbConnector,,
+23/02/16,8:15,12:30,School,Projectwerk,ontwerp polling mechanisme,,
 25/02/16,13:30,15:00,School,Communicatie,Module 4: eindwerken schrijven,,Verplichte contacturen
-25/02/16,15:15,17:45,School,Projectwerk,,,
+25/02/16,15:15,17:45,School,Projectwerk,afwerken pollingmechanisme,,
+01/03/16,13:00,15:30,Kot,Projectwerk,scripts om project naar VM te pushen,,
+02/03/16,18:00,19:00,Kot,Projectwerk,script om project naar productieomgeving te pushen,,dit maakt het testen eenvoudiger
+03/03/16,13:30,17:45,School,Communicatie,Module 4: presentatietechnieken,,Verplichte contacturen

@@ -6,14 +6,12 @@
 package verkeer;
 
 import java.io.Console;
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -38,13 +36,17 @@ public class ConsoleParser implements MyLogger{
                 System.exit(2);
             }else if(command.equals("status")){
                 printStatus();
-            }else{
+            }else if(command.equals("properties")){
+                printProperties();
+            }else if(command.equals("start")){
+                pollThread.start();
+            }
+            else{
                 String words[] = command.split(" ");
                 if(words[0].equals("properties")){
                     if(words.length >= 2)
                         properties(words);
                     else{
-                        doLog(Level.INFO, "  Usage: properties db|app get|set propertyname propertyvalue");
                         System.out.println("  Usage: properties db|app get|set propertyname propertyvalue");
                     }
                 }
@@ -54,9 +56,7 @@ public class ConsoleParser implements MyLogger{
     }
 
     private void printStatus() {
-        doLog(Level.INFO, "  Status of the polling thread: "+ pollThread.getState().name());
         System.out.println("  Status of the polling thread: "+ pollThread.getState().name());
-        doLog(Level.INFO, "  Number of updates since launch: "+ pollThread.updateCounter);
         System.out.println("  Number of updates since launch: "+ pollThread.updateCounter);
     }
 
@@ -83,6 +83,16 @@ public class ConsoleParser implements MyLogger{
             System.out.println("  Usage: properties db|app get|set propertyname propertyvalue");
         }
     }
+    
+    private void printProperties(){
+        System.out.println("\n\n--- Database ---");
+        printKeysPropertiesFile("connectors/database/database.properties");
+        System.out.println("\n\n--- Applicatie ---");
+        printKeysPropertiesFile("verkeer/app.properties");
+        System.out.println("\n\n--- Providers ---");
+        printKeysPropertiesFile("connectors/provider/providers.properties");
+        System.out.println("\n\n");
+    }
 
     private void showPropertiesDatabase(String[] command) {
         try {
@@ -95,7 +105,6 @@ public class ConsoleParser implements MyLogger{
                 if(value  != null)
                     System.out.println(command[i]+"="+value);
                 else{
-                    doLog(Level.INFO, "No such property. (URL,IP,PORT,DATABASE,USER,PASSWORD)");
                     System.out.println("  No such property. (URL,IP,PORT,DATABASE,USER,PASSWORD)");
                 }    
             }
@@ -104,6 +113,26 @@ public class ConsoleParser implements MyLogger{
             System.err.println(ex.getMessage());
         }
     }
+        
+    private void printKeysPropertiesFile(String filename) {
+        Properties prop = new Properties();
+        try{
+            InputStream propsFile = getClass().getClassLoader().getResourceAsStream(filename);
+            if(propsFile == null){
+                System.err.println(filename+" kon niet geladen worden.");
+            }else{
+                prop.load(propsFile);
+            }
+            Set<Object> keys = prop.keySet();
+            for(Object key : keys)
+                System.out.println(key.toString()+"="+prop.getProperty(key.toString())); 
+        }catch(FileNotFoundException e){
+            System.out.println("printDatabaseProperties() kon "+filename+" niet vinden. FileNotFoundException");
+        }catch(IOException e){
+            System.out.println("printDatabaseProperties() kon "+filename+" niet inlezen. IOException");
+        }
+    }
+    
     private void showPropertiesApp(String[] command){
         try {
             Properties prop = new Properties();
@@ -115,7 +144,6 @@ public class ConsoleParser implements MyLogger{
                 if(value  != null)
                     System.out.println(command[i]+"="+value);
                 else{
-                    doLog(Level.INFO, "No such property. (URL,IP,PORT,DATABASE,USER,PASSWORD)");
                     System.out.println("  No such property. (providerCount, pollinterval)");
                 }
             }

@@ -12,9 +12,13 @@ import com.owlike.genson.Genson;
 import connectors.DataEntry;
 import connectors.RouteEntry;
 import connectors.database.IDbConnector;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 
@@ -23,9 +27,7 @@ import java.util.logging.Level;
  * @author jarno
  */
 public class GoogleProviderConnector extends AProviderConnector {
-
-    protected final static String API_URL = "https://maps.googleapis.com/maps/api/directions/json";
-    protected final static String API_KEY = "AIzaSyCD3ESlkpUJGJvRKrJguvBa25eFNIJrujo"; // Jarno-Key
+    
     //     private final static String API_KEY = ; // Piet-Key
     //     private final static String API_KEY = ; // Robin-Key
     //     private final static String API_KEY = ; // Simon-Key
@@ -87,9 +89,9 @@ public class GoogleProviderConnector extends AProviderConnector {
      * @return String that contains the URL to get info about current route
      */
     protected String generateURL(RouteEntry route) {
-        StringBuilder urlBuilder = new StringBuilder(API_URL);
+        StringBuilder urlBuilder = new StringBuilder(prop.getProperty("GOOGLE_API_URL"));
         urlBuilder.append("?key=");
-        urlBuilder.append(API_KEY);
+        urlBuilder.append(prop.getProperty("GOOGLE_API_KEY"));
         urlBuilder.append("&origin=");
         urlBuilder.append(route.getStartCoordinateLatitude());
         urlBuilder.append(",");
@@ -155,5 +157,5 @@ public class GoogleProviderConnector extends AProviderConnector {
             }
         }
         return data;
-    }
+    }    
 }

@@ -1,0 +1,19 @@
+rm -rf verkeer/
+cp -R /cygdrive/d/My\ Documents/NetBeansProjects/verkeer-1/Verkeer/dist/ verkeer/
+
+echo "Inpakken van applicatie"
+tar -zcvf archive.tar.gz verkeer >> scripts.log
+
+echo "Opsturen naar de proxy"
+scp 'archive.tar.gz' student@tiwibp1.ugent.be:/home/student
+
+echo "Doorsturen naar de productieomgeving en uitpakken"
+ssh student@tiwibp1.ugent.be /bin/bash << EOF 
+	scp -P 30022 /home/student/archive.tar.gz root@localhost:/root/bachelorproef/dist.tar.gz
+	rm -rf archive.tar.gz
+	ssh root@localhost -p 30022 'rm -rf /root/verkeer; tar -zxvf /root/bachelorproef/dist.tar.gz -C /root > /dev/null; '
+EOF
+
+echo "Opkuisen van mappen en bestanden"
+rm -rf verkeer
+rm -f archive.tar.gz

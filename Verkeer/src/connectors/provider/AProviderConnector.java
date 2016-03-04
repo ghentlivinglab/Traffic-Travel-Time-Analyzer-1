@@ -9,10 +9,12 @@ import connectors.DataEntry;
 import connectors.ProviderEntry;
 import connectors.RouteEntry;
 import connectors.database.IDbConnector;
+import connectors.DataEntry;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
-import java.util.logging.Level;
-import verkeer.MyLogger;
+import java.util.Properties;
 
 /**
  *
@@ -20,6 +22,7 @@ import verkeer.MyLogger;
  */
 public abstract class AProviderConnector {
 
+    protected Properties prop;
     protected IDbConnector dbConnector;
     protected Collection<RouteEntry> routes;
     protected ProviderEntry providerEntry;
@@ -33,6 +36,20 @@ public abstract class AProviderConnector {
     public AProviderConnector(IDbConnector dbConnector) {
         this.dbConnector = dbConnector;
         this.routes = dbConnector.findAllRouteEntries();
+        
+        try{
+            prop = new Properties();
+            InputStream propsFile = getClass().getClassLoader().getResourceAsStream("connectors/provider/providers.properties");
+            if(propsFile == null){
+                System.err.println("connectors/provider/providers.properties kon niet geladen worden.");
+            }else{
+                prop.load(propsFile);
+            }
+        }catch( FileNotFoundException e){
+            System.err.println("connectors/provider/providers.properties niet gevonden.");
+        }catch( IOException ee){
+            System.err.println("connectors/provider/providers.properties kon niet geladen worden.");
+        }
     }
 
     /**
