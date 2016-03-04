@@ -15,27 +15,17 @@ import static java.lang.Math.toIntExact;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.Future;
-
 /**
  *
- * @author Simon
+ * @author Robin
  */
-public class HereProviderConnector extends AProviderConnector {
+public class TomTomProviderConnector extends AProviderConnector{
 
-    /**
-     * List of all Future instances from last triggerUpdate (check
-     * java.util.concurrent library). ± sort of threads Use f.get(); to wait the
-     * thread to finish and return its value Future<ReturnType>
-     * Used in the test classes to wait for the threads to finish and return its
-     * DataEntry (or null if failed)
-     */
     protected List<Future<DataEntry>> buzyRequests;
-
-    public HereProviderConnector(IDbConnector dbConnector) {
+    
+    public TomTomProviderConnector(IDbConnector dbConnector) {
         super(dbConnector);
-        buzyRequests = new ArrayList<>();
-        String providerName = "Here";
-        this.providerEntry = dbConnector.findProviderEntryByName(providerName);        
+        this.providerEntry = dbConnector.findProviderEntryByName("TomTom");
     }
 
     @Override
@@ -58,10 +48,7 @@ public class HereProviderConnector extends AProviderConnector {
                         connector.insert(data);
                         return data;
                     }
-                    // Er ging iets fout
-                    // TODO: Statuscodes later uitbreiden met: 
-                    // https://developer.here.com/rest-apis/documentation/traffic/topics/http-status-codes.html
-
+                    
                     String msg = fetchErrorFromJSON(response.getResponseBody());
                     throw new RouteUnavailableException(msg);
                 }
@@ -73,57 +60,50 @@ public class HereProviderConnector extends AProviderConnector {
             });
             buzyRequests.add(f);
         }
-
     }
-
+    
+    public String fetchErrorFromJSON(String json) {
+        try {
+            // Try to read a HERE error. (HERE specific error structure)
+            Genson genson = new Genson();
+            Map<String, Object> map = genson.deserialize(json, Map.class);
+            Map<String, Object> summary = (Map<String, Object>) map.get("error");
+            String desc = (String) map.get("description");
+            return desc;
+        } catch (Exception ex2) {
+            // Not expected ERROR JSON data
+            return "JSON ERROR data unreadable (expected other structure)";
+        }
+    }
+    
     public DataEntry fetchDataFromJSON(String json, RouteEntry traject) throws RouteUnavailableException {
         try {
             Genson genson = new Genson();
             Map<String, Object> map = genson.deserialize(json, Map.class);
 
-            Map<String, Object> response = (Map<String, Object>) map.get("response");
-            List<Object> route = (List<Object>) response.get("route");
+            List<Object> route = (List<Object>) map.get("routes");
             Map<String, Object> route0 = (Map<String, Object>) route.get(0);
             Map<String, Object> summary = (Map<String, Object>) route0.get("summary");
-            int travelTime = toIntExact((long) summary.get("trafficTime"));
+            int travelTime = toIntExact((long) summary.get("travelTimeInSeconds"));
 
             return new DataEntry(travelTime, traject, this.providerEntry);
         } catch (Exception ex) {
             throw new RouteUnavailableException("JSON data unreadable (expected other structure)");
         }
     }
-
-    public String fetchErrorFromJSON(String json) {
-        try {
-            // Try to read a HERE error. (HERE specific error structure)
-            Genson genson = new Genson();
-            Map<String, Object> map = genson.deserialize(json, Map.class);
-            String type = (String) map.get("type");
-            String subtype = (String) map.get("subtype");
-            String details = (String) map.get("details");
-            return type + " (" + subtype + "): " + details;
-        } catch (Exception ex2) {
-            // Not expected ERROR JSON data
-            return "JSON ERROR data unreadable (expected other structure)";
-        }
-    }
-
+    
     protected String generateURL(RouteEntry traject) {
-        StringBuilder urlBuilder = new StringBuilder(prop.getProperty("HERE_API_URL"));
-        urlBuilder.append("?app_code=");
-        urlBuilder.append(prop.getProperty("HERE_API_CODE"));
-        urlBuilder.append("&app_id=");
-        urlBuilder.append(prop.getProperty("HERE_API_ID"));
-        urlBuilder.append("&waypoint0=");
+        StringBuilder urlBuilder = new StringBuilder(prop.getProperty("TOMTOM_API_URL1"));
         urlBuilder.append(traject.getStartCoordinateLatitude());
-        urlBuilder.append(",");
+        urlBuilder.append(',');
         urlBuilder.append(traject.getStartCoordinateLongitude());
-        urlBuilder.append("&waypoint1=");
+        urlBuilder.append(':');
         urlBuilder.append(traject.getEndCoordinateLatitude());
-        urlBuilder.append(",");
+        urlBuilder.append(',');
         urlBuilder.append(traject.getEndCoordinateLongitude());
-        urlBuilder.append("&mode=shortest;car;traffic:enabled");
-        urlBuilder.append("&departure=now");
+        urlBuilder.append(prop.getProperty("TOMTOM_API_URL2"));
+        urlBuilder.append(prop.getProperty("TOMTOM_API_KEY"));
         return urlBuilder.toString();
     }
+    
 }

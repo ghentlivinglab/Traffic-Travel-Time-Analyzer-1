@@ -253,7 +253,7 @@ public class WazeProviderConnector extends AProviderConnector {
         BoundRequestBuilder request = asyncHttpClient.preparePost("https://www.waze.com/login/create");
         this.setHeaders(request);
         request.addHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-        request.setBody("user_id="+USERNAME+"&password="+PASSWORD);
+        request.setBody("user_id="+prop.getProperty("WAZE_USERNAME")+"&password="+prop.getProperty("WAZE_PASSWORD"));
 
         Request q = request.build();
         
