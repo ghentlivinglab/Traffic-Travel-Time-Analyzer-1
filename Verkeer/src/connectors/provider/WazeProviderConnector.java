@@ -31,7 +31,6 @@ import java.util.logging.Logger;
  * @author Simon
  */
 public class WazeProviderConnector extends AProviderConnector {
-    protected final static String API_URL = "https://route.cit.api.here.com/routing/7.2/calculateroute.json";
     protected final static String USERNAME = "VerkeerGent"; // Simon-Key
     protected final static String PASSWORD = "Paswoord1"; // Simon-Key
     protected Cookie csrf;
@@ -81,11 +80,7 @@ public class WazeProviderConnector extends AProviderConnector {
     private void setHeaders(BoundRequestBuilder request){
         request.addHeader("Pragma", "no-cache");
         request.addHeader("Cache-Control", "no-cache");
-        request.addHeader("X-Requested-With", "Java");
-        request.addHeader("Referer", "https://www.waze.com/en/signin?redirect=/trafficview");
         request.addHeader("Accept-Encoding", "gzip, deflate");
-        request.addHeader("Accept-Language", "nl-NL,nl;q=0.8,en-US;q=0.6,en;q=0.4");
-        request.addHeader("Origin", "https://www.waze.com");
 
         if (this.areCookiesSet()){
             request.setHeader("X-CSRF-Token", csrf.getValue());
@@ -141,7 +136,7 @@ public class WazeProviderConnector extends AProviderConnector {
         AsyncHttpClient asyncHttpClient;
         asyncHttpClient = new AsyncHttpClient();
 
-        BoundRequestBuilder request = asyncHttpClient.prepareGet("https://www.waze.com/login/get");
+        BoundRequestBuilder request = asyncHttpClient.prepareGet(prop.getProperty("WAZE_API_URL_GET_LOGIN"));
         this.setHeaders(request);
 
         Future<Boolean> f = request.execute(
@@ -175,7 +170,7 @@ public class WazeProviderConnector extends AProviderConnector {
         AsyncHttpClient asyncHttpClient;
         asyncHttpClient = new AsyncHttpClient();
 
-        BoundRequestBuilder request = asyncHttpClient.prepareGet("https://www.waze.com/row-rtserver/broadcast/BroadcastRSS?bid="+bid+"&format=JSON");
+        BoundRequestBuilder request = asyncHttpClient.prepareGet(prop.getProperty("WAZE_API_URL_GET_DATA")+bid);
         this.setHeaders(request);
         
         Future<List<DataEntry>> f = request.execute(
@@ -214,7 +209,7 @@ public class WazeProviderConnector extends AProviderConnector {
         AsyncHttpClient asyncHttpClient;
         asyncHttpClient = new AsyncHttpClient();
 
-        BoundRequestBuilder request = asyncHttpClient.prepareGet("https://www.waze.com/row-WAS/app/broadcasters/get");
+        BoundRequestBuilder request = asyncHttpClient.prepareGet(prop.getProperty("WAZE_API_URL_BROADCASTERS"));
         this.setHeaders(request);
         
         Future<Boolean> f = request.execute(
@@ -250,7 +245,7 @@ public class WazeProviderConnector extends AProviderConnector {
         AsyncHttpClient asyncHttpClient;
         asyncHttpClient = new AsyncHttpClient();
 
-        BoundRequestBuilder request = asyncHttpClient.preparePost("https://www.waze.com/login/create");
+            BoundRequestBuilder request = asyncHttpClient.preparePost(prop.getProperty("WAZE_API_URL_LOGIN"));
         this.setHeaders(request);
         request.addHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
         request.setBody("user_id="+prop.getProperty("WAZE_USERNAME")+"&password="+prop.getProperty("WAZE_PASSWORD"));
@@ -296,7 +291,7 @@ public class WazeProviderConnector extends AProviderConnector {
         AsyncHttpClient asyncHttpClient;
         asyncHttpClient = new AsyncHttpClient();
 
-        BoundRequestBuilder request = asyncHttpClient.preparePost("https://www.waze.com/login/destroy");
+        BoundRequestBuilder request = asyncHttpClient.preparePost(prop.getProperty("WAZE_API_URL_LOGOUT"));
         this.setHeaders(request);
 
         Future<Boolean> f = request.execute(
