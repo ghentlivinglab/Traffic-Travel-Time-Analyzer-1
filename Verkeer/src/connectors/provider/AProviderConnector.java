@@ -5,11 +5,14 @@
  */
 package connectors.provider;
 
-import connectors.database.IDbConnector;
+import connectors.DataEntry;
 import connectors.ProviderEntry;
 import connectors.RouteEntry;
-import connectors.DataEntry;
+import connectors.database.IDbConnector;
+import java.io.IOException;
 import java.util.Collection;
+import java.util.logging.Level;
+import verkeer.MyLogger;
 
 /**
  *

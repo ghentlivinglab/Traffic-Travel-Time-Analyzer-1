@@ -25,6 +25,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import verkeer.Verkeer;
 
 /**
  *
@@ -479,5 +480,4 @@ public class WazeProviderConnector extends AProviderConnector {
         }
         return false;
     }
-    
 }

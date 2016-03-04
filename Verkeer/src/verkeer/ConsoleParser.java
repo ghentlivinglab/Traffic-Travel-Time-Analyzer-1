@@ -19,7 +19,7 @@ import java.util.logging.Logger;
  *
  * @author Robin
  */
-public class ConsoleParser {
+public class ConsoleParser implements MyLogger{
     private final Console console;
     private final PollThread pollThread;
     public ConsoleParser(PollThread pollThread){
@@ -28,7 +28,7 @@ public class ConsoleParser {
     }
     public void processCommandLineInput(){
         if(console == null){
-            System.err.println("No console.");
+            doLog(Level.WARNING, "No console.");
             System.exit(1);
         }
         boolean keepRunning = true;
@@ -43,8 +43,10 @@ public class ConsoleParser {
                 if(words[0].equals("properties")){
                     if(words.length >= 2)
                         properties(words);
-                    else
+                    else{
+                        doLog(Level.INFO, "  Usage: properties db|app get|set propertyname propertyvalue");
                         System.out.println("  Usage: properties db|app get|set propertyname propertyvalue");
+                    }
                 }
             }
             //To be continued..
@@ -52,12 +54,15 @@ public class ConsoleParser {
     }
 
     private void printStatus() {
+        doLog(Level.INFO, "  Status of the polling thread: "+ pollThread.getState().name());
         System.out.println("  Status of the polling thread: "+ pollThread.getState().name());
+        doLog(Level.INFO, "  Number of updates since launch: "+ pollThread.updateCounter);
         System.out.println("  Number of updates since launch: "+ pollThread.updateCounter);
     }
 
     private void properties(String[] command) {
         //index 0 is al zeker properties.
+        doLog(Level.INFO, command[0] + " " + command[1] + " " + command[2] + " " + command[3] + " " + command[4] + " uitgevoerd.");
         if(command[1].equals("db")){
             if(command.length>=3&&command[2].equals("get")){
                 showPropertiesDatabase(command);
@@ -89,11 +94,14 @@ public class ConsoleParser {
                 String value = prop.getProperty(command[i]);
                 if(value  != null)
                     System.out.println(command[i]+"="+value);
-                else
+                else{
+                    doLog(Level.INFO, "No such property. (URL,IP,PORT,DATABASE,USER,PASSWORD)");
                     System.out.println("  No such property. (URL,IP,PORT,DATABASE,USER,PASSWORD)");
+                }    
             }
         } catch (IOException ex) {
-            Logger.getLogger(ConsoleParser.class.getName()).log(Level.SEVERE, null, ex);
+            doLog(Level.SEVERE, "propertiesbestand van database niet gevonden.");
+            System.err.println(ex.getMessage());
         }
     }
     private void showPropertiesApp(String[] command){
@@ -106,11 +114,14 @@ public class ConsoleParser {
                 String value = prop.getProperty(command[i]);
                 if(value  != null)
                     System.out.println(command[i]+"="+value);
-                else
+                else{
+                    doLog(Level.INFO, "No such property. (URL,IP,PORT,DATABASE,USER,PASSWORD)");
                     System.out.println("  No such property. (providerCount, pollinterval)");
+                }
             }
         } catch (IOException ex) {
-            Logger.getLogger(ConsoleParser.class.getName()).log(Level.SEVERE, null, ex);
+            doLog(Level.SEVERE, "propertiesbestand van app niet gevonden.");
+            System.err.println(ex.getMessage());
         }
         
     }
@@ -137,5 +148,15 @@ public class ConsoleParser {
         /*} catch (IOException ex) {
             Logger.getLogger(ConsoleParser.class.getName()).log(Level.SEVERE, null, ex);
         }*/
+    }
+
+    @Override
+    public void doLog(Level lvl, String log) {
+        try{
+            Verkeer.getLogger(ConsoleParser.class.getName()).log(lvl, log);
+        }
+        catch(IOException ie){
+            System.err.println("logbestand niet gevonden.");
+        }
     }
 }
