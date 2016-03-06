@@ -1,15 +1,18 @@
 Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
-09/02/16,8:30,12:30,School,Projectwerk,Uitlegsessie bachelorproef + doornemen documentatie,,
-11/02/16,13:30,17:45,School,Projectwerk,Opstellen analysedocumenten+ taakverdeling begin,,
-16/02/16,8:15,12:30,School,Communicatie,Infomoment met klant,,presentatie van onderwerp door klant + mogelijkheid tot vragen
-17/02/16,11:00,13:00,Kot,Projectwerk,Ontwerp databank in orde brengen (tabellen aanmaken ..),,
-17/02/16,13:00,16:00,Kot,Projectwerk,Programmeren van DAO,,
-18/02/16,13:30,15:00,School,Communicatie,Module 4: eindwerken schrijven,,Verplichte contacturen
-18/02/16,15:15,17:45,School,Projectwerk,Afwerken van MariaDbConnector,,
-23/02/16,8:15,12:30,School,Projectwerk,ontwerp polling mechanisme,,
-25/02/16,13:30,15:00,School,Communicatie,Module 4: eindwerken schrijven,,Verplichte contacturen
-25/02/16,15:15,17:45,School,Projectwerk,afwerken pollingmechanisme,,
-01/03/16,13:00,15:30,Kot,Projectwerk,scripts om project naar VM te pushen,22,
-02/03/16,18:00,19:00,Kot,Projectwerk,script om project naar productieomgeving te pushen,22,dit maakt het testen eenvoudiger
-03/03/16,13:30,17:45,School,Communicatie,Module 4: presentatietechnieken,,Verplichte contacturen
-06/03/16,11:00,19:00,Thuis,Presentatie,Presentatie sprint 1,,
+09/02/2016,8:30,12:30,School,Projectwerk,Uitlegsessie bachelorproef + doornemen documentatie,,
+11/02/2016,13:30,17:45,School,Projectwerk,Opstellen analysedocumenten+ taakverdeling begin,,
+16/02/2016,8:15,12:30,School,Communicatie,Infomoment met klant,,presentatie van onderwerp door klant + mogelijkheid tot vragen
+17/02/2016,11:00,13:00,Kot,Projectwerk,Ontwerp databank in orde brengen (tabellen aanmaken ..),,
+17/02/2016,13:00,16:00,Kot,Projectwerk,Programmeren van DAO,,
+18/02/2016,13:30,15:00,School,Communicatie,Module 4: eindwerken schrijven,,Verplichte contacturen
+18/02/2016,15:15,17:45,School,Projectwerk,Afwerken van MariaDbConnector,,
+23/02/2016,8:15,12:30,School,Projectwerk,ontwerp polling mechanisme,,
+25/02/2016,13:30,15:00,School,Communicatie,Module 4: eindwerken schrijven,,Verplichte contacturen
+25/02/2016,15:15,17:45,School,Projectwerk,afwerken pollingmechanisme,,
+01/03/2016,13:00,15:30,Kot,Projectwerk,scripts om project naar VM te pushen,22,
+02/03/2016,18:00,19:00,Kot,Projectwerk,script om project naar productieomgeving te pushen,22,dit maakt het testen eenvoudiger
+03/03/2016,13:30,17:45,School,Communicatie,Module 4: presentatietechnieken,,Verplichte contacturen
+03/03/2016,23:00,23:59,Kot,Projectwerk,"Vereenvoudigen van Consoleparser, Fout afhandeling",26,
+04/03/2016,0:00,4:00,Kot,Projectwerk,"Vereenvoudigen van Consoleparser, Fout afhandeling",26,
+05/03/2016,12:00,16:00,Kot,Projectwerk,Toevoegen TomTomProvider en propertiesfile,7 & 27,
+06/03/2016,11:00,19:00,Thuis,Presentatie,Presentatie sprint 1,,
