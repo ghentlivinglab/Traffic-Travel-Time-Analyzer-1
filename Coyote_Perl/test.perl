@@ -1,4 +1,4 @@
-#use warnings;
+use warnings;
 
 use JSON qw( decode_json );
 # to use this library, make sure it is installed in your Perl-system
@@ -15,6 +15,7 @@ $MAIN_URL = "https://maps.coyotesystems.com/traffic/index.php";
 $DATA_URL = "https://maps.coyotesystems.com/traffic/ajax/get_perturbation_list.ajax.php";
 $HEADER_FILE = "header.txt";
 $DATA_FILE = "data.json";
+$OUTPUT_FILE = "output.data";
 $LOGIN = "110971610";
 $PASSWORD = "50c20b94";
 
@@ -24,14 +25,9 @@ $PASSWORD = "50c20b94";
 
 my $cookie = login();
 system "curl -s --header \"" . $cookie . "\" -o \"" . $DATA_FILE . "\" " . $DATA_URL;
+
 my $routes = processJSON(time);
-for $route (keys %{$routes}){
-	print "$routes->{$route}{route_name}\n";
-	%entry = %{$routes->{$route}};
-	for $key (keys %entry){
-		print "-- $key => $entry{$key}\n";
-	}
-}
+print_routes($routes, $OUTPUT_FILE);
 
 
 ###############
@@ -66,9 +62,13 @@ sub login {
 }
 
 ###	processJSON() :: HashMap entries
-####	- 
-####	- 
-####	- returns an hashmap with all route-entries as hashmap
+####	- parses the JSON in $DATA_FILE
+####	- extracts only neccesary data and put them in route-entries
+####	- returns a hashmap with all route-entries as hashmap:
+####		* keys in hashmap are numeric route_id's
+####		* keys in entries are provider_name, provider_id, timestamp,
+####			route_id, route_name, normal_time, real_time, length,
+####			start_lat, start_lon, end_lat and end_lon
 sub processJSON {
 	#gets the moment that the data was gathered
 	my $timestamp = $_[0];
@@ -89,11 +89,16 @@ sub processJSON {
 	foreach my $key (keys %routes){
 		my $route_id=$test_id;
 		$test_id++;
-		my $startlat;
-		my $startlon;
-		my $endlat;
-		my $endlon;
+		my @wrapper_locations = @{$routes{$key}{"geometries"}};
+		my @locations = @{$wrapper_locations[0]};
+		my %start_loc = %{$locations[0]};
+		my %end_loc = %{$locations[-1]};
+		my $start_lat = $start_loc{"lat"};
+		my $start_lon = $start_loc{"lng"};
+		my $end_lat = $end_loc{"lat"};
+		my $end_lon = $end_loc{"lng"};
 
+		# store all found data in entry-object
 		my %entry = (
 			provider_name => $PROVIDER_NAME,
 			provider_id => $PROVIDER_ID,
@@ -103,14 +108,44 @@ sub processJSON {
 			normal_time => $routes{$key}{'normal_time'},
 			real_time => $routes{$key}{'real_time'},
 			length => $routes{$key}{'length'},
-			startlat=> $startlat,
-			startlon=> $startlon,
-			endlat=> $endlat,
-			endlon=> $endlon,
+			start_lat=> $start_lat,
+			start_lon=> $start_lon,
+			end_lat=> $end_lat,
+			end_lon=> $end_lon,
 			);
 		$entries{$route_id}=\%entry;
 	}
 
 
 	return \%entries;
+}
+
+
+###	print_routes :: void
+####	- prints all route entries contained in the first param 
+####		to standard output or a file if a file name is provided
+sub print_routes {
+	my $routes = $_[0]; # get hasmap with all route-entries	
+	my $filename = $_[1]; # get filename if a file is provided
+	my $file;
+
+	if(defined($filename)){ # a filename is provided, open the file for writing (overwrites content in file provided
+		open( FILEHANDLE , '>'.$filename );
+		$file = *FILEHANDLE;
+	} else { # no filename provided, print to the console
+		$file = *STDOUT;
+	}
+
+	for $route (keys %{$routes}){ # for each route-entry
+		%entry = %{$routes->{$route}};
+		print $file "ENTRY\n";
+		
+		for $key (sort keys %entry){ # for each object in route-entry
+			print $file "$key: $entry{$key}\n";
+		}
+		
+		print $file "END\n\n";
+	}
+	
+	close($file) if defined($filename);
 }
