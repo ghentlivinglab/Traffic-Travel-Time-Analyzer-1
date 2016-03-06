@@ -1,4 +1,28 @@
 # verkeer-1
+### Richtlijnen toegang tot applicatie (in de productieomgeving)
+De applicatie is opgebouwd in een linux-omgeving. Hierdoor is een linux-besturingssysteem vereist ofwel
+een bash (Bourne Again Shell, dit is een tekstuele console waar linux-commando's kunnen ingevoerd worden).
+Een mogelijkheid is 'Cygwin64 Terminal'.
+ 1. Downloaden van cygwin64 terminal: (link: https://www.cygwin.com/) kiezen voor de opties ->net->ssh.
+ 2. Eerst moeten op de proxy kunnen. Omdat deze zich op het ugent netwerk bevindt zullen we eerst een VPN-verbinding maken met UGent ASA VPN (via Cisco AnyConnect Secure Mobility Client).
+ 3. commando 'ssh student@tiwibp1.ugent.be', wachtwoord is 'vop2016'. Hierdoor bevinden we ons op de proxy.
+ 4. Voer in de proxy-console het commando 'ssh root@localhost -p 3022' uit. -p 30022 omdat de ssh-poort van onze productieomgeving op 30022 is ingesteld. Wachtwoord is 'aeSqFPbpUl'.
+Nu bevinden we ons op de productieomgeving waar de applicatie zich bevindt. Verdere instructies met het uitvoeren van de applicatie zijn hieronder te vinden.
+
+### Richtlijnen uitvoeren programma
+In onze productieomgeving bevindt zich een bestand verkeer. Hierin hebben wij het dist-bestand van ons project geïmporteerd. Wij hebben een alias gecreeërd die zorgt dat je gewoon 'verkeer' moet intypen in de tekstuele console
+die dan het executable jar bestand van ons project uitvoerd.
+
+###### stappen
+ 1. typ 'verkeer', dit zorgt dat ons hoofdprogramma gestart wordt. Verbinding met de databank wordt gerealiseerd en connectie met de providers wordt ook reeds getest. Nu bevinden we ons in de tekstuele console van ons project.
+ 2. Met het commando 'start' wordt de applicatie gestart. Polling wordt nu gedaan met een tijdspanne van 5 minuten (standaard, dit is verstelbaar en zien we later). Wanneer de applicatie heeft gepolld zal er 'triggering update:' en de hoeveelste update sinds de start van het programma verschijnen op de console.
+ 3. Met het commando 'status' kan je steeds controleren in welke staat de applicatie is.
+ Indien je het nog niet gestart hebt, zal dit NEW zijn, anders is het TIMED_WAITING.
+ 4. Het opvragen van eigenschappen van de applicatie kan via het commando 'properties'.
+ 5. Deze 'properties' van enerzijds de database en anderzijds de providers kunnen aangepast worden via het commando:
+'properties db|app get|set propertyname propertyvalue' waarbij propertyname de eigenschap is die je wil veranderen (bijvoorbeeld het pollinginterval) en propertyvalue de waarde die je aan de eigenschap wil meegeven.
+(Deze eigenschap-aanpassen instructies worden ook meegegeven indien foute syntax gehanteerd werd.)
+
 ### Indeling repository 
 In de verkeer-1 directory van de masterbranch bevinden zich naast de logboeken en de directory van het java-project 'Verkeer'
 ook nog een Perl bestand voor de Coyoteprovider de data op te halen en enkele scripts.
