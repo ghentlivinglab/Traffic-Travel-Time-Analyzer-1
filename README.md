@@ -23,6 +23,19 @@ die dan het executable jar bestand van ons project uitvoerd.
 'properties db|app get|set propertyname propertyvalue' waarbij propertyname de eigenschap is die je wil veranderen (bijvoorbeeld het pollinginterval) en propertyvalue de waarde die je aan de eigenschap wil meegeven.
 (Deze eigenschap-aanpassen instructies worden ook meegegeven indien foute syntax gehanteerd werd.)
 
+###### opmerking
+Voorlopig treden er wel nog wat problemen op met sommige providers (teveel requests of problemen met JSON).
+Problemen worden via logging naar de console en ook de logbestanden geschreven. 
+Desalniettemin wordt onze databank toch met de gelukte data-ophalingen opgevuld.
+
+###### Bekijken van de databank-gegevens 
+ 1.Dit kan via het commando 'mysql -u test -p', waarbij je dan het passwoord 'test' moet meegeven.
+Nu hebben we verbonden met de MariaDb (er staat MariaDb[(none)].
+ 2.Om de juiste databank te raadplegen voeren we nu 'use verkeer1;' uit (er staat MariaDb[verkeer1]).
+ 3.Met 'show tables;' zie je wel tabellen zijn opgenomen in de databank.
+ 4.met 'select * from trafficdata;' kan je eens testen of er wel degelijk data is opgehaald van de providers.
+ Hierbij stelt de kolom routeId de trajecten 1-30 voor en providerId van welke provider de traject-data komt.
+
 ### Indeling repository 
 In de verkeer-1 directory van de masterbranch bevinden zich naast de logboeken en de directory van het java-project 'Verkeer'
 ook nog een Perl bestand voor de Coyoteprovider de data op te halen en enkele scripts.
