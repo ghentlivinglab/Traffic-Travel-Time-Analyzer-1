@@ -17,3 +17,6 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 02/03/16,08:00,10:30,Thuis,Projectwerk,Coyote connector,9,connectie opzetten met webserver
 02/03/16,20:00,21:00,Thuis,Projectwerk,Coyote connector,9,opzoeken library om JSON in Perl te verwerken en aanleren gebruik van gekozen library
 03/03/16,08:00,11:00,Thuis,Projectwerk,Coyote connector,9,verwerking JSON
+05/03/16,15:00,16:00,Thuis,Projectwerk,Coyote connector,9,database-connectie
+06/03/16,20:00,21:00,Thuis,Projectwerk,opzetten eigen test-VM,,
+07/03/16,21:00,22:00,Thuis,Projectwerk,Coyote connector,9,toevoegen van methode om data weg te schrijven naar een bestand
