@@ -12,6 +12,6 @@ package connectors.database;
 public class ConnectionException extends Exception{
 
     public ConnectionException() {
-        super("Couldn't connect to database.");
+        super("Couldn't connect to database. Type 'properties' to check the connection properties.");
     }
 }

@@ -199,6 +199,7 @@ public class MariaDbConnector implements IDbConnector{
             ResultSet rs = p.executeQuery();
             if(rs.next())
                 ret = new RouteEntry(rs.getString("name"), rs.getDouble("startlat"), rs.getDouble("startlong"), rs.getDouble("endlat"), rs.getDouble("endlong"), rs.getInt("length"), 0);
+            //TODO: Als er niks wordt teruggegeven, dan wordt er eentje aangemaakt. Analoog zoals bij provider.
             rs.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
