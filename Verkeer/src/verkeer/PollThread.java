@@ -44,6 +44,7 @@ public class PollThread extends Thread implements MyLogger{
         try{
             dbcon = new MariaDbConnector();
             doLog(Level.INFO, "Number of providers to instantiate: "+prop.getProperty("providerCount"));
+            System.out.println("Number of providers to instantiate: "+prop.getProperty("providerCount"));
             for(int i=0; i<Integer.parseInt(prop.getProperty("providerCount")); i++){
                 doLog(Level.INFO, "  - "+prop.getProperty("provider"+i));
                 try {
@@ -56,6 +57,7 @@ public class PollThread extends Thread implements MyLogger{
                     System.err.println(ex.getMessage());
                 }
                 doLog(Level.INFO, "  - "+prop.getProperty("provider"+i) + "\t\t[LOADED] !");
+                System.out.println("  - "+prop.getProperty("provider"+i) + "\t\t[LOADED] !");
             }
         }catch(ConnectionException e){
             System.out.println("\n"+e.getMessage());
@@ -70,7 +72,7 @@ public class PollThread extends Thread implements MyLogger{
             } catch (InterruptedException ex) {
                 doLog(Level.SEVERE, ex.getMessage());
             }
-            System.out.println("\nTriggering update "+updateCounter);
+            //System.out.println("\nTriggering update "+updateCounter);
             for(AProviderConnector a : providers){
                 a.triggerUpdate();
             }
