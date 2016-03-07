@@ -18,7 +18,7 @@ import java.util.logging.SimpleFormatter;
  */
 public class Verkeer {
     
-    private static final String LOG_PARENT_DIRECTORY = "/root/verkeerlogging";
+    private static final String LOG_PARENT_DIRECTORY = "/root/verkeerlogging/";
     private static FileHandler fh = null;
     private static Logger logger = null;
     
@@ -56,14 +56,17 @@ public class Verkeer {
         Date date = new Date();
         String logbestand = LOG_PARENT_DIRECTORY + dateformat.format(date) + ".log";
         File yourFile = new File(logbestand);
-        if(!yourFile.getParentFile().mkdirs()){
-            System.err.println("parentdirectory van logbestand bestaat niet");
+        File parent = yourFile.getParentFile();
+        
+        // Aanmaken als het nog niet bestaat
+        if(!parent.exists() && !parent.mkdirs()){
+            System.err.println("Parentdirectory van logbestand kon niet aangemaakt worden");
         }
         if(!yourFile.exists()){
             try {
                 yourFile.createNewFile();
             } catch (IOException ex) {
-                System.err.println("logbestand kan niet aangemaakt worden.");
+                System.err.println("Logbestand kan niet aangemaakt worden.");
             }
         }
         return logbestand;
