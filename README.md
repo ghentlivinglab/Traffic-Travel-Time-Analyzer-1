@@ -9,6 +9,13 @@ Een mogelijkheid is 'Cygwin64 Terminal'.
  4. Voer in de proxy-console het commando 'ssh root@localhost -p 3022' uit. -p 30022 omdat de ssh-poort van onze productieomgeving op 30022 is ingesteld. Wachtwoord is 'aeSqFPbpUl'.
 Nu bevinden we ons op de productieomgeving waar de applicatie zich bevindt. Verdere instructies met het uitvoeren van de applicatie zijn hieronder te vinden.
 
+### Richtlijnen testen in lokale omgeving
+Om de applicatie lokaal te kunnen uittesten is een virtuele machine noodzakelijk. Hierop dient MariaDB reeds geïnstalleerd te zijn. Een andere mogelijkheid is om deze database lokaal te installeren: een lokaal mysql process zou normaal gezien ook moeten werken, mits het properties bestand correct wordt ingesteld.
+
+In connectors.database/database.properties vind je een lijst met allerlei properties die gebruikt worden om de connectie te starten met *jdbc*. Het kan zijn dat hier aanpassingen aan moeten gebeuren (bv het wachtwoord, de database naam, poort of ip adres...).
+
+Belangrijk om te weten is dat de applicatie momenteel niet instaat voor het initialiseren van de database als de tabellen nog niet aangemaakt zijn. Daarom kan je [scripts/dbStructure.sql](scripts/dbStructure.sql) gebruiken om de database te initialiseren. Dit SQL script maakt de tabellen aan en voegt reeds 30 routes toe die gebruikt kunnen worden om te testen.
+
 ### Richtlijnen uitvoeren programma
 In onze productieomgeving bevindt zich een bestand verkeer. Hierin hebben wij het dist-bestand van ons project geïmporteerd. Wij hebben een alias gecreeërd die zorgt dat je gewoon 'verkeer' moet intypen in de tekstuele console
 die dan het executable jar bestand van ons project uitvoerd.
