@@ -24,7 +24,7 @@ import java.util.logging.Logger;
  *
  * @author HP
  */
-public class PollThread extends Thread{
+public class PollThread extends Thread implements MyLogger{
     Properties prop;
 
     Collection<AProviderConnector> providers;
@@ -38,25 +38,25 @@ public class PollThread extends Thread{
             InputStream is = getClass().getClassLoader().getResourceAsStream("verkeer/app.properties");
             prop.load(is);
         } catch (IOException ex) {
-            //System.err.println("app.properties kon niet geladen worden.");
+            doLog(Level.WARNING, "app.properties kon niet geladen worden.");
         }
         providers = new ArrayList<>();
         try{
             dbcon = new MariaDbConnector();
-            System.out.println("Number of providers to instantiate: "+prop.getProperty("providerCount"));
+            doLog(Level.INFO, "Number of providers to instantiate: "+prop.getProperty("providerCount"));
             for(int i=0; i<Integer.parseInt(prop.getProperty("providerCount")); i++){
-                System.out.print("  - "+prop.getProperty("provider"+i));
+                doLog(Level.INFO, "  - "+prop.getProperty("provider"+i));
                 try {
                     Class clazz = Class.forName(prop.getProperty("provider"+i));
                     Constructor ctor = clazz.getConstructor(IDbConnector.class);
                     AProviderConnector a = (AProviderConnector) ctor.newInstance(dbcon);
                     providers.add(a);
                 } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                    Logger.getLogger(PollThread.class.getName()).log(Level.SEVERE, null, ex);
+                    doLog(Level.WARNING, ex.getMessage());
+                    System.err.println(ex.getMessage());
                 }
-                System.out.println("\t\t[LOADED] !");
+                doLog(Level.INFO, "  - "+prop.getProperty("provider"+i) + "\t\t[LOADED] !");
             }
-            System.out.println("");
         }catch(ConnectionException e){
             System.out.println("\n"+e.getMessage());
         }
@@ -66,19 +66,26 @@ public class PollThread extends Thread{
     public void run(){
         while(true){
             try {
-                //Thread.sleep(300000);   //5min
                 Thread.sleep(Long.parseLong(prop.getProperty("pollinterval")));    //10s
             } catch (InterruptedException ex) {
-                Logger.getLogger(PollThread.class.getName()).log(Level.SEVERE, null, ex);
+                doLog(Level.SEVERE, ex.getMessage());
             }
             System.out.println("\nTriggering update "+updateCounter);
             for(AProviderConnector a : providers){
                 a.triggerUpdate();
-                //System.out.println("Provider klaar");
             }
             updateCounter++;
         }
     }
-    
-    
+     
+    @Override
+    public void doLog(Level lvl, String log) {
+        try{
+            Verkeer.getLogger(PollThread.class.getName()).log(lvl, log);
+        }
+        catch(IOException ie){
+            System.err.println("logbestand niet gevonden.");
+        }
+    }
+
 }

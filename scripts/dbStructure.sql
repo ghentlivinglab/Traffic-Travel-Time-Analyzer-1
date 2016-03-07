@@ -1,0 +1,147 @@
+# ************************************************************
+# Sequel Pro SQL dump
+# Version 4529
+#
+# http://www.sequelpro.com/
+# https://github.com/sequelpro/sequelpro
+#
+# Host: 127.0.0.1 (MySQL 5.5.5-10.0.15-MariaDB)
+# Database: verkeer1
+# Generation Time: 2016-03-07 18:03:29 +0000
+# ************************************************************
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+
+# Dump of table providers
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `providers`;
+
+CREATE TABLE `providers` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` char(50) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+
+LOCK TABLES `providers` WRITE;
+/*!40000 ALTER TABLE `providers` DISABLE KEYS */;
+
+INSERT INTO `providers` (`id`, `name`)
+VALUES
+	(1,'Waze'),
+	(2,'Coyote'),
+	(3,'Here'),
+	(4,'Google Maps');
+
+/*!40000 ALTER TABLE `providers` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+# Dump of table routes
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `routes`;
+
+CREATE TABLE `routes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `length` double DEFAULT NULL,
+  `name` char(50) DEFAULT NULL,
+  `startlat` double DEFAULT NULL,
+  `startlong` double DEFAULT NULL,
+  `endlat` double DEFAULT NULL,
+  `endlong` double DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=latin1;
+
+LOCK TABLES `routes` WRITE;
+/*!40000 ALTER TABLE `routes` DISABLE KEYS */;
+
+INSERT INTO `routes` (`id`, `length`, `name`, `startlat`, `startlong`, `endlat`, `endlong`)
+VALUES
+	(1,2183,'Gasmeterlaan (R40) eastbound',51.06632352,3.69968998,51.067521106257,3.7276444075241),
+	(2,15880,'Paryslaan (R4) northbound',51.08512708899148,3.667218617057933,51.197083635173755,3.7847946040086464),
+	(3,16152,'Paryslaan (R4) southbound',51.1995796700664,3.7897624842981346,51.08580429107987,3.6694149950371377),
+	(4,16909,'Eisenhowerlaan (R4) southbound',51.08781697502468,3.756547050018134,51.01351711,3.7323606),
+	(5,2473,'Heernislaan (R40) northbound',51.03837265573016,3.73382932175947,51.055869480917025,3.738927677307099),
+	(6,4457,'Keizer Karelstraat northbound',51.03743458472601,3.737429989614514,51.06736297665502,3.7271062135696),
+	(7,4939,'Brusselsesteenweg (N9) eastbound',51.04150803,3.7409491,51.0105061187172,3.790711462902266),
+	(8,4994,'Brusselsesteenweg (N9) westbound',51.009823839493,3.7915580480861,51.04128217,3.74150887),
+	(9,5589,'Drongensesteenweg (N466) eastbound',51.03895767,3.62647065,51.05614584335802,3.6949601650403054),
+	(10,3183,'B401 (northbound)',51.02163435688498,3.7342642306537,51.04849145295184,3.731403207917236),
+	(11,2144,'Nieuwevaart (R40) westbound',51.067630762383,3.7280050888653,51.0659857203217,3.7000511509262095),
+	(12,16307,'Kennedylaan (R4) southbound',51.197728135964,3.827846784848499,51.07388610330032,3.734092119763203),
+	(13,3914,'Martelaarslaan (R40) northbound',51.03946326646903,3.7381149679754,51.05614584335802,3.6949601650403054),
+	(14,2688,'Blaisantvest (N430) westbound',51.067590310194,3.727864272892,51.052481891215635,3.699791565570623),
+	(15,4250,'Keizer Karelstraat southbound',51.067362976655,3.7271062135696,51.03851700000002,3.736359),
+	(16,2168,'Heernislaan (R40) southbound',51.056220201829646,3.738839186334578,51.03946326646903,3.7381149679754),
+	(17,5083,'Antwerpsesteenweg (N70) eastbound',51.05668564284585,3.73986190348546,51.08361317118673,3.794315741824791),
+	(18,1245,'Rooigemlaan (R40) southbound',51.06632352,3.69968998,51.05681064481501,3.6940958947276),
+	(19,11270,'Binnenring-Drongen (R4) northbound',51.01351711,3.7323606,51.085992000000005,3.670811),
+	(20,15797,'Kennedylaan (R4) northbound',51.07373476796992,3.733464497834568,51.19284344049101,3.8303502516274),
+	(21,2272,'B401 (southbound)',51.04849145295184,3.731403207917236,51.03136963794627,3.739609202668087),
+	(22,5457,'Antwerpsesteenweg (N70) westbound',51.08546608732767,3.7996031558559658,51.05731287090199,3.740129274625701),
+	(23,2030,'Dok-Noord (R40) southbound',51.066488185097,3.7236220240592,51.05662102821132,3.738432831668856),
+	(24,3681,'Martelaarslaan (R40) southbound',51.05681064481501,3.6940958947276,51.03837265573016,3.73382932175947),
+	(25,5567,'Drongensesteenweg (N466) westbound',51.05627181,3.6960078200000006,51.038606326647,3.62796195558),
+	(26,2018,'Dok-Noord (R40) northbound',51.05662102821132,3.738432831668856,51.067297241447,3.7268943190574),
+	(27,1352,'Rooigemlaan (R40) northbound',51.05627181,3.6960078200000006,51.065875,3.699119),
+	(28,11408,'Buitenring-Drongen (R4) southbound',51.08643799999998,3.672124,51.01315694121653,3.728930471796887),
+	(29,2668,'Blaisantvest (N430) eastbound',51.052481891215635,3.699791565570623,51.067521106257,3.7276444075241),
+	(30,18823,'Eisenhowerlaan (R4) northbound',51.01367324405533,3.7182109922981295,51.08736629632179,3.7569708390424417);
+
+/*!40000 ALTER TABLE `routes` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+# Dump of table trafficdata
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `trafficdata`;
+
+CREATE TABLE `trafficdata` (
+  `routeID` int(11) NOT NULL,
+  `providerID` int(11) NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `traveltime` int(11) DEFAULT '0',
+  PRIMARY KEY (`routeID`,`providerID`,`timestamp`),
+  KEY `fk_routes_trafficdata` (`routeID`),
+  KEY `fk_providers_traffixdata` (`providerID`),
+  CONSTRAINT `fk_providers_traffixdata` FOREIGN KEY (`providerID`) REFERENCES `providers` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_routes_trafficdata` FOREIGN KEY (`routeID`) REFERENCES `routes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+
+# Dump of table traveltimes
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `traveltimes`;
+
+CREATE TABLE `traveltimes` (
+  `routeID` int(11) NOT NULL,
+  `providerID` int(11) NOT NULL,
+  `traveltime` double DEFAULT NULL,
+  PRIMARY KEY (`routeID`,`providerID`),
+  KEY `fk_providers_traveltimes` (`providerID`),
+  KEY `fk_routes_traveltimes` (`routeID`),
+  CONSTRAINT `fk_providers_traveltimes` FOREIGN KEY (`providerID`) REFERENCES `providers` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_routes_traveltimes` FOREIGN KEY (`routeID`) REFERENCES `routes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+
+
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

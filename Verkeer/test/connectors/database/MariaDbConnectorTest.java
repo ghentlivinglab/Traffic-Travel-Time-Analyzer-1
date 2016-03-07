@@ -47,7 +47,7 @@ public class MariaDbConnectorTest {
      * Test of insert method, of class MariaDbConnector.
      */
     @Test
-    public void testInsert_DataEntry() {
+    public void testInsert_DataEntry() throws ConnectionException {
         System.out.println("insert");
         DataEntry entry = null;
         MariaDbConnector instance = new MariaDbConnector();
@@ -60,7 +60,7 @@ public class MariaDbConnectorTest {
      * Test of insert method, of class MariaDbConnector.
      */
     @Test
-    public void testInsert_ProviderEntry() {
+    public void testInsert_ProviderEntry() throws ConnectionException {
         System.out.println("insert");
         ProviderEntry entry = null;
         MariaDbConnector instance = new MariaDbConnector();
@@ -73,7 +73,7 @@ public class MariaDbConnectorTest {
      * Test of insert method, of class MariaDbConnector.
      */
     @Test
-    public void testInsert_RouteEntry() {
+    public void testInsert_RouteEntry() throws ConnectionException {
         System.out.println("insert");
         RouteEntry entry = null;
         MariaDbConnector instance = new MariaDbConnector();
@@ -86,7 +86,7 @@ public class MariaDbConnectorTest {
      * Test of findProviderEntryByName method, of class MariaDbConnector.
      */
     @Test
-    public void testFindProviderEntryByName() {
+    public void testFindProviderEntryByName() throws ConnectionException {
         System.out.println("findProviderEntryByName");
         String name = "";
         MariaDbConnector instance = new MariaDbConnector();
@@ -101,7 +101,7 @@ public class MariaDbConnectorTest {
      * Test of findProviderEntryByID method, of class MariaDbConnector.
      */
     @Test
-    public void testFindProviderEntryByID() {
+    public void testFindProviderEntryByID() throws ConnectionException {
         System.out.println("findProviderEntryByID");
         int id = 0;
         MariaDbConnector instance = new MariaDbConnector();
@@ -116,7 +116,7 @@ public class MariaDbConnectorTest {
      * Test of findRouteEntryByName method, of class MariaDbConnector.
      */
     @Test
-    public void testFindRouteEntryByName() {
+    public void testFindRouteEntryByName() throws ConnectionException {
         System.out.println("findRouteEntryByName");
         String name = "";
         MariaDbConnector instance = new MariaDbConnector();
@@ -131,7 +131,7 @@ public class MariaDbConnectorTest {
      * Test of findRouteEntryByID method, of class MariaDbConnector.
      */
     @Test
-    public void testFindRouteEntryByID() {
+    public void testFindRouteEntryByID() throws ConnectionException {
         System.out.println("findRouteEntryByID");
         int id = 0;
         MariaDbConnector instance = new MariaDbConnector();
@@ -146,7 +146,7 @@ public class MariaDbConnectorTest {
      * Test of findDataEntryByID method, of class MariaDbConnector.
      */
     @Test
-    public void testFindDataEntryByID_4args() {
+    public void testFindDataEntryByID_4args() throws ConnectionException {
         System.out.println("findDataEntryByID");
         int routeId = 0;
         int providerId = 0;
@@ -164,7 +164,7 @@ public class MariaDbConnectorTest {
      * Test of findDataEntryByID method, of class MariaDbConnector.
      */
     @Test
-    public void testFindDataEntryByID_3args() {
+    public void testFindDataEntryByID_3args() throws ConnectionException {
         System.out.println("findDataEntryByID");
         int routeId = 0;
         int providerId = 0;
@@ -181,7 +181,7 @@ public class MariaDbConnectorTest {
      * Test of findDataEntryBetween method, of class MariaDbConnector.
      */
     @Test
-    public void testFindDataEntryBetween() {
+    public void testFindDataEntryBetween() throws ConnectionException {
         System.out.println("findDataEntryBetween");
         int routeId = 0;
         int providerId = 0;
@@ -199,7 +199,7 @@ public class MariaDbConnectorTest {
      * Test of findAllRouteEntries method, of class MariaDbConnector.
      */
     @Test
-    public void testFindAllRouteEntries() {
+    public void testFindAllRouteEntries() throws ConnectionException {
         System.out.println("findAllRouteEntries");
         MariaDbConnector instance = new MariaDbConnector();
         Collection<RouteEntry> expResult = null;

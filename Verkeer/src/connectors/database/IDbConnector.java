@@ -10,12 +10,13 @@ import connectors.DataEntry;
 import connectors.RouteEntry;
 import java.sql.Timestamp;
 import java.util.Collection;
+import verkeer.MyLogger;
 
 /**
  *
  * @author Simon
  */
-public interface IDbConnector {
+public interface IDbConnector{
     public void insert(DataEntry entry);
     public void insert(RouteEntry entry);
     public void insert(ProviderEntry entry);
