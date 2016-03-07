@@ -208,6 +208,7 @@ public class MariaDbConnector implements IDbConnector, MyLogger{
             ResultSet rs = p.executeQuery();
             if(rs.next())
                 ret = new RouteEntry(rs.getString("name"), rs.getDouble("startlat"), rs.getDouble("startlong"), rs.getDouble("endlat"), rs.getDouble("endlong"), rs.getInt("length"), 0);
+            //TODO: Als er niks wordt teruggegeven, dan wordt er eentje aangemaakt. Analoog zoals bij provider.
             rs.close();
         } catch (SQLException ex) {
             doLog(Level.WARNING, "selecteren van een route entry met routenaam " + name + " is mislukt." );
