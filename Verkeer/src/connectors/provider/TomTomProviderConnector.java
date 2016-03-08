@@ -5,63 +5,74 @@
  */
 package connectors.provider;
 
-import java.util.List;
-import connectors.database.IDbConnector;
-import connectors.RouteEntry;
 import com.ning.http.client.*;
 import com.owlike.genson.Genson;
 import connectors.DataEntry;
+import connectors.RouteEntry;
+import connectors.database.IDbConnector;
 import static java.lang.Math.toIntExact;
+import static java.lang.Thread.sleep;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
+
 /**
  *
  * @author Robin
  */
-public class TomTomProviderConnector extends AProviderConnector{
+public class TomTomProviderConnector extends AProviderConnector {
 
     protected List<Future<DataEntry>> buzyRequests;
-    
+
     public TomTomProviderConnector(IDbConnector dbConnector) {
         super(dbConnector);
         this.providerEntry = dbConnector.findProviderEntryByName("TomTom");
+        updateInterval = Integer.parseInt(prop.getProperty("TOMTOM_UPDATE_INTERVAL"));
     }
 
     @Override
     public void triggerUpdate() {
-        buzyRequests = new ArrayList<>();
-        for (RouteEntry route : routes) {
-            String url = generateURL(route);
-            AsyncHttpClient asyncHttpClient;
-            asyncHttpClient = new AsyncHttpClient();
-            IDbConnector connector = this.dbConnector;
+        if (updateCounter % updateInterval == 0) {
+            buzyRequests = new ArrayList<>();
+            for (RouteEntry route : routes) {
+                String url = generateURL(route);
+                AsyncHttpClient asyncHttpClient;
+                asyncHttpClient = new AsyncHttpClient();
+                IDbConnector connector = this.dbConnector;
 
-            Future<DataEntry> f = asyncHttpClient.prepareGet(url).execute(
-                    new AsyncCompletionHandler<DataEntry>() {
+                Future<DataEntry> f = asyncHttpClient.prepareGet(url).execute(
+                        new AsyncCompletionHandler<DataEntry>() {
 
-                @Override
-                public DataEntry onCompleted(Response response) throws Exception {
-                    // 200 OK Statuscode
-                    if (response.getStatusCode() == 200) {
-                        DataEntry data = fetchDataFromJSON(response.getResponseBody(), route);
-                        connector.insert(data);
-                        return data;
-                    }
-                    
-                    String msg = fetchErrorFromJSON(response.getResponseBody());
-                    throw new RouteUnavailableException(msg);
+                            @Override
+                            public DataEntry onCompleted(Response response) throws Exception {
+                                // 200 OK Statuscode
+                                if (response.getStatusCode() == 200) {
+                                    DataEntry data = fetchDataFromJSON(response.getResponseBody(), route);
+                                    connector.insert(data);
+                                    return data;
+                                }
+
+                                String msg = fetchErrorFromJSON(response.getResponseBody());
+                                throw new RouteUnavailableException(msg);
+                            }
+
+                            @Override
+                            public void onThrowable(Throwable t) {
+                                // Something wrong happened.
+                            }
+                        });
+                buzyRequests.add(f);
+                try {
+                    sleep(250);
+                } catch (InterruptedException ex) {
+
                 }
-
-                @Override
-                public void onThrowable(Throwable t) {
-                    // Something wrong happened.
-                }
-            });
-            buzyRequests.add(f);
+            }
         }
+        updateCounter++;
     }
-    
+
     public String fetchErrorFromJSON(String json) {
         try {
             // Try to read a HERE error. (HERE specific error structure)
@@ -75,7 +86,7 @@ public class TomTomProviderConnector extends AProviderConnector{
             return "JSON ERROR data unreadable (expected other structure)";
         }
     }
-    
+
     public DataEntry fetchDataFromJSON(String json, RouteEntry traject) throws RouteUnavailableException {
         try {
             Genson genson = new Genson();
@@ -91,7 +102,7 @@ public class TomTomProviderConnector extends AProviderConnector{
             throw new RouteUnavailableException("JSON data unreadable (expected other structure)");
         }
     }
-    
+
     protected String generateURL(RouteEntry traject) {
         StringBuilder urlBuilder = new StringBuilder(prop.getProperty("TOMTOM_API_URL1"));
         urlBuilder.append(traject.getStartCoordinateLatitude());
@@ -105,5 +116,5 @@ public class TomTomProviderConnector extends AProviderConnector{
         urlBuilder.append(prop.getProperty("TOMTOM_API_KEY"));
         return urlBuilder.toString();
     }
-    
+
 }

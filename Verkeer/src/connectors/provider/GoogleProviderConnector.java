@@ -28,10 +28,6 @@ import java.util.logging.Level;
  */
 public class GoogleProviderConnector extends AProviderConnector {
     
-    //     private final static String API_KEY = ; // Piet-Key
-    //     private final static String API_KEY = ; // Robin-Key
-    //     private final static String API_KEY = ; // Simon-Key
-
     /**
      * List of all Future instances from last triggerUpdate (check
      * java.util.concurrent library). ± sort of threads Use f.get(); to wait the
@@ -39,8 +35,9 @@ public class GoogleProviderConnector extends AProviderConnector {
      * Used in the test classes to wait for the threads to finish and return its
      * DataEntry (or null if failed)
      */
+    
     protected List<Future<DataEntry>> buzyRequests;
-
+      
     /**
      * Constructs a new GoogleProviderConnector with an IDbConnector to write
      * data to storage
@@ -51,35 +48,39 @@ public class GoogleProviderConnector extends AProviderConnector {
         super(dbConnector);
         String providerName = "Google Maps";
         this.providerEntry = dbConnector.findProviderEntryByName(providerName); // gets the provider-information from the database
+        updateInterval = Integer.parseInt(prop.getProperty("GOOGLE_UPDATE_INTERVAL"));
     }
 
     @Override
     public void triggerUpdate() {
-        buzyRequests = new ArrayList<>();
-        for (RouteEntry route : routes) {
-            String url = generateURL(route);
-            AsyncHttpClient asyncHttpClient;
-            asyncHttpClient = new AsyncHttpClient(); // create http client
+        if(updateCounter%updateInterval == 0){
+            buzyRequests = new ArrayList<>();
+            for (RouteEntry route : routes) {
+                String url = generateURL(route);
+                AsyncHttpClient asyncHttpClient;
+                asyncHttpClient = new AsyncHttpClient(); // create http client
 
-            IDbConnector connector = this.dbConnector;
+                IDbConnector connector = this.dbConnector;
 
-            Future<DataEntry> f = asyncHttpClient.prepareGet(url).execute(new AsyncCompletionHandler<DataEntry>() {
-                @Override
-                public DataEntry onCompleted(Response response) throws Exception {
-                    if (response.getStatusCode() == 200) {// status == OK
-                        Map<String, Object> rawData = fetchDataFromJSON(response.getResponseBody());
-                        DataEntry data = processData(route, rawData);
-                        connector.insert(data);
-                        return data;
+                Future<DataEntry> f = asyncHttpClient.prepareGet(url).execute(new AsyncCompletionHandler<DataEntry>() {
+                    @Override
+                    public DataEntry onCompleted(Response response) throws Exception {
+                        if (response.getStatusCode() == 200) {// status == OK
+                            Map<String, Object> rawData = fetchDataFromJSON(response.getResponseBody());
+                            DataEntry data = processData(route, rawData);
+                            connector.insert(data);
+                            return data;
+                        }
+                        // Er ging iets fout
+                        // TODO: Statuscodes later uitbreiden met: 
+                        // https://developer.here.com/rest-apis/documentation/traffic/topics/http-status-codes.html
+                        throw new Exception();
                     }
-                    // Er ging iets fout
-                    // TODO: Statuscodes later uitbreiden met: 
-                    // https://developer.here.com/rest-apis/documentation/traffic/topics/http-status-codes.html
-                    throw new Exception();
-                }
-            });
-            buzyRequests.add(f);
+                });
+                buzyRequests.add(f);
+            }
         }
+        updateCounter++;
     }
 
     /**

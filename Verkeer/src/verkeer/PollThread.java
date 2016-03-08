@@ -68,7 +68,7 @@ public class PollThread extends Thread implements MyLogger{
     public void run(){
         while(true){
             try {
-                Thread.sleep(Long.parseLong(prop.getProperty("pollinterval")));    //10s
+                Thread.sleep(Long.parseLong(prop.getProperty("pollinterval")));
             } catch (InterruptedException ex) {
                 doLog(Level.SEVERE, ex.getMessage());
             }
