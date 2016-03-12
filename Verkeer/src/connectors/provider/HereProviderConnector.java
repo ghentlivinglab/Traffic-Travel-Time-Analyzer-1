@@ -35,11 +35,13 @@ public class HereProviderConnector extends AProviderConnector {
         super(dbConnector);
         buzyRequests = new ArrayList<>();
         String providerName = "Here";
-        this.providerEntry = dbConnector.findProviderEntryByName(providerName);        
+        this.providerEntry = dbConnector.findProviderEntryByName(providerName);    
+        updateInterval = Integer.parseInt(prop.getProperty("HERE_UPDATE_INTERVAL"));
     }
 
     @Override
     public void triggerUpdate() {
+        if(updateCounter%updateInterval == 0){
         buzyRequests = new ArrayList<>();
         for (RouteEntry route : routes) {
             String url = generateURL(route);
@@ -73,7 +75,8 @@ public class HereProviderConnector extends AProviderConnector {
             });
             buzyRequests.add(f);
         }
-
+        }
+        updateCounter++;
     }
 
     public DataEntry fetchDataFromJSON(String json, RouteEntry traject) throws RouteUnavailableException {

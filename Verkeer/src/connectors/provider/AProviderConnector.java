@@ -26,6 +26,8 @@ public abstract class AProviderConnector {
     protected IDbConnector dbConnector;
     protected Collection<RouteEntry> routes;
     protected ProviderEntry providerEntry;
+    protected int updateCounter=1;
+    protected int updateInterval=0;  
 
     /**
      * Constructs a new abstract ProviderConnector with an IDbConnector to write

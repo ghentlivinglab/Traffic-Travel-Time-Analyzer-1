@@ -16,6 +16,14 @@ In [connectors.database/database.properties](Verkeer/src/connectors/database/dat
 
 Belangrijk om te weten is dat de applicatie momenteel niet instaat voor het initialiseren van de database als de tabellen nog niet aangemaakt zijn. Daarom kan je [scripts/dbStructure.sql](scripts/dbStructure.sql) gebruiken om de database te initialiseren. Dit SQL script maakt de tabellen aan en voegt reeds 30 routes toe die gebruikt kunnen worden om te testen.
 
+Omdat we de console gebruiken is het essentieel dat het gebuilde programma wordt uitgevoerd wordt via de command line via java. Niet via de Netbeans 'play' knop.
+
+Bovendien moet manueel (omdat er momenteel iets misloopt in het programma - wat we niet op tijd kunnen oplossen) de map voor de logbestanden worden aangemaakt via
+```
+mdir /root/verkeer/logs
+```
+in de Terminal.
+
 ### Richtlijnen uitvoeren programma
 In onze productieomgeving bevindt zich een bestand verkeer. Hierin hebben wij het dist-bestand van ons project geïmporteerd. Wij hebben een alias gecreeërd die zorgt dat je gewoon 'verkeer' moet intypen in de tekstuele console
 die dan het executable jar bestand van ons project uitvoerd.
