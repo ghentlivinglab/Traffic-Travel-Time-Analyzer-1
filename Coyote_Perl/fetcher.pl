@@ -9,13 +9,13 @@ use JSON qw( decode_json );
 # global variables #
 ####################
 
-$PROVIDER_ID = "";
-$PROVIDER_NAME = "Coyote";
+$PROVIDER_ID = $ARGV[0];
+$PROVIDER_NAME = $ARGV[1];
 $MAIN_URL = "https://maps.coyotesystems.com/traffic/index.php";
 $DATA_URL = "https://maps.coyotesystems.com/traffic/ajax/get_perturbation_list.ajax.php";
-$HEADER_FILE = "header.txt";
-$DATA_FILE = "data.json";
-$OUTPUT_FILE = "output.data";
+$HEADER_FILE = "header.txt.temp";
+$DATA_FILE = "data.json.temp";
+$OUTPUT_FILE = $ARGV[2];
 $LOGIN = "110971610";
 $PASSWORD = "50c20b94";
 
@@ -45,9 +45,11 @@ sub login {
 	system "curl -s -d \"login=" . $LOGIN . "&password=" . $PASSWORD . "\" -D " . $HEADER_FILE . " -o /dev/null " . $MAIN_URL;
 	
 	# get all headers in memory
-	open(LOGINHEADER,"header.txt"); # open file
+	open(LOGINHEADER,$HEADER_FILE); # open file
 	my @lines = <LOGINHEADER>; # get all headers and store in array
 	close(LOGINHEADER); # close file
+	
+	unlink($HEADER_FILE);
 
 
 	#find the session and store in $cookie
@@ -78,6 +80,8 @@ sub processJSON {
 	local $/=undef;
 	my $json = <JSONDATA>;
 	close(JSONDATA);
+	
+	unlink($DATA_FILE);
 
 	# decode json-string to native Perl-structure
 	my %data = %{ decode_json( $json) };
@@ -141,7 +145,7 @@ sub print_routes {
 		print $file "ENTRY\n";
 		
 		for $key (sort keys %entry){ # for each object in route-entry
-			print $file "$key: $entry{$key}\n";
+			print $file "$key:$entry{$key}\n";
 		}
 		
 		print $file "END\n\n";
