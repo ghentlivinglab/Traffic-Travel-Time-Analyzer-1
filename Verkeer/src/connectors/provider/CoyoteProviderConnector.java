@@ -6,19 +6,15 @@
 package connectors.provider;
 
 import connectors.DataEntry;
-import connectors.ProviderEntry;
 import connectors.RouteEntry;
 import connectors.database.IDbConnector;
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.concurrent.TimeUnit;
 
 /**
  *

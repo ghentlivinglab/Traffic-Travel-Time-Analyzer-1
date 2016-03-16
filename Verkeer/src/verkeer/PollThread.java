@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Properties;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
