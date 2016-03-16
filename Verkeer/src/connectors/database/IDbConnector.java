@@ -10,7 +10,6 @@ import connectors.DataEntry;
 import connectors.RouteEntry;
 import java.sql.Timestamp;
 import java.util.Collection;
-import verkeer.MyLogger;
 
 /**
  *
