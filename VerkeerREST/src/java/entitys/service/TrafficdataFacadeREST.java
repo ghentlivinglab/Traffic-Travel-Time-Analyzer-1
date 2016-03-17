@@ -163,7 +163,7 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
                 + "timestamp - interval extract(second from timestamp) second - interval extract(minute from timestamp)%30 minute, "
                 + "avg(traveltime) "
                 + "from trafficdata "
-                + "where providerID = ? and routeID = ? and timestamp between ? and 0 "
+                + "where providerID = ? and routeID = ? and timestamp between ? and ? "
                 + "group by timestamp - interval extract(second from timestamp) second - interval extract(minute from timestamp)%30 minute")
         .setParameter(1, routeId)
         .setParameter(2, routeId)
