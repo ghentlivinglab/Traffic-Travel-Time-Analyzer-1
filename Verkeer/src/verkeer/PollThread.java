@@ -15,7 +15,9 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Level;
 
@@ -72,9 +74,21 @@ public class PollThread extends Thread implements MyLogger{
                 doLog(Level.SEVERE, ex.getMessage());
             }
             //System.out.println("\nTriggering update "+updateCounter);
-            for(AProviderConnector a : providers){
-                a.triggerUpdate();
+            
+            // Huidig uur inlezen
+            Date date = new Date();
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(date);  
+            int hours = cal.get(Calendar.HOUR_OF_DAY);
+            int minutes = cal.get(Calendar.MINUTE);
+
+            // Enkel na 6 uur of voor half 1
+            if (hours >= 6 || (hours == 0 && minutes <= 30)){
+                for(AProviderConnector a : providers){
+                    a.triggerUpdate();
+                }
             }
+            
             updateCounter++;
         }
     }
