@@ -6,8 +6,14 @@
 
 package entitys.service;
 
+import entitys.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
+import java.util.Properties;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 /**
  *
@@ -15,9 +21,34 @@ import javax.persistence.EntityManager;
  */
 public abstract class AbstractFacade<T> {
     private Class<T> entityClass;
+    protected Properties prop;
+    private String XE;
 
-    public AbstractFacade(Class<T> entityClass) {
-        this.entityClass = entityClass;
+    public AbstractFacade(Class<T> entityClass){
+        this.entityClass = entityClass;    
+        prop = new Properties();
+        try{
+            InputStream propsFile = getClass().getClassLoader().getResourceAsStream("entitys/service/entitydatabase.properties");
+            if(propsFile == null){
+                System.out.println("entitys/service/entitydatabase.properties kon niet geladen worden.");
+            }
+            else{
+                prop.load(propsFile);
+            }
+        }catch( FileNotFoundException e) {
+            System.out.println("entitys/service/entitydatabase.properties niet gevonden.");
+        }catch( IOException ee){
+            System.out.println("entitys/service/entitydatabase.properties kon niet geladen worden.");
+        }
+        if(entityClass.equals(Provider.class)){
+            XE = "PE";
+        }
+        else if(entityClass.equals(Route.class)){
+            XE = "RE";
+        }
+        else if(entityClass.equals(Trafficdata.class)){
+            XE = "DE"; 
+        }
     }
 
     protected abstract EntityManager getEntityManager();
@@ -38,10 +69,14 @@ public abstract class AbstractFacade<T> {
         return getEntityManager().find(entityClass, id);
     }
     
+    public T findByName(String naam) {
+        Query q = getEntityManager().createQuery(prop.getProperty("SELECT_" + XE + "_NAME"));
+        q.setParameter("name", naam);
+        return (T) q.getSingleResult();
+    }
+    
     public List<T> findAll() {
-        javax.persistence.criteria.CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
-        cq.select(cq.from(entityClass));
-        return getEntityManager().createQuery(cq).getResultList();
+        return getEntityManager().createQuery(prop.getProperty("SELECT_" + XE)).getResultList();
     }
 
     public int count() {

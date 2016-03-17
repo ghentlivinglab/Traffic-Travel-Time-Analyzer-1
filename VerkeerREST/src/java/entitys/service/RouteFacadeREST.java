@@ -88,9 +88,7 @@ public class RouteFacadeREST extends AbstractFacade<Route> {
     @Path("naam={routeNaam}")
     @Produces({"application/json"})
     public Route findByName(@PathParam("routeNaam") String routeNaam) {
-        Query q = getEntityManager().createNamedQuery("Route.findByName");
-        q.setParameter("name", routeNaam);
-        return (Route) q.getSingleResult();
+        return super.findByName(routeNaam);
     }
     
     @GET

@@ -24,11 +24,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "traveltimes")
 @XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "Traveltime.findAll", query = "SELECT t FROM Traveltime t"),
-    @NamedQuery(name = "Traveltime.findByRouteID", query = "SELECT t FROM Traveltime t WHERE t.traveltimePK.routeID = :routeID"),
-    @NamedQuery(name = "Traveltime.findByProviderID", query = "SELECT t FROM Traveltime t WHERE t.traveltimePK.providerID = :providerID"),
-    @NamedQuery(name = "Traveltime.findByTraveltime", query = "SELECT t FROM Traveltime t WHERE t.traveltime = :traveltime")})
 public class Traveltime implements Serializable {
     private static final long serialVersionUID = 1L;
     @EmbeddedId

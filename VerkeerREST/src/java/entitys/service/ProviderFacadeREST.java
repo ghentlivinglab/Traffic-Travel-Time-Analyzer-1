@@ -64,6 +64,7 @@ public class ProviderFacadeREST extends AbstractFacade<Provider> {
     @Path("{id}")
     @Produces({"application/json"})
     public Provider find(@PathParam("id") Integer id) {
+        System.out.println("yep, provider gevonden");
         return super.find(id);
     }
     
@@ -88,9 +89,7 @@ public class ProviderFacadeREST extends AbstractFacade<Provider> {
     @Path("naam={providerNaam}")
     @Produces({"application/json"})
     public Provider findByName(@PathParam("providerNaam") String providerNaam) {
-        Query q = getEntityManager().createNamedQuery("Provider.findByName");
-        q.setParameter("name", providerNaam);
-        return (Provider) q.getSingleResult();
+        return super.findByName(providerNaam);
     }
     
     
