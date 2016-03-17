@@ -38,9 +38,9 @@ public class ConsoleParser implements MyLogger{
                 printStatus();
             }else if(command.equals("properties")){
                 printProperties();
-            }else if(command.equals("start")){
+            }/*else if(command.equals("start")){
                 pollThread.start();
-            }
+            }*/
             else{
                 String words[] = command.split(" ");
                 if(words[0].equals("properties")){

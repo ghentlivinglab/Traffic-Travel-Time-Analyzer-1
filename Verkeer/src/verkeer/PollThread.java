@@ -68,13 +68,8 @@ public class PollThread extends Thread implements MyLogger{
     @Override
     public void run(){
         while(true){
-            try {
-                Thread.sleep(Long.parseLong(prop.getProperty("pollinterval")));
-            } catch (InterruptedException ex) {
-                doLog(Level.SEVERE, ex.getMessage());
-            }
             //System.out.println("\nTriggering update "+updateCounter);
-            
+
             // Huidig uur inlezen
             Date date = new Date();
             Calendar cal = Calendar.getInstance();
@@ -87,9 +82,15 @@ public class PollThread extends Thread implements MyLogger{
                 for(AProviderConnector a : providers){
                     a.triggerUpdate();
                 }
+                updateCounter++;
             }
             
-            updateCounter++;
+                        
+            try {
+                Thread.sleep(Long.parseLong(prop.getProperty("pollinterval")));
+            } catch (InterruptedException ex) {
+                doLog(Level.SEVERE, ex.getMessage());
+            }
         }
     }
      
