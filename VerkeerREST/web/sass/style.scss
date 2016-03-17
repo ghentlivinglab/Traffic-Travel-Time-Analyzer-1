@@ -1,0 +1,102 @@
+$settings-width: 250px;
+$medium-size: 15px;
+$dashboard-width: 800px;
+$gray: #4D4D4D;
+$background-gray: #F7F8FA;
+
+@mixin bg-gradient-t2b($start-colour, $end-colour) {
+    background-image: -webkit-gradient(linear, left top, left bottom, from($start-colour), to($end-colour));
+    background-image: -webkit-linear-gradient(top, $start-colour, $end-colour);
+    background-image:    -moz-linear-gradient(top, $start-colour, $end-colour);
+    background-image:     -ms-linear-gradient(top, $start-colour, $end-colour);
+    background-image:      -o-linear-gradient(top, $start-colour, $end-colour);
+    background-image:         linear-gradient(top, $start-colour, $end-colour);
+    $ie-color: ie-hex-str($start-colour);
+    $ie-color2: ie-hex-str($end-colour);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorStr="#{$ie-color}", EndColorStr="#{$ie-color2}");
+    zoom: 1;
+}
+@mixin bg-gradient-l2r($start-colour, $end-colour) {
+    background-image: -webkit-gradient(linear, left top, right top, from($start-colour), to($end-colour));
+    background-image: -webkit-linear-gradient(left, $start-colour, $end-colour);
+    background-image:    -moz-linear-gradient(left, $start-colour, $end-colour);
+    background-image:     -ms-linear-gradient(left, $start-colour, $end-colour);
+    background-image:      -o-linear-gradient(left, $start-colour, $end-colour);
+    background-image:         linear-gradient(left, $start-colour, $end-colour);
+    // Geen IE7-8 support atm
+}
+
+body, html {
+	padding: 0;
+	margin: 0;
+	font-family: Roboto;
+	font-size: $medium-size;
+	font-weight: normal;
+	color: $gray;
+}
+
+h1 {
+	padding: 0 0 10px 0;
+	margin: 0;
+	font-weight: 400;
+}
+
+.shadow {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 10px;
+	pointer-events: none;
+	@include bg-gradient-l2r(rgba(0,0,0,0.08), rgba(0,0,0,0));
+}
+
+#settings {
+	position: fixed;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	background: white;
+	width: $settings-width - 50;
+	padding: 30px 25px;
+	z-index: 1;
+
+	.shadow {
+		left: $settings-width;
+	}
+
+	// Radio buttons
+	label {
+		display: block;
+		padding: 2px 0;
+
+		input {
+			margin-right: 10px;
+		}
+	}
+}
+#dashboard {
+	position: fixed;
+	top: 0;
+	left: $settings-width;
+	bottom: 0;
+	width: $dashboard-width - 60;
+	background: $background-gray;
+
+	padding: 30px 20px 0 40px;
+	z-index: 0;
+
+	.shadow {
+		left: $dashboard-width;
+	}
+}
+
+#map-container {
+	background: gray;
+	left: $settings-width;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	z-index: -1;
+
+	position: fixed;
+}
