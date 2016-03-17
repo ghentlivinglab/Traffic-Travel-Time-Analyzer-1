@@ -2,13 +2,15 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 09/02/2016,8:30,12:30,School,Projectwerk,Uitlegsessie bachelorproef + doornemen documentatie,,
 11/02/2016,13:30,17:45,School,Projectwerk,Opstellen analysedocumenten+ taakverdeling begin,,
 16/02/2016,8:15,12:30,School,Communicatie,Infomoment met klant,,presentatie van onderwerp door klant + mogelijkheid tot vragen
-17/02/2016,11:00,13:00,Kot,Projectwerk,Ontwerp databank in orde brengen (tabellen aanmaken ..),,
-17/02/2016,13:00,16:00,Kot,Projectwerk,Programmeren van DAO,,
+17/02/2016,11:00,14:00,Kot,Projectwerk,Ontwerp databank in orde brengen (tabellen aanmaken ..),,
+17/02/2016,13:00,19:00,Kot,Projectwerk,Programmeren van DAO,,
 18/02/2016,13:30,15:00,School,Communicatie,Module 4: eindwerken schrijven,,Verplichte contacturen
-18/02/2016,15:15,17:45,School,Projectwerk,Afwerken van MariaDbConnector,,
+18/02/2016,15:15,17:45,School,Projectwerk,Afwerken van MariaDbConnector (1),,
+18/02/2016,19:00,23:00,Kot,Projectwerk,Afwerken van MariaDbConnector (2),,
 23/02/2016,8:15,12:30,School,Projectwerk,ontwerp polling mechanisme,,
 25/02/2016,13:30,15:00,School,Communicatie,Module 4: eindwerken schrijven,,Verplichte contacturen
-25/02/2016,15:15,17:45,School,Projectwerk,afwerken pollingmechanisme,,
+25/02/2016,15:15,17:45,School,Projectwerk,afwerken pollingmechanisme (1),,
+25/02/2016,19:00,21:00,Kot,Projectwerk,afwerken pollingmechanisme (2),,
 01/03/2016,13:00,15:30,Kot,Projectwerk,scripts om project naar VM te pushen,22,
 02/03/2016,18:00,19:00,Kot,Projectwerk,script om project naar productieomgeving te pushen,22,dit maakt het testen eenvoudiger
 03/03/2016,13:30,17:45,School,Communicatie,Module 4: presentatietechnieken,,Verplichte contacturen
@@ -17,3 +19,9 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 05/03/2016,12:00,16:00,Kot,Projectwerk,Toevoegen TomTomProvider en propertiesfile,7 & 27,
 06/03/2016,11:00,19:00,Thuis,Presentatie,Presentatie sprint 1 maken van de presentatie,,
 07/03/2016,14:30,21:00,Thuis,Presentatie,Presentatie sprint 1 inoefenen en laatste aanpassingen maken aan de code,,
+10/03/2016,12:00,18:00,Thuis,Projectwerk,ontwikkelen Rest API,,
+11/03/2016,13:30,21:00,Thuis,Projectwerk,ontwikkelen Rest API,,
+15/03/2016,08:15,10:15,School,Projectwerk,Werken aan de Rest API,,
+15/03/2016,10:30,12:30,School,Communicatie,Presentaties,,
+15/03/2016,13:00,14:00,Kot,Projectwerk,SQL querry's ontwerpen,,
+16/03/2016,14:00,19:00,Kot,Projectwerk,Netbeans+glassfish aan de praat krijgen,,
