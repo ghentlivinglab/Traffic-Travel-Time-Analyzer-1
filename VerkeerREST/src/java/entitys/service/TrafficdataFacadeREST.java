@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package entitys.service;
 
 import entitys.Trafficdata;
@@ -11,6 +10,7 @@ import entitys.TrafficdataPK;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -34,6 +34,7 @@ import javax.ws.rs.core.PathSegment;
 @Stateless
 @Path("trafficdata")
 public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
+
     @PersistenceContext(unitName = "VerkeerRESTPU")
     private EntityManager em;
 
@@ -96,12 +97,12 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
     }
 
     /**
-     * 
+     *
      * @param routeId
      * @param providerId
      * @param timestampString
      * @return
-     * @throws ParseException 
+     * @throws ParseException
      */
     @GET
     @Path("providerid={providerId}/routeid={routeId}/timestamp={timestampString}")
@@ -110,41 +111,80 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         Date parsedTimestamp = dateFormat.parse(timestampString);
         Timestamp timestamp = new java.sql.Timestamp(parsedTimestamp.getTime());
-        Query q = getEntityManager().createQuery("SELECT t from Trafficdata t WHERE t.trafficdataPK.providerID = :providerId AND t.trafficdataPK.routeID = :routeId AND t.trafficdataPK.timestamp = :timestamp");
+        Query q = getEntityManager().createQuery(prop.getProperty("SELECT_DE_ID"));
         q.setParameter("providerId", providerId);
         q.setParameter("routeId", routeId);
         q.setParameter("timestamp", timestamp);
 
-         return (Trafficdata) q.getSingleResult();
+        return (Trafficdata) q.getSingleResult();
     }
-    
+
     /**
-     * 
+     *
      * @param routeId
      * @param providerId
      * @param fromString
      * @param toString
      * @return
-     * @throws ParseException 
+     * @throws ParseException
      */
     @GET
     @Path("providerid={providerId}/routeid={routeId}/from={timestampFrom}/to={timestampTo}")
     @Produces({"application/json"})
     public List<Trafficdata> findDataBetween(@PathParam("routeId") Integer routeId, @PathParam("providerId") Integer providerId,
-                                                        @PathParam("timestampFrom") String fromString, @PathParam("timestampTo") String toString) throws ParseException {
+            @PathParam("timestampFrom") String fromString, @PathParam("timestampTo") String toString) throws ParseException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         Date parsedTimestampFrom = dateFormat.parse(fromString);
         Timestamp timestampFrom = new java.sql.Timestamp(parsedTimestampFrom.getTime());
         Date parsedTimestampTo = dateFormat.parse(toString);
         Timestamp timestampTo = new java.sql.Timestamp(parsedTimestampTo.getTime());
-        Query q = getEntityManager().createQuery("SELECT t from Trafficdata t WHERE t.trafficdataPK.providerID = :providerId AND t.trafficdataPK.routeID = :routeId AND t.trafficdataPK.timestamp BETWEEN :timestampFrom AND :timestampTo");
+        Query q = getEntityManager().createQuery(prop.getProperty("SELECT_DE_BETWEEN"));
         q.setParameter("providerId", providerId);
         q.setParameter("routeId", routeId);
         q.setParameter("timestampFrom", timestampFrom);
         q.setParameter("timestampTo", timestampTo);
 
-         return q.getResultList();
+        return q.getResultList();
     }
+
+    /* ------ Opvragen met Interval - nog te doen ------------ 
+    @GET
+    @Path("providerid={providerid}/routeid={routeid}/from={timestampFrom}/tox={timestampTo}")
+    @Produces({"application/json"})
+    public List<Trafficdata> findAvgDataBetween(@PathParam("routeId") Integer routeId, @PathParam("providerId") Integer providerId,
+            @PathParam("timestampFrom") String fromString, @PathParam("timestampTo") String toString) throws ParseException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        Date parsedTimestampFrom = dateFormat.parse(fromString);
+        Timestamp timestampFrom = new java.sql.Timestamp(parsedTimestampFrom.getTime());
+        Date parsedTimestampTo = dateFormat.parse(toString);
+        Timestamp timestampTo = new java.sql.Timestamp(parsedTimestampTo.getTime());
+        
+        List<Object[]> objects = getEntityManager().createNativeQuery("select "
+                + "timestamp - interval extract(second from timestamp) second - interval extract(minute from timestamp)%30 minute, "
+                + "avg(traveltime) "
+                + "from trafficdata "
+                + "where providerID = ? and routeID = ? and timestamp between ? and ?"
+                + "group by timestamp - interval extract(second from timestamp) second - interval extract(minute from timestamp)%30 minute")
+        
+        .setParameter(1, routeId)
+        .setParameter(2, routeId)
+        .setParameter(3, timestampFrom)
+        .setParameter(4, timestampTo)
+        .getResultList();
+        
+        System.out.println(objects.size());
+        List<Trafficdata> data = new ArrayList<>();
+        for (Object[] obj : objects) {
+            System.out.println("hallo2");
+            Date parsedTimestampAvg = dateFormat.parse((String) obj[0]);
+            Timestamp timestampAvg = new java.sql.Timestamp(parsedTimestampAvg.getTime());
+            Trafficdata de = new Trafficdata(routeId, providerId, timestampAvg);
+            de.setTraveltime((Integer) obj[1]);
+            data.add(de);
+        }
+        return data;
+    }
+    */
     
     @GET
     @Override
@@ -164,5 +204,5 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
     protected EntityManager getEntityManager() {
         return em;
     }
-    
+
 }

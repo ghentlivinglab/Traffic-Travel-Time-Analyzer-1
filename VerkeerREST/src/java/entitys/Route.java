@@ -30,15 +30,6 @@ import javax.xml.bind.annotation.XmlTransient;
 @Entity
 @Table(name = "routes")
 @XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "Route.findAll", query = "SELECT r FROM Route r"),
-    @NamedQuery(name = "Route.findById", query = "SELECT r FROM Route r WHERE r.id = :id"),
-    @NamedQuery(name = "Route.findByLength", query = "SELECT r FROM Route r WHERE r.length = :length"),
-    @NamedQuery(name = "Route.findByName", query = "SELECT r FROM Route r WHERE r.name = :name"),
-    @NamedQuery(name = "Route.findByStartlat", query = "SELECT r FROM Route r WHERE r.startlat = :startlat"),
-    @NamedQuery(name = "Route.findByStartlong", query = "SELECT r FROM Route r WHERE r.startlong = :startlong"),
-    @NamedQuery(name = "Route.findByEndlat", query = "SELECT r FROM Route r WHERE r.endlat = :endlat"),
-    @NamedQuery(name = "Route.findByEndlong", query = "SELECT r FROM Route r WHERE r.endlong = :endlong")})
 public class Route implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
