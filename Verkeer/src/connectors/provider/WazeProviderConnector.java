@@ -13,6 +13,7 @@ import com.ning.http.client.AsyncHttpClient.BoundRequestBuilder;
 import com.ning.http.client.cookie.Cookie;
 import com.owlike.genson.Genson;
 import connectors.DataEntry;
+import java.io.IOException;
 import static java.lang.Math.toIntExact;
 import java.util.ArrayList;
 import java.util.Map;
@@ -22,12 +23,15 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.logging.Level;
+import verkeer.MyLogger;
+import verkeer.Verkeer;
 
 /**
  *
  * @author Simon
  */
-public class WazeProviderConnector extends AProviderConnector {
+public class WazeProviderConnector extends AProviderConnector implements MyLogger {
 
     protected final static String USERNAME = "VerkeerGent"; // Simon-Key
     protected final static String PASSWORD = "Paswoord1"; // Simon-Key
@@ -92,7 +96,6 @@ public class WazeProviderConnector extends AProviderConnector {
      * @return RouteEntry connected to this wazeRouteId
      */
     private RouteEntry getRouteFromWazeRouteId(int wazeRouteId) {
-        // TODO: ID mapping implementeren op één of andere magische manier
         if (wazeRouteId < 4069 || wazeRouteId > 4098) {
             return null;
         }
@@ -144,9 +147,9 @@ public class WazeProviderConnector extends AProviderConnector {
         try {
             return f.get();
         } catch (InterruptedException ex) {
-            // TODO: loggen
+            this.doLog(Level.WARNING, "Thread getLogin interrupted");
         } catch (ExecutionException ex) {
-            // TODO: loggen
+            // Reeds gelogd normaal gezien
         }
         return false;
     }
@@ -211,6 +214,7 @@ public class WazeProviderConnector extends AProviderConnector {
                     public Boolean onCompleted(Response response) throws Exception {
                         if (response.getStatusCode() == 403 || response.getStatusCode() == 401) {
                             loggedIn = false;
+                            doLog(Level.INFO, "getBroadcasters: "+response.getStatusText());
                             throw new NotAuthorizedException();
                         }
                         return parseBidFromJSON(response.getResponseBody());
@@ -219,10 +223,10 @@ public class WazeProviderConnector extends AProviderConnector {
         try {
             return f.get();
         } catch (InterruptedException ex) {
-            // TODO: dit loggen
+            this.doLog(Level.WARNING, "Thread getBroadcasters intrerrupted");
             return false;
         } catch (ExecutionException ex) {
-            // TODO: dit loggen
+            // Dit is reeds gelogd
             return false;
         }
     }
@@ -256,6 +260,7 @@ public class WazeProviderConnector extends AProviderConnector {
                             return true;
                         } else if (response.getStatusCode() == 403 || response.getStatusCode() == 401) {
                             loggedIn = false;
+                            doLog(Level.INFO, "createLogin: "+response.getStatusText());
                             throw new NotAuthorizedException();
                         }
                         return false;
@@ -264,10 +269,9 @@ public class WazeProviderConnector extends AProviderConnector {
         try {
             return f.get();
         } catch (InterruptedException ex) {
-            // TODO: loggen
+            doLog(Level.WARNING, "Thread createLogin interrupted");
             return false;
         } catch (ExecutionException ex) {
-            // TODO: loggen
             return false;
         }
     }
@@ -292,6 +296,8 @@ public class WazeProviderConnector extends AProviderConnector {
                         if (response.getStatusCode() >= 200 && response.getStatusCode() < 300) {
                             return true;
                         }
+                        doLog(Level.INFO, "destroyLogin: "+response.getStatusText());
+                        
                         return false;
                     }
                 });
@@ -301,9 +307,8 @@ public class WazeProviderConnector extends AProviderConnector {
                 return true;
             }
         } catch (InterruptedException ex) {
-            // TODO: loggen
+            doLog(Level.INFO, "destroyLogin thread interrupted");
         } catch (ExecutionException ex) {
-            // TODO: loggen
         }
         return false;
     }
@@ -343,7 +348,6 @@ public class WazeProviderConnector extends AProviderConnector {
                     return false;
                 }
             } catch (NotAuthorizedException ex) {
-                // TODO: loggen
                 this.destroyLogin();
                 return false;
             }
@@ -366,8 +370,6 @@ public class WazeProviderConnector extends AProviderConnector {
                     return false;
                 }
             } catch (NotAuthorizedException ex) {
-                // TODO: loggen
-
                 // Try to retry the next time
                 this.destroyLogin();
                 return false;
@@ -451,7 +453,7 @@ public class WazeProviderConnector extends AProviderConnector {
             String full_name = (String) reply.get("full_name");
             return true;
         } catch (Exception ex2) {
-            // TODO: loggen
+            this.doLog(Level.WARNING, "Data from login JSON not readable");
         }
         return false;
     }
@@ -469,8 +471,18 @@ public class WazeProviderConnector extends AProviderConnector {
             this.bid = id;
             return true;
         } catch (Exception ex2) {
-            // TODO: loggen
+            this.doLog(Level.WARNING, "Couldn't read BID from JSON");
         }
         return false;
+    }
+    
+    @Override
+    public void doLog(Level lvl, String log) {
+        try{
+            Verkeer.getLogger(WazeProviderConnector.class.getName()).log(lvl, log);
+        }
+        catch(IOException ie){
+            System.err.println("logbestand niet gevonden.");
+        }
     }
 }

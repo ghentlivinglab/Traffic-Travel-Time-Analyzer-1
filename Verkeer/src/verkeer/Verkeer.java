@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,7 +17,7 @@ import java.util.logging.SimpleFormatter;
  */
 public class Verkeer {
     
-    private static final String LOG_PARENT_DIRECTORY = "/root/verkeer/logs";
+    private static final String LOG_PARENT_DIRECTORY = "logs";
     private static FileHandler fh = null;
     private static Logger logger = null;
     
@@ -56,9 +55,14 @@ public class Verkeer {
         Date date = new Date();
         String logbestand = LOG_PARENT_DIRECTORY+"/"+dateformat.format(date)+".log";
         File yourFile = new File(logbestand);
-        File parent = yourFile.getParentFile();
+        File parent = new File(LOG_PARENT_DIRECTORY);
         
         // Aanmaken als het nog niet bestaat
+         if(!parent.exists()){
+            System.err.println("Parentdirectory bestaat niet");
+         }
+                 
+                 
         if(!parent.exists() && !parent.mkdirs()){
             System.err.println("Parentdirectory van logbestand kon niet aangemaakt worden");
         }

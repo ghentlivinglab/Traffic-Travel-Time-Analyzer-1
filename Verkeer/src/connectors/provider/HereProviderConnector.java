@@ -11,16 +11,20 @@ import connectors.RouteEntry;
 import com.ning.http.client.*;
 import com.owlike.genson.Genson;
 import connectors.DataEntry;
+import java.io.IOException;
 import static java.lang.Math.toIntExact;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.Future;
+import java.util.logging.Level;
+import verkeer.MyLogger;
+import verkeer.Verkeer;
 
 /**
  *
  * @author Simon
  */
-public class HereProviderConnector extends AProviderConnector {
+public class HereProviderConnector extends AProviderConnector implements MyLogger {
 
     /**
      * List of all Future instances from last triggerUpdate (check
@@ -56,15 +60,19 @@ public class HereProviderConnector extends AProviderConnector {
                 public DataEntry onCompleted(Response response) throws Exception {
                     // 200 OK Statuscode
                     if (response.getStatusCode() == 200) {
-                        DataEntry data = fetchDataFromJSON(response.getResponseBody(), route);
-                        connector.insert(data);
-                        return data;
+                        try {
+                            DataEntry data = fetchDataFromJSON(response.getResponseBody(), route);
+                            connector.insert(data);
+                            return data;
+                        } catch(RouteUnavailableException e) {
+                           doLog(Level.WARNING, "Request response not readable: "+e.getMessage());
+                           throw e; 
+                        }
+                        
                     }
-                    // Er ging iets fout
-                    // TODO: Statuscodes later uitbreiden met: 
-                    // https://developer.here.com/rest-apis/documentation/traffic/topics/http-status-codes.html
 
                     String msg = fetchErrorFromJSON(response.getResponseBody());
+                    doLog(Level.WARNING, "Statuscode '"+ url +"' is "+response.getStatusCode()+" expected 200. "+msg);
                     throw new RouteUnavailableException(msg);
                 }
 
@@ -128,5 +136,15 @@ public class HereProviderConnector extends AProviderConnector {
         urlBuilder.append("&mode=shortest;car;traffic:enabled");
         urlBuilder.append("&departure=now");
         return urlBuilder.toString();
+    }
+
+    @Override
+    public void doLog(Level lvl, String log) {
+        try{
+            Verkeer.getLogger(HereProviderConnector.class.getName()).log(lvl, log);
+        }
+        catch(IOException ie){
+            System.err.println("logbestand niet gevonden.");
+        }
     }
 }
