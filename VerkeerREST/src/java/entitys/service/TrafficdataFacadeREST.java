@@ -7,6 +7,9 @@ package entitys.service;
 
 import entitys.Trafficdata;
 import entitys.TrafficdataPK;
+import java.awt.BorderLayout;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -17,6 +20,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TemporalType;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -147,43 +151,44 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
         return q.getResultList();
     }
 
-    /* ------ Opvragen met Interval - nog te doen ------------  */
+    /**
+     * 
+     * @param routeId
+     * @param providerId
+     * @param fromString
+     * @param toString
+     * @param interval
+     * @return
+     * @throws ParseException 
+     */
     @GET
-    @Path("providerid={providerid}/routeid={routeid}/from={timestampFrom}/tox={timestampTo}")
+    @Path("providerid={providerId}/routeid={routeId}/from={timestampFrom}/to={timestampTo}/interval={int_min}")
     @Produces({"application/json"})
     public List<Trafficdata> findAvgDataBetween(@PathParam("routeId") Integer routeId, @PathParam("providerId") Integer providerId,
-            @PathParam("timestampFrom") String fromString, @PathParam("timestampTo") String toString) throws ParseException {
+            @PathParam("timestampFrom") String fromString, @PathParam("timestampTo") String toString,@PathParam("int_min") Integer interval) throws ParseException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         Date parsedTimestampFrom = dateFormat.parse(fromString);
         Timestamp timestampFrom = new java.sql.Timestamp(parsedTimestampFrom.getTime());
         Date parsedTimestampTo = dateFormat.parse(toString);
         Timestamp timestampTo = new java.sql.Timestamp(parsedTimestampTo.getTime());
-        
-        List<Object[]> objects = getEntityManager().createNativeQuery("select "
-                + "timestamp - interval extract(second from timestamp) second - interval extract(minute from timestamp)%30 minute, "
-                + "avg(traveltime) "
-                + "from trafficdata "
-                + "where providerID = ? and routeID = ? and timestamp between ? and ? "
-                + "group by timestamp - interval extract(second from timestamp) second - interval extract(minute from timestamp)%30 minute")
-        .setParameter(1, routeId)
+                
+        List<Object[]> objects = (List<Object[]>) getEntityManager().createNativeQuery(prop.getProperty("SELECT_AVG_DE_BETWEEN"))
+        .setParameter(1, providerId)
         .setParameter(2, routeId)
-        .setParameter(3, timestampFrom)
-        .setParameter(4, timestampTo)
+        .setParameter(3, timestampFrom, TemporalType.TIMESTAMP)
+        .setParameter(4, timestampTo, TemporalType.TIMESTAMP)
+        .setParameter(5, interval)
         .getResultList();
         
-        System.out.println(objects.size());
         List<Trafficdata> data = new ArrayList<>();
         for (Object[] obj : objects) {
-            System.out.println("hallo2");
-            Date parsedTimestampAvg = dateFormat.parse((String) obj[0]);
-            Timestamp timestampAvg = new java.sql.Timestamp(parsedTimestampAvg.getTime());
-            Trafficdata de = new Trafficdata(routeId, providerId, timestampAvg);
-            de.setTraveltime((Integer) obj[1]);
-            data.add(de);
+            Trafficdata avgDE = new Trafficdata(routeId, providerId, (Timestamp) obj[0]);
+            Integer avgTraveltime = ((BigDecimal) obj[1]).intValue();
+            avgDE.setTraveltime(avgTraveltime);
+            data.add(avgDE);
         }
         return data;
     }
-    /* ------------------------------------------------------------ */
     
     @GET
     @Override
