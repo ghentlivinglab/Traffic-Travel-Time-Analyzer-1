@@ -8,13 +8,31 @@
 
     <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,700' rel='stylesheet' type='text/css'>    <link href="css/style.css" rel="stylesheet">
     <script type="text/javascript" src="javascript/jquery.min.js"></script>
-    <script type="text/javascript" src="javascript/script.js"></script>
 
     <!--<meta property="og:image" content="share.png" />-->
 </head>
 <body>
 	<section id="settings">
 		<div class="shadow"></div>
+		<h1>Dashboard</h1>
+		<label>
+			<input type="radio" name="dashboard" checked/>
+			Vandaag
+		</label>
+		<label>
+			<input type="radio" name="dashboard" />
+			Periode
+		</label>
+		<label>
+			<input type="radio" name="dashboard" />
+			Vergelijk periode
+		</label>
+		<label>
+			<input type="radio" name="dashboard" />
+			Vergelijk dagen
+		</label>
+
+		<hr>
 		<h1>Providers</h1>
 		<label>
 			<input type="radio" name="provider" checked/>
@@ -42,10 +60,64 @@
 		</label>
 	</section>
 	<section id="dashboard">
-		<h1>Dashboard</h1>
+		<h1>Abnormaal verkeer</h1>
+		<article class="graph">
+			<header>
+				<h1>Brusselsesteenweg (N9) westbound</h1>
+				<h2>R4 to Scheldekaai</h2>
+			</header>
+			<div class="left">
+				<p class="red status">Stilstaand</p>
+				<p class="speed">12 min.  60 km/h</p>
+				<p class="avg-speed">8 min.    90 km/h</p>
+			</div>
+			<div class="right">
+				<p class="warning">Zwaar ongeval</p>
+				<p class="warning">Blablabla</p>
+			</div>
+			<div class="arrow"></div>
+			<div class="graph-shadow"></div>
+			<div class="graph"></div>
+		</article>
+		<article>
+			<header>
+				<h1>Brusselsesteenweg (N9) westbound</h1>
+				<h2>R4 to Scheldekaai</h2>
+			</header>
+			<div class="left">
+				<p class="red status">Stilstaand</p>
+				<p class="speed">12 min.  60 km/h</p>
+				<p class="avg-speed">8 min.    90 km/h</p>
+			</div>
+			<div class="right">
+				<p class="warning">Zwaar ongeval</p>
+				<p class="warning">Blablabla</p>
+			</div>
+		</article>
+		<hr>
+		<h1>Zoals altijd</h1>
+		<article>
+			<header>
+				<h1>Brusselsesteenweg (N9) westbound</h1>
+				<h2>R4 to Scheldekaai</h2>
+			</header>
+			<div class="left">
+				<p class="red status">Stilstaand</p>
+				<p class="speed">12 min.  60 km/h</p>
+				<p class="avg-speed">8 min.    90 km/h</p>
+			</div>
+			<div class="right">
+				<p class="warning">Zwaar ongeval</p>
+				<p class="warning">Blablabla</p>
+			</div>
+		</article>
+
 		<div class="shadow"></div>
 	</section>
 	<section id="map-container">
 		<div id="map"></div>
 	</section>
+
+	<!-- Javascript pas laden na het tonen van de website -->
+	<script type="text/javascript" src="javascript/script.js"></script>
 </body>

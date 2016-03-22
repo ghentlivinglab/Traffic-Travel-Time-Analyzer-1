@@ -3,6 +3,8 @@ $medium-size: 15px;
 $dashboard-width: 800px;
 $gray: #4D4D4D;
 $background-gray: #F7F8FA;
+$light-gray: #EEE;
+$red: #FF6363;
 
 @mixin bg-gradient-t2b($start-colour, $end-colour) {
     background-image: -webkit-gradient(linear, left top, left bottom, from($start-colour), to($end-colour));
@@ -29,16 +31,33 @@ $background-gray: #F7F8FA;
 body, html {
 	padding: 0;
 	margin: 0;
-	font-family: Roboto;
+	font-family: Roboto, Helvetica, sans-serif;
 	font-size: $medium-size;
 	font-weight: normal;
 	color: $gray;
+
+  // Enable beautifull font rendering
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+hr {
+	display: block;
+	height: 1px;
+	border: 0;
+	margin: 20px 0;
+	background: $light-gray;
 }
 
 h1 {
 	padding: 0 0 10px 0;
 	margin: 0;
 	font-weight: 400;
+}
+h2 {
+	font-weight: 400;
+	margin: 0;
+	padding: 0;
 }
 
 .shadow {
@@ -100,3 +119,5 @@ h1 {
 
 	position: fixed;
 }
+
+@import 'dashboard';

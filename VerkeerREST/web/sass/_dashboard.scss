@@ -1,0 +1,89 @@
+article {
+	table-layout: fixed;
+	display: table;
+	width: 100%;
+	margin-bottom: 20px;
+	position: relative;
+
+	h1 {
+		font-size: 13pt;
+		font-weight: 500;
+		padding-bottom: 5px;
+	}
+	h2 {
+		font-size: 11pt;
+	}
+	p {
+		padding : 0;
+		margin: 0;
+	}
+	header {
+		display: table-cell;
+		padding-right: 40px;
+		width: 40%;
+	}
+	.right {
+		padding-left: 20px;
+	}
+	.left, .right{
+		display: table-cell;
+		width: 30%;
+		.status {
+			font-size: 15pt;
+			font-weight: 500;
+			padding-bottom: 5px;
+			&.red{
+				color: $red;
+			}
+		}
+		.speed {
+			font-size: 10pt;
+			font-weight: 500;
+		}
+		.avg-speed {
+			font-size: 10pt;
+		}
+		.warning {
+			padding: 5px 0 5px 35px;
+			font-size: 13pt;
+			color: $gray;
+			font-weight: 500;
+			background: url('../images/warning.png') no-repeat left center;
+		}
+	}
+	.graph-shadow {
+		position: absolute;
+		background: white;
+		z-index: 2;
+		left: -40px;
+		right: -20px;
+		bottom: 0;
+		height: 300px;
+		box-shadow: 0 0 5px rgba(0,0,0, 0.3);
+	}
+	.graph {
+		position: absolute;
+		background: white;
+		z-index: 3;
+		left: -40px;
+		right: -20px;
+		bottom: 0;
+		height: 300px;
+	}
+	.arrow {
+		position: absolute;
+		z-index: 3;
+		left: 20px;
+		bottom: 295px;
+		width: 10px;
+		height: 10px;
+		-ms-transform: rotate(45deg);
+		-webkit-transform: rotate(45deg);
+		transform: rotate(45deg);
+		background: white;
+		box-shadow: 0 0 5px rgba(0,0,0, 0.3);
+	}
+	&.graph {
+		padding-bottom: 320px;
+	}
+}
