@@ -1,7 +1,7 @@
 // Gebruikte globale variabelen
 // Worden in het begin gevraagd aan de API en ingevuld, eenmalig.
 var providers = {};
-var routes = {};
+var routes = [];
 var events = {};
 
 // Object prototypes die we gaan gebruiken
@@ -60,3 +60,30 @@ var Api = DummyApi;
 
 // Routes ophalen
 Api.syncRoutes();
+
+
+$.getJSON( "http://localhost:8080/VerkeerREST/api/route", function( json ) {
+	/*console.log(json.length + " routes gevonden.");
+	for(var i=0; i<json.length; i++){
+		Route = { id: json[i].id, name: json[i].name, length: json[i].length };
+		routes.push(Route);
+	}*/
+});
+
+$(".collapse").click(function(){
+	console.log("click");
+	$("#dashboard").hide('slide');
+
+})
+
+function initMap() {
+	var mapDiv = document.getElementById('map');
+	var map = new google.maps.Map(mapDiv, {
+		center: {lat: 51.0562261, lng: 3.7204603},
+		zoom: 12
+	});
+}
+
+for(var i=0; i<routes.length; i++){
+	console.log(routes[i].id);
+}
