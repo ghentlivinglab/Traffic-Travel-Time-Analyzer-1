@@ -69,6 +69,13 @@ article {
 		right: -20px;
 		bottom: 0;
 		height: 300px;
+
+	}
+	article{
+		&:hover{
+			cursor: hand;
+			cursor: pointer; 
+		}
 	}
 	.arrow {
 		position: absolute;
@@ -93,15 +100,18 @@ article {
 .collapse {
 		position: absolute;
 		background: $background-gray;
-		right: -20px;
-		width: 20px;
-		height: 50px;
-
+		right: -30px;
+		z-index: 10;
+		top: 50px;
+		width: 30px;
+		height: 70px;
+		border-radius: 0px 10px 10px 0px;
 		text-align: center;
+		text-size: 15px;
 		color: rgba(0,0,0, 0.5);
 		vertical-align: middle;
-		line-height: 50px;
-		overflow: visible;
+		line-height: 70px;
+		
 		&:hover{
 			background: white;
 			cursor: pointer; 

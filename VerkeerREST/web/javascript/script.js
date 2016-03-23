@@ -71,9 +71,12 @@ $.getJSON( "http://localhost:8080/VerkeerREST/api/route", function( json ) {
 });
 
 $(".collapse").click(function(){
-	console.log("click");
-	$("#dashboard").hide('slide');
+	$("#dashboard").toggleClass("expand_collapse");
+	
+})
 
+$("article").click(function(){
+	console.log("lijn klik");
 })
 
 function initMap() {
