@@ -119,7 +119,9 @@
 	</section>
 
 	<!-- Javascript pas laden na het tonen van de website -->
-    <script src="https://maps.googleapis.com/maps/api/js?callback=initMap&language=nl" async defer></script>
-    <script type="text/javascript" src="javascript/maps.js"></script>
 	<script type="text/javascript" src="javascript/script.js"></script>
+	
+	<!-- Javascript met defer-attribuut wordt pas uitgevoerd na afwerken van HTML parsing en in volgorde van vermelding -->
+    <script type="text/javascript" defer src="javascript/maps.js"></script>
+    <script type="text/javascript" defer src="https://maps.googleapis.com/maps/api/js?callback=initMap&language=nl"></script>
 </body>
