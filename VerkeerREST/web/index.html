@@ -78,7 +78,9 @@
 			</div>
 			<div class="arrow"></div>
 			<div class="graph-shadow"></div>
-			<div class="graph"></div>
+			<div class="graph">
+				<div id="graph"></div>
+			</div>
 		</article>
 		<article>
 			<header>
@@ -122,14 +124,15 @@
 
 	<section id="map-container">
 		<div id="map"></div>
-		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuXbnONKM9CrgAR9qrXxkXFss6ZkS7whM&callback=initMap"
-         async defer></script>
 	</section>
 
 	<!-- Javascript pas laden na het tonen van de website -->
 	<script type="text/javascript" src="javascript/script.js"></script>
+
+	<script type="text/javascript" defer src="https://www.gstatic.com/charts/loader.js"></script>
+	<script type="text/javascript" defer src="javascript/stats.js"></script>
 	
 	<!-- Javascript met defer-attribuut wordt pas uitgevoerd na afwerken van HTML parsing en in volgorde van vermelding -->
     <script type="text/javascript" defer src="javascript/maps.js"></script>
-    <script type="text/javascript" defer src="https://maps.googleapis.com/maps/api/js?callback=initMap&language=nl"></script>
+    <script type="text/javascript" defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuXbnONKM9CrgAR9qrXxkXFss6ZkS7whM&callback=initMap&language=nl"></script>
 </body>

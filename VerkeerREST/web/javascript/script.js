@@ -79,14 +79,6 @@ $("article").click(function(){
 	console.log("lijn klik");
 })
 
-function initMap() {
-	var mapDiv = document.getElementById('map');
-	var map = new google.maps.Map(mapDiv, {
-		center: {lat: 51.0562261, lng: 3.7204603},
-		zoom: 12
-	});
-}
-
 for(var i=0; i<routes.length; i++){
 	console.log(routes[i].id);
 }

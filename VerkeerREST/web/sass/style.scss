@@ -5,6 +5,9 @@ $gray: #4D4D4D;
 $background-gray: #F7F8FA;
 $light-gray: #EEE;
 $red: #FF6363;
+$graph-height: 300px;
+$blue: #63A7FF;
+$line-gray: #DBDBDB;
 
 @mixin bg-gradient-t2b($start-colour, $end-colour) {
     background-image: -webkit-gradient(linear, left top, left bottom, from($start-colour), to($end-colour));

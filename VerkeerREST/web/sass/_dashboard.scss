@@ -58,7 +58,7 @@ article {
 		left: -40px;
 		right: -20px;
 		bottom: 0;
-		height: 300px;
+		height: $graph-height;
 		box-shadow: 0 0 5px rgba(0,0,0, 0.3);
 	}
 	.graph {
@@ -68,8 +68,11 @@ article {
 		left: -40px;
 		right: -20px;
 		bottom: 0;
-		height: 300px;
+		height: $graph-height;
 
+		div {
+			height: $graph-height;
+		}
 	}
 	article{
 		&:hover{
@@ -81,7 +84,7 @@ article {
 		position: absolute;
 		z-index: 3;
 		left: 20px;
-		bottom: 295px;
+		bottom: $graph-height - 5;
 		width: 10px;
 		height: 10px;
 		-ms-transform: rotate(45deg);
@@ -91,7 +94,7 @@ article {
 		box-shadow: 0 0 5px rgba(0,0,0, 0.3);
 	}
 	&.graph {
-		padding-bottom: 320px;
+		padding-bottom: $graph-height + 20px;
 	}
 	
 	
