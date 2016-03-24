@@ -44,8 +44,3 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 18/03/2016,21:50,00:15,Thuis,API query vervangen door soort CTE met nieuwe tabellen,,31,
 19/03/2016,00:15,01:10,Thuis,Oplossen van REST API probleem,,31,Het was fout in mijn variabelen
 22/03/2016,08:15,12:30,School,Contacturen en presentatie geven,,31,in contacturen pushen van correcte REST API
-
-
-
-
-
