@@ -182,12 +182,12 @@ $("article").click(function(){
 	$(this).find("div.graph-shadow").slideToggle();
 	$(this).find("div.graph").slideToggle();
 	
-	if($(this).css("padding-bottom")==="20px"){
+	if($(this).css("padding-bottom")==="0px"){
 		$(this).animate({"padding-bottom":"320px"});
 		$(this).find("div.arrow").delay(400).fadeToggle();
 	} else{
 		$(this).find("div.arrow").toggle(0);
-		$(this).animate({'padding-bottom':"20px"});
+		$(this).animate({'padding-bottom':"0px"});
 	}
 });
 
