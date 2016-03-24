@@ -7,7 +7,7 @@ $light-gray: #EEE;
 $red: #FF6363;
 $graph-height: 300px;
 $blue: #63A7FF;
-$line-gray: #DBDBDB;
+$line-gray: #A8A8A8;
 
 @mixin bg-gradient-t2b($start-colour, $end-colour) {
     background-image: -webkit-gradient(linear, left top, left bottom, from($start-colour), to($end-colour));
@@ -98,6 +98,7 @@ h2 {
 }
 #dashboard {
 	position: fixed;
+	overflow: auto;
 	top: 0;
 	left: $settings-width;
 	bottom: 0;
