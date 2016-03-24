@@ -9,6 +9,7 @@
     <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,700' rel='stylesheet' type='text/css'>    <link href="css/style.css" rel="stylesheet">
     <link rel="shortcut icon" href="favicon.png"/>
     <script type="text/javascript" src="javascript/jquery.min.js"></script>
+    <script type="text/javascript" src="javascript/jquery.nicescroll.min.js"></script>
     <!--<meta property="og:image" content="share.png" />-->
 </head>
 <body>
@@ -61,7 +62,7 @@
 	</section>
 
 	<section id="dashboard">
-		<div class="collapse">+</div>
+		<div class="collapse"><img src="images/arrow-left.png" alt="<" /></div>
 		<div class="content">
 			<h1>Abnormaal verkeer</h1>
 			<article class="graph">
@@ -172,10 +173,11 @@
 	<!-- Javascript pas laden na het tonen van de website -->
 	<script type="text/javascript" src="javascript/script.js"></script>
 
+	
+	<!-- Javascript met defer-attribuut wordt pas uitgevoerd na afwerken van HTML parsing en in volgorde van vermelding -->
 	<script type="text/javascript" defer src="https://www.gstatic.com/charts/loader.js"></script>
 	<script type="text/javascript" defer src="javascript/stats.js"></script>
 	
-	<!-- Javascript met defer-attribuut wordt pas uitgevoerd na afwerken van HTML parsing en in volgorde van vermelding -->
     <script type="text/javascript" defer src="javascript/maps.js"></script>
     <script type="text/javascript" defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuXbnONKM9CrgAR9qrXxkXFss6ZkS7whM&callback=initMap&language=nl"></script>
 </body>

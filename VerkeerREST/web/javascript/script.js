@@ -27,7 +27,7 @@ var TrafficData = {
 // Houdt ook 1 TrafficData bij die representatief is voor de hele grafiek
 // In de vandaag weergave is dit de laatste bekende 
 // In de dag weergave (bv 12/08/2015) houden we het gemiddelde van de dag bij
-var TrafficGraph {
+var TrafficGraph = {
 	start: 6,
 	end: 24,
 	interval: 0.25, // kwartier
@@ -61,7 +61,7 @@ var TrafficGraph {
 
 		return obj;
 	}
-}
+};
 
 // Route bevat een id, naam en afstand. 
 // Daarnaast bevat het plaats voor de TrafficData die de gemiddelden bij houdt
@@ -165,7 +165,13 @@ $.getJSON( "http://localhost:8080/VerkeerREST/api/route", function( json ) {
 });
 
 $(".collapse").click(function(){
-	$("#dashboard").toggleClass("expand_collapse");
+	if($("#dashboard").css("left")==="250px"){
+		$("#dashboard").animate({left:-550});
+		$(this).children().attr("src","images/arrow-right.png","alt",">");
+	} else{
+		$("#dashboard").animate({left:250});
+		$(this).children().attr("src","images/arrow-left.png","alt","<");
+	}
 
 })
 
@@ -179,3 +185,7 @@ $("article").click(function(){
 for(var i=0; i<routes.length; i++){
 	console.log(routes[i].id);
 }
+
+$(document).ready( function(){
+	$("#dashboard .content").niceScroll({zindex:999,cursorcolor:"#CCCCCC"});
+});

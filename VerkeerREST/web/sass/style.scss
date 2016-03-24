@@ -118,11 +118,6 @@ h2 {
 	.shadow {
 		left: $dashboard-width;
 	}
-
-	&.expand_collapse {
-		left: -($dashboard-width)+$settings-width;
-	}
-	
 }
 
 #map-container {
