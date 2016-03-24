@@ -1,49 +1,16 @@
 package connectors.provider;
 
-import java.io.IOException;
-import java.util.logging.Level;
-import verkeer.MyLogger;
-import verkeer.Verkeer;
+import org.apache.log4j.Logger;
 
-public class NotAuthorizedException extends Exception implements MyLogger {
+public class NotAuthorizedException extends Exception {
 
+    private static final Logger log = Logger.getLogger(NotAuthorizedException.class);
+    
     public NotAuthorizedException() {
-        super();
-        notAuthorizedLog();
     }
 
     public NotAuthorizedException(String message) {
         super(message);
-        notAuthorizedLog();
+        log.error(message);
     }
-
-    public NotAuthorizedException(String message, Throwable cause) {
-        super(message, cause);
-        notAuthorizedLog();
-    }
-
-    public NotAuthorizedException(Throwable cause) {
-        super(cause);
-        notAuthorizedLog();
-    }
-
-    public NotAuthorizedException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-        notAuthorizedLog();
-    }
-
-    public void notAuthorizedLog(){
-        doLog(Level.WARNING, "Onbevoegde aanvraag.");
-    }
-    
-    @Override
-    public void doLog(Level lvl, String log) {
-        try{
-            Verkeer.getLogger(NotAuthorizedException.class.getName()).log(lvl, log);
-        }
-        catch(IOException ie){
-            System.err.println("logbestand niet gevonden.");
-        }
-    }
-    
 }

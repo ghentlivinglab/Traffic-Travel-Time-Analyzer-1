@@ -16,12 +16,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author jarno
  */
 public class GoogleProviderConnector extends AProviderConnector {
+    
+    private static final Logger log = Logger.getLogger(GoogleProviderConnector.class);
+    private int APIKeys;
+    private int alternator=0;
     
     /**
      * List of all Future instances from last triggerUpdate (check
@@ -32,7 +37,7 @@ public class GoogleProviderConnector extends AProviderConnector {
      */
     
     protected List<Future<DataEntry>> buzyRequests;
-      
+    
     /**
      * Constructs a new GoogleProviderConnector with an IDbConnector to write
      * data to storage
@@ -40,10 +45,10 @@ public class GoogleProviderConnector extends AProviderConnector {
      * @param dbConnector connector to write DataEntry to
      */
     public GoogleProviderConnector(IDbConnector dbConnector) {
-        super(dbConnector);
-        String providerName = "Google Maps";
+        super(dbConnector,"Google Maps");
         this.providerEntry = dbConnector.findProviderEntryByName(providerName); // gets the provider-information from the database
         updateInterval = Integer.parseInt(prop.getProperty("GOOGLE_UPDATE_INTERVAL"));
+        APIKeys = Integer.parseInt(prop.getProperty("GOOGLE_API_KEYS"));
     }
 
     @Override
@@ -61,7 +66,8 @@ public class GoogleProviderConnector extends AProviderConnector {
                     @Override
                     public DataEntry onCompleted(Response response) throws Exception {
                         if (response.getStatusCode() == 200) {// status == OK
-                            Map<String, Object> rawData = fetchDataFromJSON(response.getResponseBody());
+                            Map<String, Object> rawData;
+                            rawData = fetchDataFromJSON(response.getResponseBody());
                             DataEntry data = processData(route, rawData);
                             connector.insert(data);
                             return data;
@@ -69,7 +75,7 @@ public class GoogleProviderConnector extends AProviderConnector {
                         // Er ging iets fout
                         // TODO: Statuscodes later uitbreiden met: 
                         // https://developer.here.com/rest-apis/documentation/traffic/topics/http-status-codes.html
-                        throw new Exception();
+                        throw new RouteUnavailableException(providerName,"Something went wrong. Statuscode: "+ response.getStatusCode()+ " "+ response.getStatusText());
                     }
                 });
                 buzyRequests.add(f);
@@ -87,7 +93,7 @@ public class GoogleProviderConnector extends AProviderConnector {
     protected String generateURL(RouteEntry route) {
         StringBuilder urlBuilder = new StringBuilder(prop.getProperty("GOOGLE_API_URL"));
         urlBuilder.append("?key=");
-        urlBuilder.append(prop.getProperty("GOOGLE_API_KEY"));
+        urlBuilder.append(prop.getProperty(getAPIKey()));
         urlBuilder.append("&origin=");
         urlBuilder.append(route.getStartCoordinateLatitude());
         urlBuilder.append(",");
@@ -105,7 +111,7 @@ public class GoogleProviderConnector extends AProviderConnector {
      * Extracts the data from the JSON and generates a Map with all the info
      * from it.
      * <p>
- If dataset is invalid, this wil throw a RouteUnavailableException
+ If dataset is invalid, this will throw a RouteUnavailableException
      *
      * @param json String which contains the JSON-object
      * @throws RouteUnavailableException if data is not valid
@@ -115,7 +121,7 @@ public class GoogleProviderConnector extends AProviderConnector {
         Genson genson = new Genson();
         Map<String, Object> map = genson.deserialize(json, Map.class);
         if (!map.get("status").equals("OK")) { // google data is not correct
-            throw new RouteUnavailableException((String) map.get("status"));
+            throw new RouteUnavailableException(providerName,(String) map.get("status"));
         }
         return map;
     }
@@ -153,5 +159,17 @@ public class GoogleProviderConnector extends AProviderConnector {
             }
         }
         return data;
-    }    
+    }
+    
+    /**
+     * A temporary functions that switches between API keys
+     * @return String an API Key
+     */
+    private String getAPIKey(){
+        String ret = prop.getProperty("GOOGLE_API_KEY"+alternator);
+        alternator++;
+        alternator%=APIKeys;
+        return ret;
+    }
+    
 }

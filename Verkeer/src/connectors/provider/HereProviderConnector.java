@@ -11,20 +11,16 @@ import connectors.RouteEntry;
 import com.ning.http.client.*;
 import com.owlike.genson.Genson;
 import connectors.DataEntry;
-import java.io.IOException;
 import static java.lang.Math.toIntExact;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.Future;
-import java.util.logging.Level;
-import verkeer.MyLogger;
-import verkeer.Verkeer;
 
 /**
  *
  * @author Simon
  */
-public class HereProviderConnector extends AProviderConnector implements MyLogger {
+public class HereProviderConnector extends AProviderConnector {
 
     /**
      * List of all Future instances from last triggerUpdate (check
@@ -36,72 +32,62 @@ public class HereProviderConnector extends AProviderConnector implements MyLogge
     protected List<Future<DataEntry>> buzyRequests;
 
     public HereProviderConnector(IDbConnector dbConnector) {
-        super(dbConnector);
+        super(dbConnector, "Here");
         buzyRequests = new ArrayList<>();
-        String providerName = "Here";
-        this.providerEntry = dbConnector.findProviderEntryByName(providerName);    
+        this.providerEntry = dbConnector.findProviderEntryByName(providerName);
         updateInterval = Integer.parseInt(prop.getProperty("HERE_UPDATE_INTERVAL"));
     }
 
     @Override
     public void triggerUpdate() {
-        if(updateCounter%updateInterval == 0){
-        buzyRequests = new ArrayList<>();
-        for (RouteEntry route : routes) {
-            String url = generateURL(route);
-            AsyncHttpClient asyncHttpClient;
-            asyncHttpClient = new AsyncHttpClient();
-            IDbConnector connector = this.dbConnector;
+        if (updateCounter % updateInterval == 0) {
+            buzyRequests = new ArrayList<>();
+            for (RouteEntry route : routes) {
+                String url = generateURL(route);
+                AsyncHttpClient asyncHttpClient;
+                asyncHttpClient = new AsyncHttpClient();
+                IDbConnector connector = this.dbConnector;
 
-            Future<DataEntry> f = asyncHttpClient.prepareGet(url).execute(
-                    new AsyncCompletionHandler<DataEntry>() {
+                Future<DataEntry> f = asyncHttpClient.prepareGet(url).execute(
+                        new AsyncCompletionHandler<DataEntry>() {
 
-                @Override
-                public DataEntry onCompleted(Response response) throws Exception {
-                    // 200 OK Statuscode
-                    if (response.getStatusCode() == 200) {
-                        try {
+                    @Override
+                    public DataEntry onCompleted(Response response) throws Exception {
+                        // 200 OK Statuscode
+                        if (response.getStatusCode() == 200) {
                             DataEntry data = fetchDataFromJSON(response.getResponseBody(), route);
                             connector.insert(data);
                             return data;
-                        } catch(RouteUnavailableException e) {
-                           doLog(Level.WARNING, "Request response not readable: "+e.getMessage());
-                           throw e; 
                         }
-                        
+
+                        String msg = fetchErrorFromJSON(response.getResponseBody());
+                        throw new RouteUnavailableException(providerName,msg);
                     }
 
-                    String msg = fetchErrorFromJSON(response.getResponseBody());
-                    doLog(Level.WARNING, "Statuscode '"+ url +"' is "+response.getStatusCode()+" expected 200. "+msg);
-                    throw new RouteUnavailableException(msg);
-                }
-
-                @Override
-                public void onThrowable(Throwable t) {
-                    // Something wrong happened.
-                }
-            });
-            buzyRequests.add(f);
-        }
+                    @Override
+                    public void onThrowable(Throwable t) {
+                        // Something wrong happened.
+                    }
+                });
+                buzyRequests.add(f);
+            }
         }
         updateCounter++;
     }
 
     public DataEntry fetchDataFromJSON(String json, RouteEntry traject) throws RouteUnavailableException {
-        try {
-            Genson genson = new Genson();
-            Map<String, Object> map = genson.deserialize(json, Map.class);
 
-            Map<String, Object> response = (Map<String, Object>) map.get("response");
-            List<Object> route = (List<Object>) response.get("route");
-            Map<String, Object> route0 = (Map<String, Object>) route.get(0);
-            Map<String, Object> summary = (Map<String, Object>) route0.get("summary");
-            int travelTime = toIntExact((long) summary.get("trafficTime"));
+        Genson genson = new Genson();
+        Map<String, Object> map = genson.deserialize(json, Map.class);
 
-            return new DataEntry(travelTime, traject, this.providerEntry);
-        } catch (Exception ex) {
-            throw new RouteUnavailableException("JSON data unreadable (expected other structure)");
-        }
+        Map<String, Object> response = (Map<String, Object>) map.get("response");
+        List<Object> route = (List<Object>) response.get("route");
+        Map<String, Object> route0 = (Map<String, Object>) route.get(0);
+        Map<String, Object> summary = (Map<String, Object>) route0.get("summary");
+        int travelTime = toIntExact((long) summary.get("trafficTime"));
+
+        return new DataEntry(travelTime, traject, this.providerEntry);
+
     }
 
     public String fetchErrorFromJSON(String json) {
@@ -115,7 +101,7 @@ public class HereProviderConnector extends AProviderConnector implements MyLogge
             return type + " (" + subtype + "): " + details;
         } catch (Exception ex2) {
             // Not expected ERROR JSON data
-            return "JSON ERROR data unreadable (expected other structure)";
+            return "JSON ERROR data unreadable (expected other structure) " + json;
         }
     }
 
@@ -136,15 +122,5 @@ public class HereProviderConnector extends AProviderConnector implements MyLogge
         urlBuilder.append("&mode=shortest;car;traffic:enabled");
         urlBuilder.append("&departure=now");
         return urlBuilder.toString();
-    }
-
-    @Override
-    public void doLog(Level lvl, String log) {
-        try{
-            Verkeer.getLogger(HereProviderConnector.class.getName()).log(lvl, log);
-        }
-        catch(IOException ie){
-            System.err.println("logbestand niet gevonden.");
-        }
     }
 }

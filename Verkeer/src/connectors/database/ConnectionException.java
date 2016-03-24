@@ -5,29 +5,18 @@
  */
 package connectors.database;
 
-import java.io.IOException;
-import java.util.logging.Level;
-import verkeer.MyLogger;
-import verkeer.Verkeer;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author Robin
  */
-public class ConnectionException extends Exception implements MyLogger{
+public class ConnectionException extends Exception{
 
+    private static final Logger log = Logger.getLogger(ConnectionException.class);
+    
     public ConnectionException() {
         super("Couldn't connect to database.");
-        doLog(Level.WARNING, "Kon niet verbinden met de database.");
-    }
-
-    @Override
-    public void doLog(Level lvl, String log) {
-        try{
-            Verkeer.getLogger(ConnectionException.class.getName()).log(lvl, log);
-        }
-        catch(IOException ie){
-            System.err.println("logbestand niet gevonden.");
-        }
+        log.error(getMessage());
     }
 }

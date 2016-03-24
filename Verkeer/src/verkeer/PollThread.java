@@ -19,19 +19,20 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Properties;
-import java.util.logging.Level;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author HP
  */
-public class PollThread extends Thread implements MyLogger{
-    Properties prop;
-
-    Collection<AProviderConnector> providers;
-    IDbConnector dbcon;
+public class PollThread extends Thread {
+    private Properties prop;
+    private Collection<AProviderConnector> providers;
+    private IDbConnector dbcon;
+    private int updateCounter = 0;
     
-    int updateCounter = 0;
+    private static final Logger log = Logger.getLogger(PollThread.class);
+    
     public PollThread() {
         setDaemon(true);
         try {
@@ -39,29 +40,25 @@ public class PollThread extends Thread implements MyLogger{
             InputStream is = getClass().getClassLoader().getResourceAsStream("verkeer/app.properties");
             prop.load(is);
         } catch (IOException ex) {
-            doLog(Level.WARNING, "app.properties kon niet geladen worden.");
+            log.error("IOException: verkeer/app.properties could not be loaded.");
         }
         providers = new ArrayList<>();
         try{
             dbcon = new MariaDbConnector();
-            doLog(Level.INFO, "Number of providers to instantiate: "+prop.getProperty("providerCount"));
-            System.out.println("Number of providers to instantiate: "+prop.getProperty("providerCount"));
+            log.info("Number of providers to instantiate: "+prop.getProperty("providerCount"));
             for(int i=0; i<Integer.parseInt(prop.getProperty("providerCount")); i++){
-                doLog(Level.INFO, "  - "+prop.getProperty("provider"+i));
                 try {
                     Class clazz = Class.forName(prop.getProperty("provider"+i));
                     Constructor ctor = clazz.getConstructor(IDbConnector.class);
                     AProviderConnector a = (AProviderConnector) ctor.newInstance(dbcon);
                     providers.add(a);
                 } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                    doLog(Level.WARNING, ex.getMessage());
-                    System.err.println(ex.getMessage());
+                    log.error(ex.getMessage());
                 }
-                doLog(Level.INFO, "  - "+prop.getProperty("provider"+i) + "\t\t[LOADED] !");
-                System.out.println("  - "+prop.getProperty("provider"+i) + "\t\t[LOADED] !");
+                log.info(prop.getProperty("provider"+i) + "\t\t[LOADED] !");
             }
         }catch(ConnectionException e){
-            System.out.println("\n"+e.getMessage());
+            log.info(e.getMessage());
         }
     }
     
@@ -89,19 +86,12 @@ public class PollThread extends Thread implements MyLogger{
             try {
                 Thread.sleep(Long.parseLong(prop.getProperty("pollinterval")));
             } catch (InterruptedException ex) {
-                doLog(Level.SEVERE, ex.getMessage());
+                log.fatal("InterruptedException: pollthread is vastgelopen.");
             }
         }
     }
-     
-    @Override
-    public void doLog(Level lvl, String log) {
-        try{
-            Verkeer.getLogger(PollThread.class.getName()).log(lvl, log);
-        }
-        catch(IOException ie){
-            System.err.println("logbestand niet gevonden.");
-        }
-    }
 
+    public int getUpdateCounter() {
+        return updateCounter;
+    }
 }

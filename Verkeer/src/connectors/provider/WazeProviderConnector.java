@@ -23,23 +23,22 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.logging.Level;
-import verkeer.MyLogger;
-import verkeer.Verkeer;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author Simon
  */
-public class WazeProviderConnector extends AProviderConnector implements MyLogger {
+public class WazeProviderConnector extends AProviderConnector{
 
-    protected final static String USERNAME = "VerkeerGent"; // Simon-Key
-    protected final static String PASSWORD = "Paswoord1"; // Simon-Key
+    private static final Logger log = Logger.getLogger(WazeProviderConnector.class);
     protected Cookie csrf;
     protected Cookie web_session;
     private int bid = 0;
     protected boolean loggedIn = false;
 
+    
+    
     /**
      * List of all Future instances from last triggerUpdate (check
      * java.util.concurrent library). ± sort of threads Use f.get(); to wait the
@@ -49,9 +48,8 @@ public class WazeProviderConnector extends AProviderConnector implements MyLogge
     protected List<Future<Boolean>> buzyRequests;
 
     public WazeProviderConnector(IDbConnector dbConnector) {
-        super(dbConnector);
+        super(dbConnector,"Waze");
         buzyRequests = new ArrayList<>();
-        String providerName = "Waze";
         this.providerEntry = dbConnector.findProviderEntryByName(providerName);
         updateInterval = Integer.parseInt(prop.getProperty("WAZE_UPDATE_INTERVAL"));
     }
@@ -147,9 +145,9 @@ public class WazeProviderConnector extends AProviderConnector implements MyLogge
         try {
             return f.get();
         } catch (InterruptedException ex) {
-            this.doLog(Level.WARNING, "Thread getLogin interrupted");
+            log.error("Thread getLogin interrupted", ex);
         } catch (ExecutionException ex) {
-            // Reeds gelogd normaal gezien
+            log.error(ex, ex);
         }
         return false;
     }
@@ -172,25 +170,32 @@ public class WazeProviderConnector extends AProviderConnector implements MyLogge
         Future<List<DataEntry>> f = request.execute(
                 new AsyncCompletionHandler<List<DataEntry>>() {
                     @Override
-                    public List<DataEntry> onCompleted(Response response) throws Exception {
-                        if (response.getStatusCode() == 403 || response.getStatusCode() == 401) {
-                            loggedIn = false;
-                            throw new NotAuthorizedException("Authentication failed: " + response.getStatusText());
+                    public List<DataEntry> onCompleted(Response response){
+                        List<DataEntry> ret = new ArrayList<>();
+                        try{
+                            if (response.getStatusCode() == 403 || response.getStatusCode() == 401) {
+                                loggedIn = false;
+                                throw new NotAuthorizedException("Authentication failed: " + response.getStatusText());
+                            }
+                            if (response.getStatusCode() != 200) {
+                                throw new RouteUnavailableException(providerName,"Failed getting data from Waze: " + response.getStatusText());
+                            }
+                            ret = fetchDataFromJSON(response.getResponseBody());
+                        }catch(RouteUnavailableException|NotAuthorizedException|IOException ex){
+                            log.error(ex);
                         }
-                        if (response.getStatusCode() != 200) {
-                            throw new RouteUnavailableException("Failed getting data from Waze: " + response.getStatusText());
-                        }
-                        return fetchDataFromJSON(response.getResponseBody());
+                        return ret;
                     }
                 });
 
         try {
             return f.get();
         } catch (InterruptedException ex) {
-            throw new RouteUnavailableException("Interrupted request: " + ex.getMessage());
+            log.error("Interrupted request: " + ex.getMessage(), ex);
         } catch (ExecutionException ex) {
-            throw new RouteUnavailableException(ex.getCause().getCause().getMessage());
+            log.error("ExecutionException: " + ex.getMessage(), ex);
         }
+        return null;
     }
 
     /**
@@ -214,7 +219,7 @@ public class WazeProviderConnector extends AProviderConnector implements MyLogge
                     public Boolean onCompleted(Response response) throws Exception {
                         if (response.getStatusCode() == 403 || response.getStatusCode() == 401) {
                             loggedIn = false;
-                            doLog(Level.INFO, "getBroadcasters: "+response.getStatusText());
+                            log.info("getBroadcasters: "+response.getStatusText());
                             throw new NotAuthorizedException();
                         }
                         return parseBidFromJSON(response.getResponseBody());
@@ -223,10 +228,10 @@ public class WazeProviderConnector extends AProviderConnector implements MyLogge
         try {
             return f.get();
         } catch (InterruptedException ex) {
-            this.doLog(Level.WARNING, "Thread getBroadcasters intrerrupted");
+            log.error("Thread getBroadcasters intrerrupted");
             return false;
         } catch (ExecutionException ex) {
-            // Dit is reeds gelogd
+            log.error("ExecutionException");
             return false;
         }
     }
@@ -260,7 +265,7 @@ public class WazeProviderConnector extends AProviderConnector implements MyLogge
                             return true;
                         } else if (response.getStatusCode() == 403 || response.getStatusCode() == 401) {
                             loggedIn = false;
-                            doLog(Level.INFO, "createLogin: "+response.getStatusText());
+                            log.info("createLogin: "+response.getStatusText());
                             throw new NotAuthorizedException();
                         }
                         return false;
@@ -269,9 +274,10 @@ public class WazeProviderConnector extends AProviderConnector implements MyLogge
         try {
             return f.get();
         } catch (InterruptedException ex) {
-            doLog(Level.WARNING, "Thread createLogin interrupted");
+            log.error("Thread createLogin interrupted");
             return false;
         } catch (ExecutionException ex) {
+            log.error(ex, ex);
             return false;
         }
     }
@@ -296,8 +302,7 @@ public class WazeProviderConnector extends AProviderConnector implements MyLogge
                         if (response.getStatusCode() >= 200 && response.getStatusCode() < 300) {
                             return true;
                         }
-                        doLog(Level.INFO, "destroyLogin: "+response.getStatusText());
-                        
+                        log.info("destroyLogin: "+response.getStatusText());
                         return false;
                     }
                 });
@@ -307,8 +312,9 @@ public class WazeProviderConnector extends AProviderConnector implements MyLogge
                 return true;
             }
         } catch (InterruptedException ex) {
-            doLog(Level.INFO, "destroyLogin thread interrupted");
+            log.error("destroyLogin thread interrupted");
         } catch (ExecutionException ex) {
+            log.error(ex, ex);
         }
         return false;
     }
@@ -399,10 +405,11 @@ public class WazeProviderConnector extends AProviderConnector implements MyLogge
     }
 
     public List<DataEntry> fetchDataFromJSON(String json) throws RouteUnavailableException {
+        List<DataEntry> entries = new ArrayList<>();
         try {
             Genson genson = new Genson();
             Map<String, Object> map = genson.deserialize(json, Map.class);
-            List<DataEntry> entries = new ArrayList<>();
+            
             List<Object> routes = (List<Object>) map.get("routes");
 
             Map<Integer, RouteEntry> myRoutes = new TreeMap<>();
@@ -433,10 +440,10 @@ public class WazeProviderConnector extends AProviderConnector implements MyLogge
                     entries.add(entry);
                 }
             }
-            return entries;
         } catch (Exception ex) {
-            throw new RouteUnavailableException("JSON data unreadable (expected other structure)");
+            log.error("Data unreadable. Expected other structure."+json, ex);
         }
+        return entries;
     }
 
     public boolean parseGetLoginJSON(String json) {
@@ -453,7 +460,7 @@ public class WazeProviderConnector extends AProviderConnector implements MyLogge
             String full_name = (String) reply.get("full_name");
             return true;
         } catch (Exception ex2) {
-            this.doLog(Level.WARNING, "Data from login JSON not readable");
+            log.error("Data from login JSON not readable: "+json, ex2);
         }
         return false;
     }
@@ -471,18 +478,9 @@ public class WazeProviderConnector extends AProviderConnector implements MyLogge
             this.bid = id;
             return true;
         } catch (Exception ex2) {
-            this.doLog(Level.WARNING, "Couldn't read BID from JSON");
+            log.error("Couldn't read BID from JSON: "+json, ex2);
+            //this.doLog(Level.WARNING, "Couldn't read BID from JSON");
         }
         return false;
-    }
-    
-    @Override
-    public void doLog(Level lvl, String log) {
-        try{
-            Verkeer.getLogger(WazeProviderConnector.class.getName()).log(lvl, log);
-        }
-        catch(IOException ie){
-            System.err.println("logbestand niet gevonden.");
-        }
     }
 }
