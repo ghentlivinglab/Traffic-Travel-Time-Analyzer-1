@@ -12,7 +12,14 @@ var events = {};
 var TrafficData = {
 	speed: 0,
 	time: 0,
-	createdOn: 0 // Aangemaakt op (om geldigheid te kunnen controleren)
+	createdOn: null, // Type = Date
+	create: function(speed, time) {
+		var obj = Object.create(this);
+		obj.speed = speed;
+		obj.time = time;
+		obj.createdOn = new Date();
+		return obj;
+	}
 };
 
 
@@ -24,7 +31,7 @@ var TrafficGraph {
 	start: 6,
 	end: 24,
 	interval: 0.25, // kwartier
-	createdOn: 0, 
+	createdOn: null, 
 	representation: null, // instanceof TrafficData
 
 	// Houdt de data bij
@@ -39,6 +46,20 @@ var TrafficGraph {
 		...
 		24: instanceof TrafficData
 		*/
+	},
+	create: function(representation, data) {
+		var obj = Object.create(this);
+		obj.representation = representation;
+
+		// Als data niet gedefinieerd: niet doorgeven
+		if (data !== undefined){
+			// TODO: Hoe zijn we er zeker van dat de structuur die wordt doorgegeven klopt?
+			obj.data = data;
+		}
+
+		obj.createdOn = new Date();
+
+		return obj;
 	}
 }
 
@@ -50,7 +71,7 @@ var Route = {
 	id: 0,
 	length: 0,
 	name: '',
-	waypoints: [],
+	waypoints: [], // Array van google.maps.LatLng
 
 	// avgData is een mapping van de providerId op een TrafficGraph object
 	// We kunnen dus altijd een bepaalde gemiddelde snelheid en tijd lezen voor een bepaalde provider (of alles)
@@ -77,20 +98,47 @@ var Route = {
 	// Kan zijn voor maandag, dinsdag, woensdag, ... zondag (0-6) Maandag = 0, zondag = 6
 	// bv. data[maandag][providerId] -> TrafficGraph
 	eventData: {
+	},
+
+	create: function(id, length, name, waypoints) {
+		var obj = Object.create(this);
+		obj.id = id;
+		obj.length = length;
+		obj.name = name;
+
+		// Waypoints moet een array zijn
+		if (waypoints !== undefined && waypoints instanceof Array){
+			obj.waypoints = waypoints;
+		}
+		return obj;
 	}
 };
 
 // De provider die alle data van alle providers bundelt heeft id = -1
 var Provider = {
 	id: 0,
-	name: ''
+	name: '',
+	create: function(id, name) {
+		var obj = Object.create(this);
+		obj.id = id;
+		return obj;
+	}
 };
 
 var Event = {
 	id: 0,
 	name: '',
-	start: 0,
-	end: 0
+	start: null, // Object van Date. Zie http://www.w3schools.com/jsref/jsref_obj_date.asp
+	end: null, // Object Date
+	create: function(id, name, start, end){
+		// Prototype kopieëren
+		var obj = Object.create(this);
+		obj.id = id;
+		obj.name = name;
+		obj.start = start;
+		obj.end = end;
+		return obj;
+	}
 };
 
 // Dummy object dat de communicatie met de API nabootst
