@@ -74,11 +74,10 @@ article {
 			height: $graph-height;
 		}
 	}
-	article{
-		&:hover{
-			cursor: hand;
-			cursor: pointer; 
-		}
+	&:hover {
+		cursor: pointer; 
+		cursor: hand;
+
 	}
 	.arrow {
 		position: absolute;
@@ -97,6 +96,13 @@ article {
 		padding-bottom: $graph-height + 20px;
 	}
 	
+	.hidden {
+		height: 0px;
+		position: absolute;
+		left: 0px;
+    	top: 0px;
+
+	}
 	
 }
 
@@ -105,7 +111,7 @@ article {
 		background: $background-gray;
 		right: -30px;
 		z-index: 10;
-		top: 50px;
+		top: 80px;
 		width: 30px;
 		height: 70px;
 		border-radius: 0px 10px 10px 0px;

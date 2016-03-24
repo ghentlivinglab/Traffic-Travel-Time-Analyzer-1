@@ -72,11 +72,14 @@ $.getJSON( "http://localhost:8080/VerkeerREST/api/route", function( json ) {
 
 $(".collapse").click(function(){
 	$("#dashboard").toggleClass("expand_collapse");
-	
+
 })
 
 $("article").click(function(){
-	console.log("lijn klik");
+	$(this).find("div.arrow").toggleClass("hidden");
+	$(this).find("div.graph-shadow").toggleClass("hidden");
+	$(this).find("div.graph").toggleClass("hidden");
+	$(this).css("height","68px");
 })
 
 for(var i=0; i<routes.length; i++){
