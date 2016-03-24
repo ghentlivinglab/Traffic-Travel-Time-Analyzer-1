@@ -28,17 +28,18 @@ public abstract class AProviderConnector {
     protected ProviderEntry providerEntry;
     protected int updateCounter=1;
     protected int updateInterval=0;  
-
+    protected String providerName;
     /**
      * Constructs a new abstract ProviderConnector with an IDbConnector to write
      * data to storage
      *
      * @param dbConnector connector to write DataEntry to
+     * @param providerName name of the provider
      */
-    public AProviderConnector(IDbConnector dbConnector) {
+    public AProviderConnector(IDbConnector dbConnector, String providerName) {
         this.dbConnector = dbConnector;
         this.routes = dbConnector.findAllRouteEntries();
-        
+        this.providerName = providerName;
         try{
             prop = new Properties();
             InputStream propsFile = getClass().getClassLoader().getResourceAsStream("connectors/provider/providers.properties");

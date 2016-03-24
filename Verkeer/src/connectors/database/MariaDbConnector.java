@@ -20,20 +20,19 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Properties;
-import java.util.logging.Level;
-import verkeer.MyLogger;
-import verkeer.Verkeer;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author Robin
  
  */
-public class MariaDbConnector implements IDbConnector, MyLogger{
-    Connection connection;
+public class MariaDbConnector implements IDbConnector{
+    private Connection connection;
+    private static final Logger log = Logger.getLogger(MariaDbConnector.class);
     
-    public Properties prop;
-    public String conn_str;
+    private Properties prop;
+    private String conn_str;
     
     /** 
      * Creates a new instance of MariaDbConnector.
@@ -45,14 +44,14 @@ public class MariaDbConnector implements IDbConnector, MyLogger{
             prop = new Properties();
             InputStream propsFile = getClass().getClassLoader().getResourceAsStream("connectors/database/database.properties");
             if(propsFile == null){
-                doLog(Level.WARNING, "connectors/database/database.properties kon niet geladen worden.");
+                log.error("connectors/database/database.properties kon niet geladen worden.");
             }else{
                 prop.load(propsFile);
             }
         }catch( FileNotFoundException e) {
-            doLog(Level.WARNING, "connectors/database/database.properties niet gevonden.");
+            log.error("connectors/database/database.properties niet gevonden.");
         }catch( IOException ee){
-            doLog(Level.WARNING, "connectors/database/database.properties kon niet geladen worden.");
+            log.error("connectors/database/database.properties niet gevonden.");
         }
         initConnectionURL();
         initConnection();
@@ -78,16 +77,16 @@ public class MariaDbConnector implements IDbConnector, MyLogger{
         try{
             Class.forName("com.mysql.jdbc.Driver");
             if(connection == null){
-                doLog(Level.INFO, "Connecting to: " + conn_str);
+                log.info("Connecting to: " + conn_str);
                 connection = DriverManager.getConnection(conn_str,prop.getProperty("USER"),prop.getProperty("PASSWORD"));
             }
         }catch (ClassNotFoundException e){
-            doLog(Level.WARNING, "SQL Driver could not be loaded. Check all libraries are provided.");
+            log.error("SQL Driver could not be loaded. Check all libraries are provided.");
         }catch (SQLException e){
-            doLog(Level.WARNING, "getConnection() FOUT! SQLException");
+            log.error("getConnection() FOUT! SQLException", e);
             throw new ConnectionException();
         }
-        doLog(Level.INFO, "Done connecting to " + conn_str + ".");
+        log.info("Succesfully connected to: "+ conn_str);
     }
        
     /**
@@ -104,8 +103,7 @@ public class MariaDbConnector implements IDbConnector, MyLogger{
             p.setInt(4, entry.getTravelTime());
             p.executeUpdate();
         } catch (SQLException ex) {
-            doLog(Level.WARNING, "het toevoegen van een data entry is mislukt." );
-            System.err.println(ex.getMessage());
+            log.error("Couldn't insert DataEntry object in database", ex);
         }
     }
     /**
@@ -119,8 +117,7 @@ public class MariaDbConnector implements IDbConnector, MyLogger{
             p.setString ( 1, entry.getName());
             p.executeUpdate();
         } catch (SQLException ex) {
-            doLog(Level.WARNING, "het toevoegen van een provider entry met naam " + entry.getName() + " is mislukt." );
-            System.err.println(ex.getMessage());
+            log.error("Couldn't insert ProviderEntry " + entry.getName(), ex);
         }
     }
     /**
@@ -139,8 +136,7 @@ public class MariaDbConnector implements IDbConnector, MyLogger{
             p.setDouble (6, entry.getEndCoordinateLongitude());
             p.executeUpdate();
         } catch (SQLException ex) {
-            doLog(Level.WARNING, "het toevoegen van een route entry met naam " + entry.getName() + " is mislukt." );
-            System.err.println(ex.getMessage());
+            log.error("Couldn't insert RouteEntry " + entry.getName(), ex);
         }
     }
     
@@ -162,8 +158,7 @@ public class MariaDbConnector implements IDbConnector, MyLogger{
                 ret = new ProviderEntry(rs.getInt("id"), rs.getString("name"));
             rs.close();
         } catch (SQLException ex) {
-            doLog(Level.WARNING, "selecteren van een provider entry met providernaam " + name + " is mislukt." );
-            System.err.println(ex.getMessage());
+            log.error(ex, ex);
         }
         if (ret == null){
             ret = new ProviderEntry();
@@ -189,8 +184,7 @@ public class MariaDbConnector implements IDbConnector, MyLogger{
                 ret = new ProviderEntry(rs.getInt("id"), rs.getString("name"));
             rs.close();
         } catch (SQLException ex) {
-            doLog(Level.WARNING, "selecteren van een provider entry met id " + id + " is mislukt." );
-            System.err.println(ex.getMessage());
+            log.error(ex, ex);
         }
         return ret;
     }
@@ -211,8 +205,7 @@ public class MariaDbConnector implements IDbConnector, MyLogger{
             //TODO: Als er niks wordt teruggegeven, dan wordt er eentje aangemaakt. Analoog zoals bij provider.
             rs.close();
         } catch (SQLException ex) {
-            doLog(Level.WARNING, "selecteren van een route entry met routenaam " + name + " is mislukt." );
-            System.err.println(ex.getMessage());;
+            log.error(ex, ex);
         }
         return ret;
     }
@@ -234,8 +227,7 @@ public class MariaDbConnector implements IDbConnector, MyLogger{
             }
             rs.close();
         } catch (SQLException ex) {
-            doLog(Level.WARNING, "selecteren van een route met id " + id + " is mislukt." );
-            System.err.println(ex.getMessage());
+            log.error(ex, ex);
         }
         return ret;
     }
@@ -268,8 +260,7 @@ public class MariaDbConnector implements IDbConnector, MyLogger{
             }
             rs.close();
         } catch (SQLException ex) {
-            doLog(Level.WARNING, "selecteren van een data entry met routeId " + routeId + " en providerId " + providerId + " is mislukt." );
-            System.err.println(ex.getMessage());
+            log.error(ex, ex);
         }
         return ret;
     }
@@ -312,8 +303,7 @@ public class MariaDbConnector implements IDbConnector, MyLogger{
             }
             rs.close();
         } catch (SQLException ex) {
-            doLog(Level.WARNING, "selecteren van alle data entries met routeId " + routeId + " en providerId " + providerId + " van " + from.toString() + " tot " + to.toString() + " mislukt.");
-            System.err.println(ex.getMessage());
+            log.error(ex, ex);
         }
         return ret;
     }
@@ -339,20 +329,9 @@ public class MariaDbConnector implements IDbConnector, MyLogger{
             }
             rs.close();
         } catch (SQLException ex) {
-            doLog(Level.WARNING, "selecteren van alle route entries is mislukt.");
-            System.err.println(ex.getMessage());
+            log.error(ex, ex);
         }
         return ret;
     }
 
-    @Override
-    public void doLog(Level lvl, String log){
-        try{
-            Verkeer.getLogger(MariaDbConnector.class.getName()).log(lvl, log);
-        }
-        catch(IOException ie){
-            System.err.println("logbestand niet gevonden.");
-        }
-    }
-    
 }

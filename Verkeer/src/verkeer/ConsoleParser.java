@@ -11,22 +11,25 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.Set;
-import java.util.logging.Level;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author Robin
  */
-public class ConsoleParser implements MyLogger{
+public class ConsoleParser {
     private final Console console;
     private final PollThread pollThread;
+    private static final Logger log = Logger.getLogger(ConsoleParser.class);
+    
     public ConsoleParser(PollThread pollThread){
         console = System.console();
         this.pollThread=pollThread;
     }
+    
     public void processCommandLineInput(){
         if(console == null){
-            doLog(Level.WARNING, "No console.");
+            log.error("No console found. Don't try to start this in an IDE ;)");
             System.exit(1);
         }
         boolean keepRunning = true;
@@ -57,12 +60,12 @@ public class ConsoleParser implements MyLogger{
 
     private void printStatus() {
         System.out.println("  Status of the polling thread: "+ pollThread.getState().name());
-        System.out.println("  Number of updates since launch: "+ pollThread.updateCounter);
+        System.out.println("  Number of updates since launch: "+ pollThread.getUpdateCounter());
     }
 
     private void properties(String[] command) {
         //index 0 is al zeker properties.
-        doLog(Level.INFO, command[0] + " " + command[1] + " " + command[2] + " " + command[3] + " " + command[4] + " uitgevoerd.");
+        //doLog(Level.INFO, command[0] + " " + command[1] + " " + command[2] + " " + command[3] + " " + command[4] + " uitgevoerd.");
         if(command[1].equals("db")){
             if(command.length>=3&&command[2].equals("get")){
                 showPropertiesDatabase(command);
@@ -109,7 +112,7 @@ public class ConsoleParser implements MyLogger{
                 }    
             }
         } catch (IOException ex) {
-            doLog(Level.SEVERE, "propertiesbestand van database niet gevonden.");
+            //doLog(Level.SEVERE, "propertiesbestand van database niet gevonden.");
             System.err.println(ex.getMessage());
         }
     }
@@ -148,7 +151,7 @@ public class ConsoleParser implements MyLogger{
                 }
             }
         } catch (IOException ex) {
-            doLog(Level.SEVERE, "propertiesbestand van app niet gevonden.");
+            //doLog(Level.SEVERE, "propertiesbestand van app niet gevonden.");
             System.err.println(ex.getMessage());
         }
         
@@ -176,15 +179,5 @@ public class ConsoleParser implements MyLogger{
         /*} catch (IOException ex) {
             Logger.getLogger(ConsoleParser.class.getName()).log(Level.SEVERE, null, ex);
         }*/
-    }
-
-    @Override
-    public void doLog(Level lvl, String log) {
-        try{
-            Verkeer.getLogger(ConsoleParser.class.getName()).log(lvl, log);
-        }
-        catch(IOException ie){
-            System.err.println("logbestand niet gevonden.");
-        }
     }
 }

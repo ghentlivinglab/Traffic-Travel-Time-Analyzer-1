@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -24,10 +25,13 @@ import java.util.concurrent.Future;
 public class TomTomProviderConnector extends AProviderConnector {
 
     protected List<Future<DataEntry>> buzyRequests;
+    private static final Logger log = Logger.getLogger(TomTomProviderConnector.class);
+    private int APIKeys;
+    private int alternator=0;
 
     public TomTomProviderConnector(IDbConnector dbConnector) {
-        super(dbConnector);
-        this.providerEntry = dbConnector.findProviderEntryByName("TomTom");
+        super(dbConnector,"TomTom");
+        this.providerEntry = dbConnector.findProviderEntryByName(providerName);
         updateInterval = Integer.parseInt(prop.getProperty("TOMTOM_UPDATE_INTERVAL"));
     }
 
@@ -44,29 +48,29 @@ public class TomTomProviderConnector extends AProviderConnector {
                 Future<DataEntry> f = asyncHttpClient.prepareGet(url).execute(
                         new AsyncCompletionHandler<DataEntry>() {
 
-                            @Override
-                            public DataEntry onCompleted(Response response) throws Exception {
-                                // 200 OK Statuscode
-                                if (response.getStatusCode() == 200) {
-                                    DataEntry data = fetchDataFromJSON(response.getResponseBody(), route);
-                                    connector.insert(data);
-                                    return data;
-                                }
+                    @Override
+                    public DataEntry onCompleted(Response response) throws Exception {
+                        // 200 OK Statuscode
+                        if (response.getStatusCode() == 200) {
+                            DataEntry data = fetchDataFromJSON(response.getResponseBody(), route);
+                            connector.insert(data);
+                            return data;
+                        }
 
-                                String msg = fetchErrorFromJSON(response.getResponseBody());
-                                throw new RouteUnavailableException(msg);
-                            }
+                        String msg = fetchErrorFromJSON(response.getResponseBody());
+                        throw new RouteUnavailableException(msg);
+                    }
 
-                            @Override
-                            public void onThrowable(Throwable t) {
-                                // Something wrong happened.
-                            }
-                        });
+                    @Override
+                    public void onThrowable(Throwable t) {
+                        // Something wrong happened.
+                    }
+                });
                 buzyRequests.add(f);
                 try {
                     sleep(250);
                 } catch (InterruptedException ex) {
-
+                    log.fatal(ex);
                 }
             }
         }
@@ -82,9 +86,9 @@ public class TomTomProviderConnector extends AProviderConnector {
             String desc = (String) map.get("description");
             return desc;
         } catch (Exception ex2) {
-            // Not expected ERROR JSON data
-            return "JSON ERROR data unreadable (expected other structure)";
+            return "JSON ERROR data unreadable (expected other structure): "+json;
         }
+        
     }
 
     public DataEntry fetchDataFromJSON(String json, RouteEntry traject) throws RouteUnavailableException {
@@ -113,8 +117,14 @@ public class TomTomProviderConnector extends AProviderConnector {
         urlBuilder.append(',');
         urlBuilder.append(traject.getEndCoordinateLongitude());
         urlBuilder.append(prop.getProperty("TOMTOM_API_URL2"));
-        urlBuilder.append(prop.getProperty("TOMTOM_API_KEY"));
+        urlBuilder.append(getAPIKey());
         return urlBuilder.toString();
     }
 
+    private String getAPIKey(){
+        String ret = prop.getProperty("GOOGLE_API_KEY"+alternator);
+        alternator++;
+        alternator%=APIKeys;
+        return ret;
+    }
 }

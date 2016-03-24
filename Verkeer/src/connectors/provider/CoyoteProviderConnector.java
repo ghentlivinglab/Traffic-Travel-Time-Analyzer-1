@@ -15,6 +15,7 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -23,10 +24,10 @@ import java.util.Scanner;
 public class CoyoteProviderConnector extends AProviderConnector {
 
     private final String dataFile;
+    private static final Logger log = Logger.getLogger(CoyoteProviderConnector.class);
 
     public CoyoteProviderConnector(IDbConnector dbConnector) {
-        super(dbConnector);
-        String providerName = "Coyote";
+        super(dbConnector,"Coyote");
         this.providerEntry = dbConnector.findProviderEntryByName(providerName);
         updateInterval = Integer.parseInt(prop.getProperty("COYOTE_UPDATE_INTERVAL"));
         dataFile = prop.getProperty("COYOTE_DATA_FILE");
@@ -82,9 +83,9 @@ public class CoyoteProviderConnector extends AProviderConnector {
                 }
                 buffer.close();
                 if(file.delete()){
-                    System.out.println(dataFile+" deleted");
+                    log.info(dataFile+" deleted");
                 } else{
-                    System.out.println(dataFile+" not deleted");
+                    log.info(dataFile+" not deleted");
                 }
 
             } catch (FileNotFoundException e) {
