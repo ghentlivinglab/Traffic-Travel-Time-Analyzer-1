@@ -1,3 +1,32 @@
+
+#dashboard {
+	position: fixed;
+	top: 0;
+	left: $settings-width;
+	bottom: 0;
+	width: $dashboard-width;
+	background: $background-gray;
+	z-index: 0;
+
+	.content {
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: 0;
+		bottom: 0;
+		// padding NIET via left, right, top, bottom doen, anders kloppen scrollbalk posities niet
+		padding: 30px 20px 0 40px;
+		overflow: auto;
+	}
+	.shadow {
+		left: $dashboard-width;
+	}
+
+	&.expand_collapse {
+		left: -($dashboard-width)+$settings-width;
+	}
+	
+}
 article {
 	table-layout: fixed;
 	display: table;
@@ -120,6 +149,8 @@ article {
 		color: rgba(0,0,0, 0.5);
 		vertical-align: middle;
 		line-height: 70px;
+		box-shadow: 0 0 5px rgba(0,0,0, 0.3);
+
 		
 		&:hover{
 			background: white;

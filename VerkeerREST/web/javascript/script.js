@@ -1,8 +1,8 @@
 // Gebruikte globale variabelen
 // Worden in het begin gevraagd aan de API en ingevuld, eenmalig.
-var providers = {};
+var providers = [];
 var routes = [];
-var events = {};
+var events = [];
 
 // Object prototypes die we gaan gebruiken
 
@@ -100,7 +100,7 @@ var Route = {
 	eventData: {
 	},
 
-	create: function(id, length, name, waypoints) {
+	create: function(id, name, length, waypoints) {
 		var obj = Object.create(this);
 		obj.id = id;
 		obj.length = length;
@@ -145,6 +145,9 @@ var Event = {
 // Bevat voornamelijk functies
 var DummyApi = {
 	syncRoutes: function() {
+		var r = Route.create(2, 'Route 1', 2854);
+	},
+	syncProviders: function() {
 
 	}
 };
