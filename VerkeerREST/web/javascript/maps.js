@@ -69,7 +69,7 @@ function deleteLines(){
  ****************************/
 function zoomChanged(event){
 	var zoom = this.getZoom();
-	if(18 < zoom){
+	if(14 < zoom){
 		for(i in lines){
 			lines[i].setOptions({strokeWeight: 3});
 		}
@@ -84,16 +84,30 @@ function zoomChanged(event){
  * method called when a line is clicked
  ****************************/
 function lineClicked(event){ // show info window on click
-if(infowindow!=null){ // close old window if one exists
-	infowindow.close();
+	if(infowindow!=null){ // close old window if one exists
+		infowindow.close();
+	}
+	infowindow = new google.maps.InfoWindow({ // create info window
+		content: '<content id="infoWindow"><h1>'+labels[this['id']]+'</h1><p>Current time: <span id="currentTime">2 minutes</span></p><p>more details <a href="#">here</a></p></content>',
+		position: event['latLng'] // create window on location of cursor
+	});
+	infowindow.open(map); // show info window
 }
-infowindow = new google.maps.InfoWindow({ // create info window
-	content: '<content id="infoWindow"><h1>'+labels[this['id']]+'</h1><p>Current time: <span id="currentTime">2 minutes</span></p><p>more details <a href="#">here</a></p></content>',
-	position: event['latLng'] // create window on location of cursor
-});
-infowindow.open(map); // show info window
 
+/****************************
+ *
+ ****************************/
+function lineHover(event){
+	this.setOptions({strokeWeight: 6});
 }
+
+/****************************
+ *
+ ****************************/
+function lineOut(event){
+	this.setOptions({strokeWeight: 3});
+} 
+ 
 /****************************
  * creates new line objects to show on the map
  ****************************/
@@ -108,11 +122,13 @@ function generateLines(){
 			path: coords[i], // path of current route
 			strokeColor: colors[i], // color of current route
 			strokeOpacity: 1.0, // non-transparent
-			strokeWeight:5, // default weight
+			strokeWeight:3, // default weight
 			zIndex: getZIndex(colors[i]) 
 		});
 		
-		line.addListener('click',lineClicked); // shows info window on click
+		google.maps.event.addListener(line,'click',lineClicked); // shows info window on click
+		google.maps.event.addListener(line,'mouseover',lineHover);
+		google.maps.event.addListener(line,'mouseout',lineOut);
 		
 		line.setMap(map); // add line to map
 		line["id"]=i; // assign id to map, this is the index in the lines array
