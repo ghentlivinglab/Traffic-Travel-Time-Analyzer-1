@@ -35,7 +35,7 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 16/03/16,08:15,11:15,Thuis,Communicatie,voorbereiden eigen presentatie module 3,,
 16/03/16,16:00,19:00,Thuis,Communicatie,voorbereiden eigen presentatie module 3,,
 16/03/16,20:00,22:00,Thuis,Communicatie,voorbereiden eigen presentatie module 3,,
-17/03/16,12:30,17:45,School,Projectwerk,Kaart van dashboard,29,
+17/03/16,13:30,17:45,School,Projectwerk,Kaart van dashboard,29,
 18/03/16,14:00,17:00,Thuis,Projectwerk,kaartweergave routes,29,aanmaken polylines van routes
 20/03/16,11:45,13:00,Thuis,Projectwerk,kaartweergave routes,29,aanmaken polylines van routes
 20/03/16,14:15,19:00,Thuis,Projectwerk,kaartweergave routes,29,aanmaken polylines van routes
@@ -49,3 +49,6 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 23/03/16,09:00,10:30,Thuis,Projectwerk,kaartweergave routes,29,integratie kaart in dashboard pagina en code optimalisaties
 23/03/16,11:45,11:30,Thuis,Projectwerk,kaartweergave routes,29,code optimalisaties
 24/03/16,08:00,08:15,Thuis,Projectwerk,kaartweergave routes,29,controle routes
+24/03/16,13:30,17:45,School,Projectwerk,kaartweergave routes,29,
+24/03/16,22:00,23:59,School,Projectwerk,kaartweergave routes,29,
+25/03/16,00:00,00:30,School,Projectwerk,animatie van dashboard,24,

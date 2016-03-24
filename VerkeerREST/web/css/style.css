@@ -1,0 +1,207 @@
+body, html {
+  padding: 0;
+  margin: 0;
+  font-family: Roboto, Helvetica, sans-serif;
+  font-size: 15px;
+  font-weight: normal;
+  color: #4D4D4D;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; }
+
+hr {
+  display: block;
+  height: 1px;
+  border: 0;
+  margin: 20px 0;
+  background: #EEE; }
+
+h1 {
+  padding: 0 0 10px 0;
+  margin: 0;
+  font-weight: 400; }
+
+h2 {
+  font-weight: 400;
+  margin: 0;
+  padding: 0; }
+
+.shadow {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 10px;
+  pointer-events: none;
+  background-image: -webkit-gradient(linear, left top, right top, from(rgba(0, 0, 0, 0.08)), to(transparent));
+  background-image: -webkit-linear-gradient(left, rgba(0, 0, 0, 0.08), transparent);
+  background-image: -moz-linear-gradient(left, rgba(0, 0, 0, 0.08), transparent);
+  background-image: -ms-linear-gradient(left, rgba(0, 0, 0, 0.08), transparent);
+  background-image: -o-linear-gradient(left, rgba(0, 0, 0, 0.08), transparent);
+  background-image: linear-gradient(left, rgba(0, 0, 0, 0.08), transparent); }
+
+#settings {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: white;
+  width: 200px;
+  padding: 30px 25px;
+  z-index: 1; }
+  #settings .shadow {
+    left: 250px; }
+  #settings label {
+    display: block;
+    padding: 2px 0;
+    cursor: pointer; }
+    #settings label input {
+      margin-right: 10px; }
+
+#map-container {
+  background: gray;
+  left: 250px;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  z-index: -1;
+  position: fixed; }
+
+#map {
+  height: 100%; }
+
+#map #infoWindow > h1 {
+  font-size: 1.5em; }
+
+#logo {
+  display: block;
+  margin: 0 auto;
+  margin-bottom: 30px; }
+
+#dashboard {
+  position: fixed;
+  top: 0;
+  left: 250px;
+  bottom: 0;
+  width: 800px;
+  background: #F7F8FA;
+  z-index: 0; }
+  #dashboard .content {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    padding: 30px 20px 0 40px;
+    overflow: auto; }
+  #dashboard .shadow {
+    left: 800px; }
+  #dashboard.expand_collapse {
+    left: -550px; }
+
+article {
+  table-layout: fixed;
+  display: table;
+  width: 100%;
+  margin-bottom: 20px;
+  position: relative; }
+  article h1 {
+    font-size: 13pt;
+    font-weight: 500;
+    padding-bottom: 5px; }
+  article h2 {
+    font-size: 11pt; }
+  article p {
+    padding: 0;
+    margin: 0; }
+  article header {
+    display: table-cell;
+    padding-right: 40px;
+    width: 40%; }
+  article .right {
+    padding-left: 20px; }
+  article .left, article .right {
+    display: table-cell;
+    width: 30%; }
+    article .left .status, article .right .status {
+      font-size: 15pt;
+      font-weight: 500;
+      padding-bottom: 5px; }
+      article .left .status.red, article .right .status.red {
+        color: #FF6363; }
+    article .left .speed, article .right .speed {
+      font-size: 10pt;
+      font-weight: 500; }
+    article .left .avg-speed, article .right .avg-speed {
+      font-size: 10pt; }
+    article .left .warning, article .right .warning {
+      padding: 5px 0 5px 35px;
+      font-size: 13pt;
+      color: #4D4D4D;
+      font-weight: 500;
+      background: url("../images/warning.png") no-repeat left center; }
+  article .graph-shadow {
+    position: absolute;
+    background: white;
+    z-index: 2;
+    left: -40px;
+    right: -20px;
+    bottom: 0;
+    height: 300px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); }
+  article .graph {
+    position: absolute;
+    background: white;
+    z-index: 3;
+    left: -40px;
+    right: -20px;
+    bottom: 0;
+    height: 300px; }
+    article .graph div {
+      height: 300px; }
+  article:hover {
+    cursor: pointer;
+    cursor: hand; }
+  article .arrow {
+    position: absolute;
+    z-index: 3;
+    left: 20px;
+    bottom: 295px;
+    width: 10px;
+    height: 10px;
+    -ms-transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+    background: white;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); }
+  article.graph {
+    padding-bottom: 320px; }
+  article .hidden {
+    height: 0px;
+    position: absolute;
+    left: 0px;
+    top: 0px; }
+
+.collapse {
+  position: absolute;
+  background: #F7F8FA;
+  right: -30px;
+  z-index: 10;
+  top: 80px;
+  width: 30px;
+  height: 70px;
+  border-radius: 0px 10px 10px 0px;
+  text-align: center;
+  text-size: 15px;
+  color: rgba(0, 0, 0, 0.5);
+  vertical-align: middle;
+  line-height: 70px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); }
+  .collapse:hover {
+    background: white;
+    cursor: pointer;
+    cursor: hand; }
+
+#map {
+  width: 100%;
+  height: 100%; }
+
+/*# sourceMappingURL=style.css.map */
