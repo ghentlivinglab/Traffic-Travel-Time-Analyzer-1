@@ -178,7 +178,7 @@ public class WazeProviderConnector extends AProviderConnector{
                                 throw new NotAuthorizedException("Authentication failed: " + response.getStatusText());
                             }
                             if (response.getStatusCode() != 200) {
-                                throw new RouteUnavailableException("Failed getting data from Waze: " + response.getStatusText());
+                                throw new RouteUnavailableException(providerName,"Failed getting data from Waze: " + response.getStatusText());
                             }
                             ret = fetchDataFromJSON(response.getResponseBody());
                         }catch(RouteUnavailableException|NotAuthorizedException|IOException ex){

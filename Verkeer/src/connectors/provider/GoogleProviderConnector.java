@@ -75,7 +75,7 @@ public class GoogleProviderConnector extends AProviderConnector {
                         // Er ging iets fout
                         // TODO: Statuscodes later uitbreiden met: 
                         // https://developer.here.com/rest-apis/documentation/traffic/topics/http-status-codes.html
-                        throw new RouteUnavailableException("Something went wrong. Statuscode: "+ response.getStatusCode()+ " "+ response.getStatusText());
+                        throw new RouteUnavailableException(providerName,"Something went wrong. Statuscode: "+ response.getStatusCode()+ " "+ response.getStatusText());
                     }
                 });
                 buzyRequests.add(f);
@@ -121,7 +121,7 @@ public class GoogleProviderConnector extends AProviderConnector {
         Genson genson = new Genson();
         Map<String, Object> map = genson.deserialize(json, Map.class);
         if (!map.get("status").equals("OK")) { // google data is not correct
-            throw new RouteUnavailableException((String) map.get("status"));
+            throw new RouteUnavailableException(providerName,(String) map.get("status"));
         }
         return map;
     }

@@ -10,8 +10,8 @@ public class RouteUnavailableException extends Exception {
     public RouteUnavailableException() {
     }
 
-    public RouteUnavailableException(String message) {
-        super(message);
-        log.error(message);
+    public RouteUnavailableException(String provider,String message) {
+        super(provider+" "+message);
+        log.error(provider+" "+message);
     }
 }

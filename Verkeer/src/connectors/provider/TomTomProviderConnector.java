@@ -33,6 +33,7 @@ public class TomTomProviderConnector extends AProviderConnector {
         super(dbConnector,"TomTom");
         this.providerEntry = dbConnector.findProviderEntryByName(providerName);
         updateInterval = Integer.parseInt(prop.getProperty("TOMTOM_UPDATE_INTERVAL"));
+        APIKeys = Integer.parseInt(prop.getProperty("TOMTOM_API_KEYS"));
     }
 
     @Override
@@ -58,7 +59,7 @@ public class TomTomProviderConnector extends AProviderConnector {
                         }
 
                         String msg = fetchErrorFromJSON(response.getResponseBody());
-                        throw new RouteUnavailableException(msg);
+                        throw new RouteUnavailableException(providerName,msg);
                     }
 
                     @Override
@@ -103,7 +104,7 @@ public class TomTomProviderConnector extends AProviderConnector {
 
             return new DataEntry(travelTime, traject, this.providerEntry);
         } catch (Exception ex) {
-            throw new RouteUnavailableException("JSON data unreadable (expected other structure)");
+            throw new RouteUnavailableException(providerName,"JSON data unreadable (expected other structure)");
         }
     }
 
@@ -122,7 +123,7 @@ public class TomTomProviderConnector extends AProviderConnector {
     }
 
     private String getAPIKey(){
-        String ret = prop.getProperty("GOOGLE_API_KEY"+alternator);
+        String ret = prop.getProperty("TOMTOM_API_KEY"+alternator);
         alternator++;
         alternator%=APIKeys;
         return ret;

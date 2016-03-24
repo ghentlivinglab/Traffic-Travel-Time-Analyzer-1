@@ -61,7 +61,7 @@ public class HereProviderConnector extends AProviderConnector {
                         }
 
                         String msg = fetchErrorFromJSON(response.getResponseBody());
-                        throw new RouteUnavailableException(msg);
+                        throw new RouteUnavailableException(providerName,msg);
                     }
 
                     @Override
