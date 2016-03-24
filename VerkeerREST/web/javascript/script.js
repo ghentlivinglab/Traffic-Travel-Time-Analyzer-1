@@ -7,12 +7,40 @@ var events = {};
 // Object prototypes die we gaan gebruiken
 
 // TrafficData houdt snelheid en tijd in minuten bij.
+// Kan bij alles horen: een moment, een dag, een periode, enkel bv maandagen van een periode, een evenement...
 // Deze worden opgeslagen in een route of andere objecten
 var TrafficData = {
 	speed: 0,
 	time: 0,
-	createdOn: 0
+	createdOn: 0 // Aangemaakt op (om geldigheid te kunnen controleren)
 };
+
+
+// Object die trafficdata bijhoudt per tijdsinterval per dag
+// Houdt ook 1 TrafficData bij die representatief is voor de hele grafiek
+// In de vandaag weergave is dit de laatste bekende 
+// In de dag weergave (bv 12/08/2015) houden we het gemiddelde van de dag bij
+var TrafficGraph {
+	start: 6,
+	end: 24,
+	interval: 0.25, // kwartier
+	createdOn: 0, 
+	representation: null, // instanceof TrafficData
+
+	// Houdt de data bij
+	data: {
+		/* Bv.
+		6: instanceof TrafficData,
+		6.25: instanceof TrafficData,
+		6.5: instanceof TrafficData,
+		6.75: instanceof TrafficData,
+		7: instanceof TrafficData,
+		7.25: instanceof TrafficData,
+		...
+		24: instanceof TrafficData
+		*/
+	}
+}
 
 // Route bevat een id, naam en afstand. 
 // Daarnaast bevat het plaats voor de TrafficData die de gemiddelden bij houdt
@@ -24,14 +52,32 @@ var Route = {
 	name: '',
 	waypoints: [],
 
-	// avgData is een mapping van de providerId op een TrafficData object
+	// avgData is een mapping van de providerId op een TrafficGraph object
 	// We kunnen dus altijd een bepaalde gemiddelde snelheid en tijd lezen voor een bepaalde provider (of alles)
 	// Bv. stel Waze heeft id = 2, dan kunnen we de laatst gesynchroniseerde avgData halen door avgData[2],
 	// als die niet bestaat, dan moeten we deze nog ophalen uit de API
-	avgData: {},
+	// Bv. avgData[providerId] -> TrafficGraph
+	avgData: {
 
-	// liveData is een mapping van de providerId op een TrafficData object, en bevat de meest recente metingen
-	liveData: {}
+	},
+
+	// liveData is een mapping van de providerId op een TrafficGraph object, en bevat de meest recente metingen
+	// Bv. liveData[providerId] -> TrafficGraph
+	liveData: {
+	},
+
+	// Data per dag wordt hiet opgeslagen (in grafiekvorm)
+	// Bv voor 4 juli 2015
+	// dayData["04/07/2015"][providerId] -> TrafficGraph object
+	dayData: {
+
+	},
+
+	// Houdt de grafieken bij:
+	// Kan zijn voor maandag, dinsdag, woensdag, ... zondag (0-6) Maandag = 0, zondag = 6
+	// bv. data[maandag][providerId] -> TrafficGraph
+	eventData: {
+	}
 };
 
 // De provider die alle data van alle providers bundelt heeft id = -1
