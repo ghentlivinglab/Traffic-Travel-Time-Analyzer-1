@@ -3,58 +3,63 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
-package entitys;
+package domain;
 
 import java.io.Serializable;
+import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author Piet
+ * @author Robin
  */
 @Entity
 @Table(name = "traveltimes")
 @XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "Traveltime.findAll", query = "SELECT t FROM Traveltime t"),
+    @NamedQuery(name = "Traveltime.findById", query = "SELECT t FROM Traveltime t WHERE t.id = :id"),
+    @NamedQuery(name = "Traveltime.findByTraveltime", query = "SELECT t FROM Traveltime t WHERE t.traveltime = :traveltime")})
 public class Traveltime implements Serializable {
+
     private static final long serialVersionUID = 1L;
-    @EmbeddedId
-    protected TraveltimePK traveltimePK;
+    @Id
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "id")
+    private Integer id;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "traveltime")
     private Double traveltime;
-    @JoinColumn(name = "providerID", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "providerID", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private Provider provider;
-    @JoinColumn(name = "routeID", referencedColumnName = "id", insertable = false, updatable = false)
+    private Provider providerID;
+    @JoinColumn(name = "routeID", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private Route route;
+    private Route routeID;
 
     public Traveltime() {
     }
 
-    public Traveltime(TraveltimePK traveltimePK) {
-        this.traveltimePK = traveltimePK;
+    public Traveltime(Integer id) {
+        this.id = id;
     }
 
-    public Traveltime(int routeID, int providerID) {
-        this.traveltimePK = new TraveltimePK(routeID, providerID);
+    public Integer getId() {
+        return id;
     }
 
-    public TraveltimePK getTraveltimePK() {
-        return traveltimePK;
-    }
-
-    public void setTraveltimePK(TraveltimePK traveltimePK) {
-        this.traveltimePK = traveltimePK;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public Double getTraveltime() {
@@ -65,26 +70,26 @@ public class Traveltime implements Serializable {
         this.traveltime = traveltime;
     }
 
-    public Provider getProvider() {
-        return provider;
+    public Provider getProviderID() {
+        return providerID;
     }
 
-    public void setProvider(Provider provider) {
-        this.provider = provider;
+    public void setProviderID(Provider providerID) {
+        this.providerID = providerID;
     }
 
-    public Route getRoute() {
-        return route;
+    public Route getRouteID() {
+        return routeID;
     }
 
-    public void setRoute(Route route) {
-        this.route = route;
+    public void setRouteID(Route routeID) {
+        this.routeID = routeID;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (traveltimePK != null ? traveltimePK.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
@@ -95,7 +100,7 @@ public class Traveltime implements Serializable {
             return false;
         }
         Traveltime other = (Traveltime) object;
-        if ((this.traveltimePK == null && other.traveltimePK != null) || (this.traveltimePK != null && !this.traveltimePK.equals(other.traveltimePK))) {
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;
@@ -103,7 +108,7 @@ public class Traveltime implements Serializable {
 
     @Override
     public String toString() {
-        return "entitys.Traveltime[ traveltimePK=" + traveltimePK + " ]";
+        return "domain.Traveltime[ id=" + id + " ]";
     }
     
 }

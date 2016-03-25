@@ -3,15 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+package service;
 
-package entitys.service;
-
-import entitys.Provider;
+import domain.Provider;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -20,14 +18,16 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
 /**
  *
- * @author Piet
+ * @author Robin
  */
 @Stateless
-@Path("provider")
+@Path("domain.provider")
 public class ProviderFacadeREST extends AbstractFacade<Provider> {
+
     @PersistenceContext(unitName = "VerkeerRESTPU")
     private EntityManager em;
 
@@ -37,14 +37,14 @@ public class ProviderFacadeREST extends AbstractFacade<Provider> {
 
     @POST
     @Override
-    @Consumes({"application/json"})
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void create(Provider entity) {
         super.create(entity);
     }
 
     @PUT
     @Path("{id}")
-    @Consumes({"application/json"})
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void edit(@PathParam("id") Integer id, Provider entity) {
         super.edit(entity);
     }
@@ -55,54 +55,30 @@ public class ProviderFacadeREST extends AbstractFacade<Provider> {
         super.remove(super.find(id));
     }
 
-    /**
-     * 
-     * @param id
-     * @return 
-     */
     @GET
     @Path("{id}")
-    @Produces({"application/json"})
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Provider find(@PathParam("id") Integer id) {
-        System.out.println("yep, provider gevonden");
         return super.find(id);
     }
-    
-    /**
-     * 
-     * @param id
-     * @return 
-     */
-    @GET
-    @Path("id={id}")
-    @Produces({"application/json"})
-    public Provider findById(@PathParam("id") Integer id) {
-        return super.find(id);
-    }
-    
-    /**
-     * 
-     * @param providerNaam
-     * @return 
-     */
-    @GET
-    @Path("naam={providerNaam}")
-    @Produces({"application/json"})
-    public Provider findByName(@PathParam("providerNaam") String providerNaam) {
-        return super.findByName(providerNaam);
-    }
-    
-    
+
     @GET
     @Override
-    @Produces({"application/json"})
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Provider> findAll() {
         return super.findAll();
     }
 
     @GET
+    @Path("{from}/{to}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public List<Provider> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
+        return super.findRange(new int[]{from, to});
+    }
+
+    @GET
     @Path("count")
-    @Produces("text/plain")
+    @Produces(MediaType.TEXT_PLAIN)
     public String countREST() {
         return String.valueOf(super.count());
     }

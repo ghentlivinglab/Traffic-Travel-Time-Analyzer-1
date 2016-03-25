@@ -3,15 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
-package entitys.service;
+package service;
 
 import java.util.Set;
 import javax.ws.rs.core.Application;
 
 /**
  *
- * @author Piet
+ * @author Robin
  */
 @javax.ws.rs.ApplicationPath("api")
 public class ApplicationConfig extends Application {
@@ -30,10 +29,12 @@ public class ApplicationConfig extends Application {
      * If required, comment out calling this method in getClasses().
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
-        resources.add(entitys.service.ProviderFacadeREST.class);
-        resources.add(entitys.service.RouteFacadeREST.class);
-        resources.add(entitys.service.TrafficdataFacadeREST.class);
-        resources.add(entitys.service.TraveltimeFacadeREST.class);
+        resources.add(service.ProviderFacadeREST.class);
+        resources.add(service.RouteFacadeREST.class);
+        resources.add(service.TrafficdataFacadeREST.class);
+        resources.add(service.TraveltimeFacadeREST.class);
+        resources.add(service.WaypointFacadeREST.class);
+        resources.add(util.CORSFilter.class);
     }
     
 }

@@ -3,8 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
-package entitys;
+package domain;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -25,41 +24,38 @@ import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
- * @author Piet
+ * @author Robin
  */
 @Entity
-@Table(name = "routes")
+@Table(name = "providers")
 @XmlRootElement
-public class Route implements Serializable {
+@NamedQueries({
+    @NamedQuery(name = "Provider.findAll", query = "SELECT p FROM Provider p"),
+    @NamedQuery(name = "Provider.findById", query = "SELECT p FROM Provider p WHERE p.id = :id"),
+    @NamedQuery(name = "Provider.findByName", query = "SELECT p FROM Provider p WHERE p.name = :name"),
+    @NamedQuery(name = "Provider.findByWeight", query = "SELECT p FROM Provider p WHERE p.weight = :weight")})
+public class Provider implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Column(name = "length")
-    private Double length;
     @Size(max = 50)
     @Column(name = "name")
     private String name;
-    @Column(name = "startlat")
-    private Double startlat;
-    @Column(name = "startlong")
-    private Double startlong;
-    @Column(name = "endlat")
-    private Double endlat;
-    @Column(name = "endlong")
-    private Double endlong;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "route")
+    @Column(name = "weight")
+    private Integer weight;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "providerID")
     private Collection<Trafficdata> trafficdataCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "route")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "providerID")
     private Collection<Traveltime> traveltimeCollection;
 
-    public Route() {
+    public Provider() {
     }
 
-    public Route(Integer id) {
+    public Provider(Integer id) {
         this.id = id;
     }
 
@@ -71,14 +67,6 @@ public class Route implements Serializable {
         this.id = id;
     }
 
-    public Double getLength() {
-        return length;
-    }
-
-    public void setLength(Double length) {
-        this.length = length;
-    }
-
     public String getName() {
         return name;
     }
@@ -87,36 +75,12 @@ public class Route implements Serializable {
         this.name = name;
     }
 
-    public Double getStartlat() {
-        return startlat;
+    public Integer getWeight() {
+        return weight;
     }
 
-    public void setStartlat(Double startlat) {
-        this.startlat = startlat;
-    }
-
-    public Double getStartlong() {
-        return startlong;
-    }
-
-    public void setStartlong(Double startlong) {
-        this.startlong = startlong;
-    }
-
-    public Double getEndlat() {
-        return endlat;
-    }
-
-    public void setEndlat(Double endlat) {
-        this.endlat = endlat;
-    }
-
-    public Double getEndlong() {
-        return endlong;
-    }
-
-    public void setEndlong(Double endlong) {
-        this.endlong = endlong;
+    public void setWeight(Integer weight) {
+        this.weight = weight;
     }
 
     @XmlTransient
@@ -147,10 +111,10 @@ public class Route implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Route)) {
+        if (!(object instanceof Provider)) {
             return false;
         }
-        Route other = (Route) object;
+        Provider other = (Provider) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -159,7 +123,7 @@ public class Route implements Serializable {
 
     @Override
     public String toString() {
-        return "entitys.Route[ id=" + id + " ]";
+        return "domain.Provider[ id=" + id + " ]";
     }
     
 }
