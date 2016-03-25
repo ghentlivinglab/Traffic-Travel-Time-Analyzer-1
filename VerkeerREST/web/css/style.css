@@ -55,6 +55,29 @@ h2 {
     cursor: pointer; }
     #settings label input {
       margin-right: 10px; }
+    #settings label input[type="radio"] {
+      display: none; }
+    #settings label input[type="radio"] + span {
+      display: inline-block;
+      margin-right: .25em;
+      padding: 0;
+      width: .8em;
+      height: .8em;
+      background: #FFF;
+      border: 0.1em solid #C10037;
+      border-radius: .5em; }
+    #settings label input[type="radio"] + span:after {
+      content: ' ';
+      display: block;
+      margin: .1em;
+      width: .4em;
+      height: .4em;
+      background: #FFF;
+      border: .1em solid #FFF;
+      border-radius: .4em; }
+    #settings label input[type="radio"]:checked + span:after {
+      background: #C10037;
+      border-color: #C10037; }
 
 #map-container {
   background: gray;
@@ -126,7 +149,7 @@ article {
       font-weight: 500;
       padding-bottom: 5px; }
       article .left .status.red, article .right .status.red {
-        color: #FF6363; }
+        color: #C10037; }
     article .left .speed, article .right .speed {
       font-size: 10pt;
       font-weight: 500; }

@@ -4,7 +4,7 @@ $dashboard-width: 800px;
 $gray: #4D4D4D;
 $background-gray: #F7F8FA;
 $light-gray: #EEE;
-$red: #FF6363;
+$red: #C10037;//#FF6363;
 $graph-height: 300px;
 $blue: #63A7FF;
 $line-gray: #A8A8A8;
@@ -94,6 +94,33 @@ h2 {
 
 		input {
 			margin-right: 10px;
+		}
+		input[type="radio"]{
+			display: none;
+		}
+		input[type="radio"] + span{
+			display: inline-block;
+			margin-right:.25em;
+			padding:0;
+			width: .8em;
+			height: .8em;
+			background: #FFF;
+			border: .1em solid $red;
+			border-radius: .5em;
+		}
+		input[type="radio"] + span:after{
+			content: ' ';
+			display: block;
+			margin: .1em;
+			width: .4em;
+			height: .4em;
+			background: #FFF;
+			border: .1em solid #FFF;
+			border-radius: .4em;
+		}
+		input[type="radio"]:checked + span:after{
+			background: $red;
+			border-color: $red;
 		}
 	}
 }
