@@ -25,7 +25,7 @@ import javax.ws.rs.core.MediaType;
  * @author Robin
  */
 @Stateless
-@Path("domain.provider")
+@Path("/providers")
 public class ProviderFacadeREST extends AbstractFacade<Provider> {
 
     @PersistenceContext(unitName = "VerkeerRESTPU")

@@ -56,7 +56,7 @@ public class RouteFacadeREST extends AbstractFacade<Route> {
     }
 
     @GET
-    @Path("?id={id}")
+    @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Route find(@PathParam("id") Integer id) {
         System.out.println(id);

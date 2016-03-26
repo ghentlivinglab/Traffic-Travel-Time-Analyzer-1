@@ -29,7 +29,7 @@ import javax.ws.rs.core.MediaType;
  * @author Robin
  */
 @Stateless
-@Path("trafficdata")
+@Path("/trafficdata")
 public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
 
     @PersistenceContext(unitName = "VerkeerRESTPU")
@@ -41,7 +41,7 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
 
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    public String findAll(
+    public String processRequest(
             @QueryParam("from") Timestamp from,
             @QueryParam("to") Timestamp to,
             @QueryParam("routeID") Integer routeID,

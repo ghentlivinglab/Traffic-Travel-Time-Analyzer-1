@@ -11,4 +11,5 @@
         <property name="driverClass" value="com.mysql.jdbc.Driver"/>
     </jdbc-connection-pool>
     <jdbc-resource enabled="true" jndi-name="java:app/Verkeer_DB" object-type="user" pool-name="mysql_verkeer1_testPool"/>
+    <jdbc-resource enabled="true" jndi-name="java:app/VerkeerDB" object-type="user" pool-name="mysql_verkeer1_testPool"/>
 </resources>
