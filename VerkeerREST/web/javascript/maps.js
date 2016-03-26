@@ -12,12 +12,20 @@ var lines = []; // will be filled with line-object for each route
 var map;
 
 /****************************
- * Colors for traffic
+ * general settings
  ****************************/
+// map settings
+var mapCenter = {"lat":51.076317,"lng":3.7096717};
+var zoomCurrent = 12;
+// colors
 var normalTraffic = '#222222';
 var mediumTraffic = '#FF8800';
 var heavyTraffic = '#FF0000';
-
+// line settings
+var zoomThreshold = 14;
+var zoomedInWeight = 2;
+var zoomedOutWeight = 4;
+var hoverWeight = 6;
 
 /****************************
  * generate the correct color for each route
@@ -68,15 +76,10 @@ function deleteLines(){
  * method called when zoom level of the map is changed
  ****************************/
 function zoomChanged(event){
-	var zoom = this.getZoom();
-	if(14 < zoom){
-		for(i in lines){
-			lines[i].setOptions({strokeWeight: 3});
-		}
-	} else {
-		for(i in lines){
-			lines[i].setOptions({strokeWeight: 3});
-		}
+	zoomCurrent = this.getZoom();
+	var weight = getWeight();
+	for(i in lines){
+		lines[i].setOptions({strokeWeight: weight});
 	}
 }
 
@@ -95,17 +98,27 @@ function lineClicked(event){ // show info window on click
 }
 
 /****************************
- *
+ * returns the current line weight
  ****************************/
-function lineHover(event){
-	this.setOptions({strokeWeight: 6});
+function getWeight(){
+	if(zoomThreshold < zoomCurrent){ // zoomed in
+		return zoomedInWeight;
+	}
+	return zoomedOutWeight; // zoomed out
 }
 
 /****************************
- *
+ * set line bolder on hover
+ ****************************/
+function lineHover(event){
+	this.setOptions({strokeWeight: hoverWeight});
+}
+
+/****************************
+ * revert line to original width
  ****************************/
 function lineOut(event){
-	this.setOptions({strokeWeight: 3});
+	this.setOptions({strokeWeight: getWeight()});
 } 
  
 /****************************
@@ -116,13 +129,13 @@ function generateLines(){
 		deleteLines();
 	}
 	
+	var weight = getWeight();
 	for(var i=0;i<coords.length;i++){ // for each route
-		
 		var line = new google.maps.Polyline({ // create new line-object
 			path: coords[i], // path of current route
 			strokeColor: colors[i], // color of current route
 			strokeOpacity: 1.0, // non-transparent
-			strokeWeight:3, // default weight
+			strokeWeight: weight, // default weight
 			zIndex: getZIndex(colors[i]) 
 		});
 		
@@ -141,8 +154,8 @@ function generateLines(){
  ****************************/
 function initMap() {
 	map = new google.maps.Map(document.getElementById('map'), { // generate map in #map
-		"center": {"lat":51.076317,"lng":3.7096717}, // center so all routes are visible
-		"zoom": 12, // zoom so all routes are visible
+		"center": mapCenter, // center so all routes are visible
+		"zoom": zoomCurrent, // zoom so all routes are visible
 		"mapTypeId": google.maps.MapTypeId.TERRAIN, // set default to terrain
 		"mapTypeControl": true, // allow mapTypeControl
 		"mapTypeControlOptions": {
