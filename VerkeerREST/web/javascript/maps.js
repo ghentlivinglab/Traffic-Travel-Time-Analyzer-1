@@ -8,6 +8,7 @@ var coords = [[{"lng": 3.69508,"lat": 51.05617},{"lng": 3.69487,"lat": 51.05631}
 var labels = ['Rooigemlaan (R40) Northbound - Drongensesteenweg - Palinghuizen ','Rooigemlaan (R40) Southbound - Palinghuizen - Drongensesteenweg ','Gasmeterlaan (R40) Eastbound - Palinghuizen - Neuseplein ','Gasmeterlaan (R40) Westbound - Neuseplein - Palinghuizen ','Dok-Noord (R40) Southbound - Neuseplein - Dampoort ','Dok-Noord (R40) Northbound - Dampoort - Neuseplein ','Heernislaan (R40) Southbound - Dampoort - Zuidparklaan ','Heernislaan (R40) Northbound - Zuidparklaan - Dampoort ','Martelaarslaan (R40) Northbound - Zuidparklaan - Drongensesteenweg ','Martelaarslaan (R40) Southbound - Drongensesteenweg - Zuidparklaan ','Blaisantvest (N430) Eastbound - Einde Were - Neuseplein ','Blaisantvest (N430) Westbound - Neuseplein - Einde Were ','Keizer Karelstraat Northbound - Sint-Lievenslaan - Neuseplein ','Keizer Karelstraat Southbound - Neuseplein - Sint-Lievenslaan ','Kennedylaan (R4) Southbound - E34 - Port Arthurlaan ','Kennedylaan (R4) Northbound - Port Arthurlaan - E34 ','Eisenhowerlaan (R4) Southbound - Kennedylaan - E17 ','Eisenhowerlaan (R4) Northbound - E17 - Kennedylaan ','Binnenring-Drongen (R4) Northbound - Sluisweg - Industrieweg ','Buitenring-Drongen (R4) Southbound - Industrieweg - Sluisweg ','Paryslaan (R4) Northbound - Industrieweg - E34 ','Paryslaan (R4) Southbound - E34 - Industrieweg ','Drongensesteenweg (N466) Eastbound - E40 - Rooigemlaan ','Drongensesteenweg (N466) Westbound - Rooigemlaan - E40 ','Antwerpsesteenweg (N70) Westbound - R4 - Dampoort ','Antwerpsesteenweg (N70) Eastbound - Dampoort - R4 ','B401 (Northbound) - E17 - Vlaanderenstraat ','B401 (Southbound) - Vlaanderenstraat - E17 ','Brusselsesteenweg (N9) Westbound - R4 - Scheldekaai ','Brusselsesteenweg (N9) Eastbound - Scheldekaai - R4 ','Oudenaardsesteenweg (N60) Northbound - E17 - R40 ','Oudenaardsesteenweg (N60) Southbound - R40 - E17 ','Brugsevaart (N9) Southbound - R4 - Gebroeders de Smetstraat ','Brugsevaart (N9) Northbound - Gebroeders de Smetstraat - R4 '];
 var colors =[]; // will be filled with color for each route
 var infowindow; // the info window for extra info about a route
+var markers = [];
 var lines = []; // will be filled with line-object for each route
 var map;
 
@@ -26,6 +27,84 @@ var zoomThreshold = 14;
 var zoomedInWeight = 2;
 var zoomedOutWeight = 4;
 var hoverWeight = 6;
+// event settings
+var eventImage = "images/warning.png";
+
+/****************************
+ * initialiser for the map
+ ****************************/
+function initMap() {
+	map = new google.maps.Map(document.getElementById('map'), { // generate map in #map
+		"center": mapCenter, // center so all routes are visible
+		"zoom": zoomCurrent, // zoom so all routes are visible
+		"mapTypeId": google.maps.MapTypeId.TERRAIN, // set default to terrain
+		"mapTypeControl": true, // allow mapTypeControl
+		"mapTypeControlOptions": {
+			"mapTypeIds":[google.maps.MapTypeId.TERRAIN,google.maps.MapTypeId.SATELLITE,google.maps.MapTypeId.HYBRID], // allow terrain and sattelite (with or without labels)
+		},
+		"streetViewControl": false // disable street view
+	});
+	
+	map.addListener('click',function(event){ // close info window with click on map
+		if(infowindow!=null){
+			infowindow.close();
+		}
+	});
+	map.addListener('zoom_changed',zoomChanged); // change line weight on different zoom levels
+	
+	updateColors();
+	generateLines();
+}
+
+/****************************
+ * method called when zoom level of the map is changed
+ ****************************/
+function zoomChanged(event){
+	zoomCurrent = this.getZoom();
+	var weight = getWeight();
+	for(i in lines){
+		lines[i].setOptions({strokeWeight: weight});
+	}
+}
+ 
+/****************************
+ * creates new line objects to show on the map
+ * will remove old lines if they are present
+ ****************************/
+function generateLines(){
+	if(lines.length!==0){ // lines already exist
+		deleteLines();
+	}
+	
+	var weight = getWeight();
+	for(var i=0;i<coords.length;i++){ // for each route
+		var line = new google.maps.Polyline({ // create new line-object
+			path: coords[i], // path of current route
+			strokeColor: colors[i], // color of current route
+			strokeOpacity: 1.0, // non-transparent
+			strokeWeight: weight, // default weight
+			zIndex: getZIndex(colors[i]) 
+		});
+		
+		google.maps.event.addListener(line,'click',lineClicked); // shows info window on click
+		google.maps.event.addListener(line,'mouseover',lineHover);
+		google.maps.event.addListener(line,'mouseout',lineOut);
+		
+		line.setMap(map); // add line to map
+		line["id"]=i; // assign id to map, this is the index in the lines array
+		lines.push(line); // add line to lines-array
+	}
+}
+
+/****************************
+ * removes all lines from the map and deletes them
+ ****************************/
+function deleteLines(){
+	for(var i=0;i<lines.length;i++){
+		lines[i].setMap(null); // remove line from map
+	}
+	lines = []; // delete all lines
+}
 
 /****************************
  * generate the correct color for each route
@@ -63,41 +142,6 @@ function getZIndex(color){
 }
 
 /****************************
- * removes all lines from the map and deletes them
- ****************************/
-function deleteLines(){
-	for(var i=0;i<lines.length;i++){
-		lines[i].setMap(null); // remove line from map
-	}
-	lines = []; // delete all lines
-}
-
-/****************************
- * method called when zoom level of the map is changed
- ****************************/
-function zoomChanged(event){
-	zoomCurrent = this.getZoom();
-	var weight = getWeight();
-	for(i in lines){
-		lines[i].setOptions({strokeWeight: weight});
-	}
-}
-
-/****************************
- * method called when a line is clicked
- ****************************/
-function lineClicked(event){ // show info window on click
-	if(infowindow!=null){ // close old window if one exists
-		infowindow.close();
-	}
-	infowindow = new google.maps.InfoWindow({ // create info window
-		content: '<content id="infoWindow"><h1>'+labels[this['id']]+'</h1><p>Current time: <span id="currentTime">2 minutes</span></p><p>more details <a href="#">here</a></p></content>',
-		position: event['latLng'] // create window on location of cursor
-	});
-	infowindow.open(map); // show info window
-}
-
-/****************************
  * returns the current line weight
  ****************************/
 function getWeight(){
@@ -105,6 +149,34 @@ function getWeight(){
 		return zoomedInWeight;
 	}
 	return zoomedOutWeight; // zoomed out
+}
+
+/****************************
+ * generates an info window and adds it to the map
+ ****************************/
+function createInfoWindow(latLng,message){
+	if(infowindow!=null){ // close old window if one exists
+		infowindow.close();
+	}
+	infowindow = new google.maps.InfoWindow({ // create info window
+		content: message,
+		position: latLng // create window on given location
+	});
+	infowindow.open(map); // show info window
+	return infowindow;
+}
+
+/****************************
+ * method called when a line is clicked
+ * shows an info window about the route
+ ****************************/
+function lineClicked(event){
+	var message = '<content id="infoWindow">'
+						+ '<h1>'+labels[this['id']]+'</h1>'
+						+ '<p>Current time: <span id="currentTime">2 minutes</span></p>'
+						+ '<p>more details <a href="#">here</a></p>'
+					+'</content>';
+	createInfoWindow(event["latLng"],message);
 }
 
 /****************************
@@ -120,57 +192,36 @@ function lineHover(event){
 function lineOut(event){
 	this.setOptions({strokeWeight: getWeight()});
 } 
- 
+
 /****************************
- * creates new line objects to show on the map
+ * generates a traffic event and adds it to the map
+ * stores it in the markers array
  ****************************/
-function generateLines(){
-	if(lines.length!==0){ // lines already exist
-		deleteLines();
-	}
+function createMarker(latLng){
+	var marker = new google.maps.Marker({
+		"position": latLng,
+		"map": map,
+		"icon": eventImage,
+	});
 	
-	var weight = getWeight();
-	for(var i=0;i<coords.length;i++){ // for each route
-		var line = new google.maps.Polyline({ // create new line-object
-			path: coords[i], // path of current route
-			strokeColor: colors[i], // color of current route
-			strokeOpacity: 1.0, // non-transparent
-			strokeWeight: weight, // default weight
-			zIndex: getZIndex(colors[i]) 
-		});
-		
-		google.maps.event.addListener(line,'click',lineClicked); // shows info window on click
-		google.maps.event.addListener(line,'mouseover',lineHover);
-		google.maps.event.addListener(line,'mouseout',lineOut);
-		
-		line.setMap(map); // add line to map
-		line["id"]=i; // assign id to map, this is the index in the lines array
-		lines.push(line); // add line to lines-array
-	}
+	google.maps.event.addListener(marker,'click',markerClicked); // shows info window on click
+	markers.push(marker);
+	return marker;
 }
 
 /****************************
- * initialiser for the map
+ * removes all events from the map and deletes them
  ****************************/
-function initMap() {
-	map = new google.maps.Map(document.getElementById('map'), { // generate map in #map
-		"center": mapCenter, // center so all routes are visible
-		"zoom": zoomCurrent, // zoom so all routes are visible
-		"mapTypeId": google.maps.MapTypeId.TERRAIN, // set default to terrain
-		"mapTypeControl": true, // allow mapTypeControl
-		"mapTypeControlOptions": {
-			"mapTypeIds":[google.maps.MapTypeId.TERRAIN,google.maps.MapTypeId.SATELLITE,google.maps.MapTypeId.HYBRID], // allow terrain and sattelite (with or without labels)
-		},
-		"streetViewControl": false // disable street view
-	});
-	
-	map.addListener('click',function(event){ // close info window with click on map
-		if(infowindow!=null){
-			infowindow.close();
-		}
-	});
-	map.addListener('zoom_changed',zoomChanged); // change line weight on different zoom levels
-	
-	updateColors();
-	generateLines();
+function deletemarkers(){
+	for(var i=0;i<markers.length;i++){
+		markers[i].setMap(null);
+	}
+	markers = []; // deletes all events
+}
+
+/****************************
+ * method called when marker is clicked
+ ****************************/
+function markerClicked(event){
+	createInfoWindow(event["latLng"],"test");
 }
