@@ -134,6 +134,7 @@ function getZIndex(color){
 	var z_index = 0; // normal traffic is most to the back
 	if(color===heavyTraffic){ // heavy traffic in front
 		z_index = 2;
+	}else if(color===mediumTraffic){ // medium traffic inbetween
 		z_index = 1;
 	}
 	return z_index;
