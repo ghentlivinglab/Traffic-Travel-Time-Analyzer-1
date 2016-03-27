@@ -172,10 +172,10 @@ $(".collapse").click(togglePanel);
 function togglePanel(){
 	if($("#dashboard").css("left")==="250px"){
 		$("#dashboard").animate({left:-550});
-		$(this).children().attr("src","images/arrow-right.png","alt",">");
+		$(".collapse").children().attr({"src":"images/arrow-right.png","alt":">"});
 	} else{
 		$("#dashboard").animate({left:250});
-		$(this).children().attr("src","images/arrow-left.png","alt","<");
+		$(".collapse").children().attr({"src":"images/arrow-left.png","alt":"<"});
 	}
 
 }
