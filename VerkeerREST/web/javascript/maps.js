@@ -20,8 +20,8 @@ var mapCenter = {"lat":51.076317,"lng":3.7096717};
 var zoomCurrent = 12;
 // colors
 var normalTraffic = '#222222';
-var mediumTraffic = '#FF8800';
-var heavyTraffic = '#FF0000';
+var mediumTraffic = '#e67e22';
+var heavyTraffic = '#C10037';
 // line settings
 var zoomThreshold = 14;
 var zoomedInWeight = 2;
