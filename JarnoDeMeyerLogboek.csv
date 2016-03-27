@@ -56,3 +56,4 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 26/03/16,13:30,15:00,Thuis,Projectwerk,toevoegen methodes om gebeurtenissen weer te geven,29,
 27/03/16,15:15,16:30,Thuis,Projectwerk,nakijken routes en databasemethodes voor CoyoteProvider + misc. edits,,
 27/03/16,16:30,17:00,Thuis,Projectwerk,invullen peerevaluatie,,ook opzoeken wat iedereen precies heeft gedaan
+27/03/16,21:00,21:45,Thuis,Projectwerk,kleine fixes,,ook opzoeken van nut van CDN's bij hosting van javascript
