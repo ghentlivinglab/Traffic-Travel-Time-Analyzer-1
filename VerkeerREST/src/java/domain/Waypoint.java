@@ -1,3 +1,4 @@
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -27,12 +28,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "waypoints")
 @XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "Waypoint.findAll", query = "SELECT w FROM Waypoint w"),
-    @NamedQuery(name = "Waypoint.findById", query = "SELECT w FROM Waypoint w WHERE w.id = :id"),
-    @NamedQuery(name = "Waypoint.findBySequence", query = "SELECT w FROM Waypoint w WHERE w.sequence = :sequence"),
-    @NamedQuery(name = "Waypoint.findByLatitude", query = "SELECT w FROM Waypoint w WHERE w.latitude = :latitude"),
-    @NamedQuery(name = "Waypoint.findByLongitude", query = "SELECT w FROM Waypoint w WHERE w.longitude = :longitude")})
 public class Waypoint implements Serializable {
 
     private static final long serialVersionUID = 1L;
