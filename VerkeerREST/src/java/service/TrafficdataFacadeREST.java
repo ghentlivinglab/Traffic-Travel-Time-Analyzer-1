@@ -49,7 +49,7 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
             @QueryParam("to") Timestamp to,
             @QueryParam("routeID") Integer routeID,
             @QueryParam("providerID") Integer providerID,
-            @DefaultValue("30") @QueryParam("interval") Integer interval,
+            @DefaultValue("60") @QueryParam("interval") Integer interval,
             @DefaultValue("default") @QueryParam("mode") String mode,
             @QueryParam("weekday") Integer weekday) {
         String json = "";
@@ -74,7 +74,13 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
         else if (mode.equals("weekday")) {
             ArrayList<WeekdayTrafficdata> lijst = new ArrayList<>();
             for (Object[] o : objects) {
-                lijst.add(new WeekdayTrafficdata((int) o[0], ((BigDecimal) o[1]).doubleValue()));
+                System.out.println( o[0] + " " + ((BigDecimal) o[1]).doubleValue());
+                if(weekday != null){
+                    lijst.add(new WeekdayTrafficdata((int)(long) o[0], ((BigDecimal) o[1]).doubleValue()));
+                }
+                else{
+                    lijst.add(new WeekdayTrafficdata((int) o[0], ((BigDecimal) o[1]).doubleValue()));
+                }
             }
 
             json = g.serialize(lijst);
@@ -113,6 +119,9 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
             if (routeID != null) {
                 queryString += " and routeID=?4 ";
             }
+            if (weekday != null) {
+                queryString += " and WEEKDAY(TIMESTAMP)=?5 ";
+            }
             queryString += " GROUP BY WEEKDAY(TIMESTAMP)";
             q = getEntityManager().createNativeQuery(queryString);
             if (providerID != null) {
@@ -120,6 +129,9 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
             }
             if (routeID != null) {
                 q.setParameter(4, routeID);
+            }
+            if (weekday != null) {
+                q.setParameter(5, weekday);
             }
             q.setParameter(1, from, TemporalType.TIMESTAMP);
             q.setParameter(2, to, TemporalType.TIMESTAMP);
