@@ -30,11 +30,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "trafficdata")
 @XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "Trafficdata.findAll", query = "SELECT t FROM Trafficdata t"),
-    @NamedQuery(name = "Trafficdata.findById", query = "SELECT t FROM Trafficdata t WHERE t.id = :id"),
-    @NamedQuery(name = "Trafficdata.findByTimestamp", query = "SELECT t FROM Trafficdata t WHERE t.timestamp = :timestamp"),
-    @NamedQuery(name = "Trafficdata.findByTraveltime", query = "SELECT t FROM Trafficdata t WHERE t.traveltime = :traveltime")})
 public class Trafficdata implements Serializable {
 
     private static final long serialVersionUID = 1L;

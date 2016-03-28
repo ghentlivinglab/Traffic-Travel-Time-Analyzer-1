@@ -10,14 +10,11 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
+import javax.persistence.Query;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -35,41 +32,22 @@ public class RouteFacadeREST extends AbstractFacade<Route> {
         super(Route.class);
     }
 
-    @POST
-    @Override
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void create(Route entity) {
-        super.create(entity);
-    }
-
-    @PUT
-    @Path("{id}")
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void edit(@PathParam("id") Integer id, Route entity) {
-        super.edit(entity);
-    }
-
-    @DELETE
-    @Path("{id}")
-    public void remove(@PathParam("id") Integer id) {
-        super.remove(super.find(id));
-    }
-
     @GET
-    @Path("{id}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Route find(@PathParam("id") Integer id) {
-        System.out.println(id);
-        return super.find(id);
-    }
-
-    @GET
-    @Override
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Route> findAll() {
-        
-        System.out.println("findAll");
-        return super.findAll();
+    @Produces({MediaType.APPLICATION_JSON})
+    public List<Route> processRequest(@QueryParam("id") Integer routeID, @QueryParam("name") String routeName) {
+        if(routeID!= null){
+            Query q = getEntityManager().createQuery(prop.getProperty("SELECT_RE_ID"));
+            q.setParameter("routeID", routeID);
+            return q.getResultList();
+        }
+        if(routeName != null){
+            Query q = getEntityManager().createQuery(prop.getProperty("SELECT_RE_NAME"));
+            q.setParameter("name", routeName);
+            return q.getResultList();
+        }
+        else{
+            return super.findAll();
+        }
     }
 
     @Override

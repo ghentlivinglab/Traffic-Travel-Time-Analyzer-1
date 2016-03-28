@@ -5,20 +5,20 @@
  */
 package service;
 
+import com.owlike.genson.Genson;
 import domain.Waypoint;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
+import javax.persistence.Query;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import simpledomain.SimpleWaypoint;
 
 /**
  *
@@ -35,16 +35,33 @@ public class WaypointFacadeREST extends AbstractFacade<Waypoint> {
         super(Waypoint.class);
     }
 
-    
-
     @GET
-    @Override
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Waypoint> findAll() {
-        return super.findAll();
+    @Produces({MediaType.APPLICATION_JSON})
+    public String processRequest(@QueryParam("routeID") Integer routeID) {
+        String json = "";
+        Genson g = new Genson();
+        if(routeID != null){
+            Query q = getEntityManager().createQuery(prop.getProperty("SELECT_WE_ID"));
+            q.setParameter("routeID", routeID);
+            List<Object[]> objects = (List<Object[]>) q.getResultList();
+        
+            ArrayList<SimpleWaypoint> lijst = new ArrayList<>();
+            for (Object[] o : objects) {
+                System.out.println((int) o[0] +" " +(int) o[1]+" "+(double) o[2]+" " +(double) o[3]);
+                lijst.add(new SimpleWaypoint((int) o[0],(int) o[1],(double) o[2],(double) o[3]));
+            }
+            return g.serialize(lijst);
+        }
+        else{
+            Query q = getEntityManager().createQuery(prop.getProperty("SELECT_WE"));
+            List<Object[]> objects = (List<Object[]>) q.getResultList();
+            ArrayList<SimpleWaypoint> lijst = new ArrayList<>();
+            for (Object[] o : objects) {
+                lijst.add(new SimpleWaypoint((int) o[0],(int) o[1],(double) o[2],(double) o[3]));
+            }
+            return g.serialize(lijst);
+        }
     }
-
-    
 
     @Override
     protected EntityManager getEntityManager() {

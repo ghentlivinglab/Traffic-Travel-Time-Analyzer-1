@@ -5,34 +5,43 @@
  */
 package service;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
+import java.util.Properties;
 import javax.persistence.EntityManager;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author Robin
+ * @param <T>
  */
 public abstract class AbstractFacade<T> {
 
+    private static final Logger log = Logger.getLogger(AbstractFacade.class);
     private Class<T> entityClass;
+    protected Properties prop;
 
     public AbstractFacade(Class<T> entityClass) {
         this.entityClass = entityClass;
+        try{
+            prop = new Properties();
+            InputStream propsFile = getClass().getClassLoader().getResourceAsStream("service/entities.properties");
+            if(propsFile == null){
+                log.error("service/entities.properties kon niet geladen worden.");
+            }else{
+                prop.load(propsFile);
+            }
+        }catch( FileNotFoundException e) {
+            log.error("service/entities.properties niet gevonden.");
+        }catch( IOException ee){
+            log.error("service/entities.properties niet gevonden.");
+        }
     }
 
     protected abstract EntityManager getEntityManager();
-
-    public void create(T entity) {
-        getEntityManager().persist(entity);
-    }
-
-    public void edit(T entity) {
-        getEntityManager().merge(entity);
-    }
-
-    public void remove(T entity) {
-        getEntityManager().remove(getEntityManager().merge(entity));
-    }
 
     public T find(Object id) {
         return getEntityManager().find(entityClass, id);
@@ -42,23 +51,6 @@ public abstract class AbstractFacade<T> {
         javax.persistence.criteria.CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
         cq.select(cq.from(entityClass));
         return getEntityManager().createQuery(cq).getResultList();
-    }
-
-    public List<T> findRange(int[] range) {
-        javax.persistence.criteria.CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
-        cq.select(cq.from(entityClass));
-        javax.persistence.Query q = getEntityManager().createQuery(cq);
-        q.setMaxResults(range[1] - range[0] + 1);
-        q.setFirstResult(range[0]);
-        return q.getResultList();
-    }
-
-    public int count() {
-        javax.persistence.criteria.CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
-        javax.persistence.criteria.Root<T> rt = cq.from(entityClass);
-        cq.select(getEntityManager().getCriteriaBuilder().count(rt));
-        javax.persistence.Query q = getEntityManager().createQuery(cq);
-        return ((Long) q.getSingleResult()).intValue();
     }
     
 }
