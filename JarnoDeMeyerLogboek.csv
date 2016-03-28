@@ -50,6 +50,10 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 23/03/16,11:45,11:30,Thuis,Projectwerk,kaartweergave routes,29,code optimalisaties
 24/03/16,08:00,08:15,Thuis,Projectwerk,kaartweergave routes,29,controle routes
 24/03/16,13:30,17:45,School,Projectwerk,kaartweergave routes,29,
-24/03/16,22:00,23:59,Thuis,Projectwerk,kaartweergave routes,29,
+24/03/16,21:59,23:59,Thuis,Projectwerk,kaartweergave routes,29,
 25/03/16,00:00,00:30,Thuis,Projectwerk,animatie van dashboard,24,
 25/03/16,13:30,16:30,Thuis,Projectwerk,algemene styling,24,
+26/03/16,13:30,15:00,Thuis,Projectwerk,toevoegen methodes om gebeurtenissen weer te geven,29,
+27/03/16,15:15,16:30,Thuis,Projectwerk,nakijken routes en databasemethodes voor CoyoteProvider + misc. edits,,
+27/03/16,16:30,17:00,Thuis,Projectwerk,invullen peerevaluatie,,ook opzoeken wat iedereen precies heeft gedaan
+27/03/16,21:00,21:45,Thuis,Projectwerk,kleine fixes,,ook opzoeken van nut van CDN's bij hosting van javascript

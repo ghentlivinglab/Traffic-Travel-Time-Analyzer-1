@@ -167,18 +167,22 @@ $.getJSON( "http://localhost:8080/VerkeerREST/api/route", function( json ) {
 	}*/
 });
 
-$(".collapse").click(function(){
+$(".collapse").click(togglePanel);
+
+function togglePanel(){
 	if($("#dashboard").css("left")==="250px"){
 		$("#dashboard").animate({left:-550});
-		$(this).children().attr("src","images/arrow-right.png","alt",">");
+		$(".collapse").children().attr({"src":"images/arrow-right.png","alt":">"});
 	} else{
 		$("#dashboard").animate({left:250});
-		$(this).children().attr("src","images/arrow-left.png","alt","<");
+		$(".collapse").children().attr({"src":"images/arrow-left.png","alt":"<"});
 	}
 
-})
+}
 
-$("article").click(function(){
+$("article").click(toggleGraph);
+
+function toggleGraph(){
 	$(this).find("div.graph-shadow").slideToggle();
 	$(this).find("div.graph").slideToggle();
 	
@@ -189,12 +193,34 @@ $("article").click(function(){
 		$(this).find("div.arrow").toggle(0);
 		$(this).animate({'padding-bottom':"0px"});
 	}
-});
+}
 
 for(var i=0; i<routes.length; i++){
 	console.log(routes[i].id);
 }
 
+// leest de key-value paren uit in de URL
+// eg:
+// bij de url http://test.com/?food=banana&drink=beer
+// zal de methode getQueryVariable("food") "banana" teruggeven
+function getQueryVariable(variable)
+{
+       var query = window.location.search.substring(1);
+       var vars = query.split("&");
+       for (var i=0;i<vars.length;i++) {
+               var pair = vars[i].split("=");
+               if(pair[0] == variable){return pair[1];}
+       }
+       return(false);
+}
+
 $(document).ready( function(){
 	$("#dashboard .content").niceScroll({zindex:999,cursorcolor:"#CCCCCC"});
+});
+
+$(window).load( function(){
+	if(getQueryVariable("mapView")==="true"){
+		togglePanel();
+		// window.setTimeout(togglePanel,4000);
+	}
 });
