@@ -58,3 +58,4 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 27/03/16,16:30,17:00,Thuis,Projectwerk,invullen peerevaluatie,,ook opzoeken wat iedereen precies heeft gedaan
 27/03/16,21:00,21:45,Thuis,Projectwerk,kleine fixes,,ook opzoeken van nut van CDN's bij hosting van javascript
 28/03/16,16:30,17:15,Thuis,Projectwerk,Coyote connector,9,aanmaken database om coyote naam aan route-id te koppelen
+29/03/16,16:00,17:45,Thuis,Projectwerk,Coyote connector,9,route-koppeling en testen schrijven
