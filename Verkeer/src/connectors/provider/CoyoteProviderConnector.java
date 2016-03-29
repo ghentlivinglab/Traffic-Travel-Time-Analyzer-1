@@ -28,8 +28,8 @@ public class CoyoteProviderConnector extends AProviderConnector {
     private final Map<String, Integer> mapping;
 
     /**
-     * Function that is called in the constructor to generate the mapping between
-     * the Coyote ID and the database-ID
+     * Function that is called in the constructor to generate the mapping
+     * between the Coyote ID and the database-ID
      */
     private void fillMapping() {
         mapping.put("Gasmeterlaan (R40) Eastbound - Palinghuizen - Neuseplein", 1);
@@ -87,10 +87,31 @@ public class CoyoteProviderConnector extends AProviderConnector {
     public void triggerUpdate() {
         if (updateCounter % updateInterval == 0) {
             try {
-                Runtime runtime = Runtime.getRuntime();
-                String[] perlCode = {"perl", "../Coyote_Perl/fetcher.pl", providerEntry.getId() + "", providerEntry.getName(), dataFile};
-                Process process = runtime.exec(perlCode);
-                process.waitFor();
+                runPerl();
+                readFile();
+            } catch (FileNotFoundException e) {
+                log.error("Perl script has not generated any output.");
+            } catch (IOException | InterruptedException e) {
+                System.out.println("fail");
+                updateCounter++;
+            }
+        }
+    }
+
+    /**
+     * Runs the perl-script named fetcher.pl which is in the ../Coyote_Perl folder
+     * @throws IOException If an I/O error occurs when running the Perl-script
+     * @throws InterruptedException if the current thread is interrupted by another thread while it is waiting for the Perl-script to finish, then the wait is ended and an InterruptedException is thrown.
+     */
+    protected void runPerl() throws IOException, InterruptedException {
+        Runtime runtime = Runtime.getRuntime();
+        String[] perlCode = {"perl", "../Coyote_Perl/fetcher.pl", providerEntry.getId() + "", providerEntry.getName(), dataFile};
+        Process process = runtime.exec(perlCode);
+        process.waitFor();
+    }
+    
+    protected void readFile() throws FileNotFoundException{
+        
                 File file = new File(dataFile);
                 Scanner buffer = new Scanner(file);
                 buffer.useDelimiter("\n|:");
@@ -112,7 +133,13 @@ public class CoyoteProviderConnector extends AProviderConnector {
                             data.setTravelTime(travelTime);
 
                             String name = entry.get("route_name");
-                            int id = mapping.get(name);
+                            int id;
+                            try {
+                                id = mapping.get(name);
+                            } catch (NullPointerException e) {
+                                log.error("Route \"" + name + "\" is not in the database.");
+                                id = -1;
+                            }
                             RouteEntry route = dbConnector.findRouteEntryByID(id);
 
                             data.setRoute(route);
@@ -132,12 +159,10 @@ public class CoyoteProviderConnector extends AProviderConnector {
                     log.info(dataFile + " not deleted");
                 }
 
-            } catch (FileNotFoundException e) {
-                log.error("Perl script has not generated any output.");
-            } catch (IOException | InterruptedException e) {
-                System.out.println("fail");
-                updateCounter++;
-            }
-        }
     }
+
+    protected String getDataFile() {
+        return dataFile;
+    }
+    
 }

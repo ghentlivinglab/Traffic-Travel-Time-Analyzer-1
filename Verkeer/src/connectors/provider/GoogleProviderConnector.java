@@ -73,8 +73,6 @@ public class GoogleProviderConnector extends AProviderConnector {
                             return data;
                         }
                         // Er ging iets fout
-                        // TODO: Statuscodes later uitbreiden met: 
-                        // https://developer.here.com/rest-apis/documentation/traffic/topics/http-status-codes.html
                         throw new RouteUnavailableException(providerName,"Something went wrong. Statuscode: "+ response.getStatusCode()+ " "+ response.getStatusText());
                     }
                 });
