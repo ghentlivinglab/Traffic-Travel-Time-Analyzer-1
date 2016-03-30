@@ -4,10 +4,14 @@ $dashboard-width: 800px;
 $gray: #4D4D4D;
 $background-gray: #F7F8FA;
 $light-gray: #EEE;
-$red: #C10037;//#FF6363;
 $graph-height: 300px;
 $blue: #63A7FF;
 $line-gray: #A8A8A8;
+
+// Kleuren die bij Stad Gent logo passen voor warning etc
+$red: #C10037;//#FF6363;
+$orange: #E79334;
+$green: #20D713;
 
 @mixin bg-gradient-t2b($start-colour, $end-colour) {
     background-image: -webkit-gradient(linear, left top, left bottom, from($start-colour), to($end-colour));

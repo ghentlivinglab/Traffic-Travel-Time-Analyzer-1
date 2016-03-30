@@ -65,6 +65,7 @@ var Route = {
 	id: 0,
 	length: 0,
 	name: '',
+	description: '',
 	waypoints: [], // Array van google.maps.LatLng
 
 	// avgData is een mapping van de providerId op een TrafficGraph object
@@ -94,11 +95,13 @@ var Route = {
 	eventData: {
 	},
 
-	create: function(id, name, length, waypoints) {
+	// Constructor, waypoints is een optioneel argument
+	create: function(id, name, description, length, waypoints) {
 		var obj = Object.create(this);
 		obj.id = id;
 		obj.length = length;
 		obj.name = name;
+		obj.description = description;
 
 		// Waypoints moet een array zijn
 		if (waypoints !== undefined && waypoints instanceof Array){

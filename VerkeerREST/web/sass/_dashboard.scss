@@ -17,6 +17,11 @@
 		// padding NIET via left, right, top, bottom doen, anders kloppen scrollbalk posities niet
 		padding: 30px 20px 0 40px;
 		overflow: auto;
+
+		.loading {
+			text-align: center;
+			padding: 50px 0;
+		}
 	}
 	.shadow {
 		left: $dashboard-width;
@@ -70,9 +75,13 @@ article {
 			font-size: 15pt;
 			font-weight: 500;
 			padding-bottom: 5px;
+			color: $green;
 
 			&.red {
 				color: $red;
+			}
+			&.orange {
+				color: $orange;
 			}
 		}
 
@@ -152,7 +161,7 @@ article {
 			padding-bottom: $graph-height + 20px;
 		}
 	}
-	
+
 	.hidden {
 		height: 0px;
 		position: absolute;

@@ -4,9 +4,15 @@ var providers = [];
 var routes = [];
 var events = [];
 
-// Routes ophalen
-Api.syncRoutes();
-
+// Kleine uitbreiding op mustache
+// Om een  template te renderen die in onze script tags gedefineerd staan
+// Gebeurt met Mustache
+// renderTemplate('route', {name: "...", ...});
+Mustache.renderTemplate = function (template_name, view) {
+	var template = document.getElementById("template-"+template_name).innerHTML;
+	Mustache.parse(template); // Speeding things up in the future
+ 	return Mustache.render(template, view);
+}
 
 function togglePanel(){
 	if($("#dashboard").css("left")==="250px"){
@@ -50,14 +56,15 @@ function toggleGraph(){
 		});
 
 	} else{
-		box.slideUp('fast', function() {});
+		box.slideUp('fast', function() {
+			// Zouden we eigenlijk kunnen houden, maar de grafieken zijn nogal zwaar voor een browser
+			// Het is dus beter om ze te verwijderen en opnieuw aan te maken wanneer nodig
+			// De data die ze bevatten is toch gecached in de objecten
+			box.remove();
+		});
 	}
 }
 
-
-for(var i=0; i<routes.length; i++){
-	console.log(routes[i].id);
-}
 
 // leest de key-value paren uit in de URL
 // eg:
@@ -81,6 +88,8 @@ $(document).ready( function(){
 	}
 	$("article").click(toggleGraph);
 	$(".collapse").click(togglePanel);
+
+	Dashboard.init();
 });
 
 $(window).load( function(){
