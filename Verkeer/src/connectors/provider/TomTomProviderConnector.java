@@ -58,7 +58,7 @@ public class TomTomProviderConnector extends AProviderConnector {
                             return data;
                         }
 
-                        String msg = fetchErrorFromJSON(response.getResponseBody());
+                        String msg = fetchErrorFromJSON(response.getResponseBody()) + " --> Route ["+ route.getId()+"]: "+ route.getName();
                         throw new RouteUnavailableException(providerName,msg);
                     }
 
@@ -69,7 +69,7 @@ public class TomTomProviderConnector extends AProviderConnector {
                 });
                 buzyRequests.add(f);
                 try {
-                    sleep(250);
+                    sleep(300);
                 } catch (InterruptedException ex) {
                     log.fatal(ex);
                 }
@@ -80,18 +80,19 @@ public class TomTomProviderConnector extends AProviderConnector {
 
     public String fetchErrorFromJSON(String json) {
         try {
-            // Try to read a HERE error. (HERE specific error structure)
+            // Try to read a TOMTOM error. (TOMTOM specific error structure)
             Genson genson = new Genson();
             Map<String, Object> map = genson.deserialize(json, Map.class);
-            Map<String, Object> summary = (Map<String, Object>) map.get("error");
-            String desc = (String) map.get("description");
-            return desc;
+            Map<String, Object> error = (Map<String, Object>) map.get("error");
+            String description = (String) error.get("description");
+            
+            return description;
         } catch (Exception ex2) {
-            return "JSON ERROR data unreadable (expected other structure): "+json;
+            // Not expected ERROR JSON data
+            return "JSON ERROR data unreadable (expected other structure) " + json;
         }
-        
     }
-
+    
     public DataEntry fetchDataFromJSON(String json, RouteEntry traject) throws RouteUnavailableException {
         try {
             Genson genson = new Genson();
