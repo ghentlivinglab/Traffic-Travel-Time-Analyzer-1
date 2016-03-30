@@ -58,7 +58,7 @@ public class TomTomProviderConnector extends AProviderConnector {
                             return data;
                         }
 
-                        String msg = response.getResponseBody();
+                        String msg = fetchErrorFromJSON(response.getResponseBody()) + " --> Route ["+ route.getId()+"]: "+ route.getName();
                         throw new RouteUnavailableException(providerName,msg);
                     }
 
@@ -78,6 +78,21 @@ public class TomTomProviderConnector extends AProviderConnector {
         updateCounter++;
     }
 
+    public String fetchErrorFromJSON(String json) {
+        try {
+            // Try to read a TOMTOM error. (TOMTOM specific error structure)
+            Genson genson = new Genson();
+            Map<String, Object> map = genson.deserialize(json, Map.class);
+            Map<String, Object> error = (Map<String, Object>) map.get("error");
+            String description = (String) error.get("description");
+            
+            return description;
+        } catch (Exception ex2) {
+            // Not expected ERROR JSON data
+            return "JSON ERROR data unreadable (expected other structure) " + json;
+        }
+    }
+    
     public DataEntry fetchDataFromJSON(String json, RouteEntry traject) throws RouteUnavailableException {
         try {
             Genson genson = new Genson();
