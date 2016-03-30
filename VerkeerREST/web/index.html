@@ -22,7 +22,7 @@
 					<h2>{{ description }}</h2>
 				</header>
 				<div class="left">
-					<p class="status">{{ status }}</p>
+					<p class="{{ color }} status">{{ status }}</p>
 					<p class="speed">{{ live.time }} min.  {{ live.speed }} km/h</p>
 					<p class="avg-speed">{{ avg.time }} min.  {{ avg.speed }} km/h</p>
 				</div>
@@ -48,22 +48,22 @@
 		<hr>
 		<h1>Dashboard</h1>
 		<label>
-			<input type="radio" name="dashboard" checked/>
+			<input type="radio" name="dashboard" onclick="Dashboard.setMode(Dashboard.LIVE);" checked/>
 			<span></span>
 			Vandaag
 		</label>
 		<label>
-			<input type="radio" name="dashboard" />
+			<input type="radio" name="dashboard" onclick="Dashboard.setMode(Dashboard.INTERVAL);"/>
 			<span></span>
 			Periode
 		</label>
 		<label>
-			<input type="radio" name="dashboard" />
+			<input type="radio" name="dashboard" onclick="Dashboard.setMode(Dashboard.COMPARE_INTERVALS);"/>
 			<span></span>
 			Vergelijk periode
 		</label>
 		<label>
-			<input type="radio" name="dashboard" />
+			<input type="radio" name="dashboard" onclick="Dashboard.setMode(Dashboard.COMPARE_DAYS);"/>
 			<span></span>
 			Vergelijk dagen
 		</label>

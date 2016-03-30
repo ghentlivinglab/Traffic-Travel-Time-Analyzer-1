@@ -42,7 +42,7 @@ var TrafficGraph = {
 		*/
 	},
 	create: function(representation, data) {
-		var obj = Object.create(this);
+		var obj = Object.create(TrafficGraph);
 		obj.representation = representation;
 
 		// Als data niet gedefinieerd: niet doorgeven
@@ -68,18 +68,63 @@ var Route = {
 	description: '',
 	waypoints: [], // Array van google.maps.LatLng
 
+	// Geeft status object terug op basis van de liveData en avgData
+	getStatus: function(liveData, avgData){
+		if (liveData.speed < avgData.speed*0.7){
+			return {
+				text: 'Stilstaand verkeer',
+				color: 'red'
+			};
+		}
+		if (liveData.speed < avgData.speed*0.9){
+			return {
+				text: 'Traag verkeer',
+				color: 'orange'
+			};
+		}
+
+		return {
+			text: 'Vlot verkeer',
+			color: 'green'
+		};
+	},
 	// avgData is een mapping van de providerId op een TrafficGraph object
 	// We kunnen dus altijd een bepaalde gemiddelde snelheid en tijd lezen voor een bepaalde provider (of alles)
 	// Bv. stel Waze heeft id = 2, dan kunnen we de laatst gesynchroniseerde avgData halen door avgData[2],
 	// als die niet bestaat, dan moeten we deze nog ophalen uit de API
 	// Bv. avgData[providerId] -> TrafficGraph
+	hasAvgData: function(providerId) {
+		return typeof this.avgData[providerId] != "undefined";
+	},
+	hasRecentAvgRepresentation: function(providerId) {
+		if (!this.hasAvgData(providerId)){
+			return false;
+		}
+		if ((new Date) - this.avgData[providerId].representation.createdOn > 5*60*1000) { // Als ouder dan 5 minuten -> false
+			return false;
+		}
+		return true;
+	},
 	avgData: {
 
 	},
 
 	// liveData is een mapping van de providerId op een TrafficGraph object, en bevat de meest recente metingen
 	// Bv. liveData[providerId] -> TrafficGraph
+	hasLiveData: function(providerId) {
+		return typeof this.liveData[providerId] != "undefined";
+	},
+	hasRecentLiveRepresentation: function(providerId) {
+		if (!this.hasLiveData(providerId)){
+			return false;
+		}
+		if ((new Date) - this.liveData[providerId].representation.createdOn > 5*60*1000) { // Als ouder dan 5 minuten -> false
+			return false;
+		}
+		return true;
+	},
 	liveData: {
+
 	},
 
 	// Data per dag wordt hiet opgeslagen (in grafiekvorm)
@@ -93,6 +138,7 @@ var Route = {
 	// Kan zijn voor maandag, dinsdag, woensdag, ... zondag (0-6) Maandag = 0, zondag = 6
 	// bv. data[maandag][providerId] -> TrafficGraph
 	eventData: {
+
 	},
 
 	// Constructor, waypoints is een optioneel argument
@@ -102,6 +148,12 @@ var Route = {
 		obj.length = length;
 		obj.name = name;
 		obj.description = description;
+
+		// Nieuwe referenties maken (anders passen we dezelfde referenties aan voor alle objeten)
+		obj.avgData = {};
+		obj.liveData = {};
+		obj.dayData = {};
+		obj.eventData = {};
 
 		// Waypoints moet een array zijn
 		if (waypoints !== undefined && waypoints instanceof Array){

@@ -4,7 +4,9 @@
 
 var Dashboard = {
 
-	mode: 0,
+	mode: 0, // Selected mode
+	provider: -1, // Selected provider
+
 	// Mogelijke dashboard standen cte's
 	LIVE: 0, // Vandaag
 	INTERVAL: 1, // Periode
@@ -12,6 +14,11 @@ var Dashboard = {
 	COMPARE_DAYS: 3, // Vergelijk dagen
 
 	init: function() {
+		this.reload();
+	},
+
+	setMode: function(mode){
+		this.mode = mode;
 		this.reload();
 	},
 
@@ -47,32 +54,70 @@ var Dashboard = {
 	// Genereert HTML voor live modus
 	reloadLive: function() {
 		if (routes.length == 0){
-			console.log("syncRoutes");
+			console.log("sync routes");
 			Api.syncRoutes(Dashboard.reload, this);
 			this.displayLoading();
 			return;
 		}
-		console.log("render");
-		var dashboard = $('#dashboard .content');
-		var str = '';
+
+		var hasData = true;
+		var p = this.provider;
+
 		routes.forEach(function(route){
+			if (!route.hasRecentAvgRepresentation(p) || !route.hasRecentLiveRepresentation(p)){
+				hasData = false;
+			}
+		});
+		if (!hasData){
+			console.log("sync live data");
+			Api.syncLiveData(p, Dashboard.reload, this);
+			this.displayLoading();
+			return;
+		}
+
+		var dashboard = $('#dashboard .content');
+
+		var abnormaal = '';
+		var str = '';
+
+
+		routes.forEach(function(route){
+			var avg = route.avgData[p].representation;
+			var live = route.liveData[p].representation;
+			var status = route.getStatus(live, avg);
+
 			var data = {
 				name: route.name,
 				description: route.description,
-				status: 'Vlot verkeer',
+				status: status.text,
+				color: status.color,
 				live: {
-					time: 12,
-					speed: 78
+					time: live.time,
+					speed:  live.speed
 				},
 				avg: {
-					time: 12,
-					speed: 78
+					time: avg.time,
+					speed: avg.speed
 				},
 				warnings: ['Ongeval']
 			};
-			str += Mustache.renderTemplate("route", data);
+			if (status.color != 'green'){
+				abnormaal += Mustache.renderTemplate("route", data);
+			}else{
+				str += Mustache.renderTemplate("route", data);
+			}
 		});
-		dashboard.html(str);
+		var t = '';
+		if (abnormaal.length > 0){
+			t += '<h1>Traag verkeer</h1>'+abnormaal;
+
+			if (str.length > 0)
+				t += '<hr>';
+		}
+		if (str.length > 0){
+			t += '<h1>Vlot verkeer</h1>'+str;
+		}
+		dashboard.html(t);
 	},
 	// Genereert HTML voor periode modus
 	reloadInterval: function() {

@@ -2,9 +2,9 @@
 // Bevat voornamelijk functies
 
 var DummyApi = {
-	delay: 1, // Fake delay
+	delay: 1, // Fake delay die gebruikt zal worden
 
-	// Roept callback aan met delay ingesteld in object
+	// Roept callback aan met delay ingesteld in object -> om async te testen
 	callDelayed: function(callback, context){
 		setTimeout(function() {
 			callback.call(context);
@@ -26,6 +26,32 @@ var DummyApi = {
 		// Callback 
 		this.callDelayed(callback, context);
 	},
+
+	// Haalt de livedata van alle routes op 
+	syncLiveData: function(provider, callback, context) {
+		var p = provider;
+		for (var i = 0; i < routes.length; i++) {
+			var route = routes[i];
+		
+			var avgData = TrafficData.create(Math.floor((Math.random() * 40) + 50), Math.floor((Math.random() * 10) + 6));
+			var liveData = TrafficData.create(Math.floor((Math.random() * 40) + 50), Math.floor((Math.random() * 10) + 6));
+
+			if (route.hasAvgData(p)){
+				route.avgData[p].representation = avgData;
+			}else{
+				route.avgData[p] = TrafficGraph.create(avgData);
+			}
+
+			if (route.hasLiveData(p)){
+				route.liveData[p].representation = liveData;
+			}else{
+				route.liveData[p] = TrafficGraph.create(liveData);
+			}
+		}
+
+		this.callDelayed(callback, context);
+	},
+
 	syncProviders: function(callback, context) {
 		providers = [];
 		providers.push(Provider.create(-1, 'Alles'));
