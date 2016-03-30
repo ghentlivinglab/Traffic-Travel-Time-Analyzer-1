@@ -2,50 +2,49 @@
 
 google.charts.load("current", {packages:["corechart"]});
 //google.charts.setOnLoadCallback(drawChart);
-function drawChart(element, width, height) {
-	var arr = [
-	      ['Tijdstip', 'Vandaag', 'Normaal', 'Uren'],
-	];
 
+// 6.25 -> 6:15
+function floatToHour(i){
+	var hour = Math.floor(i);
+	var minutes = ("00"+(i-hour)*60).slice(-2); // Minuten padden zodat het altijd 2 lang is
+	if (hour == 24){
+		hour = 0;
+	}
+	return hour+':'+minutes;
+}
 
-	// Random genereren (tijdelijk!)
-	var base = 8;
-	var base2 = 8;
-	for (var i = 6; i <= 24; i+=0.25) {
-		if (i > 7 && i < 10 || i > 16 && i < 18){
-			base += Math.random();
-			base2 += Math.random();
-		}
-		if (i > 18){
-			base -= Math.random();
-			base2 -= Math.random();
-		}
-		if (base > 6){
-			base += Math.random() * 1 - 0.7;
-		}else{
-			base += Math.random() * 2;
-		}
-		if (base2 > 5){
-			base2 += Math.random() * 1 - 0.7;
-		}else{
-			base2 += Math.random() * 2;
-		}
-		if (i > 14){
-			base = null;
-		}
-		var hour = Math.floor(i);
-		var minutes = ("00"+(i-hour)*60).slice(-2); // Minuten padden zodat het altijd 2 lang is
-		if (hour == 24){
-			hour = 0;
-		}
-		if (hour == i){
-			arr.push([hour+":"+minutes, base, base2, base]);
-		}else{
-			arr.push([hour+":"+minutes, base, base2, null]);
-		}
+// Data bevat formaat:
+/*
+	{
+		'Vandaag': {
+			6: 123,
+			6.25: 351,
+			...
+		},
+		...
 	}
 
-	var data = google.visualization.arrayToDataTable
+*/
+function drawChart(element, data, width, height) {
+	var arr = [
+	      ['Tijdstip'],
+	];
+
+	for (var key in data) {
+			arr[0].push(key);
+	}
+	console.log(data);
+
+	for (var i = 6; i <= 24; i+= Api.intervalDecimal) {
+		var a = [floatToHour(i)];
+
+		for (var key in data) {
+			a.push(data[key][i]);
+		}
+		arr.push(a);
+	}
+	console.log(arr);
+	var d = google.visualization.arrayToDataTable
 	    (arr);
 
 	var options = {
@@ -80,5 +79,5 @@ function drawChart(element, width, height) {
 	};
 
 	var chart = new google.visualization.LineChart(element);
-	chart.draw(data, options);
+	chart.draw(d, options);
 }

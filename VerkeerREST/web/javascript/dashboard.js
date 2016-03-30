@@ -51,6 +51,41 @@ var Dashboard = {
 		dashboard.html('<p>Deze functie is nog niet geïmplementeerd</p>');
 	},
 
+	// Opent de live grafiek = grafiek in de vandaag weergave
+	// element = het DOM element waarin we de grafiek willen toevoegen
+	openLiveGraph: function(routeId, element, width, height) {
+		console.log('OpenLiveGraph('+routeId+')');
+		var route = routes[routeId];
+		var counterObject = {counter: 0, route: route, element: element, width: width, height: height}; // Referentie die we gaan meegeven
+		// Deze counter voorkomt dat we openLiveGraph te snel opnieuw aanroepen als 1 van de requests klaar is
+		var callback = function(){
+			console.log(this.counter);
+			this.counter--;
+			if (this.counter == 0){
+				Dashboard.openLiveGraph(this.route.id, this.element, this.width, this.height);
+			}
+		};
+
+		if (!route.hasRecentAvgData(this.provider)){
+			console.log("avg");
+
+			counterObject.counter++;
+			Api.syncAvgGraph(route.id, this.provider, callback, counterObject);
+		}
+		if (!route.hasRecentLiveData(this.provider)){
+			console.log("live");
+			counterObject.counter++;
+			Api.syncLiveGraph(route.id, this.provider, callback, counterObject);
+		}
+		if (counterObject.counter == 0){
+			var data = {
+				'Vandaag': route.liveData[this.provider].data,
+				'Normaal': route.avgData[this.provider].data,
+			};
+			drawChart(element, data, width, height);
+		}
+	},
+
 	// Genereert HTML voor live modus
 	reloadLive: function() {
 		if (routes.length == 0){
@@ -87,6 +122,7 @@ var Dashboard = {
 			var status = route.getStatus(live, avg);
 
 			var data = {
+				id: route.id,
 				name: route.name,
 				description: route.description,
 				status: status.text,
@@ -99,7 +135,7 @@ var Dashboard = {
 					time: avg.time,
 					speed: avg.speed
 				},
-				warnings: ['Ongeval']
+				warnings: [] // TODO: wanneer we oorzaken toevoegen moeten deze hier doorgegeven worden
 			};
 			if (status.color != 'green'){
 				abnormaal += Mustache.renderTemplate("route", data);

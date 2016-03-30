@@ -3,6 +3,8 @@
 
 var DummyApi = {
 	delay: 1, // Fake delay die gebruikt zal worden
+	interval: 15, // minute interval in graphs
+	intervalDecimal: 0.25, // (60/interval)
 
 	// Roept callback aan met delay ingesteld in object -> om async te testen
 	callDelayed: function(callback, context){
@@ -13,15 +15,15 @@ var DummyApi = {
 
 	syncRoutes: function(callback, context) {
 		routes = [];
-		routes.push(Route.create(2, 'Route 1', 'Van E40 tot X', 2854));
-		routes.push(Route.create(3, 'Route 2', 'Van E40 tot X', 2254));
-		routes.push(Route.create(4, 'Route 3', 'Van E40 tot X', 1254));
-		routes.push(Route.create(5, 'Route 4', 'Van E40 tot X', 6783));
-		routes.push(Route.create(6, 'Route 5', 'Van E40 tot X', 234));
-		routes.push(Route.create(7, 'Route 6', 'Van E40 tot X', 2823));
-		routes.push(Route.create(8, 'Route 7', 'Van E40 tot X', 3854));
-		routes.push(Route.create(9, 'Route 8', 'Van E40 tot X', 4854));
-		routes.push(Route.create(10, 'Route 9', 'Van E40 tot X', 1858));
+		routes[2] = Route.create(2, 'Route 1', 'Van E40 tot X', 2854);
+		routes[3] = Route.create(3, 'Route 2', 'Van E40 tot X', 2254);
+		routes[4] = Route.create(4, 'Route 3', 'Van E40 tot X', 1254);
+		routes[5] = Route.create(5, 'Route 4', 'Van E40 tot X', 6783);
+		routes[6] = Route.create(6, 'Route 5', 'Van E40 tot X', 234);
+		routes[7] = Route.create(7, 'Route 6', 'Van E40 tot X', 2823);
+		routes[8] = Route.create(8, 'Route 7', 'Van E40 tot X', 3854);
+		routes[9] = Route.create(9, 'Route 8', 'Van E40 tot X', 4854);
+		routes[10] = Route.create(10, 'Route 9', 'Van E40 tot X', 1858);
 
 		// Callback 
 		this.callDelayed(callback, context);
@@ -30,8 +32,7 @@ var DummyApi = {
 	// Haalt de livedata van alle routes op 
 	syncLiveData: function(provider, callback, context) {
 		var p = provider;
-		for (var i = 0; i < routes.length; i++) {
-			var route = routes[i];
+		routes.forEach(function(route){
 		
 			var avgData = TrafficData.create(Math.floor((Math.random() * 40) + 50), Math.floor((Math.random() * 10) + 6));
 			var liveData = TrafficData.create(Math.floor((Math.random() * 40) + 50), Math.floor((Math.random() * 10) + 6));
@@ -47,6 +48,73 @@ var DummyApi = {
 			}else{
 				route.liveData[p] = TrafficGraph.create(liveData);
 			}
+		});
+
+		this.callDelayed(callback, context);
+	},
+
+	// Haalt de gemiddelde grafiek op (gemiddelde van de afgelopen maand voor elk uur)
+	syncAvgGraph: function(routeId, providerId, callback, context){
+		var route = routes[routeId];
+
+		var base = 8;
+		var data = {};
+
+		for (var i = 6; i <= 24; i+=this.intervalDecimal) {
+			if (i > 7 && i < 10 || i > 16 && i < 18){
+				base += Math.random();
+			}
+			if (i > 18){
+				base -= Math.random();
+			}
+			if (base > 5){
+				base += Math.random() * 1 - 0.7;
+			}else{
+				base += Math.random() * 2;
+			}
+			data[i] = base;
+		}
+
+		if (route.hasAvgData(providerId)){
+			route.avgData[providerId].setData(data);
+		}else{
+			// dit kan niet
+			console.error('Route '+route.name+' heeft geen avgData voor provider met id '+providerId);
+		}
+
+		this.callDelayed(callback, context);
+	},
+
+	// Haalt de grafiek van vandaag op (tot dit tijdstip)
+	syncLiveGraph: function(routeId, providerId, callback, context){
+		var route = routes[routeId];
+
+		var base = 8;
+		var data = {};
+		var currentTime = (new Date()).getHours() + (new Date()).getMinutes()/60;
+		for (var i = 6; i <= 24; i+=this.intervalDecimal) {
+			if (i > 7 && i < 10 || i > 16 && i < 18){
+				base += Math.random();
+			}
+			if (i > 18){
+				base -= Math.random();
+			}
+			if (base > 5){
+				base += Math.random() * 1 - 0.7;
+			}else{
+				base += Math.random() * 2;
+			}
+			if (i > currentTime){
+				break;
+			}
+			data[i] = base;
+		}
+
+		if (route.hasLiveData(providerId)){
+			route.liveData[providerId].setData(data);
+		}else{
+			// dit kan niet
+			console.error('Route '+route.name+' heeft geen liveData voor provider met id '+providerId);
 		}
 
 		this.callDelayed(callback, context);

@@ -160,6 +160,11 @@ article {
 		&.graph {
 			padding-bottom: $graph-height + 20px;
 		}
+
+		.loading {
+			display: block;
+			margin: 0 auto;
+		}
 	}
 
 	.hidden {

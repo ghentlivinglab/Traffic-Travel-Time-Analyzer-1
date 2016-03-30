@@ -15,7 +15,7 @@
 
     <!-- Mustache templates -->
     <script id="template-route" type="text/html">
-    	<article>
+    	<article onclick="toggleGraph.call(this);" data-route="{{ id }}">
 			<div class="table">
 				<header>
 					<h1>{{ name }}</h1>

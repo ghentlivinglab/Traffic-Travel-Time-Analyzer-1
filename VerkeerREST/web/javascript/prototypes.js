@@ -41,18 +41,22 @@ var TrafficGraph = {
 		24: instanceof TrafficData
 		*/
 	},
+	setData: function(data){
+		this.data = data;
+		this.createdOn = new Date()
+	},
 	create: function(representation, data) {
 		var obj = Object.create(TrafficGraph);
 		obj.representation = representation;
+		obj.data = {};
 
 		// Als data niet gedefinieerd: niet doorgeven
 		if (data !== undefined){
 			// TODO: Hoe zijn we er zeker van dat de structuur die wordt doorgegeven klopt?
 			obj.data = data;
+			obj.createdOn = new Date();
 		}
-
-		obj.createdOn = new Date();
-
+		
 		return obj;
 	}
 };
@@ -105,6 +109,15 @@ var Route = {
 		}
 		return true;
 	},
+	hasRecentAvgData: function(providerId) {
+		if (!this.hasAvgData(providerId) && Object.keys(this.avgData[providerId].data).length > 0){
+			return false;
+		}
+		if ((new Date) - this.avgData[providerId].createdOn > 5*60*1000) { // Als ouder dan 5 minuten -> false
+			return false;
+		}
+		return true;
+	},
 	avgData: {
 
 	},
@@ -119,6 +132,15 @@ var Route = {
 			return false;
 		}
 		if ((new Date) - this.liveData[providerId].representation.createdOn > 5*60*1000) { // Als ouder dan 5 minuten -> false
+			return false;
+		}
+		return true;
+	},
+	hasRecentLiveData: function(providerId) {
+		if (!this.hasLiveData(providerId) && Object.keys(this.liveData[providerId].data).length > 0){
+			return false;
+		}
+		if ((new Date) - this.liveData[providerId].createdOn > 5*60*1000) { // Als ouder dan 5 minuten -> false
 			return false;
 		}
 		return true;

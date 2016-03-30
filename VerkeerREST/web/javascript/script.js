@@ -35,7 +35,7 @@ function toggleGraph(){
 		// TODO: data doorgeven (moet ook in deze functie enzo)
 
 		if (box.length == 0){
-			$(this).append('<div class="graph-box"><div class="arrow"></div><div class="graph-shadow"></div><div class="graph"><div class="graph-content"></div></div></div>');
+			$(this).append('<div class="graph-box"><div class="arrow"></div><div class="graph-shadow"></div><div class="graph"><div class="graph-content"><img class="loading" src="images/loading.gif" alt="Bezig met laden"></div></div></div>');
 			box = $(this).find('.graph-box');
 			console.log('grafiek toegevoegd '+box);
 		}
@@ -49,7 +49,7 @@ function toggleGraph(){
 		var height = graphContent.outerHeight();
 		box.css({ visibility: "", display: "" });
 
-		drawChart(graphContent[0], width, height);
+		Dashboard.openLiveGraph($(this).attr('data-route'), graphContent[0], width, height);
 
 		box.slideDown('fast', function() {
 			
