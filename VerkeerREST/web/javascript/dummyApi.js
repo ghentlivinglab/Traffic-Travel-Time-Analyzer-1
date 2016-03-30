@@ -13,6 +13,7 @@ var DummyApi = {
 		}, this.delay*1000);
 	},
 
+	// Deze functie haalt alle routes van de api en plaatst deze in routes[]
 	syncRoutes: function(callback, context) {
 		routes = [];
 		routes[2] = Route.create(2, 'Route 1', 'Van E40 tot X', 2854);
@@ -29,7 +30,7 @@ var DummyApi = {
 		this.callDelayed(callback, context);
 	},
 
-	// Haalt de livedata van alle routes op 
+	// Haalt de livedata (= drukte nu en gemiddelde drukte van afgelopen maand(en)) van alle routes op 
 	syncLiveData: function(provider, callback, context) {
 		var p = provider;
 		routes.forEach(function(route){
