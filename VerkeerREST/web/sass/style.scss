@@ -119,6 +119,11 @@ h2 {
 	}
 }
 
+#providers {
+	.loading {
+		margin: 20px;
+	}
+}
 #map-container {
 	background: gray;
 	left: $settings-width;
