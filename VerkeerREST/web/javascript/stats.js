@@ -1,8 +1,8 @@
 // Deze code genereert de demo chart, deze moeten we dus aanpassen als we echte data hebben
 
 google.charts.load("current", {packages:["corechart"]});
-google.charts.setOnLoadCallback(drawChart);
-function drawChart() {
+//google.charts.setOnLoadCallback(drawChart);
+function drawChart(element, width, height) {
 	var arr = [
 	      ['Tijdstip', 'Vandaag', 'Normaal', 'Uren'],
 	];
@@ -51,6 +51,8 @@ function drawChart() {
 	var options = {
 		legend: 'top',
 		fontName: 'Roboto',
+		width: width,
+		height: height,
 		chartArea:{left:80,top:60,right:80, bottom: 50},
 		series: {
 			0: { color: '#63A7FF', 'lineWidth': 2, 'curveType': 'function', pointSize: 0},
@@ -77,6 +79,6 @@ function drawChart() {
 		}
 	};
 
-	var chart = new google.visualization.LineChart(document.getElementById('graph'));
+	var chart = new google.visualization.LineChart(element);
 	chart.draw(data, options);
 }

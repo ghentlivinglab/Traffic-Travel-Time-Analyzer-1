@@ -8,17 +8,6 @@ var events = [];
 Api.syncRoutes();
 
 
-
-$.getJSON( "http://localhost:8080/VerkeerREST/api/route", function( json ) {
-	/*console.log(json.length + " routes gevonden.");
-	for(var i=0; i<json.length; i++){
-		Route = { id: json[i].id, name: json[i].name, length: json[i].length };
-		routes.push(Route);
-	}*/
-});
-
-$(".collapse").click(togglePanel);
-
 function togglePanel(){
 	if($("#dashboard").css("left")==="250px"){
 		$("#dashboard").animate({left:-550});
@@ -30,20 +19,41 @@ function togglePanel(){
 
 }
 
-$("article").click(toggleGraph);
+
+
 
 function toggleGraph(){
-	$(this).find("div.graph-shadow").slideToggle();
-	$(this).find("div.graph").slideToggle();
-	
-	if($(this).css("padding-bottom")==="0px"){
-		$(this).animate({"padding-bottom":"320px"});
-		$(this).find("div.arrow").delay(400).fadeToggle();
+	var box = $(this).find('.graph-box');
+	if(box.length == 0 || !box.is(":visible")){
+		// Grafiek toevoegen
+		// TODO: data doorgeven (moet ook in deze functie enzo)
+
+		if (box.length == 0){
+			$(this).append('<div class="graph-box"><div class="arrow"></div><div class="graph-shadow"></div><div class="graph"><div class="graph-content"></div></div></div>');
+			box = $(this).find('.graph-box');
+			console.log('grafiek toegevoegd '+box);
+		}
+
+		var graphContent = box.find('.graph-content');
+
+		// Small hack to find the right width and height for the chart
+		// Prevent duplicate code here -> no hardcoded height, only in css files
+		box.css({ visibility: "hidden", display: "block" });
+		var width = graphContent.outerWidth();
+		var height = graphContent.outerHeight();
+		box.css({ visibility: "", display: "" });
+
+		drawChart(graphContent[0], width, height);
+
+		box.slideDown('fast', function() {
+			
+		});
+
 	} else{
-		$(this).find("div.arrow").toggle(0);
-		$(this).animate({'padding-bottom':"0px"});
+		box.slideUp('fast', function() {});
 	}
 }
+
 
 for(var i=0; i<routes.length; i++){
 	console.log(routes[i].id);
@@ -69,11 +79,12 @@ $(document).ready( function(){
 	if (navigator.userAgent.indexOf('Mac OS X') == -1) {
 		$("#dashboard .content").niceScroll({zindex:999,cursorcolor:"#CCCCCC"});
 	}
+	$("article").click(toggleGraph);
+	$(".collapse").click(togglePanel);
 });
 
 $(window).load( function(){
 	if(getQueryVariable("mapView")==="true"){
 		togglePanel();
-		// window.setTimeout(togglePanel,4000);
 	}
 });
