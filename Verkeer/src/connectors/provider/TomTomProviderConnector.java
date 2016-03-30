@@ -58,7 +58,7 @@ public class TomTomProviderConnector extends AProviderConnector {
                             return data;
                         }
 
-                        String msg = fetchErrorFromJSON(response.getResponseBody());
+                        String msg = response.getResponseBody();
                         throw new RouteUnavailableException(providerName,msg);
                     }
 
@@ -69,27 +69,13 @@ public class TomTomProviderConnector extends AProviderConnector {
                 });
                 buzyRequests.add(f);
                 try {
-                    sleep(250);
+                    sleep(300);
                 } catch (InterruptedException ex) {
                     log.fatal(ex);
                 }
             }
         }
         updateCounter++;
-    }
-
-    public String fetchErrorFromJSON(String json) {
-        try {
-            // Try to read a HERE error. (HERE specific error structure)
-            Genson genson = new Genson();
-            Map<String, Object> map = genson.deserialize(json, Map.class);
-            Map<String, Object> summary = (Map<String, Object>) map.get("error");
-            String desc = (String) map.get("description");
-            return desc;
-        } catch (Exception ex2) {
-            return "JSON ERROR data unreadable (expected other structure): "+json;
-        }
-        
     }
 
     public DataEntry fetchDataFromJSON(String json, RouteEntry traject) throws RouteUnavailableException {

@@ -193,7 +193,7 @@ public class WazeProviderConnector extends AProviderConnector{
         } catch (InterruptedException ex) {
             log.error("Interrupted request: " + ex.getMessage(), ex);
         } catch (ExecutionException ex) {
-            log.error("ExecutionException: " + ex.getMessage(), ex);
+            log.error("ExecutionException: " + ex.getMessage());
         }
         return null;
     }
