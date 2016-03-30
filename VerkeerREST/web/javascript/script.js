@@ -45,7 +45,6 @@ $(document).ready( function(){
 	if (navigator.userAgent.indexOf('Mac OS X') == -1) {
 		$("#dashboard .content").niceScroll({zindex:999,cursorcolor:"#CCCCCC"});
 	}
-	$("article").click(toggleGraph);
 	$(".collapse").click(togglePanel);
 
 	Dashboard.init();

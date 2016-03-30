@@ -192,6 +192,7 @@ var Provider = {
 	create: function(id, name) {
 		var obj = Object.create(this);
 		obj.id = id;
+		obj.name = name;
 		return obj;
 	}
 };

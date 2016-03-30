@@ -123,12 +123,12 @@ var DummyApi = {
 
 	syncProviders: function(callback, context) {
 		providers = [];
-		providers.push(Provider.create(-1, 'Alles'));
-		providers.push(Provider.create(1, 'Google'));
-		providers.push(Provider.create(2, 'Waze'));
-		providers.push(Provider.create(3, 'Here'));
-		providers.push(Provider.create(4, 'TomTom'));
-		providers.push(Provider.create(5, 'Coyote'));
+		providers[0] = Provider.create(0, 'Alles');
+		providers[1] = Provider.create(1, 'Google');
+		providers[2] = Provider.create(2, 'Waze');
+		providers[3] = Provider.create(3, 'Here');
+		providers[4] = Provider.create(4, 'TomTom');
+		providers[5] = Provider.create(5, 'Coyote');
 
 		// Callback 
 		this.callDelayed(callback, context);

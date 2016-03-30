@@ -5,7 +5,7 @@
 var Dashboard = {
 
 	mode: 0, // Selected mode
-	provider: -1, // Selected provider
+	provider: null, // Selected provider
 
 	// Mogelijke dashboard standen cte's
 	LIVE: 0, // Vandaag
@@ -14,7 +14,27 @@ var Dashboard = {
 	COMPARE_DAYS: 3, // Vergelijk dagen
 
 	init: function() {
+		this.provider = null;
+
 		this.reload();
+		Api.syncProviders(this.loadProviders, this);
+	},
+
+	loadProviders: function() {
+		var str = '';
+		var me = this;
+		providers.forEach(function(provider){
+			if (!me.provider){
+				me.setProvider(provider.id);
+			}
+			var p = {
+				id: provider.id,
+				name: provider.name,
+				checked: (provider.id == me.provider.id)
+			};
+			str += Mustache.renderTemplate("provider", p);
+		});
+		$('#providers').html(str);
 	},
 
 	setMode: function(mode){
@@ -22,8 +42,17 @@ var Dashboard = {
 		this.reload();
 	},
 
+	setProvider: function(providerId){
+		console.log("set provider id "+providerId);
+		this.provider = providers[providerId];
+		this.reload();
+	},
+	
 	// Herlaad het dashboard op de huidige stand
 	reload: function() {
+		if (!this.provider){
+			return;
+		}
 		switch(this.mode){
 			case Dashboard.LIVE: 
 				this.reloadLive(); 
@@ -54,7 +83,6 @@ var Dashboard = {
 	// Opent de live grafiek = grafiek in de vandaag weergave
 	// element = het DOM element waarin we de grafiek willen toevoegen
 	openLiveGraph: function(routeId, element, width, height) {
-		console.log('OpenLiveGraph('+routeId+')');
 		var route = routes[routeId];
 		var counterObject = {counter: 0, route: route, element: element, width: width, height: height}; // Referentie die we gaan meegeven
 		// Deze counter voorkomt dat we openLiveGraph te snel opnieuw aanroepen als 1 van de requests klaar is
@@ -66,21 +94,18 @@ var Dashboard = {
 			}
 		};
 
-		if (!route.hasRecentAvgData(this.provider)){
-			console.log("avg");
-
+		if (!route.hasRecentAvgData(this.provider.id)){
 			counterObject.counter++;
-			Api.syncAvgGraph(route.id, this.provider, callback, counterObject);
+			Api.syncAvgGraph(route.id, this.provider.id, callback, counterObject);
 		}
-		if (!route.hasRecentLiveData(this.provider)){
-			console.log("live");
+		if (!route.hasRecentLiveData(this.provider.id)){
 			counterObject.counter++;
-			Api.syncLiveGraph(route.id, this.provider, callback, counterObject);
+			Api.syncLiveGraph(route.id, this.provider.id, callback, counterObject);
 		}
 		if (counterObject.counter == 0){
 			var data = {
-				'Vandaag': route.liveData[this.provider].data,
-				'Normaal': route.avgData[this.provider].data,
+				'Vandaag': route.liveData[this.provider.id].data,
+				'Normaal': route.avgData[this.provider.id].data,
 			};
 			drawChart(element, data, width, height);
 		}
@@ -89,14 +114,13 @@ var Dashboard = {
 	// Genereert HTML voor live modus
 	reloadLive: function() {
 		if (routes.length == 0){
-			console.log("sync routes");
 			Api.syncRoutes(Dashboard.reload, this);
 			this.displayLoading();
 			return;
 		}
 
 		var hasData = true;
-		var p = this.provider;
+		var p = this.provider.id;
 
 		routes.forEach(function(route){
 			if (!route.hasRecentAvgRepresentation(p) || !route.hasRecentLiveRepresentation(p)){
@@ -104,7 +128,6 @@ var Dashboard = {
 			}
 		});
 		if (!hasData){
-			console.log("sync live data");
 			Api.syncLiveData(p, Dashboard.reload, this);
 			this.displayLoading();
 			return;

@@ -39,6 +39,15 @@
     		<img src="images/loading.gif" alt="Bezig met laden">
     	</div>
     </script>
+     <script id="template-provider" type="text/html">
+	    <label>
+			<input type="radio" name="provider" onclick="Dashboard.setProvider({{ id }});" {{#checked}}checked{{/checked}}/>
+			<span></span>
+			{{ name }}
+		</label>
+    </script>
+
+
 
 </head>
 <body>
@@ -69,36 +78,9 @@
 		</label>
 		<hr>
 		<h1>Providers</h1>
-		<label>
-			<input type="radio" name="provider" checked/>
-			<span></span>
-			Alles
-		</label>
-		<label>
-			<input type="radio" name="provider" />
-			<span></span>
-			Waze
-		</label>
-		<label>
-			<input type="radio" name="provider" />
-			<span></span>
-			Google
-		</label>
-		<label>
-			<input type="radio" name="provider" />
-			<span></span>
-			Here
-		</label>
-		<label>
-			<input type="radio" name="provider" />
-			<span></span>
-			TomTom
-		</label>
-		<label>
-			<input type="radio" name="provider" />
-			<span></span>
-			Coyote
-		</label>
+		<div id="providers">
+			<img src="images/loading.gif" alt="Bezig met laden" class="loading">
+		</div>
 	</section>
 
 	<section id="dashboard">
