@@ -45,8 +45,9 @@ function toggleGraph(){
 
 // Converteert 6.25 naar 6:15
 function floatToHour(i){
-	var hour = Math.floor(i)%24;
+	var hour = Math.floor(i);
 	var minutes = ("00"+(i-hour)*60).slice(-2); // Minuten padden zodat het altijd 2 lang is
+	hour = hour%24; // Moet erna om minuten te laten werken
 	return hour+':'+minutes;
 }
 
