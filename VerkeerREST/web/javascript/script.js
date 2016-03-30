@@ -215,7 +215,10 @@ function getQueryVariable(variable)
 }
 
 $(document).ready( function(){
-	$("#dashboard .content").niceScroll({zindex:999,cursorcolor:"#CCCCCC"});
+	// Enkel op Windows -> scrollbar
+	if (navigator.userAgent.indexOf('Mac OS X') == -1) {
+		$("#dashboard .content").niceScroll({zindex:999,cursorcolor:"#CCCCCC"});
+	}
 });
 
 $(window).load( function(){
