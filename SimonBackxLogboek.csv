@@ -3,10 +3,10 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 11/02/2016,13:30,17:45,School,Projectwerk,Opstellen analysedocumenten+ taakverdeling begin,,
 16/02/2016,8:15,12:30,School,Communicatie,Infomoment met klant,,presentatie van onderwerp door klant + mogelijkheid tot vragen
 18/02/2016,12:45,14:00,School,Communicatie,Module 4: eindwerken schrijven,,Verplichte contacturen
-20/02/2016,10:00,14:30,Thuis,Projectwerk,HereConnectorProvider klasse schrijven. Line endings problemen oplossen.,1,
-21/02/2016,22:00,23:30,Thuis,Projectwerk,HereConnectorProvider afgewerkt + dummy methodes,1,
+20/02/2016,10:00,16:30,Thuis,Projectwerk,HereConnectorProvider klasse schrijven. Line endings problemen oplossen.,1,
+21/02/2016,21:00,23:30,Thuis,Projectwerk,HereConnectorProvider afgewerkt + dummy methodes,1,
 23/02/2016,8:15,12:30,School,Projectwerk,WazeConnector: geen scraper maar via api,,
-23/02/2016,18:00,19:00,Thuis,Projectwerk,WazeConnector afgewerkt,6,
+23/02/2016,18:00,19:30,Thuis,Projectwerk,WazeConnector afgewerkt,6,
 23/02/2016,20:30,23:00,Thuis,Projectwerk,WazeConnector verfijnen + mariaDB fixes + mariaDB routes in database,6,zie ook #18 #19
 24/02/2016,23:15,23:59,Thuis,Projectwerk,Kleine improvements,,
 25/02/2016,13:30,15:00,School,Communicatie,Module 4: eindwerken schrijven,,Verplichte contacturen
@@ -18,7 +18,7 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 06/03/2016,12:00,17:30,Thuis,Projectwerk,Voorbereiden voorstellen eerste sprint,,Niet zeker of dit bij communicatie hoort of niet...
 06/03/2016,17:45,19:30,Thuis,Projectwerk,Voorbereiden voorstellen eerste sprint,,Niet zeker of dit bij communicatie hoort of niet...
 10/03/2016,13:30,17:45,School,Projectwerk,Mockups maken,23,
-10/03/2016,18:00,21:30,Thuis,Projectwerk,Mockups maken,23,
+10/03/2016,18:00,22:00,Thuis,Projectwerk,Mockups maken,23,
 12/03/2016,10:00,12:00,School,Projectwerk,Mockups omzetten in HTML en (S)CSS,24,
 13/03/2016,13:00,15:00,School,Communicatie,Presentatie voorbereiden,,
 17/03/2016,13:20,18:00,School,Projectwerk,Mockups aangepast naar wensen klant. Productieklaar maken van applicatie,,
@@ -29,8 +29,8 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 21/03/2016,19:00,21:00,Thuis,Communicatie,Voorbereiden presentatie,,
 22/03/2016,10:30,12:30,School,Projectwerk,Mockups,,
 22/03/2016,10:30,12:30,School,Communicatie,Presentaties,,
-23/03/2016,22:00,23:59,Thuis,Projectwerk,Grafieken toevoegen aan html design,,
-24/03/2016,00:00,01:15,Thuis,Projectwerk,Grafieken toevoegen aan html design,,
+23/03/2016,21:30,23:59,Thuis,Projectwerk,Grafieken toevoegen aan html design,,
+24/03/2016,00:00,01:30,Thuis,Projectwerk,Grafieken toevoegen aan html design,,
 24/03/2016,13:30,18:00,School,Projectwerk,Server up and running krijgen + javascript strutuur vastgelegd,,
 29/03/2016,10:30,11:30,Thuis,Projectwerk,Javascript structuur kleine aanpassingen,,
 30/03/2016,10:30,13:00,Thuis,Projectwerk,Gitignore en sass scripts + rest api deployen,,
