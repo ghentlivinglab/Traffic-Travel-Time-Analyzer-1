@@ -5,3 +5,5 @@
 /VerkeerREST/build/
 scripts/pushNaarProductie2
 /VerkeerREST/dist/
+VerkeerREST/src/conf/persistence.xml
+VerkeerREST/setup
