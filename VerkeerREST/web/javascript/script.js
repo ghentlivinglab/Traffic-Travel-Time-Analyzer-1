@@ -6,8 +6,6 @@ var providers = [];
 var routes = [];
 var events = [];
 
-
-
 /****************************
  * Small extension of Mustache
  * renders a template from a script-tag
