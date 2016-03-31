@@ -13,6 +13,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -35,11 +36,14 @@ import javax.ws.rs.core.MediaType;
 @Path("/trafficdata")
 public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
 
+    private List<String> modes;
+    
     @PersistenceContext(unitName = "VerkeerRESTPU")
     private EntityManager em;
 
     public TrafficdataFacadeREST() {
         super(Trafficdata.class);
+        modes = new ArrayList<>(Arrays.asList("default","weekday","live"));
     }
 
     @GET
@@ -52,9 +56,7 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
             @DefaultValue("60") @QueryParam("interval") Integer interval,
             @DefaultValue("default") @QueryParam("mode") String mode,
             @QueryParam("weekday") Integer weekday) {
-        String json = "";
-        Genson g = new Genson();
-
+        StringBuilder json = new StringBuilder();
         if (from == null) {
             from = new Timestamp(0);
         }
@@ -62,26 +64,53 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
             to = new Timestamp(Calendar.getInstance().getTimeInMillis());
         }
 
-        Query q = getQuery(mode, routeID, providerID, from, to, interval, weekday);
-        List<Object[]> objects = (List<Object[]>) q.getResultList();
+        //Filter dat slechte requests tegenhoud. 
+        if(!modes.contains(mode)) return constructErrorJson(MessageState.MDNE);
         if (mode.equals("default")) {
-            ArrayList<SimpleTrafficdata> lijst = new ArrayList<>();
-            for (Object[] o : objects) {
-                lijst.add(new SimpleTrafficdata(((Timestamp) o[0]).toString(), ((BigDecimal) o[1]).doubleValue()));
+            if (routeID == null) {
+                return constructErrorJson(MessageState.RIDNP);
+            } else if (providerID == null) {
+                return constructErrorJson(MessageState.PIDNP);
             }
-            json = g.serialize(lijst);
-        }else if (mode.equals("weekday")) {
-            ArrayList<WeekdayTrafficdata> lijst = new ArrayList<>();
-            for(int i = 0; i<7; i++){
-                lijst.add(new WeekdayTrafficdata(i));
-            }
-            for (Object[] o : objects) {
-                lijst.get((int)o[0]).put((String) o[1], ((BigDecimal) o[2]).doubleValue());
-            }
-
-            json = g.serialize(lijst);
         }
-        return json;
+
+        // Als je hier geraakt wil dat zeggen dat het request geldig is. Tenzij de inhoud van de parameters ongeldig is. 
+        // In dat geval zal wss een exceptie opgegooid worden en dat fout bericht wordt dan meegestuurd in de json.
+        Query q = getQuery(mode, routeID, providerID, from, to, interval, weekday);
+        List<Object[]> objects;
+        try {
+            objects = (List<Object[]>) q.getResultList();
+
+            json.append("{\"result\":\"succes\",\"data\":");
+            if (mode.equals("default")) {
+                json.append('{');
+                String delimiter = "";
+                for (Object[] o : objects) {
+                    json.append(delimiter).append(new SimpleTrafficdata(((Timestamp) o[0]).toString(), ((BigDecimal) o[1]).doubleValue()).toJson());
+                    delimiter = ",";
+                }
+                json.append('}');
+            } else if (mode.equals("weekday")) {
+                ArrayList<WeekdayTrafficdata> lijst = new ArrayList<>();
+                for (int i = 0; i < 7; i++) {
+                    lijst.add(new WeekdayTrafficdata(i));
+                }
+                for (Object[] o : objects) {
+                    lijst.get((int) o[0]).put((String) o[1], ((BigDecimal) o[2]).doubleValue());
+                }
+                json.append('{');
+                String delimiter = "";
+                for (WeekdayTrafficdata w : lijst) {
+                    json.append(delimiter).append(w.toJson());
+                    delimiter = ",";
+                }
+                json.append('}');
+            }
+            json.append("}");
+            return json.toString();
+        } catch (Exception e) {
+            return constructErrorJson(e.getMessage());
+        }
     }
 
     public Query getQuery(String mode, Integer routeID, Integer providerID, Timestamp from, Timestamp to, Integer interval, Integer weekday) {
@@ -94,7 +123,7 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
             if (routeID != null) {
                 queryString += " and routeID=?5 ";
             }
-            queryString += " group by timestamp - interval extract(second from timestamp) second - interval extract(minute from timestamp)%?1 minute";
+            queryString += " group by timestamp - interval extract(second from timestamp) second - interval extract(minute from timestamp)%?1 minute order by 1";
 
             q = getEntityManager().createNativeQuery(queryString);
             if (providerID != null) {
@@ -108,7 +137,7 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
             q.setParameter(1, interval);
         } else if (mode.equals("weekday")) {
 
-            String queryString = "SELECT WEEKDAY(TIMESTAMP), DATE_FORMAT(STR_TO_DATE(timestamp - interval extract(second from timestamp) second - interval extract(minute from timestamp)% ?1 minute, '%Y-%m-%d %H:%i:%s'), '%H:%i:%s'), AVG(traveltime) FROM trafficdata WHERE timestamp between ?2 and ?3 ";
+            String queryString = "SELECT WEEKDAY(TIMESTAMP), DATE_FORMAT(STR_TO_DATE(timestamp - interval extract(second from timestamp) second - interval extract(minute from timestamp)% ?1 minute, '%Y-%m-%d %H:%i:%s'), '%H:%i'), AVG(traveltime) FROM trafficdata WHERE timestamp between ?2 and ?3 ";
             if (providerID != null) {
                 queryString += " and providerID=?4 ";
             }
@@ -119,7 +148,7 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
                 queryString += " and WEEKDAY(TIMESTAMP)=?6 ";
             }
             System.out.println(queryString);
-            queryString += " GROUP BY WEEKDAY(TIMESTAMP), DATE_FORMAT(STR_TO_DATE(timestamp - interval extract(second from timestamp) second - interval extract(minute from timestamp)% ?1 minute, '%Y-%m-%d %H:%i:%s'), '%H:%i:%s')";
+            queryString += " GROUP BY WEEKDAY(TIMESTAMP), DATE_FORMAT(STR_TO_DATE(timestamp - interval extract(second from timestamp) second - interval extract(minute from timestamp)% ?1 minute, '%Y-%m-%d %H:%i:%s'), '%H:%i')";
             q = getEntityManager().createNativeQuery(queryString);
             if (providerID != null) {
                 q.setParameter(4, providerID);
@@ -136,6 +165,15 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
 
         }
         return q;
+    }
+
+    private String constructErrorJson(String message) {
+        StringBuilder sb = new StringBuilder();
+        sb.append('{');
+        sb.append("\"result\": ").append("\"error\",");
+        sb.append("\"reason\": \"").append(message).append('"');
+        sb.append('}');
+        return sb.toString();
     }
 
     @Override

@@ -23,4 +23,14 @@ public class SimpleTrafficdata {
     
     public SimpleTrafficdata(){}
 
+    public String toJson(){
+        StringBuilder s = new StringBuilder();
+        
+        s.append('"');
+        s.append(timestamp);
+        s.append("\": ");
+        s.append(traveltime);
+        return s.toString();
+    }
+    
 }

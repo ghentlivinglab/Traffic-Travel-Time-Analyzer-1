@@ -26,4 +26,17 @@ public class WeekdayTrafficdata {
         data.add(new SimpleTrafficdata(timestamp, traveltime));
     }
     
+    public String toJson(){
+        StringBuilder s = new StringBuilder();
+        s.append('"').append(weekday).append('"');
+        s.append(": {");
+        String delimiter = "";
+        for(SimpleTrafficdata std : data){
+            s.append(delimiter).append(std.toJson());
+            delimiter=",";
+        }
+        s.append('}');
+        return s.toString();
+    }
+    
 }
