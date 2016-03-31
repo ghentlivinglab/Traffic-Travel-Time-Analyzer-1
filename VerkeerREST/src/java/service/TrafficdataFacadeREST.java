@@ -67,20 +67,16 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
         if (mode.equals("default")) {
             ArrayList<SimpleTrafficdata> lijst = new ArrayList<>();
             for (Object[] o : objects) {
-                lijst.add(new SimpleTrafficdata((Timestamp) o[0], ((BigDecimal) o[1]).doubleValue()));
+                lijst.add(new SimpleTrafficdata(((Timestamp) o[0]).toString(), ((BigDecimal) o[1]).doubleValue()));
             }
             json = g.serialize(lijst);
-        } 
-        else if (mode.equals("weekday")) {
+        }else if (mode.equals("weekday")) {
             ArrayList<WeekdayTrafficdata> lijst = new ArrayList<>();
+            for(int i = 0; i<7; i++){
+                lijst.add(new WeekdayTrafficdata(i));
+            }
             for (Object[] o : objects) {
-                System.out.println( o[0] + " " + ((BigDecimal) o[1]).doubleValue());
-                if(weekday != null){
-                    lijst.add(new WeekdayTrafficdata((int)(long) o[0], ((BigDecimal) o[1]).doubleValue()));
-                }
-                else{
-                    lijst.add(new WeekdayTrafficdata((int) o[0], ((BigDecimal) o[1]).doubleValue()));
-                }
+                lijst.get((int)o[0]).put((String) o[1], ((BigDecimal) o[2]).doubleValue());
             }
 
             json = g.serialize(lijst);
@@ -112,29 +108,31 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
             q.setParameter(1, interval);
         } else if (mode.equals("weekday")) {
 
-            String queryString = "SELECT WEEKDAY(TIMESTAMP), AVG(traveltime) FROM trafficdata WHERE timestamp between ?1 and ?2 ";
+            String queryString = "SELECT WEEKDAY(TIMESTAMP), DATE_FORMAT(STR_TO_DATE(timestamp - interval extract(second from timestamp) second - interval extract(minute from timestamp)% ?1 minute, '%Y-%m-%d %H:%i:%s'), '%H:%i:%s'), AVG(traveltime) FROM trafficdata WHERE timestamp between ?2 and ?3 ";
             if (providerID != null) {
-                queryString += " and providerID=?3 ";
+                queryString += " and providerID=?4 ";
             }
             if (routeID != null) {
-                queryString += " and routeID=?4 ";
+                queryString += " and routeID=?5 ";
             }
             if (weekday != null) {
-                queryString += " and WEEKDAY(TIMESTAMP)=?5 ";
+                queryString += " and WEEKDAY(TIMESTAMP)=?6 ";
             }
-            queryString += " GROUP BY WEEKDAY(TIMESTAMP)";
+            System.out.println(queryString);
+            queryString += " GROUP BY WEEKDAY(TIMESTAMP), DATE_FORMAT(STR_TO_DATE(timestamp - interval extract(second from timestamp) second - interval extract(minute from timestamp)% ?1 minute, '%Y-%m-%d %H:%i:%s'), '%H:%i:%s')";
             q = getEntityManager().createNativeQuery(queryString);
             if (providerID != null) {
-                q.setParameter(3, providerID);
+                q.setParameter(4, providerID);
             }
             if (routeID != null) {
-                q.setParameter(4, routeID);
+                q.setParameter(5, routeID);
             }
             if (weekday != null) {
-                q.setParameter(5, weekday);
+                q.setParameter(6, weekday);
             }
-            q.setParameter(1, from, TemporalType.TIMESTAMP);
-            q.setParameter(2, to, TemporalType.TIMESTAMP);
+            q.setParameter(1, interval);
+            q.setParameter(2, from, TemporalType.TIMESTAMP);
+            q.setParameter(3, to, TemporalType.TIMESTAMP);
 
         }
         return q;

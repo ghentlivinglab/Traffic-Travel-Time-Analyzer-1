@@ -5,6 +5,9 @@
  */
 package simpledomain;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
+
 /**
  *
  * @author Piet
@@ -12,10 +15,15 @@ package simpledomain;
 public class WeekdayTrafficdata {
 
     int weekday;
-    double traveltime;
+    ArrayList<SimpleTrafficdata> data;
 
-    public WeekdayTrafficdata(int weekday, double traveltime) {
+    public WeekdayTrafficdata(int weekday) {
         this.weekday = weekday;
-        this.traveltime = traveltime;
+        data = new ArrayList<>();
     }
+    
+    public void put(String timestamp, double traveltime){
+        data.add(new SimpleTrafficdata(timestamp, traveltime));
+    }
+    
 }

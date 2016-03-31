@@ -13,12 +13,14 @@ import java.sql.Timestamp;
  */
 public class SimpleTrafficdata {
 
-    Timestamp timestamp;
+    String timestamp;
     double traveltime;
 
-    public SimpleTrafficdata(Timestamp timestamp, double traveltime) {
+    public SimpleTrafficdata(String timestamp, double traveltime) {
         this.timestamp = timestamp;
         this.traveltime = traveltime;
     }
+    
+    public SimpleTrafficdata(){}
 
 }
