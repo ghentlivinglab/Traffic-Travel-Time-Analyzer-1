@@ -15,7 +15,7 @@ public class SimpleTrafficdata {
 
     String timestamp;
     double traveltime;
-
+    
     public SimpleTrafficdata(String timestamp, double traveltime) {
         this.timestamp = timestamp;
         this.traveltime = traveltime;

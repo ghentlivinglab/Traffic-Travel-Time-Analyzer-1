@@ -29,6 +29,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import simpledomain.LiveTrafficdata;
 
 /**
  *
@@ -52,7 +53,8 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
             @QueryParam("to") Timestamp to,
             @QueryParam("routeID") Integer routeID,
             @QueryParam("providerID") Integer providerID,
-            @DefaultValue("60") @QueryParam("interval") Integer interval,
+            @DefaultValue("15") @QueryParam("interval") Integer interval,
+            @DefaultValue("30") @QueryParam("period") Integer period,
             @DefaultValue("default") @QueryParam("mode") String mode,
             @QueryParam("weekday") Integer weekday) {
         if (from == null) from = new Timestamp(0);
@@ -62,6 +64,7 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
             switch(mode){
                 case "default": return "{\"result\":\"success\",\"data\":"+processDefault(from, to, routeID, providerID, interval)+"}";
                 case "weekday": return "{\"result\":\"success\",\"data\":"+processWeekday(from, to, routeID, providerID, interval, weekday)+"}";
+                case "live": return "{\"result\":\"success\",\"data\":"+processLive(providerID, interval, period)+"}";
                 default: return processError(MessageState.MDNE);
             }
         } catch (Exception ex) {
@@ -126,16 +129,11 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
         q.setParameter(6, weekday);
         
         StringBuilder json = new StringBuilder();
-        List<Object[]> objects;
         try {
             ArrayList<WeekdayTrafficdata> lijst = new ArrayList<>();
             for (int i = 0; i < 7; i++) lijst.add(new WeekdayTrafficdata(i));
-            objects = q.getResultList();
-            Genson g = new Genson();
-            System.out.println(g.serialize(objects)); 
-            for (Object[] o : objects) { 
-                WeekdayTrafficdata w = (WeekdayTrafficdata)lijst.get(Integer.parseInt(o[0].toString()));
-                w.put((String) o[1], ((BigDecimal) o[2]).doubleValue()); 
+            for (Object[] o : (List<Object[]>) q.getResultList()) {
+                ((WeekdayTrafficdata)lijst.get(Integer.parseInt(o[0].toString()))).put((String) o[1], ((BigDecimal) o[2]).doubleValue()); 
             }
             json.append('{');
             String delimiter = "";
@@ -144,13 +142,44 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
                 delimiter = ",";
             }
             json.append('}');
-            
         } catch(Exception e){
-            e.printStackTrace();
             throw new Exception(e.getMessage());
         }
         
         return json.toString();
     }
-    
+    private String processLive(Integer providerID, Integer interval, Integer period) throws Exception{
+        if(providerID == null) throw new Exception(MessageState.PIDNP);
+        String queryString = "select x.routeID, x.timestamp, y.length, x.traveltime, round((select   avg(traveltime) from     trafficdata where    providerID=x.providerID and routeID=x.routeID and timestamp > now() - interval ?1 day and abs(TIMESTAMPDIFF(minute,time(timestamp),time(x.timestamp))) < ?2 and weekday(timestamp) = weekday(x.timestamp) ),0) from trafficdata x join routes y on x.routeID=y.id where x.providerID=?3 and (  select max(timestamp) from trafficdata where providerID=x.providerID and routeID=x.routeID ) = x.timestamp";
+        Query q = getEntityManager().createNativeQuery(queryString);
+        q.setParameter(1, period );
+        q.setParameter(2, interval);
+        q.setParameter(3, providerID);
+        
+        StringBuilder json = new StringBuilder();
+        try {
+            ArrayList<LiveTrafficdata> lijst = new ArrayList<>();
+            for (Object[] o : (List<Object[]>) q.getResultList()) {
+                LiveTrafficdata l = new LiveTrafficdata(Integer.parseInt(o[0].toString()));
+                l.live.put("createdOn", o[1].toString());
+                l.live.put("speed", ""+Integer.parseInt(o[2].toString())/Integer.parseInt(o[3].toString())*3.6);
+                l.live.put("time", ""+Integer.parseInt(o[3].toString())/60);
+                l.avg.put("speed", ""+Integer.parseInt(o[2].toString())/Integer.parseInt(o[4].toString())*3.6);
+                l.avg.put("time", ""+Integer.parseInt(o[4].toString())/60);
+                lijst.add(l);
+                System.out.println("ld");
+            }
+            json.append('{');
+            String delimiter ="";
+            for(LiveTrafficdata l : lijst){
+                json.append(delimiter).append(l.toJson());
+                delimiter=",";
+            }
+            json.append('}');
+            
+        }catch(Exception e){
+            throw new Exception(e.getMessage());
+        }
+        return json.toString();
+    }
 }
