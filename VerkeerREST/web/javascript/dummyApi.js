@@ -1,19 +1,20 @@
-// Dummy object dat de communicatie met de API nabootst
-// Bevat voornamelijk functies
-
+/****************************
+ * Dummy object that mimics the API-communication
+ * contains functions for the most part
+ ****************************/
 var DummyApi = {
 	delay: 1, // Fake delay die gebruikt zal worden
-	interval: 15, // minute interval in graphs
-	intervalDecimal: 0.25, // (60/interval)
+	interval: 15, // timespan in minutes used in graphs
+	intervalDecimal: interval/60, // timespan in hours
 
-	// Roept callback aan met delay ingesteld in object -> om async te testen
+	// calls callback with a delay to test the async aspect of the code
 	callDelayed: function(callback, context){
 		setTimeout(function() {
 			callback.call(context);
 		}, this.delay*1000);
 	},
 
-	// Deze functie haalt alle routes van de api en plaatst deze in routes[]
+	// fetches all routes of the API and places them in routes[]
 	syncRoutes: function(callback, context) {
 		routes = [];
 		routes[2] = Route.create(2, 'Route 1', 'Van E40 tot X', 2854);
@@ -30,7 +31,7 @@ var DummyApi = {
 		this.callDelayed(callback, context);
 	},
 
-	// Haalt de livedata (= drukte nu en gemiddelde drukte van afgelopen maand(en)) van alle routes op 
+	// fetches the live data (= current traffic and an average of last month(s) ) of every route
 	syncLiveData: function(provider, callback, context) {
 		var p = provider;
 		routes.forEach(function(route){
@@ -54,6 +55,7 @@ var DummyApi = {
 		this.callDelayed(callback, context);
 	},
 
+	// fetches the graph for average data (= averages for every hour of last month)
 	// Haalt de gemiddelde grafiek op (gemiddelde van de afgelopen maand voor elk uur)
 	syncAvgGraph: function(routeId, providerId, callback, context){
 		var route = routes[routeId];
@@ -79,14 +81,14 @@ var DummyApi = {
 		if (route.hasAvgData(providerId)){
 			route.avgData[providerId].setData(data);
 		}else{
-			// dit kan niet
+			// impossible
 			console.error('Route '+route.name+' heeft geen avgData voor provider met id '+providerId);
 		}
 
 		this.callDelayed(callback, context);
 	},
 
-	// Haalt de grafiek van vandaag op (tot dit tijdstip)
+	// fetches graph for today (right up to current time)
 	syncLiveGraph: function(routeId, providerId, callback, context){
 		var route = routes[routeId];
 
@@ -114,13 +116,14 @@ var DummyApi = {
 		if (route.hasLiveData(providerId)){
 			route.liveData[providerId].setData(data);
 		}else{
-			// dit kan niet
+			// impossible
 			console.error('Route '+route.name+' heeft geen liveData voor provider met id '+providerId);
 		}
 
 		this.callDelayed(callback, context);
 	},
 
+	//
 	syncProviders: function(callback, context) {
 		providers = [];
 		providers[0] = Provider.create(0, 'Alles');
