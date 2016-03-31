@@ -1,5 +1,5 @@
 /****************************
- * Initialisers to set scope
+ * initialisers to set scope
  ****************************/
 // coords and labels are hard coded for now, will be dynamically loaded with AJAX
 // TODO: AJAX-request
