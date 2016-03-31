@@ -61,3 +61,4 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 29/03/16,16:00,17:45,Thuis,Projectwerk,Coyote connector,9,route-koppeling en testen schrijven
 30/03/16,13:45,14:15,Thuis,Projectwerk,wijziging in css,24,radio buttons geüpdatete
 30/03/16,23:14,23:59,Thuis,Projectwerk,debuggen TomTomProvider,,geeft ineens exceptions na toevoegen nieuwe routes
+31/03/16,14:15,16:00,Thuis,Projectwerk,Vertalen commentaar naar Engels voor consistentie,46, enkel dashboard.js en api.js nog niet gedaan
