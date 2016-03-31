@@ -60,8 +60,8 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
             
         try {
             switch(mode){
-                case "default": return "{\"result\":\"succes\",\"data\":"+processDefault(from, to, routeID, providerID, interval)+"}";
-                case "weekday": return "{\"result\":\"succes\",\"data\":"+processWeekday(from, to, routeID, providerID, interval, weekday)+"}";
+                case "default": return "{\"result\":\"success\",\"data\":"+processDefault(from, to, routeID, providerID, interval)+"}";
+                case "weekday": return "{\"result\":\"success\",\"data\":"+processWeekday(from, to, routeID, providerID, interval, weekday)+"}";
                 default: return processError(MessageState.MDNE);
             }
         } catch (Exception ex) {
