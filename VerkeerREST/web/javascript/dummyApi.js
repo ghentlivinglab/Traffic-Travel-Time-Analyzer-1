@@ -5,7 +5,7 @@
 var DummyApi = {
 	delay: 1, // Fake delay die gebruikt zal worden
 	interval: 15, // timespan in minutes used in graphs
-	intervalDecimal: interval/60, // timespan in hours
+	intervalDecimal: .25, // timespan in hours
 
 	// calls callback with a delay to test the async aspect of the code
 	callDelayed: function(callback, context){
