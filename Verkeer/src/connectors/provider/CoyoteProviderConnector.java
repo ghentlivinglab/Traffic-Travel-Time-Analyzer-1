@@ -105,8 +105,8 @@ public class CoyoteProviderConnector extends AProviderConnector {
      */
     protected void runPerl() throws IOException, InterruptedException {
         Runtime runtime = Runtime.getRuntime();
-        String[] perlCode = {"perl", "../Coyote_Perl/fetcher.pl", providerEntry.getId() + "", providerEntry.getName(), dataFile};
-        Process process = runtime.exec(perlCode);
+        String[] perlCode = {"perl", prop.getProperty("COYOTE_SCRIPT"), providerEntry.getId() + "", providerEntry.getName(), dataFile};
+        Process process = runtime.exec("perl "+prop.getProperty("COYOTE_SCRIPT")+" "+ providerEntry.getId()+ " " + providerEntry.getName()+" "+ dataFile);
         process.waitFor();
     }
     
@@ -154,9 +154,9 @@ public class CoyoteProviderConnector extends AProviderConnector {
                 }
                 buffer.close();
                 if (file.delete()) {
-                    log.info(dataFile + " deleted");
+                    //log.info(dataFile + " deleted");
                 } else {
-                    log.info(dataFile + " not deleted");
+                    //log.info(dataFile + " not deleted");
                 }
 
     }
