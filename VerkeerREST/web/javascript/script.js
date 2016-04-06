@@ -33,6 +33,20 @@ function togglePanel(){
 }
 
 /****************************
+ * Open / sluit popup in popupable element
+ * optionele parameter close om sluiten te forceren (maakt niet uit welke waarde die krijgt, zodra gegeven -> sluiten)
+ ****************************/
+function togglePopup(close){
+	console.log("togglePopup");
+	var anchor = $(this).find('.popup-anchor');
+	if (close === undefined && !anchor.hasClass('open')){
+		anchor.addClass('open');
+	}else{
+		anchor.removeClass('open');
+	}
+}
+
+/****************************
  * reads the key-value pairs from the location-URL
  * eg: for the URL http://test.com/?food=banana&drink=beer the method getQueryVariable("food") returns "banana"
  ****************************/
@@ -46,6 +60,27 @@ function getQueryVariable(variable){
        return false; // key not found
 }
 
+/****************************
+ * Wordt uitgevoerd als er nieuwe content wordt toegevoegd of herladen. Hierbij is this altijd de root element die alle aanpassingen omvat.
+ * Alles bindings moeten hierop dus opnieuw uitgevoerd worden
+ ****************************/
+function thisReady(){
+	// Propagation disablen op popup box (dat deze ook niet sluit bij onlick van de popupable parent)
+	$(this).find('.popupable').click(function(event) {
+		togglePopup.call(this);
+		event.stopPropagation();
+	});
+
+	$(this).find('.popup-box').click(function(event) {
+		console.log("Popup prevented closing");
+		event.stopPropagation();
+	});
+
+	// Scrollbalken
+	if (navigator.userAgent.indexOf('Mac OS X') == -1) {
+		$(this).find(".popup-scroll").niceScroll({zindex:999,cursorcolor:"#CCCCCC"});
+	}
+}
 
 /****************************
  * runs when DOM-tree is finished
@@ -56,9 +91,19 @@ $(document).ready( function(){
 	if (navigator.userAgent.indexOf('Mac OS X') == -1) {
 		$("#dashboard .content").niceScroll({zindex:999,cursorcolor:"#CCCCCC"});
 	}
+
+	thisReady.call(document);
 	
 	// adds a click listener to the collapse-button
 	$(".collapse").click(togglePanel);
+
+	// Popups sluiten als er naast wordt geklikt 
+	// (door stop propagation zal dit nooit uitgevoerd worden als er op de popup geklikt wordt)
+	$(document).click(function () {
+		$('.popupable').each(function() {
+			togglePopup.call(this, true);
+		});
+	});
 
 	// initialises dashboard
 	Dashboard.init();

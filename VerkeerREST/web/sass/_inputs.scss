@@ -1,0 +1,11 @@
+.period-selection {
+	border-bottom: 2px solid $light-gray;
+	color: $gray;
+	font-weight: 500;
+	display: inline-block;
+	min-width: 200px;
+	padding: 5px 30px 5px 10px;
+
+	// Hieronder: CSS3, offset 10 vanaf rechts, werkt niet in IE8
+	background: url(../images/dropdown-arrow.png) no-repeat right 10px center;
+}

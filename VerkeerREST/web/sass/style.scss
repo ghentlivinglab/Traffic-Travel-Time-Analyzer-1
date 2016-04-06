@@ -3,10 +3,12 @@ $medium-size: 15px;
 $dashboard-width: 800px;
 $gray: #4D4D4D;
 $background-gray: #F7F8FA;
-$light-gray: #EEE;
+$light-gray: #C8C8C8;
 $graph-height: 300px;
 $blue: #63A7FF;
 $line-gray: #A8A8A8;
+$border-radius: 4px;
+$box-shadow: 0 0 5px rgba(0,0,0, 0.3);
 
 // Kleuren die bij Stad Gent logo passen voor warning etc
 $red: #C10037;//#FF6363;
@@ -148,3 +150,5 @@ h2 {
 }
 
 @import 'dashboard';
+@import 'inputs';
+@import 'popups';

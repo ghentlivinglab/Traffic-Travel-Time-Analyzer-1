@@ -14,6 +14,8 @@
 
 
     <!-- Mustache templates -->
+
+    <!-- Route in de periode/vandaag weergave (één kolom met info, één met waarschuwingen) -->
     <script id="template-route" type="text/html">
     	<article onclick="toggleGraph.call(this);" data-route="{{ id }}">
 			<div class="table">
@@ -34,11 +36,39 @@
 			</div>
 			</article>
     </script>
+
+    <!-- Dashboard periode-view header: titel + periode dropdown -->
+    <script id="template-period-header" type="text/html">
+    	<h1>Periode</h1>
+    	<p>
+    	<div class="period-selection popupable">
+    		Gentse feesten 2015
+
+    		<div class="popup-anchor">
+    			<div class="popup">
+    				<div class="popup-box">
+    					<div class="popup-arrow"></div>
+    					<div class="popup-arrow-cover"></div>
+    					<div class="popup-scroll">
+    						<div class="popup-content">
+	    					Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud!Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud!Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud!Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud!Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud!Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud!Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud!Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud!Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud!Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud!Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud!Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud!Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud!Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud!Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud!
+	    					</div>
+	    				</div>
+    				</div>
+    			</div>
+    		</div>
+    	</div>
+    	</p>
+    </script>
+
+    <!-- Loading template -->
     <script id="template-loading" type="text/html">
     	<div class="loading">
     		<img src="images/loading.gif" alt="Bezig met laden">
     	</div>
     </script>
+
+    <!-- Provider template (in #settings menu) -->
      <script id="template-provider" type="text/html">
 	    <label>
 			<input type="radio" name="provider" onclick="Dashboard.setProvider({{ id }});" {{#checked}}checked{{/checked}}/>

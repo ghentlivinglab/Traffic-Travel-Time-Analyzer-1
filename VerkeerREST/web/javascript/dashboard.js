@@ -4,7 +4,7 @@
 
 var Dashboard = {
 
-	mode: 0, // Selected mode
+	mode: this.INTERVAL, // Selected mode
 	provider: null, // Selected provider
 
 	// Mogelijke dashboard standen cte's
@@ -15,6 +15,9 @@ var Dashboard = {
 
 	init: function() {
 		this.provider = null;
+
+		// TODO: TEMPORARY
+		this.mode = this.INTERVAL;
 
 		this.reload();
 		Api.syncProviders(this.loadProviders, this);
@@ -53,6 +56,15 @@ var Dashboard = {
 		if (!this.provider){
 			return;
 		}
+
+		var dashboard = $('#dashboard .content');
+
+		// Alles wissen (dit kan later weg, maar is om te voorkomen dat thisReady meerdere keren wordt uitgevoerd op dezelfde elementen)
+		// Als alles juist geprogrammeerd is, dan zal het dashboard nooit leeg zijn.
+		// Dus kan dit deeltje later weg. Maar voorlopig niet, zodat we deze oorzaak snel zien (dashboard zal leeg zijn). 
+		// (zie ook commentaar bij thisReady hieronder)
+		dashboard.html('');
+
 		switch(this.mode){
 			case Dashboard.LIVE: 
 				this.reloadLive(); 
@@ -67,6 +79,11 @@ var Dashboard = {
 				this.reloadCompareDays(); 
 			break;
 		}
+		
+		// thisReady mag NOOIT meerdere keren uitgevoerd worden op hetzelfde element (wel zelfde parent element)
+		// , niet op dezelfde kinderen.
+		// Het deel hierboven moet dus 100% zeker het dashboard resetten
+		thisReady.call(dashboard);
 	},
 
 	// Als niet voldoende gegevens beschikbaar zijn -> loading screen
@@ -180,7 +197,8 @@ var Dashboard = {
 	},
 	// Genereert HTML voor periode modus
 	reloadInterval: function() {
-		this.displayNotImplemented();
+		var dashboard = $('#dashboard .content');
+		dashboard.html(Mustache.renderTemplate("period-header", []));
 	},
 	// Genereert HTML voor live modus
 	reloadCompareIntervals: function() {

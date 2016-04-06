@@ -1,0 +1,86 @@
+
+// Class van waaruit een popup kan verschijnen (met pijtle midden onderaan)
+.popupable {
+	position: relative;
+	cursor: pointer;
+}
+
+// Deze bepaalt de top midden positie van de popup. En zorgt dat deze kan centreren.
+.popup-anchor {
+	width: 2px;
+	height: 1px;
+	position: absolute;
+	left: 50%;
+	margin-left: -1px;
+	bottom: 0;
+	cursor: default;
+	display: none;
+
+	// Debug only:
+	//background: red;
+
+	&.open {
+		display: block;
+	}
+}
+
+// Bepaalt het automatisch centereren
+.popup{
+	top: 20px;
+	position: absolute;
+	left: -120px; // Bepaald de maximale afmetingen van de popup (helft)
+	right: -120px;
+	margin: 0 auto;
+	z-index: 1000;
+
+}
+
+.popup-arrow {
+	position: absolute;
+	left: 50%;
+	margin-left: -5px;
+	top: -5px;
+	width: 10px;
+	height: 10px;
+	-ms-transform: rotate(45deg);
+	-webkit-transform: rotate(45deg);
+	transform: rotate(45deg);
+	background: white;
+	box-shadow: 0 0 5px rgba(0,0,0, 0.3);
+}
+
+// Bedekt het deel van de schaduw van de arrow die niet zichtbaar mag zijn
+.popup-arrow-cover {
+	position: absolute;
+	background: white;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+}
+
+
+// Bepaalt de achtergrond
+.popup-box {
+	display: inline-block;
+	position: relative; // Nodig voor arrow
+	background: white;
+	border-radius: $border-radius;
+	box-shadow: $box-shadow;
+
+}
+
+// Bepaalt de inhoud en vormt een nieuwe container (overflow auto) waar inhoud nooit uit kan komen
+.popup-scroll {
+	// Nodig om boven de arrow cover zichtbaar te zijn 
+	// (=> zorgt ervoor dat we boven absolute elementen kunen uitsteken)
+	position: relative; 
+
+	// Bepaalt ook de scrollable content
+	max-height: 200px;
+	overflow: auto;
+
+	.popup-content {
+		padding: 20px;
+	}
+}
