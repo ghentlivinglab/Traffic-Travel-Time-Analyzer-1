@@ -13,8 +13,21 @@ var Dashboard = {
 	COMPARE_INTERVALS: 2, // Vergelijk periodes
 	COMPARE_DAYS: 3, // Vergelijk dagen
 
+	// Geselecteerde intervallen en datums. Ofwel Interval ofwel Event objecten
+	selectedIntervals: [Interval.create(null, null), Interval.create(null, null)],
+
+	// Om de veranderingen van de selectedIntervals waar te nemen NA dat de popover is gesloten
+	// (hierdoor ontvangen we niet voortdurend change events) gebruiken we nog een extra
+	// property die de laatst gebruikte intervallen opslaat
+	lastKnownIntervals: [],
+
+	intervalsDidChange: function() {
+		// Herladen?
+	},
+
 	init: function() {
 		this.provider = null;
+
 
 		// TODO: TEMPORARY
 		this.mode = this.INTERVAL;
@@ -198,7 +211,13 @@ var Dashboard = {
 	// Genereert HTML voor periode modus
 	reloadInterval: function() {
 		var dashboard = $('#dashboard .content');
-		dashboard.html(Mustache.renderTemplate("period-header", []));
+		var data = {
+			num: 0,
+			name: this.selectedIntervals[0].getName(),
+		};
+
+
+		dashboard.html(Mustache.renderTemplate("period-header", data));
 	},
 	// Genereert HTML voor live modus
 	reloadCompareIntervals: function() {

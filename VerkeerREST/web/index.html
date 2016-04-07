@@ -8,6 +8,7 @@
 
     <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,700' rel='stylesheet' type='text/css'>
     <link href="css/style.css" rel="stylesheet">
+    <link href="css/picker.css" rel="stylesheet">
     <link rel="shortcut icon" href="favicon.png"/>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.nicescroll/3.6.8-fix/jquery.nicescroll.min.js"></script>
@@ -41,18 +42,40 @@
     <script id="template-period-header" type="text/html">
     	<h1>Periode</h1>
     	<p>
-    	<div class="period-selection popupable">
-    		Gentse feesten 2015
-
+    	<div class="period-selection popupable new" id="period-selection{{ num }}" data-num = "{{ num }}">
+    		<span class="name">{{ name }}</span><br>
     		<div class="popup-anchor">
     			<div class="popup">
     				<div class="popup-box">
     					<div class="popup-arrow"></div>
     					<div class="popup-arrow-cover"></div>
     					<div class="popup-scroll">
-    						<div class="popup-content">
-	    					Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud!Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud!Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud!Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud!Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud!Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud!Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud!Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud!Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud!Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud!Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud!Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud!Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud!Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud!Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud! Dit is de inhoud!
-	    					</div>
+    						<div class="view-selection">
+	    						<div class="popup-period-header">
+	    							<a href="#" class="edit-button">Aanpassen</a>
+	    							<a href="#" class="new-button">Nieuw</a>
+	    						</div>
+	    						<div class="popup-period-items">
+	    							<!--<a href="#">Gentse feesten 2013</a>
+	    							<a href="#">Event 2014</a>
+	    							<a href="#">Gentse feesten 2014</a>
+	    							<a href="#">Event 2015</a>
+	    							<a href="#">Gentse feesten 2015</a>
+	    							<a href="#">Gentse feesten 2016</a>
+	    							<a href="#">Event 2016</a>
+	    							<a href="#">Event 2016</a>-->
+	    						</div>
+    						</div>
+    						<div class="view-edit no-name">
+    							<input type="text" placeholder="Naam" class="name title" value="{{ name }}"/>
+    							<div><span>VAN</span><input type="text" placeholder="Datum" class="from inline datepicker"/><input type="text" placeholder="Tijd" class="from inline timepicker"/></div>
+    							<div><span>TOT</span><input type="text" placeholder="Datum" class="to inline datepicker"/><input type="text" placeholder="Tijd" class="to inline timepicker"/></div>
+    							<div class="buttons">
+	    							<div class="add">HERGEBRUIK</div>
+	    							<div class="delete">VERWIJDEREN</div>
+	    							<div class="close">OK</div>
+    							</div>
+    						</div>
 	    				</div>
     				</div>
     			</div>
@@ -116,249 +139,6 @@
 	<section id="dashboard">
 		<div class="collapse"><img src="images/arrow-left.png" alt="<" /></div>
 		<div class="content">
-			<!--<h1>Abnormaal verkeer</h1>
-			<article>
-				<div class="table">
-					<header>
-						<h1>Brusselsesteenweg (N9) westbound</h1>
-						<h2>R4 to Scheldekaai</h2>
-					</header>
-					<div class="left">
-						<p class="red status">Stilstaand</p>
-						<p class="speed">12 min.  60 km/h</p>
-						<p class="avg-speed">8 min.    90 km/h</p>
-					</div>
-					<div class="right">
-						<p class="warning">Zwaar ongeval</p>
-						<p class="warning">Blablabla</p>
-					</div>
-				</div>
-			</article>
-			<article>
-				<div class="table">
-					<header>
-						<h1>Brusselsesteenweg (N9) westbound</h1>
-						<h2>R4 to Scheldekaai</h2>
-					</header>
-					<div class="left">
-						<p class="red status">Stilstaand</p>
-						<p class="speed">12 min.  60 km/h</p>
-						<p class="avg-speed">8 min.    90 km/h</p>
-					</div>
-					<div class="right">
-						<p class="warning">Zwaar ongeval</p>
-						<p class="warning">Blablabla</p>
-					</div>
-				</div>
-			</article>
-			<hr>
-			<h1>Zoals altijd</h1>
-			<article>
-				<div class="table">
-					<header>
-						<h1>Brusselsesteenweg (N9) westbound</h1>
-						<h2>R4 to Scheldekaai</h2>
-					</header>
-					<div class="left">
-						<p class="red status">Stilstaand</p>
-						<p class="speed">12 min.  60 km/h</p>
-						<p class="avg-speed">8 min.    90 km/h</p>
-					</div>
-					<div class="right">
-						<p class="warning">Zwaar ongeval</p>
-						<p class="warning">Blablabla</p>
-					</div>
-				</div>
-			</article>
-
-			<article>
-				<div class="table">
-					<header>
-						<h1>Brusselsesteenweg (N9) westbound</h1>
-						<h2>R4 to Scheldekaai</h2>
-					</header>
-					<div class="left">
-						<p class="orange status">Stilstaand</p>
-						<p class="speed">12 min.  60 km/h</p>
-						<p class="avg-speed">8 min.    90 km/h</p>
-					</div>
-					<div class="right">
-						<p class="warning">Zwaar ongeval</p>
-						<p class="warning">Blablabla</p>
-					</div>
-				</div>
-			</article>
-			<article>
-				<div class="table">
-					<header>
-						<h1>Brusselsesteenweg (N9) westbound</h1>
-						<h2>R4 to Scheldekaai</h2>
-					</header>
-					<div class="left">
-						<p class="orange status">Stilstaand</p>
-						<p class="speed">12 min.  60 km/h</p>
-						<p class="avg-speed">8 min.    90 km/h</p>
-					</div>
-					<div class="right">
-						<p class="warning">Zwaar ongeval</p>
-						<p class="warning">Blablabla</p>
-					</div>
-				</div>
-			</article>
-			<article>
-				<div class="table">
-					<header>
-						<h1>Brusselsesteenweg (N9) westbound</h1>
-						<h2>R4 to Scheldekaai</h2>
-					</header>
-					<div class="left">
-						<p class="orange status">Stilstaand</p>
-						<p class="speed">12 min.  60 km/h</p>
-						<p class="avg-speed">8 min.    90 km/h</p>
-					</div>
-					<div class="right">
-						<p class="warning">Zwaar ongeval</p>
-						<p class="warning">Blablabla</p>
-					</div>
-				</div>
-			</article>
-			<article>
-				<div class="table">
-					<header>
-						<h1>Brusselsesteenweg (N9) westbound</h1>
-						<h2>R4 to Scheldekaai</h2>
-					</header>
-					<div class="left">
-						<p class="orange status">Stilstaand</p>
-						<p class="speed">12 min.  60 km/h</p>
-						<p class="avg-speed">8 min.    90 km/h</p>
-					</div>
-					<div class="right">
-						<p class="warning">Zwaar ongeval</p>
-						<p class="warning">Blablabla</p>
-					</div>
-				</div>
-			</article>
-			<article>
-				<div class="table">
-					<header>
-						<h1>Brusselsesteenweg (N9) westbound</h1>
-						<h2>R4 to Scheldekaai</h2>
-					</header>
-					<div class="left">
-						<p class="orange status">Stilstaand</p>
-						<p class="speed">12 min.  60 km/h</p>
-						<p class="avg-speed">8 min.    90 km/h</p>
-					</div>
-					<div class="right">
-						<p class="warning">Zwaar ongeval</p>
-						<p class="warning">Blablabla</p>
-					</div>
-				</div>
-			</article>
-			<article>
-				<div class="table">
-					<header>
-						<h1>Brusselsesteenweg (N9) westbound</h1>
-						<h2>R4 to Scheldekaai</h2>
-					</header>
-					<div class="left">
-						<p class="orange status">Stilstaand</p>
-						<p class="speed">12 min.  60 km/h</p>
-						<p class="avg-speed">8 min.    90 km/h</p>
-					</div>
-					<div class="right">
-						<p class="warning">Zwaar ongeval</p>
-						<p class="warning">Blablabla</p>
-					</div>
-				</div>
-			</article>
-			<article>
-				<div class="table">
-					<header>
-						<h1>Brusselsesteenweg (N9) westbound</h1>
-						<h2>R4 to Scheldekaai</h2>
-					</header>
-					<div class="left">
-						<p class="orange status">Stilstaand</p>
-						<p class="speed">12 min.  60 km/h</p>
-						<p class="avg-speed">8 min.    90 km/h</p>
-					</div>
-					<div class="right">
-						<p class="warning">Zwaar ongeval</p>
-						<p class="warning">Blablabla</p>
-					</div>
-				</div>
-			</article>
-			<article>
-				<div class="table">
-					<header>
-						<h1>Brusselsesteenweg (N9) westbound</h1>
-						<h2>R4 to Scheldekaai</h2>
-					</header>
-					<div class="left">
-						<p class="status">Stilstaand</p>
-						<p class="speed">12 min.  60 km/h</p>
-						<p class="avg-speed">8 min.    90 km/h</p>
-					</div>
-					<div class="right">
-						<p class="warning">Zwaar ongeval</p>
-						<p class="warning">Blablabla</p>
-					</div>
-				</div>
-			</article>
-			<article>
-				<div class="table">
-					<header>
-						<h1>Brusselsesteenweg (N9) westbound</h1>
-						<h2>R4 to Scheldekaai</h2>
-					</header>
-					<div class="left">
-						<p class="status">Stilstaand</p>
-						<p class="speed">12 min.  60 km/h</p>
-						<p class="avg-speed">8 min.    90 km/h</p>
-					</div>
-					<div class="right">
-						<p class="warning">Zwaar ongeval</p>
-						<p class="warning">Blablabla</p>
-					</div>
-				</div>
-			</article>
-			<article>
-				<div class="table">
-					<header>
-						<h1>Brusselsesteenweg (N9) westbound</h1>
-						<h2>R4 to Scheldekaai</h2>
-					</header>
-					<div class="left">
-						<p class="status">Traag verkeer</p>
-						<p class="speed">12 min.  60 km/h</p>
-						<p class="avg-speed">8 min.    90 km/h</p>
-					</div>
-					<div class="right">
-						<p class="warning">Zwaar ongeval</p>
-						<p class="warning">Blablabla</p>
-					</div>
-				</div>
-			</article>
-			<article>
-				<div class="table">
-					<header>
-						<h1>Brusselsesteenweg (N9) westbound</h1>
-						<h2>R4 to Scheldekaai</h2>
-					</header>
-					<div class="left">
-						<p class="status">Vlot verkeer</p>
-						<p class="speed">12 min.  60 km/h</p>
-						<p class="avg-speed">8 min.    90 km/h</p>
-					</div>
-					<div class="right">
-						<p class="warning">Zwaar ongeval</p>
-						<p class="warning">Blablabla</p>
-					</div>
-				</div>
-			</article>
-			-->
 		</div>
 		<div class="shadow"></div>
 	</section>
@@ -375,6 +155,7 @@
 	<script type="text/javascript" src="javascript/dashboard.js"></script>
 
 	<script type="text/javascript" src="javascript/mustache.min.js"></script>
+	<script type="text/javascript" src="javascript/picker.js"></script>
 	<script type="text/javascript" src="javascript/script.js"></script>
 
 	<!-- Javascript met defer-attribuut wordt pas uitgevoerd na afwerken van volledige HTML parsing en in volgorde van vermelding -->

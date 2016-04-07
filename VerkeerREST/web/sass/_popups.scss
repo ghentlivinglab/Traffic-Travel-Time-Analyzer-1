@@ -3,6 +3,10 @@
 .popupable {
 	position: relative;
 	cursor: pointer;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none
 }
 
 // Deze bepaalt de top midden positie van de popup. En zorgt dat deze kan centreren.
@@ -28,11 +32,10 @@
 .popup{
 	top: 20px;
 	position: absolute;
-	left: -120px; // Bepaald de maximale afmetingen van de popup (helft)
-	right: -120px;
-	margin: 0 auto;
+	left: -150px; // Bepaald de maximale afmetingen van de popup (helft)
+	right: -150px;
 	z-index: 1000;
-
+	text-align: center;
 }
 
 .popup-arrow {
@@ -46,7 +49,7 @@
 	-webkit-transform: rotate(45deg);
 	transform: rotate(45deg);
 	background: white;
-	box-shadow: 0 0 5px rgba(0,0,0, 0.3);
+	box-shadow: $arrow-shadow;
 }
 
 // Bedekt het deel van de schaduw van de arrow die niet zichtbaar mag zijn
@@ -57,6 +60,7 @@
 	right: 0;
 	top: 0;
 	bottom: 0;
+	border-radius: $border-radius;
 }
 
 
@@ -64,10 +68,9 @@
 .popup-box {
 	display: inline-block;
 	position: relative; // Nodig voor arrow
-	background: white;
 	border-radius: $border-radius;
 	box-shadow: $box-shadow;
-
+	text-align: left;
 }
 
 // Bepaalt de inhoud en vormt een nieuwe container (overflow auto) waar inhoud nooit uit kan komen
@@ -77,10 +80,9 @@
 	position: relative; 
 
 	// Bepaalt ook de scrollable content
-	max-height: 200px;
+	max-height: 300px;
 	overflow: auto;
 
-	.popup-content {
-		padding: 20px;
-	}
+	// nodig zodat randen niet overflowen
+	border-radius: $border-radius;
 }

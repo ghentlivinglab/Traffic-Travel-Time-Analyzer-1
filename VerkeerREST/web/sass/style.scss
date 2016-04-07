@@ -8,7 +8,8 @@ $graph-height: 300px;
 $blue: #63A7FF;
 $line-gray: #A8A8A8;
 $border-radius: 4px;
-$box-shadow: 0 0 5px rgba(0,0,0, 0.3);
+$box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+$arrow-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
 
 // Kleuren die bij Stad Gent logo passen voor warning etc
 $red: #C10037;//#FF6363;
@@ -68,6 +69,14 @@ h2 {
 	margin: 0;
 	padding: 0;
 }
+
+a {
+	&:hover, &:link, &:active, &:visited{
+		text-decoration: none;
+		color: inherit;
+	}
+}
+
 
 .shadow {
 	position: absolute;

@@ -1,3 +1,41 @@
+// Default inputs
+
+input[type=text] {
+	border: 0;
+	outline: 0;
+	font-size: 11pt;
+	margin-top: 2px;
+	vertical-align: middle;
+
+	color: $gray;
+	border-bottom: 2px solid $light-gray;
+	padding: 5px;
+	display: block;
+
+	&.title {
+		font-size: 13pt;
+	}
+	&.inline {
+		display: inline-block;
+	}
+	&.datepicker {
+		width: 100px;
+	}
+	&.timepicker {
+		width: 50px;
+	}
+	&:focus {
+		border-color: $red;
+	}
+	// picker
+	&.picker__input.picker__input--active{
+		border-color: $red;
+	}
+}
+
+
+
+// Custom inputs
 .period-selection {
 	border-bottom: 2px solid $light-gray;
 	color: $gray;
@@ -8,4 +46,171 @@
 
 	// Hieronder: CSS3, offset 10 vanaf rechts, werkt niet in IE8
 	background: url(../images/dropdown-arrow.png) no-repeat right 10px center;
+}
+
+// Voor in de popup: (in .popup-scroll)
+.popup-period-header {
+	min-width: 250px;
+	border-bottom: 1px solid $light-gray;
+
+	a {
+		text-transform: uppercase;
+		font-size: 10pt;
+		padding: 5px 16px;
+		margin:  10px 0;
+		color: $gray;
+		display: block;
+		font-weight: 500;
+		border: 0;
+
+		&:hover, &:link, &:active, &:visited{
+			text-decoration: none;
+			color: $gray;
+		}
+		&:hover {
+			font-weight: 600;
+		}
+	}
+}
+.popup-period-items {
+	margin-bottom: -1px;
+
+	.item {
+		padding: 5px 16px;
+		margin:  10px 0;
+		color: $gray;
+		display: block;
+		font-weight: 400;
+		border: 0;
+		position: relative;
+		cursor: pointer;
+		padding-right: 25px;
+
+		span {
+			display: block;
+
+			&:hover {
+				font-weight: 500;
+			}
+		}
+
+		.edit-period {
+			position: absolute;
+			right: 5px;
+			top: 0;
+			bottom: 0;
+			width: 20px;
+			background: url(../images/edit.png) no-repeat center;
+
+			&:hover {
+				background-color: $background-gray;
+			}
+		}
+
+	}
+}
+
+.period-selection {
+
+	.view-selection {
+		display: block;
+	}
+
+	.view-edit {
+		display: none;
+		padding: 10px 15px 0px 15px;
+
+		span{
+			vertical-align: middle;
+			display: inline-block;
+			color: $gray;
+			width: 30px;
+			font-size: 10pt;
+			margin-right: 10px;
+			box-sizing: border-box;
+		}
+		div {
+			margin: 5px 0;
+		}
+		.name {
+			margin-bottom: 15px;
+			width: 250px;
+		}
+		.datepicker {
+			width: 155px;
+			box-sizing: border-box;
+			margin-right: 5px;
+		}
+
+		.timepicker {
+			width: 50px;
+			box-sizing: border-box;
+		}
+
+		.buttons {
+			margin: 10px 0 0 0;
+			text-align: right;
+			font-size: 10pt;
+
+			div {
+				padding: 10px;
+				display: inline-block;
+				cursor: pointer;
+			}
+
+			.delete {
+				color: $red;
+			}
+			.add {
+				color: $gray;
+				display: none;
+			}
+		}
+
+		&.no-name {
+			.name {
+				display: none;
+			}
+			.delete {
+				display: none;
+			}
+			.add {
+				display: inline-block;
+			}
+		}
+	}
+
+	div.picker__holder {
+		outline: none;
+		box-shadow: none; // Verwijder schaduw, want kan hier niet door klikken -> problemen
+	}
+
+	&.edit {
+		.popup-scroll {
+			overflow: visible; // voor date pickers!
+		}
+
+		.view-selection {
+			display: none;
+		}
+		.view-edit {
+			display: block;
+		}
+	}
+	&.no-event {
+		.edit-button {
+			display: block;
+		}
+		.new-button {
+			display: none;
+		}
+	}
+	&.new {
+		.edit-button {
+			display: none;
+		}
+		.new-button {
+			display: block;
+		}
+	}
 }

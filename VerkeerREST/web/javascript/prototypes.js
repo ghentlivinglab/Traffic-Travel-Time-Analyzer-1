@@ -172,7 +172,7 @@ var Route = {
 	// TODO: translate
 	// Houdt de grafieken bij:
 	// Kan zijn voor maandag, dinsdag, woensdag, ... zondag (0-6) Maandag = 0, zondag = 6
-	// bv. data[maandag][providerId] -> TrafficGraph
+	// bv. eventData["04/07/2015T12:00>08/07/2015T14:00"][maandag][providerId] -> TrafficGraph
 	eventData: {
 
 	},
@@ -215,20 +215,169 @@ var Provider = {
 };
 
 /****************************
- *
+ * Event is an interval saved in memory, localstorage and on the server
  ****************************/
 var Event = {
-	id: 0,
-	name: '',
+	// id wordt enkel gebruikt voor communicatie met de server
+	id: -1, // Van de server gehaald, anders -1 (niet gesynct)
+	name: '', // Naam moet altijd uniek zijn
 	start: null, // instance of Date
 	end: null, // instance of Date
-	create: function(id, name, start, end){
+	hasName: true,
+
+	// Nieuw event van interval element
+	new: function(interval) {
+		if (interval.isValid()){
+			return this.create(interval.getName(), interval.start, interval.end)
+		}else{
+			return this.create('Interval', interval.start, interval.end)
+		}
+	},
+
+	createFromStorage: function(object) {
+		// Komt rechtstreeks uit localstorage. Geen checks op doen. Events zou leeg moeten zijn.
+		var obj = Object.create(Event);
+		obj.name = object.name;
+
+		// javascript JSON houdt date bij in string formaat -> hieronder omzetten in date objecten
+		obj.start = new Date(object.start);
+		obj.end = new Date(object.end);
+
+		return obj;
+	},
+
+	create: function(name, start, end){
+		// copy Prototype
+		var obj = Object.create(Event);
+		obj.start = start;
+		obj.end = end;
+		obj.name = null;
+
+		// Toevoegen aan events, en naam aanvullen als deze al in gebruik is:
+		obj.setName(name);
+
+		// TODO: Hier code om het aan server toe te voegen (als id niet opgegeven)
+
+		// TODO: Toevoegen aan localstorage
+
+		return obj;
+	},
+	isValid: function() {
+		// TODO: additional checks
+		return typeof this.end != "undefined" && typeof this.start != "undefined" && this.start && this.end;
+	},
+	setStart: function(start) {
+		this.start = start;
+		this.saveLocalStorage();
+	},
+
+	setEnd: function(end) {
+		this.end = end;
+		this.saveLocalStorage();
+	},
+
+	// iteration is enkel voor de recursieve werking, en is een optionele parameter
+	setName: function(name, iteration) {
+		var n = name;
+		if (typeof iteration == 'undefined') {
+			iteration = 1;
+		} else {
+			n += '-'+iteration;
+		}
+
+		if (this.name && n == this.name){
+			return;
+		}
+
+		if (getEventIndex(n) != -1) {
+			// Nope!
+			iteration++;
+			this.setName(name, iteration);
+			return;
+		}
+		var index = getEventIndex(this.name);
+		if (index != -1){
+			events[index] = this;
+		}else{
+			events.push(this);
+		}
+
+		this.name = n;
+		this.saveLocalStorage();
+	},
+	getName: function() {
+		return this.name;
+	},
+
+	delete: function() {
+		// Delete reference from server
+		// Delete reference from localstorage
+		// Delete reference from memory
+		var index = getEventIndex(this.name);
+		if (index != -1){
+			events.splice(index, 1);
+			this.saveLocalStorage();
+		}
+		console.log("nieuw delete: "+this.start+" > "+this.end);
+
+		// Replace reference with a new interval object
+		return Interval.create(this.start, this.end);
+	},
+
+	saveLocalStorage: function() {
+		localStorage.setItem('events', JSON.stringify(events));
+	},
+
+	loadLocalStorage: function() {	
+		// Retrieve the object from storage
+		try{
+			var retrievedObject = localStorage.getItem('events');
+			var parsed = JSON.parse(retrievedObject);
+			if (Array.isArray(parsed)){
+				// Na het parsen zijn alle methodes verdwenen. Deze voegen we terug toe
+				events = [];
+
+				for (var i = 0; i < parsed.length; i++) {
+					var parse = parsed[i];
+					events.push(this.createFromStorage(parse));
+				}
+			}
+		} catch (e) {
+			// Fout in storage -> vervangen die handel
+			this.saveLocalStorage();
+		}
+	}
+};
+
+/****************************
+ * Interval for temporary usage, max 1 reference
+ ****************************/
+var Interval = {
+	start: null, // instance of Date
+	end: null, // instance of Date
+	hasName: false,
+	create: function(start, end){
 		// copy Prototype
 		var obj = Object.create(this);
-		obj.id = id;
-		obj.name = name;
 		obj.start = start;
 		obj.end = end;
 		return obj;
+	},
+	isValid: function() {
+		// TODO: additional checks
+		return typeof this.end != "undefined" && typeof this.start != "undefined" && this.start && this.end;
+	},
+	getName: function() {
+		if (!this.isValid()){
+			return 'Selecteer een periode'; 
+		}
+		// TODO: aanpassen
+		return dateToDate(this.start)+' > '+dateToDate(this.end); 
+	},
+	setStart: function(start) {
+		this.start = start;
+	},
+	setEnd: function(end) {
+		this.end = end;
 	}
 };
