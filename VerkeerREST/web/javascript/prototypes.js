@@ -258,8 +258,6 @@ var Event = {
 
 		// TODO: Hier code om het aan server toe te voegen (als id niet opgegeven)
 
-		// TODO: Toevoegen aan localstorage
-
 		return obj;
 	},
 	isValid: function() {
@@ -358,7 +356,7 @@ var Interval = {
 	hasName: false,
 	create: function(start, end){
 		// copy Prototype
-		var obj = Object.create(this);
+		var obj = Object.create(Interval);
 		obj.start = start;
 		obj.end = end;
 		return obj;
@@ -373,6 +371,37 @@ var Interval = {
 		}
 		// TODO: aanpassen
 		return dateToDate(this.start)+' > '+dateToDate(this.end); 
+	},
+	copy: function(object) {
+		// copy obj
+		var obj = Object.create(Interval);
+
+		if (!object.start || typeof object.start == "undefined"){
+			obj.start = null;
+		}else{
+			obj.start = new Date(object.start.valueOf());
+		}
+		
+		if (!object.end || typeof object.end == "undefined"){
+			obj.end = null;
+		}else{
+			obj.end = new Date(object.end.valueOf());
+		}
+		return obj;
+	},
+	equals: function(interval) {
+		if (!this.isValid()){
+			if (!interval.isValid()){
+				return true;
+			}else{
+				return false;
+			}
+		}
+		if (!interval.isValid()){
+			return false;
+		}
+
+		return this.start.getTime() == interval.start.getTime() && this.end.getTime() == interval.end.getTime();
 	},
 	setStart: function(start) {
 		this.start = start;

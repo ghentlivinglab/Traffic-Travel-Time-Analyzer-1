@@ -64,12 +64,17 @@ function togglePanel(){
  * optionele parameter close om sluiten te forceren (maakt niet uit welke waarde die krijgt, zodra gegeven -> sluiten)
  ****************************/
 function togglePopup(close){
-	console.log("togglePopup");
 	var anchor = $(this).find('.popup-anchor');
 	if (close === undefined && !anchor.hasClass('open')){
 		anchor.addClass('open');
 	}else{
-		anchor.removeClass('open');
+		// Voorkomen dat Dashboard.intervalsDidChange bij elke klik wordt uitgevoerd -> enkel bij sluiten
+		if (anchor.hasClass('open')){
+			if ($(this).hasClass('period-selection')) {
+				Dashboard.intervalsDidChange();
+			}
+			anchor.removeClass('open');
+		}
 	}
 }
 
@@ -160,7 +165,6 @@ function fillPeriodSelectionInputs(){
 // Haalt de waarde van de inputs uit de popup en slaat deze op in het juiste interval element (1 of 2) van dashoboard
 function savePeriodSelectionInputs() {
 	var interval = Dashboard.selectedIntervals[$(this).attr('data-num')];
-	console.log(Dashboard.selectedIntervals[$(this).attr('data-num')]);
 
 	if (interval.hasName){
 		interval.setName($(this).find('.view-edit .name').val());
@@ -245,7 +249,6 @@ function onOpenPeriodSelection() {
 	// Als het niet om een event gaat -> aanpassen knop niet tonen.
 	// (een interval (<-> event) zit namelijk niet in het geheugen)
 	var interval = Dashboard.selectedIntervals[$(this).attr('data-num')];
-	console.log(interval);
 
 	$(this).removeClass('new');
 
@@ -348,7 +351,6 @@ function thisReady(){
 
 
 	$(this).find('.popup-box').click(function(event) {
-		console.log("Popup prevented closing");
 		clickedOnPopup = true;
 	});
 
@@ -402,7 +404,6 @@ $(document).ready( function(){
 	// Popups sluiten als er naast wordt geklikt 
 	// (door stop propagation zal dit nooit uitgevoerd worden als er op de popup geklikt wordt)
 	$(document).click(function () {
-		console.log('document: '+clickedOnPopup);
 		if (clickedOnPopup){
 			clickedOnPopup = false;
 			return;

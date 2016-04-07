@@ -22,12 +22,29 @@ var Dashboard = {
 	lastKnownIntervals: [],
 
 	intervalsDidChange: function() {
-		// Herladen?
+		var changed = false;
+		for (var i = 0; i < this.selectedIntervals.length; i++) {
+			var sel = this.selectedIntervals[i];
+			var lk = this.lastKnownIntervals[i];
+
+			if (!lk.equals(sel)){
+				changed = true;
+			}
+
+			this.lastKnownIntervals[i] = Interval.copy(sel);
+		}
+
+		if (changed) {
+			console.log('intervals did change!');
+			this.reload();
+		}else{
+			console.log('no change')
+		}
 	},
 
 	init: function() {
 		this.provider = null;
-
+		this.lastKnownIntervals = [Interval.copy(this.selectedIntervals[0]), Interval.copy(this.selectedIntervals[1])];
 
 		// TODO: TEMPORARY
 		this.mode = this.INTERVAL;
