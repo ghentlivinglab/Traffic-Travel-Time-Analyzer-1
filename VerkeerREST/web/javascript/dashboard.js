@@ -21,6 +21,15 @@ var Dashboard = {
 	// property die de laatst gebruikte intervallen opslaat
 	lastKnownIntervals: [],
 
+
+	init: function() {
+		this.provider = null;
+		this.lastKnownIntervals = [Interval.copy(this.selectedIntervals[0]), Interval.copy(this.selectedIntervals[1])];
+
+		this.reload();
+		Api.syncProviders(this.loadProviders, this);
+	},
+
 	intervalsDidChange: function() {
 		var changed = false;
 		for (var i = 0; i < this.selectedIntervals.length; i++) {
@@ -35,22 +44,8 @@ var Dashboard = {
 		}
 
 		if (changed) {
-			console.log('intervals did change!');
 			this.reload();
-		}else{
-			console.log('no change')
 		}
-	},
-
-	init: function() {
-		this.provider = null;
-		this.lastKnownIntervals = [Interval.copy(this.selectedIntervals[0]), Interval.copy(this.selectedIntervals[1])];
-
-		// TODO: TEMPORARY
-		this.mode = this.INTERVAL;
-
-		this.reload();
-		Api.syncProviders(this.loadProviders, this);
 	},
 
 	loadProviders: function() {
@@ -76,7 +71,6 @@ var Dashboard = {
 	},
 
 	setProvider: function(providerId){
-		console.log("set provider id "+providerId);
 		this.provider = providers[providerId];
 		this.reload();
 	},
@@ -134,7 +128,6 @@ var Dashboard = {
 		var counterObject = {counter: 0, route: route, element: element, width: width, height: height}; // Referentie die we gaan meegeven
 		// Deze counter voorkomt dat we openLiveGraph te snel opnieuw aanroepen als 1 van de requests klaar is
 		var callback = function(){
-			console.log(this.counter);
 			this.counter--;
 			if (this.counter == 0){
 				Dashboard.openLiveGraph(this.route.id, this.element, this.width, this.height);
