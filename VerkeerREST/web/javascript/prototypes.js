@@ -307,6 +307,10 @@ var Event = {
 		return this.name;
 	},
 
+	isEmpty: function() {
+		return false;
+	},
+
 	delete: function() {
 		// Delete reference from server
 		// Delete reference from localstorage
@@ -365,6 +369,10 @@ var Interval = {
 		// TODO: additional checks
 		return typeof this.end != "undefined" && typeof this.start != "undefined" && this.start && this.end;
 	},
+	isEmpty: function() {
+		// TODO: additional checks
+		return (typeof this.end == "undefined" || !this.end) && typeof (this.start == "undefined" || !this.start);
+	},
 	getName: function() {
 		if (!this.isValid()){
 			return 'Selecteer een periode'; 
@@ -381,7 +389,7 @@ var Interval = {
 		}else{
 			obj.start = new Date(object.start.valueOf());
 		}
-		
+
 		if (!object.end || typeof object.end == "undefined"){
 			obj.end = null;
 		}else{

@@ -42,6 +42,12 @@
     <script id="template-period-header" type="text/html">
     	<h1>Periode</h1>
     	<p>
+    		{{& period-selection }}
+    	</p>
+    </script>
+
+    <!-- Dashboard periode-view header: titel + periode dropdown -->
+    <script id="template-period-selection" type="text/html">
     	<div class="period-selection popupable new" id="period-selection{{ num }}" data-num = "{{ num }}">
     		<span class="name">{{ name }}</span><br>
     		<div class="popup-anchor">
@@ -52,18 +58,10 @@
     					<div class="popup-scroll">
     						<div class="view-selection">
 	    						<div class="popup-period-header">
-	    							<a href="#" class="edit-button">Aanpassen</a>
-	    							<a href="#" class="new-button">Nieuw</a>
+	    							<div class="edit-button">Aanpassen</div>
+	    							<div class="new-button">Nieuw</div>
 	    						</div>
 	    						<div class="popup-period-items">
-	    							<!--<a href="#">Gentse feesten 2013</a>
-	    							<a href="#">Event 2014</a>
-	    							<a href="#">Gentse feesten 2014</a>
-	    							<a href="#">Event 2015</a>
-	    							<a href="#">Gentse feesten 2015</a>
-	    							<a href="#">Gentse feesten 2016</a>
-	    							<a href="#">Event 2016</a>
-	    							<a href="#">Event 2016</a>-->
 	    						</div>
     						</div>
     						<div class="view-edit no-name">
@@ -81,7 +79,6 @@
     			</div>
     		</div>
     	</div>
-    	</p>
     </script>
 
     <!-- Loading template -->
@@ -156,6 +153,7 @@
 
 	<script type="text/javascript" src="javascript/mustache.min.js"></script>
 	<script type="text/javascript" src="javascript/picker.js"></script>
+	<script type="text/javascript" src="javascript/periodSelection.js"></script>
 	<script type="text/javascript" src="javascript/script.js"></script>
 
 	<!-- Javascript met defer-attribuut wordt pas uitgevoerd na afwerken van volledige HTML parsing en in volgorde van vermelding -->

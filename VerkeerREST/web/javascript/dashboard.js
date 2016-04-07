@@ -228,13 +228,28 @@ var Dashboard = {
 	// Genereert HTML voor periode modus
 	reloadInterval: function() {
 		var dashboard = $('#dashboard .content');
+		var interval = this.selectedIntervals[0];
 		var data = {
 			num: 0,
 			name: this.selectedIntervals[0].getName(),
 		};
+		var period_selection = Mustache.renderTemplate("period-selection", data);
 
+		var str = Mustache.renderTemplate("period-header", { 'period-selection': period_selection});
 
-		dashboard.html(Mustache.renderTemplate("period-header", data));
+		
+		// data checken
+		if (interval.isEmpty()){
+			str += "<p>Selecteer een reeds opgeslagen periode of kies zelf een bereik.</p>";
+		}else{
+			if (interval.isValid()){
+				str += "<p>Resultaat voor periode: "+ dateToDate(interval.start) +" tot "+dateToDate(interval.end) +"</p>";
+			}else{
+				str += "<p>Het opgegeven bereik is niet volledig/ongeldig.</p>";
+			}
+		}
+
+		dashboard.html(str);
 	},
 	// Genereert HTML voor live modus
 	reloadCompareIntervals: function() {
