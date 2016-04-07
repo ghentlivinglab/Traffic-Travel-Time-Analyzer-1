@@ -9,7 +9,7 @@ select
 		where 	providerID=x.providerID and 
 					routeID=x.routeID and
 					timestamp > now() - interval 30 day and
-					abs(TIMESTAMPDIFF(minute,time(timestamp),time(x.timestamp))) < 30 and
+					abs(TIMESTAMPDIFF(minute,time(timestamp),time(x.timestamp))) < 15 and
 					weekday(timestamp) = weekday(x.timestamp)			
 	),0) avg
 from trafficdata x join routes y on x.routeID=y.id

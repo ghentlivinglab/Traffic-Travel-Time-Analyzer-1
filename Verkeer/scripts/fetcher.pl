@@ -1,4 +1,4 @@
-use warnings;
+no warnings;
 
 use JSON qw( decode_json );
 # to use this library, make sure it is installed in your Perl-system
@@ -24,7 +24,7 @@ $PASSWORD = "50c20b94";
 ##################
 
 my $cookie = login();
-system "curl -s --header \"" . $cookie . "\" -o \"" . $DATA_FILE . "\" " . $DATA_URL;
+system "curl -s -k --header \"" . $cookie . "\" -o \"" . $DATA_FILE . "\" " . $DATA_URL;
 
 my $routes = processJSON(time);
 print_routes($routes, $OUTPUT_FILE);
@@ -42,11 +42,11 @@ sub login {
 	my $cookie;
 
 	# reads headers to $HEADER_FILE and ignores body
-	system "curl -s -d \"login=" . $LOGIN . "&password=" . $PASSWORD . "\" -D " . $HEADER_FILE . " -o /dev/null " . $MAIN_URL;
-	
+	system "curl -s -k -d \"login=" . $LOGIN . "&password=" . $PASSWORD . "\" -D " . $HEADER_FILE . " -o /dev/null " . $MAIN_URL;
 	# get all headers in memory
-	open(LOGINHEADER,$HEADER_FILE); # open file
+	open(LOGINHEADER,$HEADER_FILE) or die "Can't open '$HEADER_FILE': $!"; # open file
 	my @lines = <LOGINHEADER>; # get all headers and store in array
+	print "@lines";
 	close(LOGINHEADER); # close file
 	
 	unlink($HEADER_FILE);
@@ -76,7 +76,7 @@ sub processJSON {
 	my $timestamp = $_[0];
 
 	#get the json in memory
-	open(JSONDATA,$DATA_FILE);
+	open(JSONDATA,'<',$DATA_FILE) or die "Can't open '$DATA_FILE': $!";
 	local $/=undef;
 	my $json = <JSONDATA>;
 	close(JSONDATA);
@@ -134,10 +134,10 @@ sub print_routes {
 	my $file;
 
 	if(defined($filename)){ # a filename is provided, open the file for writing (overwrites content in file provided
-		open( FILEHANDLE , '>'.$filename );
+		open( FILEHANDLE , '>',$filename );
 		$file = *FILEHANDLE;
 	} else { # no filename provided, print to the console
-		$file = *STDOUT;
+		#$file = *STDOUT;
 	}
 
 	for $route (keys %{$routes}){ # for each route-entry
