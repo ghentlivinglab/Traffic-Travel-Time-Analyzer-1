@@ -4,7 +4,7 @@
 
 var Dashboard = {
 
-	mode: this.INTERVAL, // Selected mode
+	mode: null, // Selected mode
 	provider: null, // Selected provider
 
 	// Mogelijke dashboard standen cte's
@@ -25,6 +25,8 @@ var Dashboard = {
 	init: function() {
 		this.provider = null;
 		this.lastKnownIntervals = [Interval.copy(this.selectedIntervals[0]), Interval.copy(this.selectedIntervals[1])];
+
+		this.mode = this.LIVE;
 
 		this.reload();
 		Api.syncProviders(this.loadProviders, this);
