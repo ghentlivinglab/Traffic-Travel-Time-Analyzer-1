@@ -238,7 +238,21 @@ var Dashboard = {
 			str += "<p>Selecteer een reeds opgeslagen periode of kies zelf een bereik.</p>";
 		}else{
 			if (interval.isValid()){
-				str += "<p>Resultaat voor periode: "+ dateToDate(interval.start) +" tot "+dateToDate(interval.end) +"</p>";
+				// Hebben we deze data?
+				var hasData = true;
+				var p = this.provider.id;
+
+				routes.forEach(function(route){
+					if (!route.getIntervalDataRepresentation(interval, 7, p)){
+						hasData = false;
+					}
+				});
+				if (!hasData){
+					Api.syncIntervalData(interval, p, Dashboard.reload, this);
+					str += Mustache.renderTemplate("loading", []);
+				}else {
+					str += "<p>Resultaat voor periode: "+ dateToDate(interval.start) +" tot "+dateToDate(interval.end) +"</p>";
+				}
 			}else{
 				str += "<p>Het opgegeven bereik is niet volledig/ongeldig.</p>";
 			}

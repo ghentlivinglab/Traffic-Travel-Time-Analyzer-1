@@ -3,7 +3,7 @@
  * contains functions for the most part
  ****************************/
 var DummyApi = {
-	delay: 1, // Fake delay die gebruikt zal worden
+	delay: 0.2, // Fake delay die gebruikt zal worden
 	interval: 15, // timespan in minutes used in graphs
 	intervalDecimal: .25, // timespan in hours
 
@@ -135,5 +135,22 @@ var DummyApi = {
 
 		// Callback 
 		this.callDelayed(callback, context);
-	}
+	},
+
+	// fetches the live data (= current traffic and an average of last month(s) ) of every route
+	syncIntervalData: function(interval, provider, callback, context) {
+		var p = provider;
+		routes.forEach(function(route){
+		
+			var representation = TrafficData.create(Math.floor((Math.random() * 40) + 50), Math.floor((Math.random() * 10) + 6));
+			var data = route.getIntervalData(interval, 7, p);
+			if (data){
+				data.representation = representation;
+			}else{
+				route.setIntervalData(interval, 7, p, TrafficGraph.create(representation));
+			}
+		});
+
+		this.callDelayed(callback, context);
+	},
 };

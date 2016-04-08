@@ -169,11 +169,47 @@ var Route = {
 
 	},
 
+	// Geeft de trafficGraph die bij een interval hoort, of null
+	getIntervalData: function(interval, day, providerId) {
+		var str = interval.toString();
+		if (typeof this.intervalData[str] == "undefined"){
+			return null; // undefined
+		}
+		if (typeof this.intervalData[str][day] == "undefined"){
+			return null; // undefined
+		}
+		if (typeof this.intervalData[str][day][providerId] == "undefined"){
+			return null; // undefined
+		}
+		return this.intervalData[str][day][providerId];
+	},
+
+	// Geeft de trafficGraph die bij een interval hoort, of null
+	setIntervalData: function(interval, day, providerId, value) {
+		var str = interval.toString();
+		if (typeof this.intervalData[str] == "undefined"){
+			this.intervalData[str] = {};
+		}
+		if (typeof this.intervalData[str][day] == "undefined"){
+			this.intervalData[str][day] = {};
+		}
+		this.intervalData[str][day][providerId] = value;
+	},
+
+	// Geeft de representation voor ene bepaald interval, of null indien deze niet bestaat
+	getIntervalDataRepresentation: function(interval, day, providerId) {
+		if (!this.getIntervalData(interval, day, providerId)){
+			return null;
+		}
+		return this.getIntervalData(interval, day, providerId).representation;
+	},
+
 	// TODO: translate
 	// Houdt de grafieken bij:
 	// Kan zijn voor maandag, dinsdag, woensdag, ... zondag (0-6) Maandag = 0, zondag = 6
-	// bv. eventData["04/07/2015T12:00>08/07/2015T14:00"][maandag][providerId] -> TrafficGraph
-	eventData: {
+	// 7 = gemiddelde van alle dagen
+	// bv. intervalData["04/07/2015T12:00>08/07/2015T14:00"][0][providerId] -> TrafficGraph
+	intervalData: {
 
 	},
 
@@ -189,7 +225,7 @@ var Route = {
 		obj.avgData = {};
 		obj.liveData = {};
 		obj.dayData = {};
-		obj.eventData = {};
+		obj.intervalData = {};
 
 		// Waypoints has to be an Array
 		if (waypoints !== undefined && waypoints instanceof Array){
@@ -217,6 +253,7 @@ var Provider = {
 /****************************
  * Event is an interval saved in memory, localstorage and on the server
  ****************************/
+ // TODO: Event van Interval laten erven
 var Event = {
 	// id wordt enkel gebruikt voor communicatie met de server
 	id: -1, // Van de server gehaald, anders -1 (niet gesynct)
@@ -348,6 +385,11 @@ var Event = {
 			// Fout in storage -> vervangen die handel
 			this.saveLocalStorage();
 		}
+	},
+
+	// TODO: beter maken!!
+	toString: function() {
+		return dateToDate(this.start)+' > '+dateToDate(this.end); 
 	}
 };
 
@@ -416,5 +458,10 @@ var Interval = {
 	},
 	setEnd: function(end) {
 		this.end = end;
+	},
+
+	// TODO: beter maken!!
+	toString: function() {
+		return dateToDate(this.start)+' > '+dateToDate(this.end); 
 	}
 };
