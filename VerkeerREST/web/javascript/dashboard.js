@@ -127,29 +127,34 @@ var Dashboard = {
 	// element = het DOM element waarin we de grafiek willen toevoegen
 	openLiveGraph: function(routeId, element, width, height) {
 		var route = routes[routeId];
-		var counterObject = {counter: 0, route: route, element: element, width: width, height: height}; // Referentie die we gaan meegeven
+		//var counterObject = {counter: 0, route: route, element: element, width: width, height: height}; // Referentie die we gaan meegeven
 		// Deze counter voorkomt dat we openLiveGraph te snel opnieuw aanroepen als 1 van de requests klaar is
 		var callback = function(){
-			this.counter--;
-			if (this.counter == 0){
-				Dashboard.openLiveGraph(this.route.id, this.element, this.width, this.height);
-			}
+			Dashboard.openLiveGraph(routeId, element, width, height);
 		};
+		var c = 0;
 
 		if (!route.hasRecentAvgData(this.provider.id)){
-			counterObject.counter++;
-			Api.syncAvgGraph(route.id, this.provider.id, callback, counterObject);
+			c++;
 		}
 		if (!route.hasRecentLiveData(this.provider.id)){
-			counterObject.counter++;
-			Api.syncLiveGraph(route.id, this.provider.id, callback, counterObject);
+			c++;
 		}
-		if (counterObject.counter == 0){
+		if (c == 0){
 			var data = {
 				'Vandaag': route.liveData[this.provider.id].data,
 				'Normaal': route.avgData[this.provider.id].data,
 			};
 			drawChart(element, data, width, height);
+		}else{
+			Api.newQueue(c);
+			if (!route.hasRecentAvgData(this.provider.id)){
+				Api.syncAvgGraph(route.id, this.provider.id, callback, this);
+			}
+			if (!route.hasRecentLiveData(this.provider.id)){
+				Api.syncLiveGraph(route.id, this.provider.id, callback, this);
+			}
+			Api.endQueue();
 		}
 	},
 
@@ -252,6 +257,31 @@ var Dashboard = {
 					str += Mustache.renderTemplate("loading", []);
 				}else {
 					str += "<p>Resultaat voor periode: "+ dateToDate(interval.start) +" tot "+dateToDate(interval.end) +"</p>";
+					
+					routes.forEach(function(route){
+						var representation = route.getIntervalDataRepresentation(interval, 7, p);
+						var avg = route.avgData[p].representation;
+						var status = route.getStatus(live, avg);
+
+						var data = {
+							id: route.id,
+							name: route.name,
+							description: route.description,
+							status: status.text,
+							color: status.color,
+							live: {
+								time: representation.time,
+								speed:  representation.speed
+							},
+							avg: {
+								time: '',
+								speed: ''
+							},
+							warnings: ['Geen waarschuwingen'] // TODO: wanneer we oorzaken toevoegen moeten deze hier doorgegeven worden
+						};
+						str += Mustache.renderTemplate("route", data);
+					});
+
 				}
 			}else{
 				str += "<p>Het opgegeven bereik is niet volledig/ongeldig.</p>";

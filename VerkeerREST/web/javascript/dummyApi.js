@@ -7,11 +7,73 @@ var DummyApi = {
 	interval: 15, // timespan in minutes used in graphs
 	intervalDecimal: .25, // timespan in hours
 
+	// Counter
+	queues: {},
+	currentQueue: null,
+
+	// Stel een callback uit tot meerdere requests zijn afgehandeld
+	// Moet beïndigd worden met endQueue nadat alle requests (aantal count) in die queue zijn verzonden
+	// Count zou later evt geautomatiseerd kunnen worden, maar is veel dup code
+	newQueue: function(count) {
+		if (count == 0){
+			return;
+		}
+		var id = Math.floor((Math.random() * 10000000));
+		var queue = {
+			id: id,
+			count: count
+		};
+
+		console.log("Nieuwe queue "+id+" met "+count+" requests");
+
+		this.queues[id] = queue;
+		this.currentQueue = queue;
+	},
+
+	endQueue: function() {
+		console.log("end queue "+this.currentQueue.id);
+		this.currentQueue = null;
+	},
+
+	getQueue: function(id) {
+		if (typeof this.queues[id] == "undefined"){
+			return null;
+		}
+		return this.queues[id];
+	},
+
+	deleteQueue: function(id) {
+		delete this.queues[id];
+	},
 	// calls callback with a delay to test the async aspect of the code
 	callDelayed: function(callback, context){
+		// Id opslaan
+		var qid = -1;
+		if (this.currentQueue){
+			qid = this.currentQueue.id;
+			console.log("request toegeveogd aan queue "+qid);
+		}
+
+		var me = this;
+
 		setTimeout(function() {
-			callback.call(context);
-		}, this.delay*1000);
+			var q = me.getQueue(qid);
+			if (!q){
+				console.log("request klaar zonder queue ");
+				callback.call(context);
+			}else{
+				q.count = Math.max(0, q.count - 1);
+				if (q.count == 0){
+					console.log("request klaar (queue = "+q.id+") queue beïndigd");
+
+					me.deleteQueue(q.id);
+					callback.call(context);
+				} else {
+					console.log("request klaar (queue = "+q.id+"), moet wachten op "+q.count+" request(s)");
+				}
+			}
+
+		}, this.delay*1000+Math.floor((Math.random() * 2000)));
 	},
 
 	// fetches all routes of the API and places them in routes[]
@@ -26,7 +88,11 @@ var DummyApi = {
 		routes[8] = Route.create(8, 'Route 7', 'Van E40 tot X', 3854);
 		routes[9] = Route.create(9, 'Route 8', 'Van E40 tot X', 4854);
 		routes[10] = Route.create(10, 'Route 9', 'Van E40 tot X', 1858);
-
+		routes[11] = Route.create(11, 'Route 10', 'Van E40 tot X', 1858);
+		routes[12] = Route.create(12, 'Route 11', 'Van E40 tot X', 1858);
+		routes[13] = Route.create(13, 'Route 12', 'Van E40 tot X', 1858);
+		routes[14] = Route.create(14, 'Route 13', 'Van E40 tot X', 1858);
+		
 		// Callback 
 		this.callDelayed(callback, context);
 	},
@@ -153,4 +219,6 @@ var DummyApi = {
 
 		this.callDelayed(callback, context);
 	},
+
+
 };
