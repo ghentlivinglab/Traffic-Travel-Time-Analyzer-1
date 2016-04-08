@@ -181,16 +181,17 @@ var Dashboard = {
 		}
 
 		var dashboard = $('#dashboard .content');
-
-		var abnormaal = '';
 		var str = '';
 
-
+		// Dit stuk code sorteert de resultaten van alle routes en voegt ze toe aan de html
+		// Met de juiste Mustache template
+		var dataArr = [];
 		routes.forEach(function(route){
 			var avg = route.avgData[p].representation;
 			var live = route.liveData[p].representation;
 			var status = route.getStatus(live, avg);
 
+			// Data voor in de template
 			var data = {
 				id: route.id,
 				name: route.name,
@@ -207,23 +208,28 @@ var Dashboard = {
 				},
 				warnings: [] // TODO: wanneer we oorzaken toevoegen moeten deze hier doorgegeven worden
 			};
-			if (status.color != 'green'){
-				abnormaal += Mustache.renderTemplate("route", data);
-			}else{
-				str += Mustache.renderTemplate("route", data);
-			}
+			dataArr.push(data);
 		});
-		var t = '';
-		if (abnormaal.length > 0){
-			t += '<h1>Traag verkeer</h1>'+abnormaal;
 
-			if (str.length > 0)
-				t += '<hr>';
-		}
-		if (str.length > 0){
-			t += '<h1>Vlot verkeer</h1>'+str;
-		}
-		dashboard.html(t);
+		dataArr.sort(function(a, b) {
+			// Nog sorteren op status op eerste plaats toeveogen hier
+			return a.live.speed/a.avg.speed - b.live.speed/b.avg.speed;
+		});
+
+		// Juiste subtitels (en evt lijn) ondertussen toevoegen
+		var lastStatus = '';
+		dataArr.forEach(function (data){
+			if (lastStatus != data.status){
+				if (lastStatus != ''){
+					str += '<hr>';
+				}
+				lastStatus = data.status;
+				str += "<h1>"+lastStatus+"</h1>";
+			}
+			str += Mustache.renderTemplate("route", data);
+		});
+
+		dashboard.html(str);
 	},
 	// Genereert HTML voor periode modus
 	reloadInterval: function() {
@@ -238,55 +244,108 @@ var Dashboard = {
 		var str = Mustache.renderTemplate("period-header", { 'period-selection': period_selection});
 
 		
-		// data checken
+		// Opgegeven interval checken
 		if (interval.isEmpty()){
 			str += "<p>Selecteer een reeds opgeslagen periode of kies zelf een bereik.</p>";
+			dashboard.html(str);
+			return;
 		}else{
 			if (interval.isValid()){
-				// Hebben we deze data?
+				// Hebben we alle benodigde data? 
+				// Dat is: de representatie van elke periode + het gemiddelde van de afgelopen maand
 				var hasData = true;
+				var hasAvg = true;
+
 				var p = this.provider.id;
 
 				routes.forEach(function(route){
 					if (!route.getIntervalDataRepresentation(interval, 7, p)){
 						hasData = false;
 					}
+					if (!route.hasRecentAvgRepresentation(p)){
+						hasAvg = false;
+					}
 				});
+
+				// Stuk code die we nodig hebben om de Api queue te laten werken
+				// Deze houdt bij hoeveel requests er nog voltooid moeten worden voor we
+				// een callback krijgen. 
+				// we krijgen dus geen callback per request, maar enkel als ze allemaal klaar zijn
+				var c = 0;
 				if (!hasData){
-					Api.syncIntervalData(interval, p, Dashboard.reload, this);
+					c++;
+				}
+				if (!hasAvg){
+					c++;
+				}
+
+				if (c != 0){
+					Api.newQueue(c);
+					if (!hasData)
+						Api.syncIntervalData(interval, p, Dashboard.reload, this);
+					if (!hasAvg)
+						Api.syncLiveData(p, Dashboard.reload, this);
+					Api.endQueue();
+
 					str += Mustache.renderTemplate("loading", []);
-				}else {
-					str += "<p>Resultaat voor periode: "+ dateToDate(interval.start) +" tot "+dateToDate(interval.end) +"</p>";
-					
-					routes.forEach(function(route){
-						var representation = route.getIntervalDataRepresentation(interval, 7, p);
-						var avg = route.avgData[p].representation;
-						var status = route.getStatus(live, avg);
-
-						var data = {
-							id: route.id,
-							name: route.name,
-							description: route.description,
-							status: status.text,
-							color: status.color,
-							live: {
-								time: representation.time,
-								speed:  representation.speed
-							},
-							avg: {
-								time: '',
-								speed: ''
-							},
-							warnings: ['Geen waarschuwingen'] // TODO: wanneer we oorzaken toevoegen moeten deze hier doorgegeven worden
-						};
-						str += Mustache.renderTemplate("route", data);
-					});
-
+					dashboard.html(str);
+					return;
 				}
 			}else{
 				str += "<p>Het opgegeven bereik is niet volledig/ongeldig.</p>";
+				dashboard.html(str);
+				return;
 			}
 		}
+		// Als alles in orde is: resultaat tonen
+
+		str += "<p>Resultaat voor periode: "+ dateToDate(interval.start) +" tot "+dateToDate(interval.end) +"</p>";
+					
+		// Dit stuk code sorteert de resultaten van alle routes en voegt ze toe aan de html
+		// Met de juiste Mustache template
+		var dataArr = [];
+		routes.forEach(function(route){
+			var representation = route.getIntervalDataRepresentation(interval, 7, p);
+			var avg = route.avgData[p].representation;
+			var status = route.getStatus(representation, avg);
+
+			var data = {
+				id: route.id,
+				name: route.name,
+				description: route.description,
+				status: status.text,
+				color: status.color,
+				live: {
+					time: representation.time,
+					speed:  representation.speed
+				},
+				avg: {
+					time: avg.time,
+					speed: avg.speed
+				},
+				warnings: ['Geen waarschuwingen'] // TODO: wanneer we oorzaken toevoegen moeten deze hier doorgegeven worden
+			};
+
+			dataArr.push(data);
+		});
+
+		dataArr.sort(function(a, b) {
+			// Nog sorteren op status op eerste plaats toeveogen hier
+			return a.live.speed/a.avg.speed - b.live.speed/b.avg.speed;
+		});
+
+		// Juiste subtitels (en evt lijn) ondertussen toevoegen
+		var lastStatus = '';
+		dataArr.forEach(function (data){
+			if (lastStatus != data.status){
+				if (lastStatus != ''){
+					str += '<hr>';
+				}
+				lastStatus = data.status;
+				str += "<h1>"+lastStatus+"</h1>";
+			}
+			str += Mustache.renderTemplate("route", data);
+		});
 
 		dashboard.html(str);
 	},
