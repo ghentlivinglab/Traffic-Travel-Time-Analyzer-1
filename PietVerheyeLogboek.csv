@@ -45,7 +45,7 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 19/03/2016,00:15,01:10,Thuis,Oplossen van REST API probleem,,31,Het was fout in mijn variabelen
 22/03/2016,08:15,12:30,School,Contacturen en presentatie geven,,31,in contacturen pushen van correcte REST API
 24/03/2016,13:30,17:45,School,Contacturen,,, rest api & query's logging
-24/03/2016,21:45,23:30,Thuis,Rest api "?" voor goede query strings proberen,,,
+24/03/2016,21:45,23:30,Thuis,Rest api ? voor goede query strings proberen,,,
 25/03/2016,11:00,13:40,Thuis,REST API authentication en empty path problemen,,,
 25/03/2016,14:50,17:10,Thuis,Zoeken naar mogelijke oplossing voor URL-probleem (? enzo),,,
 25/03/2016,23:30,01:30,Thuis,Robin's REST oplossing bekijken en mogelijke aanpassingen,,,
