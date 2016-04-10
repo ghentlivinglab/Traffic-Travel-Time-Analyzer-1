@@ -44,3 +44,28 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 18/03/2016,21:50,00:15,Thuis,API query vervangen door soort CTE met nieuwe tabellen,,31,
 19/03/2016,00:15,01:10,Thuis,Oplossen van REST API probleem,,31,Het was fout in mijn variabelen
 22/03/2016,08:15,12:30,School,Contacturen en presentatie geven,,31,in contacturen pushen van correcte REST API
+24/03/2016,13:30,17:45,School,Contacturen,,, rest api & query's logging
+24/03/2016,21:45,23:30,Thuis,Rest api ? voor goede query strings proberen,,,
+25/03/2016,11:00,13:40,Thuis,REST API authentication en empty path problemen,,,
+25/03/2016,14:50,17:10,Thuis,Zoeken naar mogelijke oplossing voor URL-probleem (? enzo),,,
+25/03/2016,23:30,01:30,Thuis,Robin's REST oplossing bekijken en mogelijke aanpassingen,,,
+26/03/2016,10:00,11:50,Thuis,REST API query strings en opschonen code,,,
+27/03/2016,16:00,17:30,Thuis,REST API verderwerken,,,
+27/03/2016,20:30,23:15,Thuis,Verderwerken REST API,,,
+28/03/2016,10:15,12:30,Thuis,Verderwerken REST API,,,samenvatten url's en output's
+28/03/2016,13:30,15:00,Thuis,Probleem oplossen met weekday's casten naar long,,,
+30/03/2016,15:30,18:00,Thuis,Zoeken naar mogelijkheden api authentication,,,
+31/03/2016,09:00,12:15,Thuis,Mogelijkheden vergelijken api authentication,,,
+31/03/2016,20:45,00:30,Thuis,Uitwerken mogelijkheid met  containerrequestfilter,,,
+01/04/2016,16:30,18:30,Thuis,Verderwerken api authentication met containerrequestfilter,,,
+01/04/2016,19:45,21:15,Thuis,Verderwerken api authentication met containerrequestfilter,,,
+02/04/2016,00:30,01:45,Thuis,Api authentication met web service security bekijken en proberen,,,
+02/04/2016,10:30,11:30,Thuis,Api authentication met api keys weer uit proberen werken,,,
+04/04/2016,09:00,12:00,Thuis,Code van project lezen,,,
+04/04/2016,14:45,17:00,Thuis,Alle requests opvangen met een containerrequestfilter bekijken,,,
+05/04/2016,10:00,13:00,Thuis,Zorgen dat mijn project weer werkt mbv Robin,,,
+05/04/2016,16:00,17:45,Thuis,Verderkijken naar mogelijke authenticatie met filters,,,
+07/04/2016,12:00,13:00,Thuis,Kijken voor query waar alle providers worden opgehaald,,,
+10/04/2016,22:30,23:45,Thuis,javascript code project bekijken,,,
+
+
