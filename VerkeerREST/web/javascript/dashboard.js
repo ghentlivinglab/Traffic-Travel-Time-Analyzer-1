@@ -93,7 +93,7 @@ var Dashboard = {
 
 		switch(this.mode){
 			case Dashboard.LIVE: 
-				this.reloadLive(); 
+				this.reloadLive();
 			break;
 			case Dashboard.INTERVAL: 
 				this.reloadInterval(); 
@@ -262,6 +262,7 @@ var Dashboard = {
 		});
 
 		dashboard.html(str);
+		reloadMap();
 	},
 	// Genereert HTML voor periode modus
 	reloadInterval: function() {
