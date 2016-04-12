@@ -48,7 +48,7 @@ var Api = {
 		var qid = -1;
 		if (this.currentQueue){
 			qid = this.currentQueue.id;
-			console.log("request toegeveogd aan queue "+qid);
+			console.log("request toegevoegd aan queue "+qid);
 		}
 	},
 
@@ -81,6 +81,15 @@ var Api = {
 
 		// Hier alle data van de server halen.
 		// Uiteindelijk moet dit ongeveer het resultaat zijn: 
+                routes = [];
+                var me = this;
+                $.getJSON("http://localhost:8080/VerkeerREST/api/routes", function(result){
+                    for(var i = 0; i<result.length; i++){
+                        routes[result[i].id] = Route.create(result[i].id, result[i].name, result[i].description, result[i].length);
+                    }
+                    me.callDelayed(qid, callback, context);
+                });
+                
 
 		/*routes = [];
 		routes[2] = Route.create(2, 'Route 1', 'Van E40 tot X', 2854);
@@ -100,7 +109,7 @@ var Api = {
 		// Hier alle data van de server halen
 		
 		// Callback zodra we de data hebben (moet dus in success van ajax)
-		this.callDelayed(qid, callback, context);
+		
 	},
 
 	// fetches the live data (= current traffic and an average of last month(s) ) of every route
@@ -110,31 +119,40 @@ var Api = {
 		var qid = this.getQueueId();
 
 		// Hier alle data van de server halen.
-		// Uiteindelijk moet dit ongeveer het resultaat zijn: 
+                
+                var me = this;
+                $.getJSON("http://localhost:8080/VerkeerREST/api/trafficdata/live?providerID="+provider, function(result){
+                    if(result.result === "success"){
+                        var data = result.data;
+                        
+                        routes.forEach(function(route){
+                            var rdata = data[route.id];
+                            console.log(JSON.stringify(rdata));
+                            if(typeof rdata !== "undefined"){
+                                var avgData = TrafficData.create( rdata.avg.speed, rdata.avg.time );
+                                var liveData = TrafficData.create( rdata.live.speed, rdata.live.time );
+                            }else{
+                                var avgData = TrafficData.create( '', '' );
+                                var liveData = TrafficData.create( '', '' );
+                            }
+                            if(route.hasAvgData(provider))
+                                route.avgData[provider].representation = avgData;
+                            else 
+                                route.avgData[provider] = TrafficGraph.create(avgData);
 
-		/*var p = provider;
-		routes.forEach(function(route){
-		
-			var avgData = TrafficData.create(Math.floor((Math.random() * 40) + 50), Math.floor((Math.random() * 10) + 6));
-			var liveData = TrafficData.create(Math.floor((Math.random() * 40) + 50), Math.floor((Math.random() * 10) + 6));
-
-			if (route.hasAvgData(p)){
-				route.avgData[p].representation = avgData;
-			}else{
-				route.avgData[p] = TrafficGraph.create(avgData);
-			}
-
-			if (route.hasLiveData(p)){
-				route.liveData[p].representation = liveData;
-			}else{
-				route.liveData[p] = TrafficGraph.create(liveData);
-			}
-		});*/
-		
-		// Hier alle data van de server halen
-		
-		// Callback zodra we de data hebben (moet dus in success van ajax)
-		this.callDelayed(qid, callback, context);
+                            if(route.hasLiveData(provider))
+                                route.liveData[provider].representation = liveData;
+                            else
+                                route.liveData[provider] = TrafficGraph.create(liveData);
+                            
+                        });
+                    }else{
+                        alert(result.reason);
+                    }
+                    me.callDelayed(qid, callback, context);
+                }).fail(function(){
+                    console.log("something went wrong loading the live data");
+                });
 	},
 
 	// fetches the graph for average data (= averages for every hour of last month)
@@ -177,7 +195,7 @@ var Api = {
 		// Hier alle data van de server halen
 		
 		// Callback zodra we de data hebben (moet dus in success van ajax)
-		this.callDelayed(qid, callback, context);
+		//this.callDelayed(qid, callback, context);
 	},
 
 	// fetches graph for today (right up to current time)
@@ -222,7 +240,7 @@ var Api = {
 		// Hier alle data van de server halen
 		
 		// Callback zodra we de data hebben (moet dus in success van ajax)
-		this.callDelayed(qid, callback, context);
+		//this.callDelayed(qid, callback, context);
 	},
 
 	//
@@ -232,8 +250,17 @@ var Api = {
 		var qid = this.getQueueId();
 
 		// Hier alle data van de server halen.
-		// Uiteindelijk moet dit ongeveer het resultaat zijn: 
-
+		// Uiteindelijk moet dit ongeveer het resultaat zijn:
+                providers = [];
+                var me = this;
+                providers[0] = Provider.create(0, 'Alles');
+                $.getJSON("http://localhost:8080/VerkeerREST/api/providers", function(result){
+                    console.log(JSON.stringify(result));
+                    for(var i=0; i<result.length; i++){
+                        providers[result[i].id] = Provider.create(result[i].id, result[i].name );
+                    }
+                    me.callDelayed(qid, callback, context);
+                });
 		/*providers = [];
 		providers[0] = Provider.create(0, 'Alles');
 		providers[1] = Provider.create(1, 'Google');
@@ -245,7 +272,7 @@ var Api = {
 		// Hier alle data van de server halen
 		
 		// Callback zodra we de data hebben (moet dus in success van ajax)
-		this.callDelayed(qid, callback, context);
+		
 	},
 
 	// fetches the live data (= current traffic and an average of last month(s) ) of every route
@@ -272,7 +299,7 @@ var Api = {
 		// Hier alle data van de server halen
 		
 		// Callback zodra we de data hebben (moet dus in success van ajax)
-		this.callDelayed(qid, callback, context);
+		//this.callDelayed(qid, callback, context);
 	},
 
 

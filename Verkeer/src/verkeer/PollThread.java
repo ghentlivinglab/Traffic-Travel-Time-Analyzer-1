@@ -69,7 +69,7 @@ public class PollThread extends Thread {
     @Override
     public void run(){
         while(true){
-            System.out.println("\nTriggering update "+updateCounter);
+            //System.out.println("\nTriggering update "+updateCounter);
 
             // Huidig uur inlezen
             Date date = new Date();
