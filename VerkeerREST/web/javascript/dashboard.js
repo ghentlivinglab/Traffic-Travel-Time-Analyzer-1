@@ -584,7 +584,7 @@ var Dashboard = {
 
 		dataArr.sort(function(a, b) {
 			// Nog sorteren op status op eerste plaats toeveogen hier
-			return b.score - a.score;
+			return a.score - b.score;
 		});
 
 		// Juiste subtitels (en evt lijn) ondertussen toevoegen
