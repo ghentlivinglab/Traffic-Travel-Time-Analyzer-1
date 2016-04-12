@@ -172,5 +172,10 @@ public class DummyDbConnector implements IDbConnector{
         det2.setTravelTime(25);
         dataEntries.add(det2);
     }
+
+    @Override
+    public void reloadProperties() throws ConnectionException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }

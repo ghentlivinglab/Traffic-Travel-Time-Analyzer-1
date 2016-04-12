@@ -100,10 +100,17 @@
 
         <zip destfile="${store.jar}">
             <zipfileset src="${store.dir}/temp_final.jar"
-            excludes="META-INF/*.SF, META-INF/*.DSA, META-INF/*.RSA"/>
+                        excludes="META-INF/*.SF, META-INF/*.DSA, META-INF/*.RSA"/>
         </zip>
 
         <delete file="${store.dir}/temp_final.jar"/>
 
     </target>
+    
+    <target name="-post-compile">
+        <copy file="config/providers.properties" todir="${dist.dir}/config"/>
+        <copy file="config/database.properties" todir="${dist.dir}/config"/>
+        <copy file="config/app.properties" todir="${dist.dir}/config"/>
+    </target>
+    
 </project>
