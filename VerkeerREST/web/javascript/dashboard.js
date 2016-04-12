@@ -254,14 +254,15 @@ var Dashboard = {
 			return;
 		}
 
-		var hasData = true;
+		var hasData = false;
 		var p = this.provider.id;
 
 		routes.forEach(function(route){
-			if (!route.hasRecentAvgRepresentation(p) || !route.hasRecentLiveRepresentation(p)){
-				hasData = false;
+			if (route.hasRecentAvgRepresentation(p) && route.hasRecentLiveRepresentation(p)){
+				hasData = true;
 			}
 		});
+
 		if (!hasData){
 			Api.syncLiveData(p, Dashboard.reload, this);
 			this.displayLoading();
@@ -275,6 +276,23 @@ var Dashboard = {
 		// Met de juiste Mustache template
 		var dataArr = [];
 		routes.forEach(function(route){
+
+			if (!route.hasRecentAvgRepresentation(p) || !route.hasRecentLiveRepresentation(p)){
+				var data = {
+					id: route.id,
+					name: route.name,
+					description: route.description,
+					status: '',
+					color: '',
+					score: 100000000, // Voor sorteren
+					title: 'Niet beschikbaar',
+					subtitle: 'Geen data van deze provider over deze route',
+					warnings: [] // TODO: wanneer we oorzaken toevoegen moeten deze hier doorgegeven worden
+				};
+				dataArr.push(data);
+				return;
+			}
+
 			var avg = route.avgData[p].representation;
 			var live = route.liveData[p].representation;
 			var status = route.getStatus(live, avg);
@@ -337,13 +355,14 @@ var Dashboard = {
 			if (interval.isValid()){
 				// Hebben we alle benodigde data? 
 				// Dat is: de representatie van elke periode + het gemiddelde van de afgelopen maand
-				var hasData = true;
+				var hasData = false;
 
 				var p = this.provider.id;
 
 				routes.forEach(function(route){
-					if (!route.getIntervalDataRepresentation(interval, 7, p)){
-						hasData = false;
+					if (route.getIntervalDataRepresentation(interval, 7, p)){
+						hasData = true;
+						// TODO: Loop kan hier eig stoppen (omzetten in for loop)
 					}
 				});
 
@@ -368,6 +387,21 @@ var Dashboard = {
 		// Met de juiste Mustache template
 		var dataArr = [];
 		routes.forEach(function(route){
+			if (!route.getIntervalDataRepresentation(interval, 7, p)){
+				var data = {
+					id: route.id,
+					name: route.name,
+					description: route.description,
+					status: '',
+					color: '',
+					score: -1000, // Voor sorteren
+					title: 'Niet beschikbaar',
+					subtitle: 'Geen data van deze provider over deze route',
+					warnings: [] // TODO: wanneer we oorzaken toevoegen moeten deze hier doorgegeven worden
+				};
+				dataArr.push(data);
+				return;
+			}
 			var representation = route.getIntervalDataRepresentation(interval, 7, p);
 			var status = representation.getStatus();
 
@@ -435,17 +469,17 @@ var Dashboard = {
 			if (interval0.isValid() && interval1.isValid()){
 				// Hebben we alle benodigde data? 
 				// Dat is: de representatie van elke periode + het gemiddelde van de afgelopen maand
-				var hasData0 = true;
-				var hasData1 = true;
+				var hasData0 = false;
+				var hasData1 = false;
 
 				var p = this.provider.id;
 
 				routes.forEach(function(route){
-					if (!route.getIntervalDataRepresentation(interval0, 7, p)){
-						hasData0 = false;
+					if (route.getIntervalDataRepresentation(interval0, 7, p)){
+						hasData0 = true;
 					}
-					if (!route.getIntervalDataRepresentation(interval1, 7, p)){
-						hasData1 = false;
+					if (route.getIntervalDataRepresentation(interval1, 7, p)){
+						hasData1 = true;
 					}
 				});
 
@@ -483,20 +517,47 @@ var Dashboard = {
 		var dataArr = [];
 
 		routes.forEach(function(route){
+			if (!route.getIntervalDataRepresentation(interval0, 7, p) || !route.getIntervalDataRepresentation(interval1, 7, p)){
+				var data = {
+					id: route.id,
+					name: route.name,
+					description: route.description,
+					status: 'Niet beschikbaar',
+					score: -10000000,
+					first: {
+						status: '',
+						color:  '',
+						title: 'Niet beschikbaar',
+						subtitle: 'Deze route is niet beschikbaar in deze provider.',
+					},
+					second: {
+						status: '',
+						color: '',
+						title: '',
+						subtitle: '',
+					}
+				};
+
+				dataArr.push(data);
+				return;
+			}
+
 			var representation0 = route.getIntervalDataRepresentation(interval0, 7, p);
 			var representation1 = route.getIntervalDataRepresentation(interval1, 7, p);
 
 			var status0 = representation0.getStatus();
 			var status1 = representation1.getStatus();
 
-			var diff = Math.abs(representation0.average - representation1.average);
-			var t = 'Weinig verschil';
-			if (diff > 10){
-				t = 'Verschillend';
+			var diff = representation0.average - representation1.average;
+
+			var t = 'Slechter';
+			if (diff > 0){
+				t = 'Verbeterd';
 			}
-			if (diff > 20){
-				t = 'Groot verschil';
+			if (Math.abs(diff) < 5){
+				t = 'Gelijk';
 			}
+			
 
 			var data = {
 				id: route.id,

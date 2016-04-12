@@ -94,6 +94,11 @@ var DummyApi = {
 	syncLiveData: function(provider, callback, context) {
 		var p = provider;
 		routes.forEach(function(route){
+
+			// een route niet toevoegen bij 2e provider
+			if (p == 2 && route.id == 2) {
+				return;
+			}
 		
 			var avgData = TrafficData.create(Math.floor((Math.random() * 40) + 50), Math.floor((Math.random() * 10) + 6));
 			var liveData = TrafficData.create(Math.floor((Math.random() * 40) + 50), Math.floor((Math.random() * 10) + 6));
@@ -201,6 +206,10 @@ var DummyApi = {
 		var p = provider;
 		routes.forEach(function(route){
 		
+			if (p == 2 && route.id == 2) {
+				return;
+			}
+			
 			//var representation = TrafficData.create(Math.floor((Math.random() * 40) + 50), Math.floor((Math.random() * 10) + 6));
 			var slow = [];
 			var stationary = [];
