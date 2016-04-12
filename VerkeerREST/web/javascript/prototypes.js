@@ -277,7 +277,6 @@ var Route = {
 	generateIntervalAvg: function(interval, providerId) {
 		var data = {};
 		for (var day = 0; day < 7; day++) {
-			console.log(day);
 			var graph = this.getIntervalData(interval, day, providerId);
 			if (!graph){
 				continue;
@@ -472,7 +471,6 @@ var Event = {
 			events.splice(index, 1);
 			this.saveLocalStorage();
 		}
-		console.log("nieuw delete: "+this.start+" > "+this.end);
 
 		// Replace reference with a new interval object
 		return Interval.create(this.start, this.end);

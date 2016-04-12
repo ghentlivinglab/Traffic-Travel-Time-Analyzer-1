@@ -15,7 +15,6 @@ function toggleGraph(){
 			box.click(function(e) {
 				e.stopPropagation();
 			});
-			console.log('grafiek toegevoegd '+box);
 		}
 
 		var graphContent = box.find('.graph-content');

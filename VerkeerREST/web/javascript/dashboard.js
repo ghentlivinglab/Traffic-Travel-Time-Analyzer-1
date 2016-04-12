@@ -239,8 +239,6 @@ var Dashboard = {
 			return;
 		}
 
-		console.log(data);
-
 		drawChart(element, data, width, height);
 	},
 
