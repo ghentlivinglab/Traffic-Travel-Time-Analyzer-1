@@ -53,7 +53,6 @@ var DummyApi = {
 			qid = this.currentQueue.id;
 			console.log("request toegeveogd aan queue "+qid);
 		}
-
 		var me = this;
 
 		setTimeout(function() {
