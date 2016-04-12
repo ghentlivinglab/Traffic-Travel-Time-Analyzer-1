@@ -111,6 +111,7 @@
         <copy file="config/providers.properties" todir="${dist.dir}/config"/>
         <copy file="config/database.properties" todir="${dist.dir}/config"/>
         <copy file="config/app.properties" todir="${dist.dir}/config"/>
+        <copy file="scripts/fetcher.pl" todir="${dist.dir}"/>
     </target>
     
 </project>

@@ -42,7 +42,7 @@ public class ConsoleParser {
             }else if(command.equals("properties")){
                 printProperties();
             }else if(command.equals("reload")){
-                pollThread.start();
+                pollThread.reloadProperties();
             }
             else{
                 String words[] = command.split(" ");
@@ -89,11 +89,11 @@ public class ConsoleParser {
     
     private void printProperties(){
         System.out.println("\n\n--- Database ---");
-        printKeysPropertiesFile("connectors/database/database.properties");
+        printKeysPropertiesFile("./config/database.properties");
         System.out.println("\n\n--- Applicatie ---");
-        printKeysPropertiesFile("verkeer/app.properties");
+        printKeysPropertiesFile("./config/app.properties");
         System.out.println("\n\n--- Providers ---");
-        printKeysPropertiesFile("connectors/provider/providers.properties");
+        printKeysPropertiesFile("./config/providers.properties");
         System.out.println("\n\n");
     }
 

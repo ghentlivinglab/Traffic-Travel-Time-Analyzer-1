@@ -1,3 +1,5 @@
+#!/usr/bin/perl
+
 no warnings;
 
 use JSON qw( decode_json );
@@ -46,7 +48,7 @@ sub login {
 	# get all headers in memory
 	open(LOGINHEADER,$HEADER_FILE) or die "Can't open '$HEADER_FILE': $!"; # open file
 	my @lines = <LOGINHEADER>; # get all headers and store in array
-	print "@lines";
+	
 	close(LOGINHEADER); # close file
 	
 	unlink($HEADER_FILE);
