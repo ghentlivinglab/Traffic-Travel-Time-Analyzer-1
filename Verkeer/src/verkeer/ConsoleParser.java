@@ -41,9 +41,9 @@ public class ConsoleParser {
                 printStatus();
             }else if(command.equals("properties")){
                 printProperties();
-            }/*else if(command.equals("start")){
+            }else if(command.equals("reload")){
                 pollThread.start();
-            }*/
+            }
             else{
                 String words[] = command.split(" ");
                 if(words[0].equals("properties")){

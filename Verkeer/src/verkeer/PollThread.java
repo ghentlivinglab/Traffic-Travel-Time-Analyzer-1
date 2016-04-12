@@ -10,15 +10,19 @@ import connectors.database.ConnectionException;
 import connectors.database.IDbConnector;
 import connectors.database.MariaDbConnector;
 import connectors.provider.AProviderConnector;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Properties;
+import java.util.logging.Level;
 import org.apache.log4j.Logger;
 
 /**
@@ -37,10 +41,10 @@ public class PollThread extends Thread {
         setDaemon(true);
         try {
             prop = new Properties();
-            InputStream is = getClass().getClassLoader().getResourceAsStream("verkeer/app.properties");
-            prop.load(is);
+            FileInputStream fis = new FileInputStream(new File(PollThread.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent()+"/config/app.properties");
+            prop.load(fis);
         } catch (IOException ex) {
-            log.error("IOException: verkeer/app.properties could not be loaded.");
+            log.error("IOException: "+new File(PollThread.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent()+"\\config\\app.properties"+" could not be loaded. "+ex.getMessage());
         }
         providers = new ArrayList<>();
         try{
@@ -65,7 +69,7 @@ public class PollThread extends Thread {
     @Override
     public void run(){
         while(true){
-            //System.out.println("\nTriggering update "+updateCounter);
+            System.out.println("\nTriggering update "+updateCounter);
 
             // Huidig uur inlezen
             Date date = new Date();
@@ -80,6 +84,8 @@ public class PollThread extends Thread {
                     a.triggerUpdate();
                 }
                 updateCounter++;
+            }else{
+                log.info("No update because its between 00:30am and 6:00am");
             }
             
                         
@@ -87,7 +93,20 @@ public class PollThread extends Thread {
                 Thread.sleep(Long.parseLong(prop.getProperty("pollinterval")));
             } catch (InterruptedException ex) {
                 log.fatal("InterruptedException: pollthread is vastgelopen.");
+                System.exit(1);
             }
+        }
+    }
+    
+    public void reloadProperties(){
+        for(AProviderConnector apc : providers){
+            apc.reloadProperties();
+        }
+        try{
+            dbcon.reloadProperties();
+        }catch(ConnectionException e){
+            log.error("Reload failed. Could not make a connection to the database.");
+            System.exit(1);
         }
     }
 

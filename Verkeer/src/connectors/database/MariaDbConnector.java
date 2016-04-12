@@ -8,6 +8,8 @@ package connectors.database;
 import connectors.DataEntry;
 import connectors.ProviderEntry;
 import connectors.RouteEntry;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Properties;
 import org.apache.log4j.Logger;
+import verkeer.PollThread;
 
 /**
  *
@@ -42,16 +45,18 @@ public class MariaDbConnector implements IDbConnector{
     public MariaDbConnector() throws ConnectionException {
         try{
             prop = new Properties();
-            InputStream propsFile = getClass().getClassLoader().getResourceAsStream("connectors/database/database.properties");
-            if(propsFile == null){
-                log.error("connectors/database/database.properties kon niet geladen worden.");
+            FileInputStream fis = new FileInputStream(new File(MariaDbConnector.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent()+"/config/database.properties");
+            if(fis == null){
+                log.error("./config/database.properties kon niet geladen worden.");
             }else{
-                prop.load(propsFile);
+                prop.load(fis);
             }
         }catch( FileNotFoundException e) {
-            log.error("connectors/database/database.properties niet gevonden.");
+            log.error("./config/database.properties  niet gevonden.");
+            System.exit(1);
         }catch( IOException ee){
-            log.error("connectors/database/database.properties niet gevonden.");
+            log.error("./config/database.properties niet gevonden.");
+            System.exit(1);
         }
         initConnectionURL();
         initConnection();
@@ -332,6 +337,27 @@ public class MariaDbConnector implements IDbConnector{
             log.error(ex, ex);
         }
         return ret;
+    }
+
+    @Override
+    public void reloadProperties() throws ConnectionException{
+        try{
+            prop = new Properties();
+            FileInputStream fis = new FileInputStream(new File(MariaDbConnector.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent()+"/config/database.properties");
+            if(fis == null){
+                log.error("./config/database.properties kon niet geladen worden.");
+            }else{
+                prop.load(fis);
+            }
+        }catch( FileNotFoundException e) {
+            log.error("./config/database.properties  niet gevonden.");
+            System.exit(1);
+        }catch( IOException ee){
+            log.error("./config/database.properties niet gevonden.");
+            System.exit(1);
+        }
+        initConnectionURL();
+        initConnection();
     }
 
 }

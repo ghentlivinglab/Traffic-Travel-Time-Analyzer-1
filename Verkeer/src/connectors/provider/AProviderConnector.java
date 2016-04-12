@@ -10,11 +10,14 @@ import connectors.ProviderEntry;
 import connectors.RouteEntry;
 import connectors.database.IDbConnector;
 import connectors.DataEntry;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Properties;
+import verkeer.PollThread;
 
 /**
  *
@@ -42,16 +45,12 @@ public abstract class AProviderConnector {
         this.providerName = providerName;
         try{
             prop = new Properties();
-            InputStream propsFile = getClass().getClassLoader().getResourceAsStream("connectors/provider/providers.properties");
-            if(propsFile == null){
-                System.err.println("connectors/provider/providers.properties kon niet geladen worden.");
-            }else{
-                prop.load(propsFile);
-            }
+            FileInputStream fis = new FileInputStream(new File(AProviderConnector.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent()+"/config/providers.properties");
+            prop.load(fis);
         }catch( FileNotFoundException e){
-            System.err.println("connectors/provider/providers.properties niet gevonden.");
+            System.err.println("./config/providers.properties niet gevonden.");
         }catch( IOException ee){
-            System.err.println("connectors/provider/providers.properties kon niet geladen worden.");
+            System.err.println("./config/providers.properties kon niet geladen worden.");
         }
     }
 
@@ -68,4 +67,18 @@ public abstract class AProviderConnector {
     public void saveToDb(DataEntry entry) {
         dbConnector.insert(entry);
     }
+    
+    public void reloadProperties(){
+        this.routes = dbConnector.findAllRouteEntries();
+        try{
+            prop = new Properties();
+            FileInputStream fis = new FileInputStream(new File(AProviderConnector.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent()+"/config/providers.properties");
+            prop.load(fis);
+        }catch( FileNotFoundException e){
+            System.err.println("./config/providers.properties niet gevonden.");
+        }catch( IOException ee){
+            System.err.println("./config/providers.properties kon niet geladen worden.");
+        }
+    }
+    
 }

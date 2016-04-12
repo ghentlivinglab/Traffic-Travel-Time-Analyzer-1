@@ -26,4 +26,7 @@ public interface IDbConnector{
     public DataEntry        findDataEntryByID(int routeId, int providerId, Timestamp timestamp);
     public Collection<DataEntry> findDataEntryBetween(int routeId, int providerId, Timestamp from, Timestamp to);
     public Collection<RouteEntry> findAllRouteEntries();
+    
+    public void reloadProperties() throws ConnectionException;
+    
 }
