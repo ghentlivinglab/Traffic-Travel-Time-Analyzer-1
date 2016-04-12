@@ -305,7 +305,9 @@ var Route = {
 
 		// Waypoints has to be an Array
 		if (waypoints !== undefined && waypoints instanceof Array){
-			obj.waypoints = waypoints;
+			obj.waypoints = waypoints.slice();
+		}else{
+			obj.waypoints = []; // Belangrijk!
 		}
 		return obj;
 	}
