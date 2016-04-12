@@ -376,6 +376,118 @@ var Dashboard = {
 
 		var str = Mustache.renderTemplate("compare-header", { 'period-selection0': period_selection0, 'period-selection1': period_selection1});
 
+		if (interval0.isEmpty() || interval1.isEmpty()){
+			str += "<p>Selecteer twee reeds opgeslagen periodes of kies zelf een bereik.</p>";
+			dashboard.html(str);
+			return;
+		}else{
+			if (interval0.isValid() && interval1.isValid()){
+				// Hebben we alle benodigde data? 
+				// Dat is: de representatie van elke periode + het gemiddelde van de afgelopen maand
+				var hasData0 = true;
+				var hasData1 = true;
+
+				var p = this.provider.id;
+
+				routes.forEach(function(route){
+					if (!route.getIntervalDataRepresentation(interval0, 7, p)){
+						hasData0 = false;
+					}
+					if (!route.getIntervalDataRepresentation(interval1, 7, p)){
+						hasData1 = false;
+					}
+				});
+
+				var c = 0;
+				if (!hasData0){
+					c++;
+				}
+				if (!hasData1){
+					c++;
+				}
+
+				if (c > 0){
+					Api.newQueue(c);
+
+					if (!hasData0)
+						Api.syncIntervalData(interval0, p, Dashboard.reload, this);
+
+					if (!hasData1)
+						Api.syncIntervalData(interval1, p, Dashboard.reload, this);
+
+					Api.endQueue();
+
+					str += Mustache.renderTemplate("loading", []);
+					dashboard.html(str);
+					return;
+				}
+			}else{
+				str += "<p>De opgegeven bereiken zijn niet volledig/ongeldig.</p>";
+				dashboard.html(str);
+				return;
+			}
+		}
+		str += "<p>Resultaat voor periode: "+ dateToDate(interval0.start) +" tot "+dateToDate(interval0.end) +' en '+ dateToDate(interval1.start) +" tot "+dateToDate(interval1.end) +"</p>";
+
+		var dataArr = [];
+
+		routes.forEach(function(route){
+			var representation0 = route.getIntervalDataRepresentation(interval0, 7, p);
+			var representation1 = route.getIntervalDataRepresentation(interval1, 7, p);
+
+			var status0 = representation0.getStatus();
+			var status1 = representation1.getStatus();
+
+			var diff = Math.abs(representation0.average - representation1.average);
+			var t = 'Weinig verschil';
+			if (diff > 10){
+				t = 'Verschillend';
+			}
+			if (diff > 20){
+				t = 'Groot verschil';
+			}
+
+			var data = {
+				id: route.id,
+				name: route.name,
+				description: route.description,
+				status: t,
+				score: diff, // Sorteren op grootste verschillen
+				first: {
+					status: status0.text,
+					color: status0.color,
+					title: representation0.toString(),
+					subtitle: representation0.getSubtitle(),
+				},
+				second: {
+					status: status1.text,
+					color: status1.color,
+					title: representation1.toString(),
+					subtitle: representation1.getSubtitle(),
+				}
+			};
+
+			dataArr.push(data);
+		});
+
+		dataArr.sort(function(a, b) {
+			// Nog sorteren op status op eerste plaats toeveogen hier
+			return b.score - a.score;
+		});
+
+		// Juiste subtitels (en evt lijn) ondertussen toevoegen
+		var lastStatus = '';
+		dataArr.forEach(function (data){
+			if (lastStatus != data.status){
+				if (lastStatus != ''){
+					str += '<hr>';
+				}
+				lastStatus = data.status;
+				str += "<h1>"+lastStatus+"</h1>";
+			}
+			str += Mustache.renderTemplate("compare", data);
+		});
+
 		dashboard.html(str);
 	},
 	reloadCompareDays: function() {
