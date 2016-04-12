@@ -18,6 +18,82 @@ var TrafficData = {
 		obj.time = time;
 		obj.createdOn = new Date();
 		return obj;
+	},
+	toString: function (){
+		return this.time+'min. '+this.speed+'km/h';
+	}
+};
+
+/****************************
+ * IntervalData maintains % slow traffic per weekday and the total
+ * will be stored in a TrafficGraph object
+ ****************************/
+var IntervalRepresentation = {
+	slowTraffic: [], // 0 -> percentage op maandag, ...
+	stationaryTraffic: [], // 0 -> percentage op maandag, ...
+	average: 0,
+
+	createdOn: null, // instance of Date
+	
+	create: function(slowTraffic, stationaryTraffic) { // Constructor
+		var obj = Object.create(this);
+		obj.slowTraffic = slowTraffic;
+		obj.stationaryTraffic = stationaryTraffic;
+
+		// Gemiddelde berekenen
+		var avg = 0;
+		for (var i = 0; i < obj.slowTraffic.length; i++) {
+			avg += obj.slowTraffic[i];
+		}
+		if (avg > 0)
+			obj.average = Math.ceil(avg / obj.slowTraffic.length);
+
+		obj.createdOn = new Date();
+		return obj;
+	},
+	toString: function() {
+		return this.average+'% traag verkeer';
+	},
+	getSubtitle: function() {
+		var s = [];
+		for (var i = 0; i < this.slowTraffic.length; i++) {
+			s.push({
+				percentage: this.slowTraffic[i],
+				day: i
+			});
+		}
+		s.sort(function(a, b) {
+			// Nog sorteren op status op eerste plaats toeveogen hier
+			return b.percentage - a.percentage;
+		});
+		var str = '';
+		for (var i = 0; i < s.length && i < 3; i++) {
+			if (i > 0){
+				str += ', ';
+			}
+			var d = s[i];
+			str += weekdays_short[d.day] + ' ('+d.percentage+'%)';
+		}
+
+		return str;
+	},
+	getStatus: function () {
+		if (this.average > 60){
+			return {
+				text: 'Stilstaand verkeer',
+				color: 'red'
+			};
+		}
+		if (this.average > 30){
+			return {
+				text: 'Traag verkeer',
+				color: 'orange'
+			};
+		}
+		return {
+			text: 'Vlot verkeer',
+			color: 'green'
+		};
 	}
 };
 
@@ -33,7 +109,7 @@ var TrafficGraph = {
 	end: 24,
 	interval: 0.25, // every 15 minutes
 	createdOn: null,  // instance of Date
-	representation: null, // instance of TrafficData
+	representation: null, // instance of TrafficData or IntervalRepresentation
 
 	// will contain the TrafficaData per time interval and day
 	data: {

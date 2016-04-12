@@ -123,6 +123,14 @@ var Dashboard = {
 		dashboard.html('<p>Deze functie is nog niet geïmplementeerd</p>');
 	},
 
+	openGraph: function(routeId, element, width, height) {
+		if (this.mode == this.LIVE){
+			this.openLiveGraph(routeId, element, width, height);
+		}
+		if (this.mode == this.INTERVAL){
+			this.openIntervalGraph(this.selectedIntervals[0], routeId, element, width, height);
+		}
+	},
 	// Opent de live grafiek = grafiek in de vandaag weergave
 	// element = het DOM element waarin we de grafiek willen toevoegen
 	openLiveGraph: function(routeId, element, width, height) {
@@ -157,6 +165,35 @@ var Dashboard = {
 			Api.endQueue();
 		}
 	},
+	// Opent de grafiek horende bij 1 interval (met weekdagen etc)
+	openIntervalGraph: function(interval, routeId, element, width, height) {
+		var route = routes[routeId];
+
+		var callback = function(){
+			Dashboard.openIntervalGraph(interval, routeId, element, width, height);
+		};
+
+		var okay = true;
+		var data = {};
+		for (var day = 0; day < 7; day++) {
+			var graph = route.getIntervalData(interval, day, this.provider.id)
+			if (!graph){
+				okay = false;
+				break;
+			}else{
+				data[weekdays[day]] = graph.data;
+			}	
+		}
+
+		if (!okay) {
+			Api.syncIntervalGraph(interval, routeId, this.provider.id, callback, this);
+			return;
+		}
+
+		drawChart(element, data, width, height);
+	},
+
+	//syncIntervalGraph
 
 	// Genereert HTML voor live modus
 	reloadLive: function() {
@@ -198,14 +235,9 @@ var Dashboard = {
 				description: route.description,
 				status: status.text,
 				color: status.color,
-				live: {
-					time: live.time,
-					speed:  live.speed
-				},
-				avg: {
-					time: avg.time,
-					speed: avg.speed
-				},
+				score: live.speed / avg.speed, // Voor sorteren
+				title: live.toString(),
+				subtitle: avg.toString(),
 				warnings: [] // TODO: wanneer we oorzaken toevoegen moeten deze hier doorgegeven worden
 			};
 			dataArr.push(data);
@@ -213,7 +245,7 @@ var Dashboard = {
 
 		dataArr.sort(function(a, b) {
 			// Nog sorteren op status op eerste plaats toeveogen hier
-			return a.live.speed/a.avg.speed - b.live.speed/b.avg.speed;
+			return a.score - b.score;
 		});
 
 		// Juiste subtitels (en evt lijn) ondertussen toevoegen
@@ -254,7 +286,6 @@ var Dashboard = {
 				// Hebben we alle benodigde data? 
 				// Dat is: de representatie van elke periode + het gemiddelde van de afgelopen maand
 				var hasData = true;
-				var hasAvg = true;
 
 				var p = this.provider.id;
 
@@ -262,30 +293,10 @@ var Dashboard = {
 					if (!route.getIntervalDataRepresentation(interval, 7, p)){
 						hasData = false;
 					}
-					if (!route.hasRecentAvgRepresentation(p)){
-						hasAvg = false;
-					}
 				});
 
-				// Stuk code die we nodig hebben om de Api queue te laten werken
-				// Deze houdt bij hoeveel requests er nog voltooid moeten worden voor we
-				// een callback krijgen. 
-				// we krijgen dus geen callback per request, maar enkel als ze allemaal klaar zijn
-				var c = 0;
 				if (!hasData){
-					c++;
-				}
-				if (!hasAvg){
-					c++;
-				}
-
-				if (c != 0){
-					Api.newQueue(c);
-					if (!hasData)
-						Api.syncIntervalData(interval, p, Dashboard.reload, this);
-					if (!hasAvg)
-						Api.syncLiveData(p, Dashboard.reload, this);
-					Api.endQueue();
+					Api.syncIntervalData(interval, p, Dashboard.reload, this);
 
 					str += Mustache.renderTemplate("loading", []);
 					dashboard.html(str);
@@ -306,8 +317,7 @@ var Dashboard = {
 		var dataArr = [];
 		routes.forEach(function(route){
 			var representation = route.getIntervalDataRepresentation(interval, 7, p);
-			var avg = route.avgData[p].representation;
-			var status = route.getStatus(representation, avg);
+			var status = representation.getStatus();
 
 			var data = {
 				id: route.id,
@@ -315,14 +325,9 @@ var Dashboard = {
 				description: route.description,
 				status: status.text,
 				color: status.color,
-				live: {
-					time: representation.time,
-					speed:  representation.speed
-				},
-				avg: {
-					time: avg.time,
-					speed: avg.speed
-				},
+				score: representation.average, // Voor sorteren
+				title: representation.toString(),
+				subtitle: representation.getSubtitle(),
 				warnings: ['Geen waarschuwingen'] // TODO: wanneer we oorzaken toevoegen moeten deze hier doorgegeven worden
 			};
 
@@ -331,7 +336,7 @@ var Dashboard = {
 
 		dataArr.sort(function(a, b) {
 			// Nog sorteren op status op eerste plaats toeveogen hier
-			return a.live.speed/a.avg.speed - b.live.speed/b.avg.speed;
+			return b.score - a.score;
 		});
 
 		// Juiste subtitels (en evt lijn) ondertussen toevoegen
@@ -349,9 +354,28 @@ var Dashboard = {
 
 		dashboard.html(str);
 	},
+
 	// Genereert HTML voor live modus
 	reloadCompareIntervals: function() {
-		this.displayNotImplemented();
+		var dashboard = $('#dashboard .content');
+		var interval0 = this.selectedIntervals[0];
+		var data = {
+			num: 0,
+			name: interval0.getName(),
+		};
+		var period_selection0 = Mustache.renderTemplate("period-selection", data);
+
+		var interval1 = this.selectedIntervals[1];
+		var data = {
+			num: 1,
+			name: interval1.getName(),
+		};
+		var period_selection1 = Mustache.renderTemplate("period-selection", data);
+
+
+		var str = Mustache.renderTemplate("compare-header", { 'period-selection0': period_selection0, 'period-selection1': period_selection1});
+
+		dashboard.html(str);
 	},
 	reloadCompareDays: function() {
 		this.displayNotImplemented();

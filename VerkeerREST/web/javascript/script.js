@@ -6,8 +6,14 @@ var providers = [];
 var routes = [];
 var events = [];
 
+// Weekdays
+var weekdays = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag', 'Zaterdag', 'Zondag'];
+var weekdays_short = ['ma', 'di', 'wo', 'do', 'vr', 'za', 'zo'];
+
+
 // Inladen van local storage
 Event.loadLocalStorage();
+
 
 function getEventIndex(name){
 	for (var i = 0; i < events.length; i++) {

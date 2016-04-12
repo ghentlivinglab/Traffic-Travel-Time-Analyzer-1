@@ -12,6 +12,9 @@ function toggleGraph(){
 		if (box.length == 0){
 			$(this).append('<div class="graph-box"><div class="arrow"></div><div class="graph-shadow"></div><div class="graph"><div class="graph-content"><img class="loading" src="images/loading.gif" alt="Bezig met laden"></div></div></div>');
 			box = $(this).find('.graph-box');
+			box.click(function(e) {
+				e.stopPropagation();
+			});
 			console.log('grafiek toegevoegd '+box);
 		}
 
@@ -27,7 +30,7 @@ function toggleGraph(){
 		// Momenteel voeg ik gewoon de live grafiek toe, maar dit moet berekend gebeuren
 		// Later kan dit ook een periode, periodevergelijk, of dag/dag grafiek worden
 		// Zal uit de html moeten worden afgeleid (extra data- attributen toevoegen)
-		Dashboard.openLiveGraph($(this).attr('data-route'), graphContent[0], width, height);
+		Dashboard.openGraph($(this).attr('data-route'), graphContent[0], width, height);
 
 		box.slideDown('fast', function() {
 			
@@ -89,8 +92,25 @@ function drawChart(element, data, width, height) {
 	var d = google.visualization.arrayToDataTable
 	    (arr);
 
+	var colors = ['#63A7FF', '#FFA363', '#FF6363', '#63FF7D', '#EADD5E', '#9263FF', '#FF63C8'];
+
 	// Options van de grafiek
 	// TODO: opties staan nu gewoon op die van de live grafiek, moet meegestuurd worden!
+	var defSettings = { color: '#63A7FF', 'lineWidth': 2, 'curveType': 'function', pointSize: 0};
+	var avgSettings = { color: '#A8A8A8', 'lineWidth': 2, 'lineDashStyle':  [4, 4], 'curveType': 'function' };
+
+	var series = {};
+	if (arr[0].length == 3) {
+		series = {0: defSettings, 1: avgSettings};
+	}else{
+		for (var i = 0; i < arr[0].length-1; i++) {
+			// Dupliceren
+			var obj = JSON.parse(JSON.stringify(defSettings));
+			obj.color = colors[i];
+			series[i] = obj;
+		}
+	}
+
 
 	var options = {
 		legend: 'top',
@@ -98,11 +118,7 @@ function drawChart(element, data, width, height) {
 		width: width,
 		height: height,
 		chartArea:{left:80,top:60,right:80, bottom: 50},
-		series: {
-			0: { color: '#63A7FF', 'lineWidth': 2, 'curveType': 'function', pointSize: 0},
-			1: { color: '#A8A8A8', 'lineWidth': 2, 'lineDashStyle':  [4, 4], 'curveType': 'function' },
-			2: { labelInLegend: null, color: '#63A7FF', 'lineWidth': 0, 'curveType': 'none', pointSize: 6}
-		},
+		series: series,
 		vAxis: {
 		    baselineColor: '#A8A8A8'
 

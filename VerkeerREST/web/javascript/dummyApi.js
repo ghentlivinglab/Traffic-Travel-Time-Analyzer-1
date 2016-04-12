@@ -202,12 +202,20 @@ var DummyApi = {
 		this.callDelayed(callback, context);
 	},
 
-	// fetches the live data (= current traffic and an average of last month(s) ) of every route
+	// fetches the acumulated data of every route
 	syncIntervalData: function(interval, provider, callback, context) {
 		var p = provider;
 		routes.forEach(function(route){
 		
-			var representation = TrafficData.create(Math.floor((Math.random() * 40) + 50), Math.floor((Math.random() * 10) + 6));
+			//var representation = TrafficData.create(Math.floor((Math.random() * 40) + 50), Math.floor((Math.random() * 10) + 6));
+			var slow = [];
+			var stationary = [];
+			for (var i = 0; i < 7; i++) {
+				slow[i] = Math.ceil(Math.random() * 80);
+				stationary[i] = Math.ceil(Math.random() * 80);
+			}
+			var representation = IntervalRepresentation.create(slow, stationary);
+
 			var data = route.getIntervalData(interval, 7, p);
 			if (data){
 				data.representation = representation;
@@ -219,5 +227,38 @@ var DummyApi = {
 		this.callDelayed(callback, context);
 	},
 
+	// fetches the acumulated data of every route
+	syncIntervalGraph: function(interval, routeId, provider, callback, context) {
+		var route = routes[routeId];
+
+		for (var day = 0; day < 7; day++) {
+			var graph = route.getIntervalData(interval, day, provider)
+			if (!graph){
+				var graph = TrafficGraph.create(null);
+				route.setIntervalData(interval, day, provider, graph);
+			}
+			var data = {};
+			var base = 8;
+			for (var i = 6; i <= 24; i+=this.intervalDecimal) {
+				if (i > 7 && i < 10 || i > 16 && i < 18){
+					base += Math.random();
+				}
+				if (i > 18){
+					base -= Math.random();
+				}
+				if (base > 5){
+					base += Math.random() * 1 - 0.7;
+				}else{
+					base += Math.random() * 2;
+				}
+				data[i] = base;
+			}
+			graph.data = data;
+			//graph.representation = null;
+
+		}
+
+		this.callDelayed(callback, context);
+	},
 
 };

@@ -26,8 +26,8 @@
 				</header>
 				<div class="left">
 					<p class="{{ color }} status">{{ status }}</p>
-					<p class="speed">{{ live.time }} min.  {{ live.speed }} km/h</p>
-					<p class="avg-speed">{{ avg.time }} min.  {{ avg.speed }} km/h</p>
+					<p class="speed">{{ title }}</p>
+					<p class="avg-speed">{{ subtitle }}</p>
 				</div>
 				<div class="right">
 					{{#warnings}}
@@ -38,11 +38,40 @@
 			</article>
     </script>
 
+     <script id="template-compare" type="text/html">
+    	<article onclick="toggleGraph.call(this);" data-route="{{ id }}">
+			<div class="table">
+				<header>
+					<h1>{{ name }}</h1>
+					<h2>{{ description }}</h2>
+				</header>
+				<div class="left">
+					<p class="{{ first.color }} status">{{ first.status }}</p>
+					<p class="speed">{{ first.title }}</p>
+					<p class="avg-speed">{{ first.subtitle }}</p>
+				</div>
+				<div class="right">
+					<p class="{{ second.color }} status">{{ second.status }}</p>
+					<p class="speed">{{ second.title }}</p>
+					<p class="avg-speed">{{ second.subtitle }}</p>
+				</div>
+			</div>
+			</article>
+    </script>
+
     <!-- Dashboard periode-view header: titel + periode dropdown -->
     <script id="template-period-header" type="text/html">
     	<h1>Periode</h1>
     	<p>
     		{{& period-selection }}
+    	</p>
+    </script>
+
+     <!-- Dashboard periode-view header: titel + periode dropdown -->
+    <script id="template-compare-header" type="text/html">
+    	<h1>Vergelijk</h1>
+    	<p>
+    		{{& period-selection0 }} <span class="sub">EN</span> {{& period-selection1 }}
     	</p>
     </script>
 
