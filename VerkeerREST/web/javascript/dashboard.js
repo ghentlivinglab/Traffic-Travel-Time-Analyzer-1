@@ -130,6 +130,10 @@ var Dashboard = {
 		if (this.mode == this.INTERVAL){
 			this.openIntervalGraph(this.selectedIntervals[0], routeId, element, width, height);
 		}
+		if (this.mode == this.COMPARE_INTERVALS){
+			this.openCompareGraph(this.selectedIntervals[0], this.selectedIntervals[1], routeId, element, width, height);
+		}
+
 	},
 	// Opent de live grafiek = grafiek in de vandaag weergave
 	// element = het DOM element waarin we de grafiek willen toevoegen
@@ -153,7 +157,7 @@ var Dashboard = {
 				'Vandaag': route.liveData[this.provider.id].data,
 				'Normaal': route.avgData[this.provider.id].data,
 			};
-			drawChart(element, data, width, height);
+			drawChart(element, data, width, height, true);
 		}else{
 			Api.newQueue(c);
 			if (!route.hasRecentAvgData(this.provider.id)){
@@ -177,7 +181,7 @@ var Dashboard = {
 		var data = {};
 		for (var day = 0; day < 7; day++) {
 			var graph = route.getIntervalData(interval, day, this.provider.id)
-			if (!graph){
+			if (!graph || !graph.data){
 				okay = false;
 				break;
 			}else{
@@ -189,6 +193,53 @@ var Dashboard = {
 			Api.syncIntervalGraph(interval, routeId, this.provider.id, callback, this);
 			return;
 		}
+
+		drawChart(element, data, width, height);
+	},
+
+	// Opent de grafiek horende bij 2 intervallen
+	openCompareGraph: function(interval0, interval1, routeId, element, width, height) {
+		var route = routes[routeId];
+
+		var callback = function(){
+			Dashboard.openCompareGraph(interval0, interval1, routeId, element, width, height);
+		};
+
+		var okay0 = true;
+		var data = {};
+		var c = 0;
+
+		var graph = route.getIntervalData(interval0, 7, this.provider.id)
+		if (!graph || !graph.data){
+			okay0 = false;
+			c++;
+		}else{
+			data[interval0.getName()] = graph.data;
+		}
+
+		graph = route.getIntervalData(interval1, 7, this.provider.id)
+		if (!graph || !graph.data){
+			okay1 = false;
+			c++;
+		}else{
+			data[interval1.getName()] = graph.data;
+		}	
+
+		if (c > 0) {
+			Api.newQueue(c);
+
+			if (!okay0)
+				Api.syncIntervalGraph(interval0, routeId, this.provider.id, callback, this);
+
+			if (!okay1)
+				Api.syncIntervalGraph(interval1, routeId, this.provider.id, callback, this);
+
+			Api.endQueue();
+
+			return;
+		}
+
+		console.log(data);
 
 		drawChart(element, data, width, height);
 	},

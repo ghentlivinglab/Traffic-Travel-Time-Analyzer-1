@@ -67,10 +67,14 @@ function floatToHour(i){
 	}
 
 */
-function drawChart(element, data, width, height) {
+function drawChart(element, data, width, height, dotted) {
 	var arr = [
 	      ['Tijdstip'],
 	];
+
+	if (typeof dotted == "undefined"){
+		dotted = false;
+	}
 
 	// Dit stuk converteert het data object naar hetgene google verwacht (zie hun documentatie hiervoor)
 
@@ -100,7 +104,7 @@ function drawChart(element, data, width, height) {
 	var avgSettings = { color: '#A8A8A8', 'lineWidth': 2, 'lineDashStyle':  [4, 4], 'curveType': 'function' };
 
 	var series = {};
-	if (arr[0].length == 3) {
+	if (dotted) {
 		series = {0: defSettings, 1: avgSettings};
 	}else{
 		for (var i = 0; i < arr[0].length-1; i++) {

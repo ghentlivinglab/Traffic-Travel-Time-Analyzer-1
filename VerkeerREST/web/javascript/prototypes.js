@@ -133,7 +133,7 @@ var TrafficGraph = {
 	create: function(representation, data) {
 		var obj = Object.create(TrafficGraph);
 		obj.representation = representation;
-		obj.data = {};
+		obj.data = null;
 
 		// dont pass data if it's not defined
 		if (data !== undefined){
@@ -270,6 +270,43 @@ var Route = {
 			this.intervalData[str][day] = {};
 		}
 		this.intervalData[str][day][providerId] = value;
+	},
+
+	// Berekent het gemiddelde van alle weekdagen -> niet met api meegegeven
+	// En slaat dit op in IntervalData, op day = 7 (alle weekdagen)
+	generateIntervalAvg: function(interval, providerId) {
+		var data = {};
+		for (var day = 0; day < 7; day++) {
+			console.log(day);
+			var graph = this.getIntervalData(interval, day, providerId);
+			if (!graph){
+				continue;
+			}
+			for (var time in graph.data) {
+				
+				if (!data[time]) {
+
+					data[time] = {
+						value: 0,
+						count: 0
+					};
+				}
+				data[time].value += graph.data[time];
+				data[time].count ++;
+			}
+		}
+
+		var result = {};
+		for (var time in data) {
+			result[time] = data[time].value / data[time].count;
+		}
+
+		var graph = this.getIntervalData(interval, 7, providerId)
+		if (!graph){
+			graph = TrafficGraph.create(null);
+			this.setIntervalData(interval, 7, providerId, graph);
+		}
+		graph.data = result;
 	},
 
 	// Geeft de representation voor ene bepaald interval, of null indien deze niet bestaat

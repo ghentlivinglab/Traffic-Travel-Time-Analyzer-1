@@ -228,7 +228,7 @@ var DummyApi = {
 		for (var day = 0; day < 7; day++) {
 			var graph = route.getIntervalData(interval, day, provider)
 			if (!graph){
-				var graph = TrafficGraph.create(null);
+				graph = TrafficGraph.create(null);
 				route.setIntervalData(interval, day, provider, graph);
 			}
 			var data = {};
@@ -251,6 +251,9 @@ var DummyApi = {
 			//graph.representation = null;
 
 		}
+
+		// Gemiddelde berekenen van alle weekdagen
+		route.generateIntervalAvg(interval, provider);
 
 		this.callDelayed(callback, context);
 	},
