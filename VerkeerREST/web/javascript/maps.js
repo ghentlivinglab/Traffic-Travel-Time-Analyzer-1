@@ -19,11 +19,12 @@ var zoomCurrent = 12;
 var normalTraffic = '#222222';
 var mediumTraffic = '#e67e22';
 var heavyTraffic = '#C10037';
+var selected = '#33AA33';
 // line settings
 var zoomThreshold = 14;
 var zoomedInWeight = 2;
 var zoomedOutWeight = 4;
-var hoverWeight = 6;
+var hoverWeight = zoomedOutWeight;
 // event settings
 var eventImage = "images/warning.png";
 
@@ -184,14 +185,14 @@ function lineClicked(event){
  * set line bolder on hover
  ****************************/
 function lineHover(event){
-	this.setOptions({strokeWeight: hoverWeight,zIndex:3});
+	this.setOptions({strokeWeight: hoverWeight,zIndex:3,strokeColor:selected});
 }
 
 /****************************
  * revert line to original width
  ****************************/
 function lineOut(event){
-	this.setOptions({strokeWeight: getWeight(),zIndex:getZIndex(colors[this['id']])});
+	this.setOptions({strokeWeight: getWeight(),zIndex:getZIndex(colors[this['id']]), strokeColor:colors[this['id']]});
 } 
 
 /****************************
