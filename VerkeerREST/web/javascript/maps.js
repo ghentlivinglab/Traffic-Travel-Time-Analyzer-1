@@ -19,7 +19,7 @@ var zoomCurrent = 12;
 var normalTraffic = '#222222';
 var mediumTraffic = '#e67e22';
 var heavyTraffic = '#C10037';
-var selected = '#33AA33';
+var selected = '#3333AA';
 // line settings
 var zoomThreshold = 14;
 var zoomedInWeight = 2;
@@ -46,6 +46,8 @@ function initMap() {
 	map.addListener('click',function(event){ // close info window with click on map
 		if(infowindow!=null){
 			infowindow.close();
+			infowindow=null;
+			generateLines();
 		}
 	});
 	map.addListener('zoom_changed',zoomChanged); // change line weight on different zoom levels
@@ -174,9 +176,16 @@ function createInfoWindow(latLng,message){
  * shows an info window about the route
  ****************************/
 function lineClicked(event){
+	if(infowindow!=null){
+		infowindow.close();
+		generateLines();
+		infowindow=null;
+		this.setOptions({strokeWeight: hoverWeight,zIndex:3,strokeColor:selected});
+	}
 	var message = '<content id="infoWindow">'
-						+ '<h1>'+routes[this['id']].name +' - '+ routes[this['id']].description+'</h1>'
-						+ '<p>Current time: <span id="currentTime">'+routes[this['id']].liveData[0].representation.time+' minutes</span></p>'
+						+ '<h1>'+routes[this['id']].name +' <span class=smallTitle>'+ routes[this['id']].description+'</span></h1>'
+						+ '<p>Huidige reistijd: <span id="infoWindowCurrentTime">'+routes[this['id']].liveData[0].representation.time+' minuten</span></p>'
+						+ '<p>Gemiddelde reistijd: <span id="infoWindowAverageTime">'+routes[this['id']].avgData[0].representation.time+' minuten</span></p>'
 					+'</content>';
 	createInfoWindow(event["latLng"],message);
 }
@@ -185,14 +194,19 @@ function lineClicked(event){
  * set line bolder on hover
  ****************************/
 function lineHover(event){
-	this.setOptions({strokeWeight: hoverWeight,zIndex:3,strokeColor:selected});
+	if(infowindow==null){
+		this.setOptions({strokeWeight: hoverWeight,zIndex:3,strokeColor:selected});
+	}
 }
 
 /****************************
  * revert line to original width
  ****************************/
 function lineOut(event){
-	this.setOptions({strokeWeight: getWeight(),zIndex:getZIndex(colors[this['id']]), strokeColor:colors[this['id']]});
+	this.setOptions({strokeWeight: getWeight()});
+	if(infowindow==null){
+		this.setOptions({strokeColor:colors[this['id']], zIndex:getZIndex(colors[this['id']])});
+	}
 } 
 
 /****************************

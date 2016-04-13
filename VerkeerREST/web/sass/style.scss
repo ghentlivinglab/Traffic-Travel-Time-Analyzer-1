@@ -153,9 +153,21 @@ span.sub {
 }
 #map {
 	height: 100%;
-}
-#map #infoWindow > h1{
-	font-size: 1.5em;
+	#infoWindow > h1 {
+		font-size: 1.5em;
+		.smallTitle {
+			font-size: 0.5em;
+		}
+	}
+	#infoWindow {
+		p {
+			padding: 0;
+			margin: 0;
+		}
+		#infoWindowCurrentTime, #infoWindowAverageTime{
+			font-weight: 500;
+		}
+	}
 }
 
 #logo {
