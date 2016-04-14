@@ -160,13 +160,20 @@ span.sub {
 		}
 	}
 	#infoWindow {
-		p {
+		min-width: 30em;
+		min-height: 5em;
+		> p {
 			padding: 0;
 			margin: 0;
+			display: inline-block;
+			&.infoWindowCurrentTime, &.infoWindowAverageTime {
+				width: 50%;
+				&.value,  {
+					font-weight: 500;
+				}
+			}
 		}
-		#infoWindowCurrentTime, #infoWindowAverageTime{
-			font-weight: 500;
-		}
+		
 	}
 }
 
