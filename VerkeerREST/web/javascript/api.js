@@ -387,3 +387,4 @@ var Api = {
 
 };
 
+var Api = DummyApi;

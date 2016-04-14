@@ -279,7 +279,8 @@ var Dashboard = {
 				var data = {
 					id: route.id,
 					name: route.name,
-					description: route.description,
+					description: route.getDescription(),
+					length: route.getLength(),
 					status: '',
 					color: '',
 					score: 100000000, // Voor sorteren
@@ -299,7 +300,8 @@ var Dashboard = {
 			var data = {
 				id: route.id,
 				name: route.name,
-				description: route.description,
+				description: route.getDescription(),
+				length: route.getLength(),
 				status: status.text,
 				color: status.color,
 				score: live.speed / avg.speed, // Voor sorteren
@@ -389,7 +391,8 @@ var Dashboard = {
 				var data = {
 					id: route.id,
 					name: route.name,
-					description: route.description,
+					description: route.getDescription(),
+					length: route.getLength(),
 					status: '',
 					color: '',
 					score: -1000, // Voor sorteren
@@ -406,7 +409,8 @@ var Dashboard = {
 			var data = {
 				id: route.id,
 				name: route.name,
-				description: route.description,
+				description: route.getDescription(),
+				length: route.getLength(),
 				status: status.text,
 				color: status.color,
 				score: representation.average, // Voor sorteren
@@ -519,7 +523,8 @@ var Dashboard = {
 				var data = {
 					id: route.id,
 					name: route.name,
-					description: route.description,
+					description: route.getDescription(),
+					length: route.getLength(),
 					status: 'Niet beschikbaar',
 					score: 10000000,
 					first: {
@@ -560,7 +565,8 @@ var Dashboard = {
 			var data = {
 				id: route.id,
 				name: route.name,
-				description: route.description,
+				description: route.getDescription(),
+				length: route.getLength(),
 				status: t,
 				score: diff, // Sorteren op grootste verschillen
 				first: {

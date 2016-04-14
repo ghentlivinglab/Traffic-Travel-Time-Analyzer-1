@@ -20,7 +20,7 @@ var TrafficData = {
 		return obj;
 	},
 	toString: function (){
-		return this.time+'min. '+this.speed+'km/h';
+		return Math.floor(this.time*10)/10+' min. '+Math.floor(this.speed)+' km/h';
 	}
 };
 
@@ -158,6 +158,36 @@ var Route = {
 	name: '',
 	description: '',
 	waypoints: [], // Array of google.maps.LatLng
+
+	// Constructor with optional argument waypoints
+	create: function(id, name, description, length, waypoints) {
+		var obj = Object.create(this);
+		obj.id = id;
+		obj.length = length;
+		obj.name = name;
+		obj.description = description;
+
+		// create new references (otherwise we edit the same references for every object)
+		obj.avgData = {};
+		obj.liveData = {};
+		obj.dayData = {};
+		obj.intervalData = {};
+
+		// Waypoints has to be an Array
+		if (waypoints !== undefined && waypoints instanceof Array){
+			obj.waypoints = waypoints.slice();
+		}else{
+			obj.waypoints = []; // Belangrijk!
+		}
+		return obj;
+	},
+
+	getDescription: function () {
+		return this.description;
+	},
+	getLength: function () {
+		return Math.floor(this.length / 100)/10 + " km";
+	},
 
 	// returns status object, based on liveData and avgData
 	getStatus: function(liveData, avgData){
@@ -319,29 +349,6 @@ var Route = {
 	// eg intervalData["04/07/2015T12:00>08/07/2015T14:00"][0][providerId] -> TrafficGraph
 	intervalData: {
 
-	},
-
-	// Constructor with optional argument waypoints
-	create: function(id, name, description, length, waypoints) {
-		var obj = Object.create(this);
-		obj.id = id;
-		obj.length = length;
-		obj.name = name;
-		obj.description = description;
-
-		// create new references (otherwise we edit the same references for every object)
-		obj.avgData = {};
-		obj.liveData = {};
-		obj.dayData = {};
-		obj.intervalData = {};
-
-		// Waypoints has to be an Array
-		if (waypoints !== undefined && waypoints instanceof Array){
-			obj.waypoints = waypoints.slice();
-		}else{
-			obj.waypoints = []; // Belangrijk!
-		}
-		return obj;
 	}
 };
 
