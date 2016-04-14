@@ -1,5 +1,7 @@
 package connectors.provider;
 
+import com.ning.http.client.AsyncHttpClient;
+import com.ning.http.client.AsyncHttpClientConfig;
 import connectors.RouteEntry;
 import connectors.database.DummyDbConnector;
 import java.util.ArrayList;
@@ -61,9 +63,12 @@ public class GoogleProviderConnectorTest {
      */
     @Test
     public void connectionTest() {
+        AsyncHttpClientConfig.Builder ab = new AsyncHttpClientConfig.Builder();
+        ab.setMaxConnections(15);
+        AsyncHttpClient a = new AsyncHttpClient(ab.build());
         try {
             GoogleProviderConnector connector = new GoogleProviderConnector(new DummyDbConnector());
-            connector.triggerUpdate();
+            connector.triggerUpdate(a);
 
         } catch (Exception e) { // connection can only fail if
             fail(e.getMessage());

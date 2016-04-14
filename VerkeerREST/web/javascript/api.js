@@ -83,7 +83,8 @@ var Api = {
 		// Uiteindelijk moet dit ongeveer het resultaat zijn: 
                 routes = [];
                 var me = this;
-                $.getJSON("http://localhost:8080/VerkeerREST/api/routes", function(result){
+                $.getJSON("/VerkeerREST/api/routes", function(result){
+                    console.log(JSON.stringify(result));
                     for(var i = 0; i<result.length; i++){
                         routes[result[i].id] = Route.create(result[i].id, result[i].name, result[i].description, result[i].length);
                     }
@@ -121,20 +122,22 @@ var Api = {
 		// Hier alle data van de server halen.
                 
                 var me = this;
-                $.getJSON("http://localhost:8080/VerkeerREST/api/trafficdata/live?providerID="+provider, function(result){
+                //console.log("http://verkeer-1.bp.tiwi.be/VerkeerREST/api/trafficdata/live?providerID="+provider);
+                $.getJSON("/VerkeerREST/api/trafficdata/live?providerID="+provider, function(result){
                     if(result.result === "success"){
                         var data = result.data;
-                        
+                        console.log(JSON.stringify(data));
                         routes.forEach(function(route){
                             var rdata = data[route.id];
                             console.log(JSON.stringify(rdata));
-                            if(typeof rdata !== "undefined"){
+                            if(typeof rdata != "undefined"){ 
                                 var avgData = TrafficData.create( rdata.avg.speed, rdata.avg.time );
                                 var liveData = TrafficData.create( rdata.live.speed, rdata.live.time );
                             }else{
                                 var avgData = TrafficData.create( '', '' );
                                 var liveData = TrafficData.create( '', '' );
                             }
+                            
                             if(route.hasAvgData(provider))
                                 route.avgData[provider].representation = avgData;
                             else 
@@ -146,10 +149,10 @@ var Api = {
                                 route.liveData[provider] = TrafficGraph.create(liveData);
                             
                         });
+                        me.callDelayed(qid, callback, context);
                     }else{
                         alert(result.reason);
                     }
-                    me.callDelayed(qid, callback, context);
                 }).fail(function(){
                     console.log("something went wrong loading the live data");
                 });
@@ -254,7 +257,7 @@ var Api = {
                 providers = [];
                 var me = this;
                 providers[0] = Provider.create(0, 'Alles');
-                $.getJSON("http://localhost:8080/VerkeerREST/api/providers", function(result){
+                $.getJSON("/VerkeerREST/api/providers", function(result){
                     console.log(JSON.stringify(result));
                     for(var i=0; i<result.length; i++){
                         providers[result[i].id] = Provider.create(result[i].id, result[i].name );
@@ -300,7 +303,7 @@ var Api = {
 		
 		// Callback zodra we de data hebben (moet dus in success van ajax)
 		//this.callDelayed(qid, callback, context);
-	},
+	}
 
 
 };
@@ -308,4 +311,4 @@ var Api = {
 // Gebruiken nu voorlopig de dummy
 
 // De gebruikte API zetten we op de dummy
-var Api = DummyApi;
+var Api = Api;

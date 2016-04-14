@@ -5,6 +5,8 @@
  */
 package connectors.provider;
 
+import com.ning.http.client.AsyncHttpClient;
+import com.ning.http.client.AsyncHttpClientConfig;
 import connectors.DataEntry;
 import connectors.database.ConnectionException;
 import connectors.database.DummyDbConnector;
@@ -49,7 +51,12 @@ public class WazeProviderConnectorTest {
     public void returnTest() throws ConnectionException{
         IDbConnector db = new MariaDbConnector();
         WazeProviderConnector connector = new WazeProviderConnector(db);
-        connector.triggerUpdate();
+        
+        AsyncHttpClientConfig.Builder ab = new AsyncHttpClientConfig.Builder();
+        ab.setMaxConnections(15);
+        AsyncHttpClient a = new AsyncHttpClient(ab.build());
+        
+        connector.triggerUpdate(a);
 
         // Wait for all threads to complete, read their return data (= DataEntry)
         for (Future<Boolean> hashRequest : connector.buzyRequests) {
@@ -78,8 +85,12 @@ public class WazeProviderConnectorTest {
         int loops = 1;
         WazeProviderConnector connector = new WazeProviderConnector(dummy);
         
+        AsyncHttpClientConfig.Builder ab = new AsyncHttpClientConfig.Builder();
+        ab.setMaxConnections(15);
+        AsyncHttpClient a = new AsyncHttpClient(ab.build());
+        
         for (int i = 0; i<loops; i++){
-            connector.triggerUpdate();
+            connector.triggerUpdate(a);
             // Wait for all threads to complete
             for (Future<Boolean> hashRequest : connector.buzyRequests) {
                 hashRequest.get();

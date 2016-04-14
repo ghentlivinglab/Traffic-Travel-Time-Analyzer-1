@@ -31,7 +31,7 @@ public class LiveTrafficdata {
         sb.append("\"time\": \"").append(live.get("time")).append("\"");
         sb.append("}, \"avg\": {");
         sb.append("\"speed\": \"").append(avg.get("speed")).append("\",");
-        sb.append("\"time\": \"").append(live.get("time")).append("\"");
+        sb.append("\"time\": \"").append(avg.get("time")).append("\"");
         sb.append("}");
         sb.append('}');
         return sb.toString();

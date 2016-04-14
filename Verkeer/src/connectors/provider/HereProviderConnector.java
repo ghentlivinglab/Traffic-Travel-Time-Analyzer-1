@@ -39,16 +39,15 @@ public class HereProviderConnector extends AProviderConnector {
     }
 
     @Override
-    public void triggerUpdate() {
+    public void triggerUpdate(AsyncHttpClient a) {
         if (updateCounter % updateInterval == 0) {
             buzyRequests = new ArrayList<>();
             for (RouteEntry route : routes) {
                 String url = generateURL(route);
-                AsyncHttpClient asyncHttpClient;
-                asyncHttpClient = new AsyncHttpClient();
+                
                 IDbConnector connector = this.dbConnector;
 
-                Future<DataEntry> f = asyncHttpClient.prepareGet(url).execute(
+                Future<DataEntry> f = a.prepareGet(url).execute(
                         new AsyncCompletionHandler<DataEntry>() {
 
                     @Override

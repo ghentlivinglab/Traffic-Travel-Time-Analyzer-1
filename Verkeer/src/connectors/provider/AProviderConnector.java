@@ -5,6 +5,7 @@
  */
 package connectors.provider;
 
+import com.ning.http.client.AsyncHttpClient;
 import connectors.DataEntry;
 import connectors.ProviderEntry;
 import connectors.RouteEntry;
@@ -56,8 +57,9 @@ public abstract class AProviderConnector {
 
     /**
      * Makes the ProviderConnector fetch data from provider
+     * @param a The AsyncHttpClient used to send the requests.
      */
-    public abstract void triggerUpdate();
+    public abstract void triggerUpdate(AsyncHttpClient a);
 
     /**
      * Saves the generated info to the IDbConnector
