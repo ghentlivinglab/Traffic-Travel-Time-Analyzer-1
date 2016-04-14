@@ -130,7 +130,10 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
         q.setParameter(4, providerID);
         q.setParameter(5, routeID);
 
-        SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        // Formaat is met die T ertussen! ' en ' zorgen ervoor dat hij dit letterlijk overneemt
+        // -> dit is javascript formaat
+        SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"); 
+
         
         StringBuilder json = new StringBuilder();
         try {
