@@ -139,6 +139,7 @@ var Dashboard = {
 	// element = het DOM element waarin we de grafiek willen toevoegen
 	openLiveGraph: function(routeId, element, width, height) {
 		var route = routes[routeId];
+
 		//var counterObject = {counter: 0, route: route, element: element, width: width, height: height}; // Referentie die we gaan meegeven
 		// Deze counter voorkomt dat we openLiveGraph te snel opnieuw aanroepen als 1 van de requests klaar is
 		var callback = function(){

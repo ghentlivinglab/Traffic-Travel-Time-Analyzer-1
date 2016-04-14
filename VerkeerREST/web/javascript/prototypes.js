@@ -11,6 +11,7 @@ var TrafficData = {
 	speed: 0,
 	time: 0,
 	createdOn: null, // instance of Date
+	empty: false,
 	
 	create: function(speed, time) { // Constructor
 		var obj = Object.create(this);
@@ -19,10 +20,22 @@ var TrafficData = {
 		obj.createdOn = new Date();
 		return obj;
 	},
+
+	createEmpty: function() {
+		var obj = Object.create(this);
+		obj.createdOn = new Date();
+		obj.empty = true;
+		return obj;
+	},
+
 	toString: function (){
+		if (this.empty) {
+			return '';
+		}
 		return Math.floor(this.time*10)/10+' min. '+Math.floor(this.speed)+' km/h';
 	}
 };
+
 
 /****************************
  * IntervalData maintains % slow traffic per weekday and the total
@@ -191,6 +204,12 @@ var Route = {
 
 	// returns status object, based on liveData and avgData
 	getStatus: function(liveData, avgData){
+		if (liveData.empty || avgData.empty) {
+			return {
+				text: 'Niet beschikbaar',
+				color: 'gray'
+			};
+		}
 		if (liveData.speed < avgData.speed*0.7){
 			return {
 				text: 'Stilstaand verkeer',

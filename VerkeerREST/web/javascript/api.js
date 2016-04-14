@@ -130,8 +130,8 @@ var Api = {
                         var avgData = TrafficData.create(rdata.avg.speed, rdata.avg.time);
                         var liveData = TrafficData.create(rdata.live.speed, rdata.live.time);
                     } else {
-                        var avgData = TrafficData.create('', '');
-                        var liveData = TrafficData.create('', '');
+                        var avgData = TrafficData.createEmpty();
+                        var liveData = TrafficData.createEmpty();
                     }
                     if (route.hasAvgData(provider))
                         route.avgData[provider].representation = avgData;
