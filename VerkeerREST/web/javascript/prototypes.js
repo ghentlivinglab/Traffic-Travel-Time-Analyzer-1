@@ -542,6 +542,15 @@ var Interval = {
 		obj.end = end;
 		return obj;
 	},
+	createFromStorage: function(object) {
+		// Komt rechtstreeks uit localstorage. Geen checks op doen. Events zou leeg moeten zijn.
+		var obj = Object.create(Interval);
+		// javascript JSON houdt date bij in string formaat -> hieronder omzetten in date objecten
+		obj.start = new Date(object.start);
+		obj.end = new Date(object.end);
+
+		return obj;
+	},
 	isValid: function() {
 		// TODO: additional checks
 		return typeof this.end != "undefined" && typeof this.start != "undefined" && this.start && this.end;
