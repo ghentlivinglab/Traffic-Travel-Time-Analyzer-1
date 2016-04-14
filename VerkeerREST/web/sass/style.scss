@@ -164,11 +164,9 @@ span.sub {
 			padding: 0;
 			margin: 0;
 			display: inline-block;
-			&.infoWindowCurrentTime, &.infoWindowAverageTime {
-				width: 50%;
-				&.value,  {
-					font-weight: 500;
-				}
+			width: 50%;
+			&.value,  {
+				font-weight: 500;
 			}
 		}
 	}

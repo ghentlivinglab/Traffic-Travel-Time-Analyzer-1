@@ -194,6 +194,8 @@ function lineClicked(event){
 						+ '<p class="infoWindowCurrentTime value">' + routes[this['id']].liveData[0].representation.time + ' minuten</p>'
 						+ '<p class="infoWindowAverageTime">Gemiddelde reistijd: </p>'
 						+ '<p class="infoWindowAverageTime value">' + routes[this['id']].avgData[0].representation.time + ' minuten</p>'
+						+ '<p class="infoWindowRouteLenght">Lengte van traject:</p>'
+						+ '<p class="infoWindowRouteLenght value">' + routes[this['id']].length + ' meter</p>'
 					+'</content>';
 	createInfoWindow(event["latLng"],message);
 	this.setOptions({strokeWeight: hoverWeight, zIndex: 3, strokeColor: selectedColor}); // add accent to line
