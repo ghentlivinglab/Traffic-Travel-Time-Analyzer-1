@@ -75,6 +75,8 @@ function drawChart(element, data, width, height, dotted) {
 		dotted = false;
 	}
 
+	var minimum = 0;
+
 	// Dit stuk converteert het data object naar hetgene google verwacht (zie hun documentatie hiervoor)
 
 	for (var key in data) {
@@ -85,7 +87,10 @@ function drawChart(element, data, width, height, dotted) {
 		var a = [floatToHour(i)];
 
 		for (var key in data) {
-                    a.push(data[key][i]);
+            a.push(data[key][i]);
+            if (typeof data[key][i] != 'undefined' && data[key][i] && (minimum == 0 || data[key][i] < minimum)) {
+            	minimum = data[key][i];
+            }
 		}
 		arr.push(a);
 	}
@@ -96,7 +101,7 @@ function drawChart(element, data, width, height, dotted) {
 	var d = google.visualization.arrayToDataTable
 	    (arr);
 
-	var colors = ['#63A7FF', '#FFA363', '#FF6363', '#63FF7D', '#EADD5E', '#9263FF', '#FF63C8'];
+	var colors = ['#800024', '#C10037', '#FC4D7E', '#005AC1', '#51A2FF', '#A8A8A8', '#D2D2D2'];
 
 	// Options van de grafiek
 	// TODO: opties staan nu gewoon op die van de live grafiek, moet meegestuurd worden!
@@ -104,31 +109,38 @@ function drawChart(element, data, width, height, dotted) {
 	var avgSettings = { color: '#A8A8A8', 'lineWidth': 2, 'lineDashStyle':  [4, 4], 'curveType': 'function' };
 
 	var series = {};
+	var legend = { position: 'top', alignment: 'start' };
+	var padding = {left:90,top:50,right:20, bottom: 70};
 	if (dotted) {
 		series = {0: defSettings, 1: avgSettings};
 	}else{
+		legend = { position: 'right', alignment: 'start' };
+		padding = {left:90,top:20,right:140, bottom: 70};
+
 		for (var i = 0; i < arr[0].length-1; i++) {
 			// Dupliceren
 			var obj = JSON.parse(JSON.stringify(defSettings));
 			obj.color = colors[i];
+
+			// weekend in stippellijnen
+			if (i >= 5) {
+				obj.lineDashStyle = [4, 4];
+			}
 			series[i] = obj;
 		}
 	}
 
 
 	var options = {
-		legend: 'top',
+		legend: legend,
 		fontName: 'Roboto',
 		width: width,
 		height: height,
-		chartArea:{left:80,top:60,right:80, bottom: 50},
+		chartArea:padding,
 		series: series,
-		vAxis: {
-		    baselineColor: '#A8A8A8'
-
-		},
 		hAxis: {
 		    baselineColor: '#A8A8A8',
+		   	title: "Tijdstip",
 		    textStyle: {
 				color: '#5E5E5E',
 				italic: false
@@ -136,10 +148,18 @@ function drawChart(element, data, width, height, dotted) {
 		},
 		vAxis: {
 		    baselineColor: '#A8A8A8',
+		    title: "Reistijd (minuten)",
+		    slantedText:true,
+		    slantedTextAngle:90,
+
 		    textStyle: {
 				color: '#5E5E5E',
 				italic: false
-			}
+			},
+			minValue: Math.max(0, Math.floor(minimum)),
+	        minorGridlines: {
+	        	count: 1
+	        }
 		}
 	};
 
