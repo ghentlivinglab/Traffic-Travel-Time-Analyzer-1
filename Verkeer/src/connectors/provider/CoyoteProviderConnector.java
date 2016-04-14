@@ -5,6 +5,7 @@
  */
 package connectors.provider;
 
+import com.ning.http.client.AsyncHttpClient;
 import connectors.DataEntry;
 import connectors.RouteEntry;
 import connectors.database.IDbConnector;
@@ -84,7 +85,7 @@ public class CoyoteProviderConnector extends AProviderConnector {
     }
 
     @Override
-    public void triggerUpdate() {
+    public void triggerUpdate(AsyncHttpClient a) {
         if (updateCounter % updateInterval == 0) {
             try {
                 runPerl();

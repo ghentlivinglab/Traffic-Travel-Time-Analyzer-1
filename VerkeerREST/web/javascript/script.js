@@ -10,6 +10,7 @@ var events = [];
 var weekdays = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag', 'Zaterdag', 'Zondag'];
 var weekdays_short = ['ma', 'di', 'wo', 'do', 'vr', 'za', 'zo'];
 
+var weekdays_js_to_rest = [6,0,1,2,3,4,5];
 
 // Inladen van local storage
 Event.loadLocalStorage();
@@ -171,7 +172,7 @@ $(document).ready( function(){
 $(window).load( function(){
 	
 	// checks if mapView or overview has to be displayed
-	if(getQueryVariable("mapView")==="true"){
+	if(getQueryVariable("mapView")==="true" && $("#dashboard").css("left")==="250px"){
 		togglePanel();
 	}
 });

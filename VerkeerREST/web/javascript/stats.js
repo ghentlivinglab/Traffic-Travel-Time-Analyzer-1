@@ -80,15 +80,16 @@ function drawChart(element, data, width, height, dotted) {
 	for (var key in data) {
 			arr[0].push(key);
 	}
-
+         console.log(data);
 	for (var i = 6; i <= 24; i+= Api.intervalDecimal) {
 		var a = [floatToHour(i)];
 
 		for (var key in data) {
-			a.push(data[key][i]);
+                    a.push(data[key][i]);
 		}
 		arr.push(a);
 	}
+        console.log(arr);
 
 	// data is nu omgezt naar [[yas, title1, title2], [xval, yval1, yval2], ...] formaat
 	// nu kunnen we dit omzetten naar de DataTable die google verwacht met eigen google functie

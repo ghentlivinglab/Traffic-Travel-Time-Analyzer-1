@@ -11,6 +11,28 @@ function dateToDate(date){
 	var year = date.getFullYear();
 	return day+"/"+month+"/"+year;
 }
+function dateToRestString(date){
+    
+	if (!date){
+		return '';
+	}
+	var day = pad(date.getDate());
+	var month = pad(date.getMonth()+1);
+	var year = pad(date.getFullYear());
+        
+        var hours = pad(date.getHours());
+        var minutes = pad(date.getMinutes());
+        var seconds = pad(date.getSeconds());
+	return year+"-"+month+"-"+day+" "+hours+":"+minutes+":"+seconds;
+}
+
+function pad(str){
+    str = '' + str;
+    if(str.length < 2){
+        return "0" + str;
+    }
+    return str;
+}
 
 // Vult automatisch de periode popup in, o.a. net voor het openen of na het aanpassen van het geselecteerde interval.
 //  Hierbij is this = class .period-selection

@@ -237,15 +237,14 @@ var Route = {
 
 	},
 
-	// TODO: translate
-	// Data per dag wordt hiet opgeslagen (in grafiekvorm)
-	// Bv voor 4 juli 2015
+	// Information per day is stored here (in a graph)
+	// eg: 4 july 2015
 	// dayData["04/07/2015"][providerId] -> TrafficGraph object
 	dayData: {
 
 	},
 
-	// Geeft de trafficGraph die bij een interval hoort, of null
+	// returns trafficGraph for interval, or null
 	getIntervalData: function(interval, day, providerId) {
 		var str = interval.toString();
 		if (typeof this.intervalData[str] == "undefined"){
@@ -260,7 +259,7 @@ var Route = {
 		return this.intervalData[str][day][providerId];
 	},
 
-	// Geeft de trafficGraph die bij een interval hoort, of null
+	// returns trafficGraph for interval, or null
 	setIntervalData: function(interval, day, providerId, value) {
 		var str = interval.toString();
 		if (typeof this.intervalData[str] == "undefined"){
@@ -272,8 +271,8 @@ var Route = {
 		this.intervalData[str][day][providerId] = value;
 	},
 
-	// Berekent het gemiddelde van alle weekdagen -> niet met api meegegeven
-	// En slaat dit op in IntervalData, op day = 7 (alle weekdagen)
+	// calculates the average of all weekdays (not given by api)
+	// stores it in IntervalData under day=7 (all weekdays)
 	generateIntervalAvg: function(interval, providerId) {
 		var data = {};
 		for (var day = 0; day < 7; day++) {
@@ -308,19 +307,16 @@ var Route = {
 		graph.data = result;
 	},
 
-	// Geeft de representation voor ene bepaald interval, of null indien deze niet bestaat
+	// returns representation for given interval, or null if non-existant
 	getIntervalDataRepresentation: function(interval, day, providerId) {
 		if (!this.getIntervalData(interval, day, providerId)){
 			return null;
 		}
 		return this.getIntervalData(interval, day, providerId).representation;
 	},
-
-	// TODO: translate
-	// Houdt de grafieken bij:
-	// Kan zijn voor maandag, dinsdag, woensdag, ... zondag (0-6) Maandag = 0, zondag = 6
-	// 7 = gemiddelde van alle dagen
-	// bv. intervalData["04/07/2015T12:00>08/07/2015T14:00"][0][providerId] -> TrafficGraph
+	
+	// maintains graphs for each day (0-6) or all days (7)
+	// eg intervalData["04/07/2015T12:00>08/07/2015T14:00"][0][providerId] -> TrafficGraph
 	intervalData: {
 
 	},

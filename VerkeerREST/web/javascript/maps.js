@@ -16,14 +16,15 @@ var map; // object for the map
 var mapCenter = {"lat":51.076317,"lng":3.7096717};
 var zoomCurrent = 12;
 // colors
-var normalTraffic = '#222222';
-var mediumTraffic = '#e67e22';
-var heavyTraffic = '#C10037';
+var normalTrafficColor = '#222222';
+var mediumTrafficColor = '#e67e22';
+var heavyTrafficColor = '#C10037';
+var selectedColor = '#3333AA';
 // line settings
 var zoomThreshold = 14;
 var zoomedInWeight = 2;
 var zoomedOutWeight = 4;
-var hoverWeight = 6;
+var hoverWeight = zoomedOutWeight;
 // event settings
 var eventImage = "images/warning.png";
 
@@ -39,20 +40,28 @@ function initMap() {
 		"mapTypeControlOptions": {
 			"mapTypeIds":[google.maps.MapTypeId.TERRAIN,google.maps.MapTypeId.SATELLITE,google.maps.MapTypeId.HYBRID], // allow terrain and sattelite (with or without labels)
 		},
-		"streetViewControl": false // disable street view
+		"streetViewControl": false, // disable street view
+		"styles":[{
+			featureType: "poi",
+			stylers: [
+			  { zIndex : 0 }
+			]   
+		}]
 	});
 	
 	map.addListener('click',function(event){ // close info window with click on map
 		if(infowindow!=null){
 			infowindow.close();
+			infowindow=null;
+			generateLines();
 		}
 	});
 	map.addListener('zoom_changed',zoomChanged); // change line weight on different zoom levels
 	
 }
 function reloadMap(){
-	updateColors();
 	generateLines();
+	updateColors();
 	console.log("Map data was reloaded");
 }
 
@@ -116,13 +125,16 @@ function updateColors(){
 		var colorStatus = routes[i].getStatus(routes[i].liveData[0].representation,routes[i].avgData[0].representation);
 		switch(colorStatus.color){
 			case 'red':
-				colors[i] = heavyTraffic; // heavy traffic
+				colors[i] = heavyTrafficColor; // heavy traffic
+				lines[i].setOptions({strokeColor: heavyTrafficColor});
 				break;
 			case 'orange':
-				colors[i] = mediumTraffic; // medium traffic
+				colors[i] = mediumTrafficColor; // medium traffic
+				lines[i].setOptions({strokeColor: mediumTrafficColor});
 				break;
 			default:
-				colors[i] = normalTraffic; // normal traffic
+				colors[i] = normalTrafficColor; // normal traffic
+				lines[i].setOptions({strokeColor: normalTrafficColor});
 				break;
 		}
 	}
@@ -134,9 +146,9 @@ function updateColors(){
  ****************************/
 function getZIndex(color){
 	var z_index = 0; // normal traffic is most to the back
-	if(color===heavyTraffic){ // heavy traffic in front
+	if(color===heavyTrafficColor){ // heavy traffic in front
 		z_index = 2;
-	}else if(color===mediumTraffic){ // medium traffic inbetween
+	}else if(color===mediumTrafficColor){ // medium traffic inbetween
 		z_index = 1;
 	}
 	return z_index;
@@ -173,25 +185,38 @@ function createInfoWindow(latLng,message){
  * shows an info window about the route
  ****************************/
 function lineClicked(event){
+	if(infowindow!=null){// if an infoWindow is shown
+		updateColors();
+	}
 	var message = '<content id="infoWindow">'
-						+ '<h1>'+routes[this['id']].name +' - '+ routes[this['id']].description+'</h1>'
-						+ '<p>Current time: <span id="currentTime">'+routes[this['id']].liveData[0].representation.time+' minutes</span></p>'
+						+ '<h1>'+routes[this['id']].name + ' <span class=smallTitle>'+ routes[this['id']].description + '</span></h1>'
+						+ '<p class="infoWindowCurrentTime">Huidige reistijd: </p>'
+						+ '<p class="infoWindowCurrentTime value">' + routes[this['id']].liveData[0].representation.time + ' minuten</p>'
+						+ '<p class="infoWindowAverageTime">Gemiddelde reistijd: </p>'
+						+ '<p class="infoWindowAverageTime value">' + routes[this['id']].avgData[0].representation.time + ' minuten</p>'
+						+ '<p class="infoWindowRouteLenght">Lengte van traject:</p>'
+						+ '<p class="infoWindowRouteLenght value">' + routes[this['id']].length + ' meter</p>'
 					+'</content>';
 	createInfoWindow(event["latLng"],message);
+	this.setOptions({strokeWeight: hoverWeight, zIndex: 3, strokeColor: selectedColor}); // add accent to line
 }
 
 /****************************
  * set line bolder on hover
  ****************************/
 function lineHover(event){
-	this.setOptions({strokeWeight: hoverWeight,zIndex:3});
+	if(infowindow==null){ // if no infoWindow is shown
+		this.setOptions({strokeWeight: hoverWeight, zIndex: 3, strokeColor: selectedColor}); // add accent to line
+	}
 }
 
 /****************************
  * revert line to original width
  ****************************/
 function lineOut(event){
-	this.setOptions({strokeWeight: getWeight(),zIndex:getZIndex(colors[this['id']])});
+	if(infowindow==null){ // if no infoWindow is shown
+		this.setOptions({strokeColor: colors[this['id']], zIndex: getZIndex(colors[this['id']]), strokeWeight: getWeight()}); // return line to default display
+	}
 } 
 
 /****************************

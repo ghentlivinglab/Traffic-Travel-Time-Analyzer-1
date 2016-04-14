@@ -5,6 +5,8 @@
  */
 package connectors.provider;
 
+import com.ning.http.client.AsyncHttpClient;
+import com.ning.http.client.AsyncHttpClientConfig;
 import connectors.database.DummyDbConnector;
 import java.io.File;
 import java.io.IOException;
@@ -42,8 +44,11 @@ public class CoyoteProviderConnectorTest {
 
     @Test
     public void test() {
+        AsyncHttpClientConfig.Builder ab = new AsyncHttpClientConfig.Builder();
+        ab.setMaxConnections(15);
+        AsyncHttpClient a = new AsyncHttpClient(ab.build());
         CoyoteProviderConnector connector = new CoyoteProviderConnector(new DummyDbConnector());
-        connector.triggerUpdate();
+        connector.triggerUpdate(a);
     }
 
     @Test
