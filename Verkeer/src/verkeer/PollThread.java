@@ -6,6 +6,8 @@
 
 package verkeer;
 
+import com.ning.http.client.AsyncHttpClient;
+import com.ning.http.client.AsyncHttpClientConfig;
 import connectors.database.ConnectionException;
 import connectors.database.IDbConnector;
 import connectors.database.MariaDbConnector;
@@ -68,6 +70,9 @@ public class PollThread extends Thread {
     
     @Override
     public void run(){
+        AsyncHttpClientConfig.Builder ab = new AsyncHttpClientConfig.Builder();
+        //ab.setMaxConnections(15);
+        AsyncHttpClient asyncHttpClient = new AsyncHttpClient(ab.build());
         while(true){
             //System.out.println("\nTriggering update "+updateCounter);
 
@@ -81,7 +86,7 @@ public class PollThread extends Thread {
             // Enkel na 6 uur of voor half 1
             if (hours >= 6 || (hours == 0 && minutes <= 30)){
                 for(AProviderConnector a : providers){
-                    a.triggerUpdate();
+                    a.triggerUpdate(asyncHttpClient);
                 }
                 updateCounter++;
             }else{

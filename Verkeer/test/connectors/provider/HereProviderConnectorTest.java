@@ -1,5 +1,7 @@
 package connectors.provider;
 
+import com.ning.http.client.AsyncHttpClient;
+import com.ning.http.client.AsyncHttpClientConfig;
 import connectors.DataEntry;
 import connectors.database.ConnectionException;
 import connectors.database.DummyDbConnector;
@@ -38,9 +40,11 @@ public class HereProviderConnectorTest {
 
     @Test
     public void returnTest() throws ConnectionException {
-        IDbConnector db = new MariaDbConnector();
-        HereProviderConnector connector = new HereProviderConnector(db);
-        connector.triggerUpdate();
+        AsyncHttpClientConfig.Builder ab = new AsyncHttpClientConfig.Builder();
+        ab.setMaxConnections(15);
+        AsyncHttpClient a = new AsyncHttpClient(ab.build());
+        HereProviderConnector connector = new HereProviderConnector(new MariaDbConnector());
+        connector.triggerUpdate(a);
 
         // Wait for all threads to complete, read their return data (= DataEntry)
         for (Future<DataEntry> hashRequest : connector.buzyRequests) {
@@ -67,10 +71,15 @@ public class HereProviderConnectorTest {
         DummyDbConnector dummy = new DummyDbConnector();
         int loops = 0;
         int voor = dummy.getDataEntriesSize();
+        
+        AsyncHttpClientConfig.Builder ab = new AsyncHttpClientConfig.Builder();
+        ab.setMaxConnections(15);
+        AsyncHttpClient a = new AsyncHttpClient(ab.build());
+        
         HereProviderConnector connector = new HereProviderConnector(dummy);
 
         for (int i = 0; i < loops; i++) {
-            connector.triggerUpdate();
+            connector.triggerUpdate(a);
             // Wait for all threads to complete
             for (Future<DataEntry> hashRequest : connector.buzyRequests) {
                 hashRequest.get();

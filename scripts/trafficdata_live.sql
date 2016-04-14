@@ -1,21 +1,10 @@
-select
-	x.routeID,
-	x.timestamp,
-	y.length,
-	x.traveltime live,
-	round((	
-		select 	avg(traveltime) 
-		from 		trafficdata 
-		where 	providerID=x.providerID and 
-					routeID=x.routeID and
-					timestamp > now() - interval 30 day and
-					abs(TIMESTAMPDIFF(minute,time(timestamp),time(x.timestamp))) < 15 and
-					weekday(timestamp) = weekday(x.timestamp)			
-	),0) avg
-from trafficdata x join routes y on x.routeID=y.id
-where x.providerID=1 and
-		(	select max(timestamp) 
-			from trafficdata 
-			where providerID=x.providerID 
-				and routeID=x.routeID
-		) = x.timestamp
+SELECT x.routeID, x.timestamp, y.length, x.traveltime, ROUND((
+SELECT AVG(traveltime)
+FROM trafficdata
+WHERE providerID=x.providerID AND routeID=x.routeID AND TIMESTAMP > NOW() - INTERVAL 30 DAY AND ABS(TIMESTAMPDIFF(MINUTE, TIME(TIMESTAMP), TIME(x.timestamp))) < 30 AND WEEKDAY(TIMESTAMP) = WEEKDAY(x.timestamp)),0)
+FROM trafficdata x
+JOIN routes y ON x.routeID=y.id
+WHERE x.providerID=1 AND (
+SELECT MAX(TIMESTAMP)
+FROM trafficdata
+WHERE providerID=x.providerID AND routeID=x.routeID) = x.timestamp

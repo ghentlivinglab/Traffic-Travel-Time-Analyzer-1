@@ -172,7 +172,7 @@ $(document).ready( function(){
 $(window).load( function(){
 	
 	// checks if mapView or overview has to be displayed
-	if(getQueryVariable("mapView")==="true"){
+	if(getQueryVariable("mapView")==="true" && $("#dashboard").css("left")==="250px"){
 		togglePanel();
 	}
 });

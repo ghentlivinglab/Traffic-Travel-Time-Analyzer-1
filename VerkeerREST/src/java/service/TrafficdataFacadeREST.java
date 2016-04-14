@@ -6,6 +6,7 @@
 package service;
 
 import domain.Trafficdata;
+import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -195,11 +196,12 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
         if (providerID == null) {
             throw new Exception(MessageState.PIDNP);
         }
-        String queryString = "select x.routeID, x.timestamp, y.length, x.traveltime, round((select   avg(traveltime) from     trafficdata where    providerID=x.providerID and routeID=x.routeID and timestamp > now() - interval ?1 day and abs(TIMESTAMPDIFF(minute,time(timestamp),time(x.timestamp))) < ?2 and weekday(timestamp) = weekday(x.timestamp) ),0) from trafficdata x join routes y on x.routeID=y.id where x.providerID=?3 ";
+        String queryString = "select x.routeID, x.timestamp, y.length, x.traveltime, round((select   avg(traveltime) from     trafficdata where    providerID=x.providerID and routeID=x.routeID and timestamp > now() - interval ?1 day and Abs(Minute(Timediff(Time(timestamp), Time(x.timestamp)))) < ?2 and weekday(timestamp) = weekday(x.timestamp) ),0) from trafficdata x join routes y on x.routeID=y.id where x.providerID=?3 ";
         if(routeID != null){
             queryString += " and routeID=?4 ";
         }
-        queryString += " and (  select max(timestamp) from trafficdata where providerID=x.providerID and routeID=x.routeID ) = x.timestamp ";
+        queryString += " and (  select max(timestamp) from trafficdata where providerID=x.providerID and routeID=x.routeID ) = x.timestamp;";
+        System.out.println(queryString);
         Query q = getEntityManager().createNativeQuery(queryString);
         q.setParameter(1, period);
         q.setParameter(2, interval);
@@ -209,28 +211,33 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
         }
         
         StringBuilder json = new StringBuilder();
-        try {
-            ArrayList<LiveTrafficdata> lijst = new ArrayList<>();
-            for (Object[] o : (List<Object[]>) q.getResultList()) {
+         ArrayList<LiveTrafficdata> lijst = new ArrayList<>();
+        try{
+            List<Object[]> rl = q.getResultList();
+            if(rl != null){
+            for (Object[] o : rl) {
+                System.out.println(o[2].toString());
                 LiveTrafficdata l = new LiveTrafficdata(Integer.parseInt(o[0].toString()));
+                
                 l.live.put("createdOn", o[1].toString());
                 l.live.put("speed", "" + Math.round(Integer.parseInt(o[2].toString()) / Integer.parseInt(o[3].toString()) * 3.6 * 10.0) / 10.0);
-                l.live.put("time", "" + Integer.parseInt(o[3].toString()) / 60);
+                l.live.put("time", "" + Double.parseDouble(o[3].toString()) / 60 );
                 l.avg.put("speed", "" + Math.round(Integer.parseInt(o[2].toString()) / Integer.parseInt(o[4].toString()) * 3.6 * 10.0) / 10.0);
-                l.avg.put("time", "" + Integer.parseInt(o[4].toString()) / 60);
+                l.avg.put("time", "" + Double.parseDouble(o[4].toString()) / 60 );
                 lijst.add(l);
             }
-            json.append('{');
-            String delimiter = "";
-            for (LiveTrafficdata l : lijst) {
-                json.append(delimiter).append(l.toJson());
-                delimiter = ",";
             }
-            json.append('}');
-
         } catch (Exception e) {
-            throw new Exception(e.getMessage());
+            throw new Exception(e.getClass().getName() + "deel 1");
         }
+        
+        json.append('{');
+        String delimiter = "";
+        for (LiveTrafficdata l : lijst) {
+            json.append(delimiter).append(l.toJson());
+            delimiter = ",";
+        }
+        json.append('}');
         return json.toString();
     }
 }

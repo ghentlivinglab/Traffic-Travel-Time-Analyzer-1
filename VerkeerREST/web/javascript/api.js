@@ -206,7 +206,6 @@ var Api = {
 
         // Callback zodra we de data hebben (moet dus in success van ajax)
 
-
         /*var route = routes[routeId];
          
          var base = 8;
@@ -290,6 +289,7 @@ var Api = {
             console.log("something went wrong loading the live data.");
         });
         
+
 
         /*
         var base = 8;
@@ -379,13 +379,11 @@ var Api = {
          });*/
 
         // Hier alle data van de server halen
-
+        // 
         // Callback zodra we de data hebben (moet dus in success van ajax)
         //this.callDelayed(qid, callback, context);
-    },
+    }
+
+
 };
 
-// Gebruiken nu voorlopig de dummy
-
-// De gebruikte API zetten we op de dummy
-//var Api = Api;
