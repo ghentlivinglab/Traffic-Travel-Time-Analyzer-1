@@ -5,11 +5,10 @@
  */
 package service;
 
-import simpledomain.SimpleTrafficdata;
-import simpledomain.WeekdayTrafficdata;
 import domain.Trafficdata;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -25,6 +24,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import simpledomain.LiveTrafficdata;
+import simpledomain.SimpleTrafficdata;
+import simpledomain.WeekdayTrafficdata;
 
 /**
  *
@@ -128,12 +129,14 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
         q.setParameter(4, providerID);
         q.setParameter(5, routeID);
 
+        SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        
         StringBuilder json = new StringBuilder();
         try {
             json.append('{');
             String delimiter = "";
             for (Object[] o : (List<Object[]>) q.getResultList()) {
-                json.append(delimiter).append(new SimpleTrafficdata(((Timestamp) o[0]).toString(), ((BigDecimal) o[1]).doubleValue()).toJson());
+                json.append(delimiter).append(new SimpleTrafficdata((dateformat.format((Timestamp) o[0])), ((BigDecimal) o[1]).doubleValue()).toJson());
                 delimiter = ",";
             }
             json.append('}');
