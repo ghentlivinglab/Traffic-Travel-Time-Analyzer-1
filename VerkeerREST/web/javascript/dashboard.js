@@ -28,6 +28,10 @@ var Dashboard = {
 		this.lastKnownIntervals = [Interval.copy(this.selectedIntervals[0]), Interval.copy(this.selectedIntervals[1])];
 
 		this.mode = this.LIVE;
+		if (localStorage.getItem('mode') !== null){
+			this.mode = parseInt(localStorage.getItem('mode'));
+			$('#mode-'+this.mode).prop("checked", true);
+		}
 
 		this.reload();
 		Api.syncProviders(this.loadProviders, this);
@@ -99,6 +103,11 @@ var Dashboard = {
 
 	loadProviders: function() {
 		var str = '';
+
+		if (localStorage.getItem('provider') !== null){
+			this.setProvider(localStorage.getItem('provider'));
+		}
+
 		var me = this;
 		providers.forEach(function(provider){
 			if (!me.provider){
@@ -111,17 +120,30 @@ var Dashboard = {
 			};
 			str += Mustache.renderTemplate("provider", p);
 		});
+
 		$('#providers').html(str);
 	},
 
 	setMode: function(mode){
 		this.mode = mode;
+		localStorage.setItem('mode', this.mode);
 		this.reload();
 	},
 
 	setProvider: function(providerId){
-		this.provider = providers[providerId];
-		this.reload();
+		if (typeof providers[providerId] != "undefined"){
+			var reload = false;
+			if (!this.provider || this.provider.id != providerId) {
+				reload = true;
+			}
+			this.provider = providers[providerId];
+			localStorage.setItem('provider', this.provider.id);
+			if (reload) {
+				this.reload();
+			}
+		} else {
+			console.error('No provider found with id '+providerId);
+		}
 	},
 	
 	// Herlaad het dashboard op de huidige stand
@@ -150,6 +172,9 @@ var Dashboard = {
 			break;
 			case Dashboard.COMPARE_DAYS: 
 				this.reloadCompareDays(); 
+			break;
+			default:
+				this.displayNotImplemented();
 			break;
 		}
 		
