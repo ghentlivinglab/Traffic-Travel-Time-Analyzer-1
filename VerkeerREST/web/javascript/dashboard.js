@@ -521,7 +521,7 @@ var Dashboard = {
 					name: route.name,
 					description: route.description,
 					status: 'Niet beschikbaar',
-					score: -10000000,
+					score: 10000000,
 					first: {
 						status: '',
 						color:  '',
