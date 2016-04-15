@@ -73,6 +73,18 @@ var Api = {
             }
         }
     },
+	syncWaypoints: function(id){
+		$.getJSON("/VerkeerREST/api/waypoints",{routeID:id},function(result){
+			if(result.length!==0){
+				var array=[];
+				result.sort(function(a,b){return a.sequence-b.sequence;});
+				for(var i in result){
+					array.push({"lat":result[i].longitude,"lng":result[i].latitude});
+				}
+				routes[result[0].routeID].waypoints=array;
+			}
+		});
+	},
     // fetches all routes of the API and places them in routes[]
     syncRoutes: function(callback, context) {
         // Bij begin van alle requests uitvoeren. 
@@ -86,6 +98,7 @@ var Api = {
         $.getJSON("/VerkeerREST/api/routes", function(result) {
             for (var i = 0; i < result.length; i++) {
                 routes[result[i].id] = Route.create(result[i].id, result[i].name, result[i].description, result[i].length);
+				Api.syncWaypoints(result[i].id);
             }
             me.callDelayed(qid, callback, context);
         });

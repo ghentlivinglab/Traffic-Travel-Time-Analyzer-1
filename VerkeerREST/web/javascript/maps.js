@@ -6,7 +6,7 @@
 var colors =[]; // will be filled with color for each route
 var infowindow; // the info window for extra info about a route
 var markers = []; // will be filled with the markers for events
-var lines = []; // will be filled with line-object for each route
+var lines = {}; // will be filled with line-object for each route
 var map; // object for the map
 
 /****************************
@@ -16,7 +16,7 @@ var map; // object for the map
 var mapCenter = {"lat":51.076317,"lng":3.7096717};
 var zoomCurrent = 12;
 // colors
-var normalTrafficColor = '#222222';
+var normalTrafficColor = '#555555';
 var mediumTrafficColor = '#e67e22';
 var heavyTrafficColor = '#C10037';
 var selectedColor = '#3333AA';
@@ -62,7 +62,6 @@ function initMap() {
 function reloadMap(){
 	generateLines();
 	updateColors();
-	console.log("Map data was reloaded");
 }
 
 /****************************
@@ -71,7 +70,7 @@ function reloadMap(){
 function zoomChanged(event){
 	zoomCurrent = this.getZoom();
 	var weight = getWeight();
-	for(i in lines){
+	for(var i in lines){
 		lines[i].setOptions({strokeWeight: weight});
 	}
 }
@@ -84,7 +83,6 @@ function generateLines(){
 	if(lines.length!==0){ // lines already exist
 		deleteLines();
 	}
-	
 	var weight = getWeight();
 	for(var i in routes){ // for each route
 		var line = new google.maps.Polyline({ // create new line-object
@@ -101,7 +99,7 @@ function generateLines(){
 		
 		line.setMap(map); // add line to map
 		line["id"]=i; // assign id to map, this is the index in the lines array
-		lines.push(line); // add line to lines-array
+		lines[i]=line; // add line to lines-array
 	}
 }
 
@@ -109,7 +107,7 @@ function generateLines(){
  * removes all lines from the map and deletes them
  ****************************/
 function deleteLines(){
-	for(var i=0;i<lines.length;i++){
+	for(var i in lines){
 		lines[i].setMap(null); // remove line from map
 	}
 	lines = []; // delete all lines
@@ -121,8 +119,9 @@ function deleteLines(){
  ****************************/
 function updateColors(){
 	var x = 0;
-	for(i in routes){
-		var colorStatus = routes[i].getStatus(routes[i].liveData[0].representation,routes[i].avgData[0].representation);
+	var providerId = Dashboard.provider.id;
+	for(var i in routes){
+		var colorStatus = routes[i].getStatus(routes[i].liveData[providerId].representation,routes[i].avgData[providerId].representation);
 		switch(colorStatus.color){
 			case 'red':
 				colors[i] = heavyTrafficColor; // heavy traffic
@@ -239,7 +238,7 @@ function createMarker(latLng){
  * removes all events from the map and deletes them
  ****************************/
 function deletemarkers(){
-	for(var i=0;i<markers.length;i++){
+	for(var i = 0;i<markers.length;i++){
 		markers[i].setMap(null); // remove from map
 	}
 	markers = []; // deletes all events
