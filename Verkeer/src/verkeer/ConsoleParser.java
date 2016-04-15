@@ -43,8 +43,9 @@ public class ConsoleParser {
                 printProperties();
             }else if(command.equals("reload")){
                 pollThread.reloadProperties();
-            }
-            else{
+            }else if(command.equals("poll")){
+                pollThread.forceUpdate();
+            }else{
                 String words[] = command.split(" ");
                 if(words[0].equals("properties")){
                     if(words.length >= 2)

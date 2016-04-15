@@ -83,7 +83,7 @@ var Api = {
         // Uiteindelijk moet dit ongeveer het resultaat zijn: 
         routes = [];
         var me = this;
-        $.getJSON("http://localhost:8080/VerkeerREST/api/routes", function(result) {
+        $.getJSON("/VerkeerREST/api/routes", function(result) {
             for (var i = 0; i < result.length; i++) {
                 routes[result[i].id] = Route.create(result[i].id, result[i].name, result[i].description, result[i].length);
             }
@@ -120,7 +120,7 @@ var Api = {
         // Hier alle data van de server halen.
 
         var me = this;
-        $.getJSON("http://localhost:8080/VerkeerREST/api/trafficdata/live?providerID=" + provider, function(result) {
+        $.getJSON("/VerkeerREST/api/trafficdata/live?providerID=" + provider, function(result) {
             if (result.result === "success") {
                 var data = result.data;
 
@@ -278,7 +278,8 @@ var Api = {
         providers = [];
         var me = this;
         providers[0] = Provider.create(0, 'Alles');
-        $.getJSON("http://localhost:8080/VerkeerREST/api/providers", function(result) {
+        $.getJSON("/VerkeerREST/api/providers", function(result) {
+            console.log(JSON.stringify(result));
             for (var i = 0; i < result.length; i++) {
                 providers[result[i].id] = Provider.create(result[i].id, result[i].name);
             }

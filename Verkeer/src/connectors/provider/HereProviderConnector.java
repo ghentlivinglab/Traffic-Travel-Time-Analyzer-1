@@ -8,13 +8,22 @@ package connectors.provider;
 import java.util.List;
 import connectors.database.IDbConnector;
 import connectors.RouteEntry;
-import com.ning.http.client.*;
 import com.owlike.genson.Genson;
 import connectors.DataEntry;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import static java.lang.Math.toIntExact;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.Future;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -22,6 +31,7 @@ import java.util.concurrent.Future;
  */
 public class HereProviderConnector extends AProviderConnector {
 
+    private static final Logger log = Logger.getLogger(HereProviderConnector.class);
     /**
      * List of all Future instances from last triggerUpdate (check
      * java.util.concurrent library). ± sort of threads Use f.get(); to wait the
@@ -39,36 +49,34 @@ public class HereProviderConnector extends AProviderConnector {
     }
 
     @Override
-    public void triggerUpdate(AsyncHttpClient a) {
+    public void triggerUpdate() {
         if (updateCounter % updateInterval == 0) {
-            buzyRequests = new ArrayList<>();
-            for (RouteEntry route : routes) {
-                String url = generateURL(route);
-                
-                IDbConnector connector = this.dbConnector;
+            try(CloseableHttpClient client = HttpClientBuilder.create().build()){
+                for (RouteEntry route : routes) {
+                    log.info(route.getName());
+                    HttpGet request = new HttpGet(generateURL(route));
+                    try (CloseableHttpResponse response = client.execute(request)) {
+                        if (response.getStatusLine().getStatusCode() == 200) { // Alles OK
+                            HttpEntity httpEntity = response.getEntity();
+                            BufferedReader rd = new BufferedReader(new InputStreamReader(httpEntity.getContent()));
+                            StringBuilder json = new StringBuilder();
+                            String line;
+                            while ((line = rd.readLine()) != null) {
+                                json.append(line);
+                            }
+                            DataEntry data = fetchDataFromJSON(json.toString(), route);
+                            dbConnector.insert(data);
 
-                Future<DataEntry> f = a.prepareGet(url).execute(
-                        new AsyncCompletionHandler<DataEntry>() {
-
-                    @Override
-                    public DataEntry onCompleted(Response response) throws Exception {
-                        // 200 OK Statuscode
-                        if (response.getStatusCode() == 200) {
-                            DataEntry data = fetchDataFromJSON(response.getResponseBody(), route);
-                            connector.insert(data);
-                            return data;
+                            EntityUtils.consume(response.getEntity());
+                        } else {
+                            throw new RouteUnavailableException(providerName, "Something went wrong. Statuscode: " + response.getStatusLine().getStatusCode() + " " + response.getStatusLine().getReasonPhrase());
                         }
-
-                        String msg = fetchErrorFromJSON(response.getResponseBody());
-                        throw new RouteUnavailableException(providerName,msg);
+                    } catch (IOException | RouteUnavailableException ex) {
+                        log.error(ex.getClass().getName() + " triggerUpdate() -> " + route.getName());
                     }
-
-                    @Override
-                    public void onThrowable(Throwable t) {
-                        // Something wrong happened.
-                    }
-                });
-                buzyRequests.add(f);
+                }
+            }catch(IOException e){
+                log.error(e);
             }
         }
         updateCounter++;

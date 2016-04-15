@@ -11,6 +11,5 @@ public class NotAuthorizedException extends Exception {
 
     public NotAuthorizedException(String message) {
         super(message);
-        log.error(message);
     }
 }
