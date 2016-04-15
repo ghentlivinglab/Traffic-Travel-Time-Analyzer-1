@@ -284,17 +284,6 @@ var Api = {
             }
             me.callDelayed(qid, callback, context);
         });
-        /*providers = [];
-         providers[0] = Provider.create(0, 'Alles');
-         providers[1] = Provider.create(1, 'Google');
-         providers[2] = Provider.create(2, 'Waze');
-         providers[3] = Provider.create(3, 'Here');
-         providers[4] = Provider.create(4, 'TomTom');
-         providers[5] = Provider.create(5, 'Coyote');*/
-
-        // Hier alle data van de server halen
-
-        // Callback zodra we de data hebben (moet dus in success van ajax)
 
     },
     // fetches the live data (= current traffic and an average of last month(s) ) of every route
@@ -322,7 +311,42 @@ var Api = {
         // 
         // Callback zodra we de data hebben (moet dus in success van ajax)
         //this.callDelayed(qid, callback, context);
-    }
+    },
+
+    // fetches the acumulated data of every route
+	syncIntervalGraph: function(interval, routeId, provider, callback, context) {
+		/*var route = routes[routeId];
+
+		for (var day = 0; day < 7; day++) {
+			var graph = route.getIntervalData(interval, day, provider)
+			if (!graph){
+				graph = TrafficGraph.create(null);
+				route.setIntervalData(interval, day, provider, graph);
+			}
+			var data = {};
+			var base = 8;
+			for (var i = 6; i <= 24; i+=this.intervalDecimal) {
+				if (i > 7 && i < 10 || i > 16 && i < 18){
+					base += Math.random();
+				}
+				if (i > 18){
+					base -= Math.random();
+				}
+				if (base > 5){
+					base += Math.random() * 1 - 0.7;
+				}else{
+					base += Math.random() * 2;
+				}
+				data[i] = base;
+			}
+			graph.data = data;
+			//graph.representation = null;
+
+		}
+
+		// Gemiddelde berekenen van alle weekdagen
+		route.generateIntervalAvg(interval, provider);*/
+	},
 
 
 };
