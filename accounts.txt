@@ -6,7 +6,7 @@ ROOT_PASSWORD: aeSqFPbpUl
 SSH ACCESS:
 ssh root@146.185.150.100
 
-Glassfish: admin/admin
+Glassfish: admin/aeSqFPbpUl
 MySQL: root/root
 
 
