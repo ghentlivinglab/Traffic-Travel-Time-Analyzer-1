@@ -29,7 +29,7 @@ public abstract class AProviderConnector {
     protected Collection<RouteEntry> routes;
     protected ProviderEntry providerEntry;
     protected int updateCounter=1;
-    protected int updateInterval=0;  
+    protected int updateInterval=1;  
     protected String providerName;
     /**
      * Constructs a new abstract ProviderConnector with an IDbConnector to write
@@ -44,15 +44,32 @@ public abstract class AProviderConnector {
         this.providerName = providerName;
         try{
             prop = new Properties();
-            FileInputStream fis = new FileInputStream(new File(AProviderConnector.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent()+"/config/providers.properties");
+            File file = new File("./config/providers.properties");
+            FileInputStream fis = new FileInputStream(file);
             prop.load(fis);
+            System.out.println("Properties geladen gelukt");
         }catch( FileNotFoundException e){
             System.err.println("./config/providers.properties niet gevonden.");
         }catch( IOException ee){
             System.err.println("./config/providers.properties kon niet geladen worden.");
         }
+        
     }
 
+    /**
+     * Checks if the provider needs to be called (to force rate limits)
+     */
+    public boolean shouldTriggerUpdate() {
+        return updateCounter % updateInterval == 0;
+    }
+    
+    /**
+     * When a provider is called, exectute this after creating the thread
+     */
+    public void increaseUpdateCounter() {
+        updateCounter ++;
+    }
+    
     /**
      * Makes the ProviderConnector fetch data from provider
      * @param a The AsyncHttpClient used to send the requests.

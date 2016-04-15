@@ -79,12 +79,15 @@ public class PollThread extends Thread {
             // Enkel na 6 uur of voor half 1
             if (hours >= 6 || (hours == 0 && minutes <= 30)) {
                 for (AProviderConnector a : providers) {
-                    executor.submit(new Runnable() {
-                        @Override
-                        public void run() {
-                            a.triggerUpdate();
-                        }
-                    });
+                    if (a.shouldTriggerUpdate()){
+                        executor.submit(new Runnable() {
+                            @Override
+                            public void run() {
+                                a.triggerUpdate();
+                            }
+                        });
+                    }
+                    a.increaseUpdateCounter();
                 }
                 updateCounter++;
             } else {
