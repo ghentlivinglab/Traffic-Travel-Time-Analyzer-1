@@ -70,3 +70,4 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 13/04/16,16:30,18:00,Thuis,Projectwerk,kaartweergave routes,29,wijzigen van weergave infopanel en dergerlijke
 14/04/16,13:30,17:45,School,Projectwerk,kaartweergave routes,29,bugfixes
 15/04/16,19:00,20:30,Thuis,Projectwerk,opstellen testplan,56,initiële ruwe schets van alle mogelijke testen (aan te vullen door de rest)
+15/04/16,20:30,23:30,Thuis,Projectwerk,kaartweergave routes,29,fixen weergave routes op de kaart bij echte api
