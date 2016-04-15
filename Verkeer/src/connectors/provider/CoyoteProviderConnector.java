@@ -64,8 +64,8 @@ public class CoyoteProviderConnector extends AProviderConnector {
         mapping.put("Eisenhowerlaan (R4) Northbound - E17 - Kennedylaan", 30);
         mapping.put("Brugsevaart (N9) Northbound - Gebroeders de Smetstraat - R4", 31);
         mapping.put("Brugsevaart (N9) Southbound - R4 - Gebroeders de Smetstraat", 32);
-        mapping.put("Oudenaardsesteenweg (N60) Northbound - E17 - R40", 34);
-        mapping.put("Oudenaardsesteenweg (N60) Southbound - R40 - E17", 35);
+        mapping.put("Oudenaardsesteenweg (N60) Northbound - E17 - R40", 33);
+        mapping.put("Oudenaardsesteenweg (N60) Southbound - R40 - E17", 34);
     }
 
     /**
@@ -91,7 +91,7 @@ public class CoyoteProviderConnector extends AProviderConnector {
         } catch (FileNotFoundException e) {
             log.error("FileNotFoundException: Perl script has not generated any output.");
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error(e);
         }
     }
 
@@ -139,11 +139,14 @@ public class CoyoteProviderConnector extends AProviderConnector {
                         id = -1;
                     }
                     RouteEntry route = dbConnector.findRouteEntryByID(id);
+                    if (route == null){
+                        log.error("Route met id \"" + id + "\" is not in the database.");
+                    }else {
+                        data.setRoute(route);
+                        data.setProvider(providerEntry);
 
-                    data.setRoute(route);
-                    data.setProvider(providerEntry);
-
-                    dbConnector.insert(data);
+                        dbConnector.insert(data);
+                    }
                     buffer.nextLine();
                     break;
                 default:
