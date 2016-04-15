@@ -24,9 +24,14 @@ var Dashboard = {
 
 	init: function() {
 		this.provider = null;
+		this.loadSelectedIntervals();
 		this.lastKnownIntervals = [Interval.copy(this.selectedIntervals[0]), Interval.copy(this.selectedIntervals[1])];
 
 		this.mode = this.LIVE;
+		if (localStorage.getItem('mode') !== null){
+			this.mode = parseInt(localStorage.getItem('mode'));
+			$('#mode-'+this.mode).prop("checked", true);
+		}
 
 		this.reload();
 		Api.syncProviders(this.loadProviders, this);
@@ -48,10 +53,61 @@ var Dashboard = {
 		if (changed) {
 			this.reload();
 		}
+		this.saveSelectedIntervals();
+	},
+
+	saveSelectedIntervals: function () {
+		var selected_intervals = {}; // number of selection -> object data
+		var selected_events = {}; // name -> number of selection
+		for (var num in this.selectedIntervals){
+			var interval = this.selectedIntervals[num];
+			if (this.selectedIntervals[num].hasName){
+				if (typeof selected_events[interval.name] == "undefined"){
+					selected_events[interval.name] = [];
+				}
+				selected_events[interval.name].push(num);
+			} else {
+				selected_intervals[num] = interval;
+			}
+		}
+		localStorage.setItem('selected_intervals', JSON.stringify(selected_intervals));
+		localStorage.setItem('selected_events', JSON.stringify(selected_events));
+	},
+	loadSelectedIntervals: function () {
+		try {
+			var selected_intervals = JSON.parse(localStorage.getItem('selected_intervals')); // number of selection -> object data
+			var selected_events = JSON.parse(localStorage.getItem('selected_events')); // name -> number of selection
+			
+			for (var num in selected_intervals){
+				var interval = Interval.createFromStorage(selected_intervals[num]);
+				// dates juist zetten
+				this.selectedIntervals[num] = interval;
+			}
+
+			for (var name in selected_events){
+				var nums = selected_events[name];
+
+				var index = getEventIndex(name);
+				if (index != -1){
+					for (var i = 0; i < nums.length; i++) {
+						var num = nums[i];
+						this.selectedIntervals[num] = events[index];
+					}
+				}
+			}
+
+		}catch (e) {
+			// niets doen
+		}
 	},
 
 	loadProviders: function() {
 		var str = '';
+
+		if (localStorage.getItem('provider') !== null){
+			this.setProvider(localStorage.getItem('provider'));
+		}
+
 		var me = this;
 		providers.forEach(function(provider){
 			if (!me.provider){
@@ -64,17 +120,30 @@ var Dashboard = {
 			};
 			str += Mustache.renderTemplate("provider", p);
 		});
+
 		$('#providers').html(str);
 	},
 
 	setMode: function(mode){
 		this.mode = mode;
+		localStorage.setItem('mode', this.mode);
 		this.reload();
 	},
 
 	setProvider: function(providerId){
-		this.provider = providers[providerId];
-		this.reload();
+		if (typeof providers[providerId] != "undefined"){
+			var reload = false;
+			if (!this.provider || this.provider.id != providerId) {
+				reload = true;
+			}
+			this.provider = providers[providerId];
+			localStorage.setItem('provider', this.provider.id);
+			if (reload) {
+				this.reload();
+			}
+		} else {
+			console.error('No provider found with id '+providerId);
+		}
 	},
 	
 	// Herlaad het dashboard op de huidige stand
@@ -103,6 +172,9 @@ var Dashboard = {
 			break;
 			case Dashboard.COMPARE_DAYS: 
 				this.reloadCompareDays(); 
+			break;
+			default:
+				this.displayNotImplemented();
 			break;
 		}
 		
@@ -139,6 +211,7 @@ var Dashboard = {
 	// element = het DOM element waarin we de grafiek willen toevoegen
 	openLiveGraph: function(routeId, element, width, height) {
 		var route = routes[routeId];
+
 		//var counterObject = {counter: 0, route: route, element: element, width: width, height: height}; // Referentie die we gaan meegeven
 		// Deze counter voorkomt dat we openLiveGraph te snel opnieuw aanroepen als 1 van de requests klaar is
 		var callback = function(){
@@ -279,7 +352,8 @@ var Dashboard = {
 				var data = {
 					id: route.id,
 					name: route.name,
-					description: route.description,
+					description: route.getDescription(),
+					length: route.getLength(),
 					status: '',
 					color: '',
 					score: 100000000, // Voor sorteren
@@ -299,7 +373,8 @@ var Dashboard = {
 			var data = {
 				id: route.id,
 				name: route.name,
-				description: route.description,
+				description: route.getDescription(),
+				length: route.getLength(),
 				status: status.text,
 				color: status.color,
 				score: live.speed / avg.speed, // Voor sorteren
@@ -389,7 +464,8 @@ var Dashboard = {
 				var data = {
 					id: route.id,
 					name: route.name,
-					description: route.description,
+					description: route.getDescription(),
+					length: route.getLength(),
 					status: '',
 					color: '',
 					score: -1000, // Voor sorteren
@@ -406,7 +482,8 @@ var Dashboard = {
 			var data = {
 				id: route.id,
 				name: route.name,
-				description: route.description,
+				description: route.getDescription(),
+				length: route.getLength(),
 				status: status.text,
 				color: status.color,
 				score: representation.average, // Voor sorteren
@@ -519,7 +596,8 @@ var Dashboard = {
 				var data = {
 					id: route.id,
 					name: route.name,
-					description: route.description,
+					description: route.getDescription(),
+					length: route.getLength(),
 					status: 'Niet beschikbaar',
 					score: 10000000,
 					first: {
@@ -560,7 +638,8 @@ var Dashboard = {
 			var data = {
 				id: route.id,
 				name: route.name,
-				description: route.description,
+				description: route.getDescription(),
+				length: route.getLength(),
 				status: t,
 				score: diff, // Sorteren op grootste verschillen
 				first: {

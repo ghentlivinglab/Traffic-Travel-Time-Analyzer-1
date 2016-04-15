@@ -51,6 +51,7 @@ var Api = {
             qid = this.currentQueue.id;
             console.log("request toegevoegd aan queue " + qid);
         }
+        return qid;
     },
     // calls callback with a delay to test the async aspect of the code
     // Als een request klaar is moet deze methode uitgevoerd worden
@@ -125,13 +126,12 @@ var Api = {
 
                 routes.forEach(function(route) {
                     var rdata = data[route.id];
-                    console.log(JSON.stringify(rdata));
                     if (typeof rdata !== "undefined") {
                         var avgData = TrafficData.create(rdata.avg.speed, rdata.avg.time);
                         var liveData = TrafficData.create(rdata.live.speed, rdata.live.time);
                     } else {
-                        var avgData = TrafficData.create('', '');
-                        var liveData = TrafficData.create('', '');
+                        var avgData = TrafficData.createEmpty();
+                        var liveData = TrafficData.createEmpty();
                     }
                     if (route.hasAvgData(provider))
                         route.avgData[provider].representation = avgData;
@@ -158,6 +158,7 @@ var Api = {
         // Bij begin van alle requests uitvoeren. 
         // Hebben deze nodig voor de callback wanneer de request klaar is.
         var qid = this.getQueueId();
+        console.log('start avggraph request met id '+qid);
 
         var route = routes[routeId];
 
@@ -187,6 +188,9 @@ var Api = {
                     data[hour] = (resultdata[weekday][key]) / 60;
                 }
 
+                console.log('avgGraph api data:');
+                console.log(data);
+
                 if (route.hasAvgData(providerId)) {
                     route.avgData[providerId].setData(data);
                     me.callDelayed(qid, callback, context);
@@ -194,8 +198,6 @@ var Api = {
                     // impossible
                     console.error('Route ' + route.name + ' has no avgData for provider with id ' + providerId);
                 }
-                console.log(data);
-                
 
             } else {
                 alert(result.reason);
@@ -204,45 +206,14 @@ var Api = {
             console.log("something went wrong loading the live data.");
         });
 
-        // Callback zodra we de data hebben (moet dus in success van ajax)
-
-        /*var route = routes[routeId];
-         
-         var base = 8;
-         var data = {};
-         
-         for (var i = 6; i <= 24; i+=this.intervalDecimal) {
-         if (i > 7 && i < 10 || i > 16 && i < 18){
-         base += Math.random();
-         }
-         if (i > 18){
-         base -= Math.random();
-         }
-         if (base > 5){
-         base += Math.random() * 1 - 0.7;
-         }else{
-         base += Math.random() * 2;
-         }
-         data[i] = base;
-         }
-         /*
-         if (route.hasAvgData(providerId)){
-         route.avgData[providerId].setData(data);
-         }else{
-         // impossible
-         console.error('Route '+route.name+' heeft geen avgData voor provider met id '+providerId);
-         }*/
-
-        // Hier alle data van de server halen
-
-        // Callback zodra we de data hebben (moet dus in success van ajax)
-        //this.callDelayed(qid, callback, context);
     },
     // fetches graph for today (right up to current time)
     syncLiveGraph: function(routeId, providerId, callback, context) {
+    	
         // Bij begin van alle requests uitvoeren. 
         // Hebben deze nodig voor de callback wanneer de request klaar is.
         var qid = this.getQueueId();
+        console.log('start live graph request met id '+qid);
 
         // Hier alle data van de server halen.
         // Uiteindelijk moet dit ongeveer het resultaat zijn: 
@@ -251,8 +222,6 @@ var Api = {
         
         // Hier alle data van de server halen.
         // Uiteindelijk moet dit ongeveer het resultaat zijn: 
-
-        var data = {};
 
         var from = new Date();
         from.setHours(0);
@@ -264,15 +233,24 @@ var Api = {
 
         $.getJSON("/VerkeerREST/api/trafficdata?providerID=" + providerId + "&routeID=" + routeId + "&from=" + dateToRestString(from) + "&to=" + dateToRestString(to), function(result) {
             if (result.result === "success") {
+            	var data = {};
                 var resultdata = result.data;
+                console.log(resultdata);
 
                 for (var key in resultdata) {
                     var time = new Date(key);
-                    var hour = time.getHours();
-                    var minutes = time.getMinutes();
+                    var hour = time.getUTCHours();
+                    var minutes = time.getUTCMinutes();
                     hour += (minutes / 60);
+                    if (isNaN(hour)){
+                    	console.error('Unreadable date format: "'+key+'" - Make sure the REST server is running the latest version.');
+                    	continue;
+                    }
                     data[hour] = (resultdata[key]) / 60;
                 }
+
+                console.log('liveGraph api data:');
+                console.log(data);
 
                 if (route.hasLiveData(providerId)) {
                     route.liveData[providerId].setData(data);
@@ -288,43 +266,6 @@ var Api = {
         }).fail(function() {
             console.log("something went wrong loading the live data.");
         });
-        
-
-
-        /*
-        var base = 8;
-        var data = {};
-        var currentTime = (new Date()).getHours() + (new Date()).getMinutes() / 60;
-        for (var i = 6; i <= 24; i += this.intervalDecimal) {
-            if (i > 7 && i < 10 || i > 16 && i < 18) {
-                base += Math.random();
-            }
-            if (i > 18) {
-                base -= Math.random();
-            }
-            if (base > 5) {
-                base += Math.random() * 1 - 0.7;
-            } else {
-                base += Math.random() * 2;
-            }
-            if (i > currentTime) {
-                break;
-            }
-            data[i] = base;
-        }
-
-        if (route.hasLiveData(providerId)) {
-            route.liveData[providerId].setData(data);
-        } else {
-            // impossible
-            console.error('Route ' + route.name + ' heeft geen liveData voor provider met id ' + providerId);
-        }
-
-        // Hier alle data van de server halen
-
-        // Callback zodra we de data hebben (moet dus in success van ajax)
-        this.callDelayed(qid, callback, context);
-        */
     },
     //
     syncProviders: function(callback, context) {
@@ -387,3 +328,4 @@ var Api = {
 
 };
 
+//var Api = DummyApi;

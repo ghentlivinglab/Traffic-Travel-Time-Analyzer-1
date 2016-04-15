@@ -84,6 +84,9 @@ article {
 			&.orange {
 				color: $orange;
 			}
+			&.gray {
+				color: $gray;
+			}
 		}
 
 		.speed {
@@ -106,9 +109,9 @@ article {
 
 	.graph-box {
 		display: none;
-		height: 300px;
+		height: $graph-height;
 		position: relative;
-		margin-bottom: 20px;
+		margin-bottom: 50px;
 		overflow: visible !important; // Zorg dat jquery's automatische overflow:hidden genegeerd wordt.
 
 		.graph-shadow {

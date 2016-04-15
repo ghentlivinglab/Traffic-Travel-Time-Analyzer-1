@@ -11,6 +11,7 @@ var TrafficData = {
 	speed: 0,
 	time: 0,
 	createdOn: null, // instance of Date
+	empty: false,
 	
 	create: function(speed, time) { // Constructor
 		var obj = Object.create(this);
@@ -19,10 +20,22 @@ var TrafficData = {
 		obj.createdOn = new Date();
 		return obj;
 	},
+
+	createEmpty: function() {
+		var obj = Object.create(this);
+		obj.createdOn = new Date();
+		obj.empty = true;
+		return obj;
+	},
+
 	toString: function (){
-		return this.time+'min. '+this.speed+'km/h';
+		if (this.empty) {
+			return '';
+		}
+		return Math.floor(this.time*10)/10+' min. '+Math.floor(this.speed)+' km/h';
 	}
 };
+
 
 /****************************
  * IntervalData maintains % slow traffic per weekday and the total
@@ -159,8 +172,44 @@ var Route = {
 	description: '',
 	waypoints: [], // Array of google.maps.LatLng
 
+	// Constructor with optional argument waypoints
+	create: function(id, name, description, length, waypoints) {
+		var obj = Object.create(this);
+		obj.id = id;
+		obj.length = length;
+		obj.name = name;
+		obj.description = description;
+
+		// create new references (otherwise we edit the same references for every object)
+		obj.avgData = {};
+		obj.liveData = {};
+		obj.dayData = {};
+		obj.intervalData = {};
+
+		// Waypoints has to be an Array
+		if (waypoints !== undefined && waypoints instanceof Array){
+			obj.waypoints = waypoints.slice();
+		}else{
+			obj.waypoints = []; // Belangrijk!
+		}
+		return obj;
+	},
+
+	getDescription: function () {
+		return this.description;
+	},
+	getLength: function () {
+		return Math.floor(this.length / 100)/10 + " km";
+	},
+
 	// returns status object, based on liveData and avgData
 	getStatus: function(liveData, avgData){
+		if (liveData.empty || avgData.empty) {
+			return {
+				text: 'Niet beschikbaar',
+				color: 'gray'
+			};
+		}
 		if (liveData.speed < avgData.speed*0.7){
 			return {
 				text: 'Stilstaand verkeer',
@@ -319,29 +368,6 @@ var Route = {
 	// eg intervalData["04/07/2015T12:00>08/07/2015T14:00"][0][providerId] -> TrafficGraph
 	intervalData: {
 
-	},
-
-	// Constructor with optional argument waypoints
-	create: function(id, name, description, length, waypoints) {
-		var obj = Object.create(this);
-		obj.id = id;
-		obj.length = length;
-		obj.name = name;
-		obj.description = description;
-
-		// create new references (otherwise we edit the same references for every object)
-		obj.avgData = {};
-		obj.liveData = {};
-		obj.dayData = {};
-		obj.intervalData = {};
-
-		// Waypoints has to be an Array
-		if (waypoints !== undefined && waypoints instanceof Array){
-			obj.waypoints = waypoints.slice();
-		}else{
-			obj.waypoints = []; // Belangrijk!
-		}
-		return obj;
 	}
 };
 
@@ -514,6 +540,15 @@ var Interval = {
 		var obj = Object.create(Interval);
 		obj.start = start;
 		obj.end = end;
+		return obj;
+	},
+	createFromStorage: function(object) {
+		// Komt rechtstreeks uit localstorage. Geen checks op doen. Events zou leeg moeten zijn.
+		var obj = Object.create(Interval);
+		// javascript JSON houdt date bij in string formaat -> hieronder omzetten in date objecten
+		obj.start = new Date(object.start);
+		obj.end = new Date(object.end);
+
 		return obj;
 	},
 	isValid: function() {
