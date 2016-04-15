@@ -190,9 +190,9 @@ function lineClicked(event){
 	var message = '<content id="infoWindow">'
 						+ '<h1>'+routes[this['id']].name + ' <span class=smallTitle>'+ routes[this['id']].description + '</span></h1>'
 						+ '<p class="infoWindowCurrentTime">Huidige reistijd: </p>'
-						+ '<p class="infoWindowCurrentTime value">' + routes[this['id']].liveData[0].representation.time + ' minuten</p>'
+						+ '<p class="infoWindowCurrentTime value">' + routes[this['id']].liveData[Dashboard.provider.id].representation.time + ' minuten</p>'
 						+ '<p class="infoWindowAverageTime">Gemiddelde reistijd: </p>'
-						+ '<p class="infoWindowAverageTime value">' + routes[this['id']].avgData[0].representation.time + ' minuten</p>'
+						+ '<p class="infoWindowAverageTime value">' + routes[this['id']].avgData[Dashboard.provider.id].representation.time + ' minuten</p>'
 						+ '<p class="infoWindowRouteLenght">Lengte van traject:</p>'
 						+ '<p class="infoWindowRouteLenght value">' + routes[this['id']].length + ' meter</p>'
 					+'</content>';
