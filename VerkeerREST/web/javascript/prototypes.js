@@ -43,33 +43,43 @@ var TrafficData = {
  ****************************/
 var IntervalRepresentation = {
 	slowTraffic: [], // 0 -> percentage op maandag, ...
-	stationaryTraffic: [], // 0 -> percentage op maandag, ...
-	average: 0,
+	speed: 0,
+	time: 0,
+	empty: false,
 
 	createdOn: null, // instance of Date
 	
-	create: function(slowTraffic, stationaryTraffic) { // Constructor
+	create: function(speed, time, slowTraffic) { // Constructor
 		var obj = Object.create(this);
-		obj.slowTraffic = slowTraffic;
-		obj.stationaryTraffic = stationaryTraffic;
-
-		// Gemiddelde berekenen
-		var avg = 0;
-		for (var i = 0; i < obj.slowTraffic.length; i++) {
-			avg += obj.slowTraffic[i];
-		}
-		if (avg > 0)
-			obj.average = Math.ceil(avg / obj.slowTraffic.length);
+		obj.slowTraffic = slowTraffic.slice();
+		obj.speed = speed;
+		obj.time = time;
 
 		obj.createdOn = new Date();
 		return obj;
 	},
+	createEmpty: function() {
+		var obj = Object.create(this);
+		obj.empty = true;
+		obj.slowTraffic = null;
+		obj.stationaryTraffic = null;
+
+		obj.createdOn = new Date();
+		return obj;
+	},
+
 	toString: function() {
-		return this.average+'% traag verkeer';
+		if (this.empty){
+			return '';
+		}
+		return Math.floor(this.time)+' min. '+this.speed+' km/h - '+this.slowTraffic[7]+'% < 30 km/h';
 	},
 	getSubtitle: function() {
+		if (this.empty){
+			return '';
+		}
 		var s = [];
-		for (var i = 0; i < this.slowTraffic.length; i++) {
+		for (var i = 0; i < Math.min(7, this.slowTraffic.length); i++) {
 			s.push({
 				percentage: this.slowTraffic[i],
 				day: i
@@ -91,13 +101,19 @@ var IntervalRepresentation = {
 		return str;
 	},
 	getStatus: function () {
-		if (this.average > 60){
+		if (this.empty){
+			return {
+				text: 'Niet beschikbaar',
+				color: 'gray'
+			};
+		}
+		if (this.speed < 25){
 			return {
 				text: 'Stilstaand verkeer',
 				color: 'red'
 			};
 		}
-		if (this.average > 30){
+		if (this.speed < 40){
 			return {
 				text: 'Traag verkeer',
 				color: 'orange'
@@ -490,7 +506,7 @@ var Event = {
 		// Delete reference from memory
 		var index = getEventIndex(this.name);
 		if (index != -1){
-			events.splice(index, 1);
+			events.slice(index, 1);
 			this.saveLocalStorage();
 		}
 

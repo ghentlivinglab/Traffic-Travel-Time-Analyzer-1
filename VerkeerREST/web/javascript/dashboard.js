@@ -151,6 +151,11 @@ var Dashboard = {
 		if (!this.provider){
 			return;
 		}
+		if (routes.length == 0){
+			Api.syncRoutes(Dashboard.reload, this);
+			this.displayLoading();
+			return;
+		}
 
 		var dashboard = $('#dashboard .content');
 
@@ -319,12 +324,6 @@ var Dashboard = {
 
 	// Genereert HTML voor live modus
 	reloadLive: function() {
-		if (routes.length == 0){
-			Api.syncRoutes(Dashboard.reload, this);
-			this.displayLoading();
-			return;
-		}
-
 		var hasData = false;
 		var p = this.provider.id;
 
@@ -468,7 +467,7 @@ var Dashboard = {
 					length: route.getLength(),
 					status: '',
 					color: '',
-					score: -1000, // Voor sorteren
+					score: 10000, // Voor sorteren
 					title: 'Niet beschikbaar',
 					subtitle: 'Geen data van deze provider over deze route',
 					warnings: [] // TODO: wanneer we oorzaken toevoegen moeten deze hier doorgegeven worden
@@ -486,7 +485,7 @@ var Dashboard = {
 				length: route.getLength(),
 				status: status.text,
 				color: status.color,
-				score: representation.average, // Voor sorteren
+				score: representation.speed, // Voor sorteren
 				title: representation.toString(),
 				subtitle: representation.getSubtitle(),
 				warnings: ['Geen waarschuwingen'] // TODO: wanneer we oorzaken toevoegen moeten deze hier doorgegeven worden
@@ -497,7 +496,7 @@ var Dashboard = {
 
 		dataArr.sort(function(a, b) {
 			// Nog sorteren op status op eerste plaats toeveogen hier
-			return b.score - a.score;
+			return a.score - b.score;
 		});
 
 		// Juiste subtitels (en evt lijn) ondertussen toevoegen
@@ -624,7 +623,7 @@ var Dashboard = {
 			var status0 = representation0.getStatus();
 			var status1 = representation1.getStatus();
 
-			var diff = representation0.average - representation1.average;
+			var diff = representation0.speed - representation1.speed;
 
 			var t = 'Slechter';
 			if (diff > 0){

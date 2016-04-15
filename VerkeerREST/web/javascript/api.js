@@ -306,6 +306,45 @@ var Api = {
         // Hebben deze nodig voor de callback wanneer de request klaar is.
         var qid = this.getQueueId();
 
+        var me = this;
+        $.getJSON("/VerkeerREST/api/trafficdata/interval?providerID=" + provider+"&from="+dateToRestString(interval.start)+"&to="+dateToRestString(interval.end), function(result) {
+            if (result.result === "success") {
+                var resultdata = result.data;
+                routes.forEach(function(route) {
+                    var rdata = resultdata[route.id];
+                    var representation;
+                    if (typeof rdata != "undefined") {
+                        var days = rdata.days;
+                        for (var i = 0; i < days.length; i++) {
+                            days[i] = parseInt(days[i]);
+                        }
+                        representation = IntervalRepresentation.create(parseInt(rdata.speed), parseInt(rdata.time)/60, days);
+                    } else {
+                        representation = IntervalRepresentation.createEmpty();
+                    }
+                    var data = route.getIntervalData(interval, 7, provider);
+                    if (data){
+                        data.representation = representation;
+                    }else{
+                        route.setIntervalData(interval, 7, provider, TrafficGraph.create(representation));
+                    }
+                });
+                if (routes.length == 0){
+                    console.error("Routes zijn leeg! Infinte loop voorkomen.");
+                    return;
+                }
+                me.callDelayed(qid, callback, context);
+            } else {
+                console.error(result.reason);
+            }
+            //me.callDelayed(qid, callback, context);
+        }).fail(function() {
+            console.error("something went wrong loading the interval data.");
+        });
+
+
+
+
         // Hier alle data van de server halen.
         // Uiteindelijk moet dit ongeveer het resultaat zijn: 
 
