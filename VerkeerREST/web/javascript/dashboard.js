@@ -151,6 +151,11 @@ var Dashboard = {
 		if (!this.provider){
 			return;
 		}
+		if (routes.length == 0){
+			Api.syncRoutes(Dashboard.reload, this);
+			this.displayLoading();
+			return;
+		}
 
 		var dashboard = $('#dashboard .content');
 
@@ -319,12 +324,6 @@ var Dashboard = {
 
 	// Genereert HTML voor live modus
 	reloadLive: function() {
-		if (routes.length == 0){
-			Api.syncRoutes(Dashboard.reload, this);
-			this.displayLoading();
-			return;
-		}
-
 		var hasData = false;
 		var p = this.provider.id;
 
