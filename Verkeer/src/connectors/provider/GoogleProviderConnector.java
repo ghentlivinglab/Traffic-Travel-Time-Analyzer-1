@@ -13,17 +13,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -33,7 +28,7 @@ import org.apache.log4j.Logger;
 public class GoogleProviderConnector extends AProviderConnector {
 
     private static final Logger log = Logger.getLogger(GoogleProviderConnector.class);
-    private int APIKeys;
+    private List<String> ApiKeys;
     private int alternator = 0;
 
     /**
@@ -55,42 +50,84 @@ public class GoogleProviderConnector extends AProviderConnector {
         super(dbConnector, "Google Maps");
         this.providerEntry = dbConnector.findProviderEntryByName(providerName); // gets the provider-information from the database
         updateInterval = Integer.parseInt(prop.getProperty("GOOGLE_UPDATE_INTERVAL"));
-        APIKeys = Integer.parseInt(prop.getProperty("GOOGLE_API_KEYS"));
+        
+        int count = Integer.parseInt(prop.getProperty("GOOGLE_API_KEYS"));
+        ApiKeys = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            ApiKeys.add(prop.getProperty("GOOGLE_API_KEY"+i));
+        }
+        
+    }
+    
+    /**
+     * Sets the required HTTP headers for a request to the Here API: - Disable
+     * cache - Accept gzip - Set origin to waze.com - Accept language: Dutch,
+     * Accept all media types
+     *
+     * @param request to set headers of
+     */
+    private void setHeaders(HttpURLConnection request) {
+        request.setRequestProperty("Pragma", "no-cache");
+        request.setRequestProperty("Cache-Control", "no-cache");
+        request.setRequestProperty("Accept-Encoding", "deflate");
+        request.setRequestProperty("Accept", "*/*");
+    }
+    
+
+    public DataEntry getData(RouteEntry route) throws RouteUnavailableException {
+        String url = generateURL(route);
+
+        URL obj;
+        try {
+            obj = new URL(url);
+        } catch (MalformedURLException ex) {
+            throw new RouteUnavailableException(providerName, "Failed getting data: Url malformed " + url);
+        }
+
+        try {
+            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+            setHeaders(con);
+            
+            // optional default is GET
+            con.setRequestMethod("GET");
+
+            int responseCode = con.getResponseCode();
+            String responseMessage = con.getResponseMessage();
+
+            BufferedReader in = new BufferedReader(
+                    new InputStreamReader(con.getInputStream()));
+            String inputLine;
+            StringBuilder response = new StringBuilder();
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+            
+            if (responseCode == 200) { // Alles OK
+                Map<String, Object> rawData = fetchDataFromJSON(response.toString());
+                DataEntry data = processData(route, rawData);
+                return data;
+            } else {
+                throw new RouteUnavailableException(providerName, "Something went wrong. Statuscode: " + responseCode + " " + responseMessage);
+            }
+        } catch (IOException ex) {
+            throw new RouteUnavailableException(providerName, "Failed getting data: IOException :" + ex.getMessage());
+        }
     }
 
     @Override
     public void triggerUpdate() {
-        if (updateCounter % updateInterval == 0) {
-            try(CloseableHttpClient client = HttpClientBuilder.create().build()){
-                for (RouteEntry route : routes) {
-                    HttpGet request = new HttpGet(generateURL(route));
-                    try (CloseableHttpResponse response = client.execute(request)) {
-                        if (response.getStatusLine().getStatusCode() == 200) { // Alles OK
-                            HttpEntity httpEntity = response.getEntity();
-                            BufferedReader rd = new BufferedReader(new InputStreamReader(httpEntity.getContent()));
-                            StringBuilder json = new StringBuilder();
-                            String line;
-                            while ((line = rd.readLine()) != null) {
-                                json.append(line);
-                            }
-                            Map<String, Object> rawData = fetchDataFromJSON(json.toString());
-                            DataEntry data = processData(route, rawData);
-                            dbConnector.insert(data);
 
-                            EntityUtils.consume(response.getEntity());
-                        } else {
-                            throw new RouteUnavailableException(providerName, "Something went wrong. Statuscode: " + response.getStatusLine().getStatusCode() + " " + response.getStatusLine().getReasonPhrase());
-                        }
-                    } catch (IOException | RouteUnavailableException ex) {
-                        log.error(ex.getClass().getName() + " triggerUpdate() -> " + route.getName());
-                    }
-                }
-            }catch(IOException e){
-                log.error(e);
+        for (RouteEntry route : routes) {
+            try {
+                DataEntry data = getData(route);
+                dbConnector.insert(data);
+            } catch (Exception ex) {
+                log.error(ex.getMessage());
             }
         }
-        updateCounter++;
-        
     }
 
     /**
@@ -102,7 +139,7 @@ public class GoogleProviderConnector extends AProviderConnector {
     protected String generateURL(RouteEntry route) {
         StringBuilder urlBuilder = new StringBuilder(prop.getProperty("GOOGLE_API_URL"));
         urlBuilder.append("?key=");
-        urlBuilder.append(prop.getProperty(getAPIKey()));
+        urlBuilder.append(getAPIKey());
         urlBuilder.append("&origin=");
         urlBuilder.append(route.getStartCoordinateLatitude());
         urlBuilder.append(",");
@@ -128,8 +165,10 @@ public class GoogleProviderConnector extends AProviderConnector {
      */
     protected Map<String, Object> fetchDataFromJSON(String json) throws RouteUnavailableException {
         Genson genson = new Genson();
-        Map<String, Object> map = genson.deserialize(json, Map.class);
-        if (!map.get("status").equals("OK")) { // google data is not correct
+        Map<String, Object> map = genson.deserialize(json, Map.class
+        );
+        if (!map.get(
+                "status").equals("OK")) { // google data is not correct
             throw new RouteUnavailableException(providerName, (String) map.get("status"));
         }
         return map;
@@ -176,9 +215,9 @@ public class GoogleProviderConnector extends AProviderConnector {
      * @return String an API Key
      */
     private String getAPIKey() {
-        String ret = prop.getProperty("GOOGLE_API_KEY" + alternator);
+        String ret = ApiKeys.get(alternator);
         alternator++;
-        alternator %= APIKeys;
+        alternator %= ApiKeys.size();
         return ret;
     }
 

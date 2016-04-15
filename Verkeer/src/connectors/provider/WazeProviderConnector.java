@@ -89,7 +89,7 @@ public class WazeProviderConnector extends AProviderConnector {
         try {
             obj = new URL(url);
         } catch (MalformedURLException ex) {
-            throw new RouteUnavailableException(providerName, "Failed getting data from Waze: Url malformed "+url);
+            throw new RouteUnavailableException(providerName, "Failed getting data: Url malformed "+url);
         }
             
         try {

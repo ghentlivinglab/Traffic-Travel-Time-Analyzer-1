@@ -1,10 +1,13 @@
 package connectors.provider;
 
 import connectors.RouteEntry;
+import connectors.database.ConnectionException;
+import connectors.database.DummyDbConnector;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -47,27 +50,18 @@ public class GoogleProviderConnectorTest {
      * Test to see if URL-creation is ok
      */
     @Test
-    public void URLCreationTest() {
-        //String correctURL = GoogleProviderConnector.API_URL + "?key=" + GoogleProviderConnector.API_KEY + "&origin=51.0560905,3.6951634&destination=51.0663037,3.6996797";
-        //GoogleProviderConnector connector = new GoogleProviderConnector(new DummyDbConnector());
-        // TODO: 'trajecten' is slechts een tijdelijke placeholder.
-        //assertEquals(connector.generateURL(trajecten.get(0)), correctURL);
-    }
-
-    /**
-     * test if a request goes through
-     */
-    @Test
-    public void connectionTest() {
-        /*AsyncHttpClientConfig.Builder ab = new AsyncHttpClientConfig.Builder();
-        ab.setMaxConnections(15);
-        AsyncHttpClient a = new AsyncHttpClient(ab.build());
-        try {
-            GoogleProviderConnector connector = new GoogleProviderConnector(new DummyDbConnector());
-            connector.triggerUpdate(a);
-
-        } catch (Exception e) { // connection can only fail if
-            fail(e.getMessage());
-        }*/
+    public void triggerTest(){
+        DummyDbConnector dummy = new DummyDbConnector();
+        int voor = dummy.getDataEntriesSize();
+        int loops = 1;
+        GoogleProviderConnector connector = new GoogleProviderConnector(dummy);
+        
+        for (int i = 0; i<loops; i++){
+            connector.triggerUpdate();
+        }
+        // Check database count
+        if (dummy.getDataEntriesSize()-voor != connector.routes.size()*loops){
+            fail("Expected "+(connector.routes.size()*loops)+" dataEntries, "+(dummy.getDataEntriesSize()-voor)+" given.");
+        }
     }
 }
