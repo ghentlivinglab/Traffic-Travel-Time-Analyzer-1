@@ -148,6 +148,7 @@ public class GoogleProviderConnector extends AProviderConnector {
         urlBuilder.append(route.getEndCoordinateLatitude());
         urlBuilder.append(",");
         urlBuilder.append(route.getEndCoordinateLongitude());
+        urlBuilder.append("&departure_time=now");
 
         return urlBuilder.toString();
 
