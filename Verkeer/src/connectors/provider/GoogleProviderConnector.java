@@ -5,17 +5,25 @@
  */
 package connectors.provider;
 
-import com.ning.http.client.AsyncCompletionHandler;
-import com.ning.http.client.AsyncHttpClient;
-import com.ning.http.client.Response;
 import com.owlike.genson.Genson;
 import connectors.DataEntry;
 import connectors.RouteEntry;
 import connectors.database.IDbConnector;
-import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -23,11 +31,11 @@ import org.apache.log4j.Logger;
  * @author jarno
  */
 public class GoogleProviderConnector extends AProviderConnector {
-    
+
     private static final Logger log = Logger.getLogger(GoogleProviderConnector.class);
     private int APIKeys;
-    private int alternator=0;
-    
+    private int alternator = 0;
+
     /**
      * List of all Future instances from last triggerUpdate (check
      * java.util.concurrent library). ± sort of threads Use f.get(); to wait the
@@ -35,9 +43,8 @@ public class GoogleProviderConnector extends AProviderConnector {
      * Used in the test classes to wait for the threads to finish and return its
      * DataEntry (or null if failed)
      */
-    
     protected List<Future<DataEntry>> buzyRequests;
-    
+
     /**
      * Constructs a new GoogleProviderConnector with an IDbConnector to write
      * data to storage
@@ -45,38 +52,45 @@ public class GoogleProviderConnector extends AProviderConnector {
      * @param dbConnector connector to write DataEntry to
      */
     public GoogleProviderConnector(IDbConnector dbConnector) {
-        super(dbConnector,"Google Maps");
+        super(dbConnector, "Google Maps");
         this.providerEntry = dbConnector.findProviderEntryByName(providerName); // gets the provider-information from the database
         updateInterval = Integer.parseInt(prop.getProperty("GOOGLE_UPDATE_INTERVAL"));
         APIKeys = Integer.parseInt(prop.getProperty("GOOGLE_API_KEYS"));
     }
 
     @Override
-    public void triggerUpdate(AsyncHttpClient a) {
-        if(updateCounter%updateInterval == 0){
-            buzyRequests = new ArrayList<>();
-            for (RouteEntry route : routes) {
-                String url = generateURL(route);
-                IDbConnector connector = this.dbConnector;
-
-                Future<DataEntry> f = a.prepareGet(url).execute(new AsyncCompletionHandler<DataEntry>() {
-                    @Override
-                    public DataEntry onCompleted(Response response) throws Exception {
-                        if (response.getStatusCode() == 200) {// status == OK
-                            Map<String, Object> rawData;
-                            rawData = fetchDataFromJSON(response.getResponseBody());
+    public void triggerUpdate() {
+        if (updateCounter % updateInterval == 0) {
+            try(CloseableHttpClient client = HttpClientBuilder.create().build()){
+                for (RouteEntry route : routes) {
+                    HttpGet request = new HttpGet(generateURL(route));
+                    try (CloseableHttpResponse response = client.execute(request)) {
+                        if (response.getStatusLine().getStatusCode() == 200) { // Alles OK
+                            HttpEntity httpEntity = response.getEntity();
+                            BufferedReader rd = new BufferedReader(new InputStreamReader(httpEntity.getContent()));
+                            StringBuilder json = new StringBuilder();
+                            String line;
+                            while ((line = rd.readLine()) != null) {
+                                json.append(line);
+                            }
+                            Map<String, Object> rawData = fetchDataFromJSON(json.toString());
                             DataEntry data = processData(route, rawData);
-                            connector.insert(data);
-                            return data;
+                            dbConnector.insert(data);
+
+                            EntityUtils.consume(response.getEntity());
+                        } else {
+                            throw new RouteUnavailableException(providerName, "Something went wrong. Statuscode: " + response.getStatusLine().getStatusCode() + " " + response.getStatusLine().getReasonPhrase());
                         }
-                        // Er ging iets fout
-                        throw new RouteUnavailableException(providerName,"Something went wrong. Statuscode: "+ response.getStatusCode()+ " "+ response.getStatusText());
+                    } catch (IOException | RouteUnavailableException ex) {
+                        log.error(ex.getClass().getName() + " triggerUpdate() -> " + route.getName());
                     }
-                });
-                buzyRequests.add(f);
+                }
+            }catch(IOException e){
+                log.error(e);
             }
         }
         updateCounter++;
+        
     }
 
     /**
@@ -106,7 +120,7 @@ public class GoogleProviderConnector extends AProviderConnector {
      * Extracts the data from the JSON and generates a Map with all the info
      * from it.
      * <p>
- If dataset is invalid, this will throw a RouteUnavailableException
+     * If dataset is invalid, this will throw a RouteUnavailableException
      *
      * @param json String which contains the JSON-object
      * @throws RouteUnavailableException if data is not valid
@@ -116,7 +130,7 @@ public class GoogleProviderConnector extends AProviderConnector {
         Genson genson = new Genson();
         Map<String, Object> map = genson.deserialize(json, Map.class);
         if (!map.get("status").equals("OK")) { // google data is not correct
-            throw new RouteUnavailableException(providerName,(String) map.get("status"));
+            throw new RouteUnavailableException(providerName, (String) map.get("status"));
         }
         return map;
     }
@@ -155,16 +169,17 @@ public class GoogleProviderConnector extends AProviderConnector {
         }
         return data;
     }
-    
+
     /**
      * A temporary functions that switches between API keys
+     *
      * @return String an API Key
      */
-    private String getAPIKey(){
-        String ret = prop.getProperty("GOOGLE_API_KEY"+alternator);
+    private String getAPIKey() {
+        String ret = prop.getProperty("GOOGLE_API_KEY" + alternator);
         alternator++;
-        alternator%=APIKeys;
+        alternator %= APIKeys;
         return ret;
     }
-    
+
 }

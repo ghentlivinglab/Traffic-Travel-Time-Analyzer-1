@@ -5,8 +5,6 @@
  */
 package connectors.provider;
 
-import com.ning.http.client.AsyncHttpClient;
-import connectors.DataEntry;
 import connectors.ProviderEntry;
 import connectors.RouteEntry;
 import connectors.database.IDbConnector;
@@ -15,10 +13,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.Properties;
-import verkeer.PollThread;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 
 /**
  *
@@ -59,7 +57,7 @@ public abstract class AProviderConnector {
      * Makes the ProviderConnector fetch data from provider
      * @param a The AsyncHttpClient used to send the requests.
      */
-    public abstract void triggerUpdate(AsyncHttpClient a);
+    public abstract void triggerUpdate();
 
     /**
      * Saves the generated info to the IDbConnector

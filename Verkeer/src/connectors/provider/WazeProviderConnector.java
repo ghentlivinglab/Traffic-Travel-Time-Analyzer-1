@@ -8,28 +8,44 @@ package connectors.provider;
 import java.util.List;
 import connectors.database.IDbConnector;
 import connectors.RouteEntry;
-import com.ning.http.client.*;
-import com.ning.http.client.AsyncHttpClient.BoundRequestBuilder;
-import com.ning.http.client.cookie.Cookie;
 import com.owlike.genson.Genson;
 import connectors.DataEntry;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import static java.lang.Math.toIntExact;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import org.apache.http.HttpEntity;
+import org.apache.http.cookie.Cookie;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.CookieStore;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
 /**
  *
  * @author Simon
  */
-public class WazeProviderConnector extends AProviderConnector{
+public class WazeProviderConnector extends AProviderConnector {
 
     private static final Logger log = Logger.getLogger(WazeProviderConnector.class);
     protected Cookie csrf;
@@ -37,8 +53,6 @@ public class WazeProviderConnector extends AProviderConnector{
     private int bid = 0;
     protected boolean loggedIn = false;
 
-    
-    
     /**
      * List of all Future instances from last triggerUpdate (check
      * java.util.concurrent library). ± sort of threads Use f.get(); to wait the
@@ -48,8 +62,7 @@ public class WazeProviderConnector extends AProviderConnector{
     protected List<Future<Boolean>> buzyRequests;
 
     public WazeProviderConnector(IDbConnector dbConnector) {
-        super(dbConnector,"Waze");
-        buzyRequests = new ArrayList<>();
+        super(dbConnector, "Waze");
         this.providerEntry = dbConnector.findProviderEntryByName(providerName);
         updateInterval = Integer.parseInt(prop.getProperty("WAZE_UPDATE_INTERVAL"));
     }
@@ -74,16 +87,15 @@ public class WazeProviderConnector extends AProviderConnector{
      *
      * @param request to set headers of
      */
-    private void setHeaders(BoundRequestBuilder request) {
+    private void setHeaders(HttpRequest request) {
         request.addHeader("Pragma", "no-cache");
         request.addHeader("Cache-Control", "no-cache");
         request.addHeader("Accept-Encoding", "gzip, deflate");
-
-        if (this.areCookiesSet()) {
+        /*if (this.areCookiesSet()) {
             request.setHeader("X-CSRF-Token", csrf.getValue());
             request.addCookie(csrf);
             request.addCookie(web_session);
-        }
+        }*/
         request.setHeader("Accept", "*/*");
     }
 
@@ -107,8 +119,10 @@ public class WazeProviderConnector extends AProviderConnector{
      *
      * @param response
      */
-    private void saveTokens(Response response) {
-        List<Cookie> cookies = response.getCookies();
+    private void saveTokens(CloseableHttpClient client, CloseableHttpResponse response) {
+        HttpClientContext context = HttpClientContext.create();
+        CookieStore store = context.getCookieStore();
+        List<Cookie> cookies = store.getCookies();
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("_csrf_token")) {
                 csrf = cookie;
@@ -127,25 +141,35 @@ public class WazeProviderConnector extends AProviderConnector{
      *
      * @return succeeded: got correct json response
      */
-    private boolean getLogin(AsyncHttpClient a) {
+    private boolean getLogin(CloseableHttpClient client) {
+        /*HttpGet request = new HttpGet(prop.getProperty("WAZE_API_URL_GET_LOGIN"));
+        setHeaders(request);
+        
+        try(CloseableHttpResponse response = client.execute(request)){
+            saveTokens(client, response);
+            
+        }catch(IOException e){
+            log.error("getLogin() IOException: "+e.getMessage(), e);
+        }
+        
         BoundRequestBuilder request = a.prepareGet(prop.getProperty("WAZE_API_URL_GET_LOGIN"));
         this.setHeaders(request);
 
         Future<Boolean> f = request.execute(
                 new AsyncCompletionHandler<Boolean>() {
-                    @Override
-                    public Boolean onCompleted(Response response) throws Exception {
-                        saveTokens(response);
-                        return parseGetLoginJSON(response.getResponseBody());
-                    }
-                });
+            @Override
+            public Boolean onCompleted(Response response) throws Exception {
+                saveTokens(response);
+                return parseGetLoginJSON(response.getResponseBody());
+            }
+        });
         try {
             return f.get();
         } catch (InterruptedException ex) {
             log.error("Thread getLogin interrupted", ex);
         } catch (ExecutionException ex) {
             log.error(ex, ex);
-        }
+        }*/
         return false;
     }
 
@@ -157,39 +181,44 @@ public class WazeProviderConnector extends AProviderConnector{
      *
      * @return List<DataEntry> parsed from JSON response from WAZE api.
      */
-    private List<DataEntry> getData(AsyncHttpClient a) throws RouteUnavailableException, NotAuthorizedException {
-        BoundRequestBuilder request = a.prepareGet(prop.getProperty("WAZE_API_URL_GET_DATA") + bid);
+    private List<DataEntry> getData(CloseableHttpClient client) throws RouteUnavailableException, NotAuthorizedException {
+        HttpGet request = new HttpGet(prop.getProperty("WAZE_API_URL_GET_DATA") + bid);
         this.setHeaders(request);
 
-        Future<List<DataEntry>> f = request.execute(
-                new AsyncCompletionHandler<List<DataEntry>>() {
-                    @Override
-                    public List<DataEntry> onCompleted(Response response){
-                        List<DataEntry> ret = new ArrayList<>();
-                        try{
-                            if (response.getStatusCode() == 403 || response.getStatusCode() == 401) {
-                                loggedIn = false;
-                                throw new NotAuthorizedException("Authentication failed: " + response.getStatusText());
-                            }
-                            if (response.getStatusCode() != 200) {
-                                throw new RouteUnavailableException(providerName,"Failed getting data from Waze: " + response.getStatusText());
-                            }
-                            ret = fetchDataFromJSON(response.getResponseBody());
-                        }catch(RouteUnavailableException|NotAuthorizedException|IOException ex){
-                            log.error(ex);
-                        }
-                        return ret;
-                    }
-                });
-
-        try {
-            return f.get();
-        } catch (InterruptedException ex) {
-            log.error("Interrupted request: " + ex.getMessage(), ex);
-        } catch (ExecutionException ex) {
-            log.error("ExecutionException: " + ex.getMessage());
+        List<DataEntry> ret = new ArrayList<>();
+        try (CloseableHttpResponse response = client.execute(request)) {
+            if (response.getStatusLine().getStatusCode() == 403 || response.getStatusLine().getStatusCode() == 401) {
+                loggedIn = false;
+                throw new NotAuthorizedException("Authentication failed: " + response.getStatusLine());
+            }
+            if (response.getStatusLine().getStatusCode() != 200) {
+                throw new RouteUnavailableException(providerName, "Failed getting data from Waze: " + response.getStatusLine());
+            }
+            HttpEntity entity = response.getEntity();
+            if (entity != null) {
+                BufferedReader rd = new BufferedReader(new InputStreamReader(entity.getContent()));
+                StringBuilder json = new StringBuilder();
+                String line;
+                while ((line = rd.readLine()) != null) {
+                    json.append(line);
+                }
+                ret = fetchDataFromJSON(json.toString());
+                rd.close();
+                EntityUtils.consume(entity);
+            }else{
+                log.error("Entity was null, so getData returned an empty list.");
+            }
+        } catch (IOException e) {
+            request.abort();
+            log.error(e);
+        } catch (NotAuthorizedException e) {
+            request.abort();
+            log.error(e);
+        } catch (RouteUnavailableException e) {
+            request.abort();
+            log.error(e);
         }
-        return null;
+        return ret;
     }
 
     /**
@@ -200,22 +229,23 @@ public class WazeProviderConnector extends AProviderConnector{
      *
      * @return boolean: true when bid found
      */
-    private boolean getBroadcasters(AsyncHttpClient a) throws NotAuthorizedException {
+    private boolean getBroadcasters() throws NotAuthorizedException {
+        /*AsyncHttpClient a = new AsyncHttpClient();
         BoundRequestBuilder request = a.prepareGet(prop.getProperty("WAZE_API_URL_BROADCASTERS"));
         this.setHeaders(request);
 
         Future<Boolean> f = request.execute(
                 new AsyncCompletionHandler<Boolean>() {
-                    @Override
-                    public Boolean onCompleted(Response response) throws Exception {
-                        if (response.getStatusCode() == 403 || response.getStatusCode() == 401) {
-                            loggedIn = false;
-                            log.info("getBroadcasters: "+response.getStatusText());
-                            throw new NotAuthorizedException();
-                        }
-                        return parseBidFromJSON(response.getResponseBody());
-                    }
-                });
+            @Override
+            public Boolean onCompleted(Response response) throws Exception {
+                if (response.getStatusCode() == 403 || response.getStatusCode() == 401) {
+                    loggedIn = false;
+                    log.info("getBroadcasters: " + response.getStatusText());
+                    throw new NotAuthorizedException();
+                }
+                return parseBidFromJSON(response.getResponseBody());
+            }
+        });
         try {
             return f.get();
         } catch (InterruptedException ex) {
@@ -224,7 +254,8 @@ public class WazeProviderConnector extends AProviderConnector{
         } catch (ExecutionException ex) {
             log.error("ExecutionException");
             return false;
-        }
+        }*/
+        return false;
     }
 
     /**
@@ -235,10 +266,9 @@ public class WazeProviderConnector extends AProviderConnector{
      * @return boolean: true if succeeded
      */
     private boolean createLogin() throws NotAuthorizedException {
-        AsyncHttpClient asyncHttpClient;
-        asyncHttpClient = new AsyncHttpClient();
+        /*AsyncHttpClient a = new AsyncHttpClient();
 
-        BoundRequestBuilder request = asyncHttpClient.preparePost(prop.getProperty("WAZE_API_URL_LOGIN"));
+        BoundRequestBuilder request = a.preparePost(prop.getProperty("WAZE_API_URL_LOGIN"));
         this.setHeaders(request);
         request.addHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
         request.setBody("user_id=" + prop.getProperty("WAZE_USERNAME") + "&password=" + prop.getProperty("WAZE_PASSWORD"));
@@ -248,20 +278,20 @@ public class WazeProviderConnector extends AProviderConnector{
         Future<Boolean> f = request.execute(
                 new AsyncCompletionHandler<Boolean>() {
 
-                    @Override
-                    public Boolean onCompleted(Response response) throws Exception {
-                        if (response.getStatusCode() == 200) {
-                            saveTokens(response);
-                            loggedIn = true;
-                            return true;
-                        } else if (response.getStatusCode() == 403 || response.getStatusCode() == 401) {
-                            loggedIn = false;
-                            log.info("createLogin: "+response.getStatusText());
-                            throw new NotAuthorizedException();
-                        }
-                        return false;
-                    }
-                });
+            @Override
+            public Boolean onCompleted(Response response) throws Exception {
+                if (response.getStatusCode() == 200) {
+                    saveTokens(response);
+                    loggedIn = true;
+                    return true;
+                } else if (response.getStatusCode() == 403 || response.getStatusCode() == 401) {
+                    loggedIn = false;
+                    log.info("createLogin: " + response.getStatusText());
+                    throw new NotAuthorizedException();
+                }
+                return false;
+            }
+        });
         try {
             return f.get();
         } catch (InterruptedException ex) {
@@ -270,7 +300,8 @@ public class WazeProviderConnector extends AProviderConnector{
         } catch (ExecutionException ex) {
             log.error(ex, ex);
             return false;
-        }
+        }*/
+        return false;
     }
 
     /**
@@ -279,21 +310,21 @@ public class WazeProviderConnector extends AProviderConnector{
      *
      * @return succeeded
      */
-    private boolean destroyLogin(AsyncHttpClient a) {
-        BoundRequestBuilder request = a.preparePost(prop.getProperty("WAZE_API_URL_LOGOUT"));
+    private boolean destroyLogin() {
+        /*BoundRequestBuilder request = a.preparePost(prop.getProperty("WAZE_API_URL_LOGOUT"));
         this.setHeaders(request);
 
         Future<Boolean> f = request.execute(
                 new AsyncCompletionHandler<Boolean>() {
-                    @Override
-                    public Boolean onCompleted(Response response) throws Exception {
-                        if (response.getStatusCode() >= 200 && response.getStatusCode() < 300) {
-                            return true;
-                        }
-                        log.info("destroyLogin: "+response.getStatusText());
-                        return false;
-                    }
-                });
+            @Override
+            public Boolean onCompleted(Response response) throws Exception {
+                if (response.getStatusCode() >= 200 && response.getStatusCode() < 300) {
+                    return true;
+                }
+                log.info("destroyLogin: " + response.getStatusText());
+                return false;
+            }
+        });
         try {
             if (f.get()) {
                 this.resetCookies();
@@ -303,25 +334,20 @@ public class WazeProviderConnector extends AProviderConnector{
             log.error("destroyLogin thread interrupted");
         } catch (ExecutionException ex) {
             log.error(ex, ex);
-        }
+        }*/
         return false;
     }
 
     @Override
-    public void triggerUpdate(AsyncHttpClient a) {
+    public void triggerUpdate() {
         if (updateCounter % updateInterval == 0) {
-            buzyRequests = new ArrayList<>();
+            try (CloseableHttpClient client = HttpClients.createDefault()) {
+                callApi(client);
+            } catch (RouteUnavailableException e) {
 
-            // Voor Waze moeten er verschillende calls na elkaar uitgevoerd worden. 
-            // Om dit asyncrhoon te houden maak ik hier een thread aan. En die sla ik op in buzyRequests.
-            Callable<Boolean> task = () -> {
-                return callApi(a);
-            };
+            } catch (IOException e) {
 
-            ExecutorService executor = Executors.newFixedThreadPool(1);
-            Future<Boolean> future = executor.submit(task);
-
-            buzyRequests.add(future);
+            }
         }
     }
 
@@ -330,22 +356,22 @@ public class WazeProviderConnector extends AProviderConnector{
      *
      * @return succeeded
      */
-    private boolean loginIfNeeded(AsyncHttpClient a) {
-        if (!areCookiesSet()) {
-            if (!this.getLogin(a)) {
+    private boolean loginIfNeeded(CloseableHttpClient client) {
+        /*if (!areCookiesSet()) {
+            if (!getLogin(client)) {
                 return false;
             }
         }
         if (!loggedIn) {
             try {
-                if (!this.createLogin()) {
+                if (!createLogin()) {
                     return false;
                 }
             } catch (NotAuthorizedException ex) {
-                this.destroyLogin(a);
+                this.destroyLogin();
                 return false;
             }
-        }
+        }*/
         return true;
     }
 
@@ -355,36 +381,36 @@ public class WazeProviderConnector extends AProviderConnector{
      *
      * @return succeeded
      */
-    private boolean callApi(AsyncHttpClient a) throws RouteUnavailableException {
+    private boolean callApi(CloseableHttpClient client) throws RouteUnavailableException {
         // Structuur zodanig om aantal requests te beperken
-        if (bid == 0) {
-            loginIfNeeded(a);
+        /*if (bid == 0) {
+            loginIfNeeded(client);
             try {
-                if (!getBroadcasters(a)) {
+                if (!getBroadcasters()) {
                     return false;
                 }
             } catch (NotAuthorizedException ex) {
                 // Try to retry the next time
-                this.destroyLogin(a);
+                this.destroyLogin();
                 return false;
             }
         }
-
+         */
         // Data ophalen
-        List<DataEntry> entries;
+        List<DataEntry> entries = new ArrayList<>();
         try {
-            entries = this.getData(a);
+            entries = getData(client);
         } catch (NotAuthorizedException ex) {
             // Opnieuw proberen inloggen en nog eens proberen
-            this.destroyLogin(a);
-            this.loginIfNeeded(a);
+            /*destroyLogin();
+            loginIfNeeded();
             try {
-                entries = this.getData(a);
+                entries = getData();
             } catch (NotAuthorizedException ex1) {
                 // Ook 2e poging is mislukt
                 this.destroyLogin(a);
                 return false;
-            }
+            }*/
         }
         for (DataEntry entry : entries) {
             this.dbConnector.insert(entry);
@@ -397,7 +423,7 @@ public class WazeProviderConnector extends AProviderConnector{
         try {
             Genson genson = new Genson();
             Map<String, Object> map = genson.deserialize(json, Map.class);
-            
+
             List<Object> routes = (List<Object>) map.get("routes");
 
             Map<Integer, RouteEntry> myRoutes = new TreeMap<>();
@@ -429,7 +455,7 @@ public class WazeProviderConnector extends AProviderConnector{
                 }
             }
         } catch (Exception ex) {
-            log.error("Data unreadable. Expected other structure."+json, ex);
+            log.error("Data unreadable. Expected other structure." + json, ex);
         }
         return entries;
     }
@@ -448,7 +474,7 @@ public class WazeProviderConnector extends AProviderConnector{
             String full_name = (String) reply.get("full_name");
             return true;
         } catch (Exception ex2) {
-            log.error("Data from login JSON not readable: "+json, ex2);
+            log.error("Data from login JSON not readable: " + json, ex2);
         }
         return false;
     }
@@ -466,7 +492,7 @@ public class WazeProviderConnector extends AProviderConnector{
             this.bid = id;
             return true;
         } catch (Exception ex2) {
-            log.error("Couldn't read BID from JSON: "+json, ex2);
+            log.error("Couldn't read BID from JSON: " + json, ex2);
             //this.doLog(Level.WARNING, "Couldn't read BID from JSON");
         }
         return false;

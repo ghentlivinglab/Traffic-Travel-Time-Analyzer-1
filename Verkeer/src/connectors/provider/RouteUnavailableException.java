@@ -12,6 +12,5 @@ public class RouteUnavailableException extends Exception {
 
     public RouteUnavailableException(String provider,String message) {
         super(provider+" "+message);
-        log.error(provider+" "+message);
     }
 }
