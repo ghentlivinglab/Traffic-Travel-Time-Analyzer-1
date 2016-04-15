@@ -72,7 +72,7 @@ var IntervalRepresentation = {
 		if (this.empty){
 			return '';
 		}
-		return this.slowTraffic[7]+'% traag verkeer';
+		return Math.floor(this.time)+' min. '+this.speed+' km/h - '+this.slowTraffic[7]+'% traag verkeer';
 	},
 	getSubtitle: function() {
 		if (this.empty){

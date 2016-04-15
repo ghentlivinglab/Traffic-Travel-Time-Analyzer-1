@@ -305,7 +305,7 @@ var Api = {
                         for (var i = 0; i < days.length; i++) {
                             days[i] = parseInt(days[i]);
                         }
-                        representation = IntervalRepresentation.create(parseInt(rdata.speed), parseInt(rdata.time), days);
+                        representation = IntervalRepresentation.create(parseInt(rdata.speed), parseInt(rdata.time)/60, days);
                     } else {
                         representation = IntervalRepresentation.createEmpty();
                     }
