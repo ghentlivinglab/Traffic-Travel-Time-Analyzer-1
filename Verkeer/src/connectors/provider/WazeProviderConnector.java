@@ -57,7 +57,7 @@ public class WazeProviderConnector extends AProviderConnector {
     private void setHeaders(HttpURLConnection request) {
         request.setRequestProperty("Pragma", "no-cache");
         request.setRequestProperty("Cache-Control", "no-cache");
-        request.setRequestProperty("Accept-Encoding", "gzip, deflate");
+        request.setRequestProperty("Accept-Encoding", "deflate");
         request.setRequestProperty("Accept", "*/*");
     }
 

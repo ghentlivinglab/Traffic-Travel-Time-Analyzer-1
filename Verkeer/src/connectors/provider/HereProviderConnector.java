@@ -14,6 +14,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import static java.lang.Math.toIntExact;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -47,39 +50,73 @@ public class HereProviderConnector extends AProviderConnector {
         this.providerEntry = dbConnector.findProviderEntryByName(providerName);
         updateInterval = Integer.parseInt(prop.getProperty("HERE_UPDATE_INTERVAL"));
     }
+    
+    /**
+     * Sets the required HTTP headers for a request to the Here API: - Disable
+     * cache - Accept gzip - Set origin to waze.com - Accept language: Dutch,
+     * Accept all media types
+     *
+     * @param request to set headers of
+     */
+    private void setHeaders(HttpURLConnection request) {
+        request.setRequestProperty("Pragma", "no-cache");
+        request.setRequestProperty("Cache-Control", "no-cache");
+        request.setRequestProperty("Accept-Encoding", "deflate");
+        request.setRequestProperty("Accept", "*/*");
+    }
 
+    public DataEntry getData(RouteEntry route) throws RouteUnavailableException {
+        String url = generateURL(route);
+
+        URL obj;
+        try {
+            obj = new URL(url);
+        } catch (MalformedURLException ex) {
+            throw new RouteUnavailableException(providerName, "Failed getting data: Url malformed " + url);
+        }
+
+        try {
+            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+            setHeaders(con);
+            
+            // optional default is GET
+            con.setRequestMethod("GET");
+
+            int responseCode = con.getResponseCode();
+            String responseMessage = con.getResponseMessage();
+
+            BufferedReader in = new BufferedReader(
+                    new InputStreamReader(con.getInputStream()));
+            String inputLine;
+            StringBuilder response = new StringBuilder();
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+            
+            if (responseCode == 200) { // Alles OK
+                DataEntry data = fetchDataFromJSON(response.toString(), route);
+                return data;
+            } else {
+                throw new RouteUnavailableException(providerName, "Something went wrong. Statuscode: " + responseCode + " " + responseMessage);
+            }
+        } catch (IOException ex) {
+            throw new RouteUnavailableException(providerName, "Failed getting data: IOException :" + ex.getMessage());
+        }
+    }
+    
     @Override
     public void triggerUpdate() {
-        if (updateCounter % updateInterval == 0) {
-            try(CloseableHttpClient client = HttpClientBuilder.create().build()){
-                for (RouteEntry route : routes) {
-                    log.info(route.getName());
-                    HttpGet request = new HttpGet(generateURL(route));
-                    try (CloseableHttpResponse response = client.execute(request)) {
-                        if (response.getStatusLine().getStatusCode() == 200) { // Alles OK
-                            HttpEntity httpEntity = response.getEntity();
-                            BufferedReader rd = new BufferedReader(new InputStreamReader(httpEntity.getContent()));
-                            StringBuilder json = new StringBuilder();
-                            String line;
-                            while ((line = rd.readLine()) != null) {
-                                json.append(line);
-                            }
-                            DataEntry data = fetchDataFromJSON(json.toString(), route);
-                            dbConnector.insert(data);
-
-                            EntityUtils.consume(response.getEntity());
-                        } else {
-                            throw new RouteUnavailableException(providerName, "Something went wrong. Statuscode: " + response.getStatusLine().getStatusCode() + " " + response.getStatusLine().getReasonPhrase());
-                        }
-                    } catch (IOException | RouteUnavailableException ex) {
-                        log.error(ex.getClass().getName() + " triggerUpdate() -> " + route.getName());
-                    }
-                }
-            }catch(IOException e){
-                log.error(e);
+        for (RouteEntry route : routes) {
+            try {
+                DataEntry data = getData(route);
+                dbConnector.insert(data);
+            } catch (Exception ex) {
+                log.error(ex.getMessage());
             }
         }
-        updateCounter++;
     }
 
     public DataEntry fetchDataFromJSON(String json, RouteEntry traject) throws RouteUnavailableException {
