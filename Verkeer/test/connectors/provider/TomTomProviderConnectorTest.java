@@ -8,9 +8,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class HereProviderConnectorTest {
+public class TomTomProviderConnectorTest {
 
-    public HereProviderConnectorTest() {
+    public TomTomProviderConnectorTest() {
     }
 
     @BeforeClass
@@ -35,7 +35,7 @@ public class HereProviderConnectorTest {
         DummyDbConnector dummy = new DummyDbConnector();
         int voor = dummy.getDataEntriesSize();
         int loops = 1;
-        HereProviderConnector connector = new HereProviderConnector(dummy);
+        TomTomProviderConnector connector = new TomTomProviderConnector(dummy);
         
         for (int i = 0; i<loops; i++){
             connector.triggerUpdate();
