@@ -85,16 +85,13 @@ public class CoyoteProviderConnector extends AProviderConnector {
 
     @Override
     public void triggerUpdate() {
-        if (updateCounter % updateInterval == 0) {
-            try {
-                runPerl();
-                readFile();
-            } catch (FileNotFoundException e) {
-                log.error("Perl script has not generated any output.");
-            } catch (IOException | InterruptedException e) {
-                System.out.println("fail");
-                updateCounter++;
-            }
+        try {
+            runPerl();
+            readFile();
+        } catch (FileNotFoundException e) {
+            log.error("FileNotFoundException: Perl script has not generated any output.");
+        } catch (Exception e) {
+            log.error(e.getMessage());
         }
     }
 
@@ -103,66 +100,70 @@ public class CoyoteProviderConnector extends AProviderConnector {
      * @throws IOException If an I/O error occurs when running the Perl-script
      * @throws InterruptedException if the current thread is interrupted by another thread while it is waiting for the Perl-script to finish, then the wait is ended and an InterruptedException is thrown.
      */
-    protected void runPerl() throws IOException, InterruptedException {
+    protected void runPerl() throws IOException, InterruptedException, RouteUnavailableException {
         Runtime runtime = Runtime.getRuntime();
-        String[] perlCode = {"perl", prop.getProperty("COYOTE_SCRIPT"), providerEntry.getId() + "", providerEntry.getName(), dataFile};
         Process process = runtime.exec("perl "+prop.getProperty("COYOTE_SCRIPT")+" "+ providerEntry.getId()+ " " + providerEntry.getName()+" "+ dataFile);
-        process.waitFor();
+        int val = process.waitFor();
+        if (val != 0){
+            throw new RouteUnavailableException(providerName, "Perl process gaf return code "+val);
+        }
     }
     
     protected void readFile() throws FileNotFoundException{
-        
-                File file = new File(dataFile);
-                Scanner buffer = new Scanner(file);
-                buffer.useDelimiter("\n|:");
+        File file = new File(dataFile);
+        Scanner buffer = new Scanner(file);
+        buffer.useDelimiter("\n|:");
 
-                Map<String, String> entry = new HashMap<>();
+        Map<String, String> entry = new HashMap<>();
 
-                while (buffer.hasNext()) {
-                    String next = buffer.next();
+        while (buffer.hasNext()) {
+            String next = buffer.next();
 
-                    switch (next) {
-                        case "ENTRY":
-                            entry = new HashMap<>();
-                            break;
-                        case "END":
-                            DataEntry data = new DataEntry();
+            switch (next) {
+                case "ENTRY":
+                    entry = new HashMap<>();
+                    break;
+                case "END":
+                    DataEntry data = new DataEntry();
 
-                            data.setTimestamp(new Timestamp(Long.parseLong(entry.get("timestamp")) * 1000));
-                            int travelTime = Math.round(Float.parseFloat(entry.get("real_time")));
-                            data.setTravelTime(travelTime);
+                    data.setTimestamp(new Timestamp(Long.parseLong(entry.get("timestamp")) * 1000));
+                    int travelTime = Math.round(Float.parseFloat(entry.get("real_time")));
+                    data.setTravelTime(travelTime);
 
-                            String name = entry.get("route_name");
-                            int id;
-                            try {
-                                id = mapping.get(name);
-                            } catch (NullPointerException e) {
-                                log.error("Route \"" + name + "\" is not in the database.");
-                                id = -1;
-                            }
-                            RouteEntry route = dbConnector.findRouteEntryByID(id);
-
-                            data.setRoute(route);
-                            data.setProvider(providerEntry);
-
-                            dbConnector.insert(data);
-                            buffer.nextLine();
-                            break;
-                        default:
-                            entry.put(next, buffer.next());
+                    String name = entry.get("route_name");
+                    int id;
+                    try {
+                        id = mapping.get(name);
+                    } catch (NullPointerException e) {
+                        log.error("Route \"" + name + "\" is not in the database.");
+                        id = -1;
                     }
-                }
-                buffer.close();
-                if (file.delete()) {
-                    //log.info(dataFile + " deleted");
-                } else {
-                    //log.info(dataFile + " not deleted");
-                }
+                    RouteEntry route = dbConnector.findRouteEntryByID(id);
 
+                    data.setRoute(route);
+                    data.setProvider(providerEntry);
+
+                    dbConnector.insert(data);
+                    buffer.nextLine();
+                    break;
+                default:
+                    entry.put(next, buffer.next());
+            }
+        }
+        buffer.close();
+        if (file.delete()) {
+            //log.info(dataFile + " deleted");
+        } else {
+            //log.info(dataFile + " not deleted");
+        }
     }
 
     protected String getDataFile() {
         return dataFile;
+    }
+
+    private Exception RouteUnavailableException(String providerName, String test) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

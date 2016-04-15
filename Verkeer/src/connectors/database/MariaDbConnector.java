@@ -45,7 +45,7 @@ public class MariaDbConnector implements IDbConnector{
     public MariaDbConnector() throws ConnectionException {
         try{
             prop = new Properties();
-            FileInputStream fis = new FileInputStream(new File(MariaDbConnector.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent()+"/config/database.properties");
+            FileInputStream fis = new FileInputStream(new File("./config/database.properties"));
             if(fis == null){
                 log.error("./config/database.properties kon niet geladen worden.");
             }else{

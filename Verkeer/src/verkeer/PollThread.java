@@ -40,10 +40,12 @@ public class PollThread extends Thread {
         setDaemon(true);
         try {
             prop = new Properties();
-            FileInputStream fis = new FileInputStream(new File(PollThread.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent() + "/config/app.properties");
+            FileInputStream fis = new FileInputStream(new File("./config/app.properties"));
             prop.load(fis);
         } catch (IOException ex) {
-            log.error("IOException: " + new File(PollThread.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent() + "\\config\\app.properties" + " could not be loaded. " + ex.getMessage());
+            System.err.println("./config/app.properties niet gevonden. "+ex.getMessage());
+            System.exit(1);
+
         }
         providers = new ArrayList<>();
         try {

@@ -5,8 +5,10 @@
  */
 package connectors.provider;
 
+import connectors.database.DummyDbConnector;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -37,12 +39,19 @@ public class CoyoteProviderConnectorTest {
     }
 
     @Test
-    public void test() {
-        /*AsyncHttpClientConfig.Builder ab = new AsyncHttpClientConfig.Builder();
-        ab.setMaxConnections(15);
-        AsyncHttpClient a = new AsyncHttpClient(ab.build());
-        CoyoteProviderConnector connector = new CoyoteProviderConnector(new DummyDbConnector());
-        connector.triggerUpdate(a);*/
+    public void triggerTest(){
+        DummyDbConnector dummy = new DummyDbConnector();
+        int voor = dummy.getDataEntriesSize();
+        int loops = 1;
+        CoyoteProviderConnector connector = new CoyoteProviderConnector(dummy);
+        
+        for (int i = 0; i<loops; i++){
+            connector.triggerUpdate();
+        }
+        // Check database count
+        if (dummy.getDataEntriesSize()-voor != connector.routes.size()*loops){
+            fail("Expected "+(connector.routes.size()*loops)+" dataEntries, "+(dummy.getDataEntriesSize()-voor)+" given.");
+        }
     }
 
     @Test

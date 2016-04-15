@@ -44,16 +44,16 @@ public abstract class AProviderConnector {
         this.providerName = providerName;
         try{
             prop = new Properties();
-            File file = new File("./config/providers.properties");
-            FileInputStream fis = new FileInputStream(file);
+            FileInputStream fis = new FileInputStream(new File("./config/providers.properties"));
             prop.load(fis);
-            System.out.println("Properties geladen gelukt");
         }catch( FileNotFoundException e){
             System.err.println("./config/providers.properties niet gevonden.");
+            System.exit(1);
+
         }catch( IOException ee){
             System.err.println("./config/providers.properties kon niet geladen worden.");
+            System.exit(1);
         }
-        
     }
 
     /**
