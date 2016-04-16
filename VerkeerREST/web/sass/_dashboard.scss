@@ -17,6 +17,7 @@
 		// padding NIET via left, right, top, bottom doen, anders kloppen scrollbalk posities niet
 		padding: 30px 20px 0 40px;
 		overflow: auto;
+		overflow-y: scroll;
 
 		.loading {
 			text-align: center;
@@ -138,6 +139,11 @@ article {
 			div {
 				// DUPLICATE CODE!
 				height: $graph-height;
+			}
+			p {
+				text-align: center;
+				padding: 30px;
+				font-weight: 500;
 			}
 		}
 

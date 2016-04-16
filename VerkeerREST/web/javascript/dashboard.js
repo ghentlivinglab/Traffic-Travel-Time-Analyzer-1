@@ -376,15 +376,29 @@ var Dashboard = {
 				length: route.getLength(),
 				status: status.text,
 				color: status.color,
-				score: live.speed / avg.speed, // Voor sorteren
+				score: live.speed, // Voor sorteren
 				title: live.toString(),
 				subtitle: avg.toString(),
-				warnings: [] // TODO: wanneer we oorzaken toevoegen moeten deze hier doorgegeven worden
+				warnings: route.getWarnings(live, avg) // TODO: wanneer we oorzaken toevoegen moeten deze hier doorgegeven worden
 			};
 			dataArr.push(data);
 		});
 
 		dataArr.sort(function(a, b) {
+			if (a.status != b.status){
+				if (a.color == "red"){
+					return -1;
+				}
+				if (b.color == "red"){
+					return 1;
+				}
+				if (a.color == "orange"){
+					return -1;
+				}
+				if (b.color == "orange"){
+					return 1;
+				}
+			}
 			// Nog sorteren op status op eerste plaats toeveogen hier
 			return a.score - b.score;
 		});
@@ -459,16 +473,16 @@ var Dashboard = {
 		// Met de juiste Mustache template
 		var dataArr = [];
 		routes.forEach(function(route){
-			if (!route.getIntervalDataRepresentation(interval, 7, p)){
+			if (!route.getIntervalDataRepresentation(interval, 7, p) || route.getIntervalDataRepresentation(interval, 7, p).empty){
 				var data = {
 					id: route.id,
 					name: route.name,
 					description: route.getDescription(),
 					length: route.getLength(),
-					status: '',
-					color: '',
+					status: 'Niet beschikbaar',
+					color: 'gray',
 					score: 10000, // Voor sorteren
-					title: 'Niet beschikbaar',
+					title: '',
 					subtitle: 'Geen data van deze provider over deze route',
 					warnings: [] // TODO: wanneer we oorzaken toevoegen moeten deze hier doorgegeven worden
 				};
@@ -488,7 +502,7 @@ var Dashboard = {
 				score: representation.speed, // Voor sorteren
 				title: representation.toString(),
 				subtitle: representation.getSubtitle(),
-				warnings: ['Geen waarschuwingen'] // TODO: wanneer we oorzaken toevoegen moeten deze hier doorgegeven worden
+				warnings: [] // TODO: wanneer we oorzaken toevoegen moeten deze hier doorgegeven worden
 			};
 
 			dataArr.push(data);
@@ -591,7 +605,7 @@ var Dashboard = {
 		var dataArr = [];
 
 		routes.forEach(function(route){
-			if (!route.getIntervalDataRepresentation(interval0, 7, p) || !route.getIntervalDataRepresentation(interval1, 7, p)){
+			if (!route.getIntervalDataRepresentation(interval0, 7, p) || !route.getIntervalDataRepresentation(interval1, 7, p) || route.getIntervalDataRepresentation(interval1, 7, p).empty || route.getIntervalDataRepresentation(interval0, 7, p).empty){
 				var data = {
 					id: route.id,
 					name: route.name,
@@ -600,9 +614,9 @@ var Dashboard = {
 					status: 'Niet beschikbaar',
 					score: 10000000,
 					first: {
-						status: '',
-						color:  '',
-						title: 'Niet beschikbaar',
+						status: 'Niet beschikbaar',
+						color:  'gray',
+						title: '',
 						subtitle: 'Deze route is niet beschikbaar in deze provider.',
 					},
 					second: {
@@ -640,6 +654,7 @@ var Dashboard = {
 				description: route.getDescription(),
 				length: route.getLength(),
 				status: t,
+				statusScore: diff,
 				score: diff, // Sorteren op grootste verschillen
 				first: {
 					status: status0.text,
@@ -659,6 +674,9 @@ var Dashboard = {
 		});
 
 		dataArr.sort(function(a, b) {
+			if (a.status == b.status) {
+				return a.score - b.score;
+			}
 			// Nog sorteren op status op eerste plaats toeveogen hier
 			return a.score - b.score;
 		});

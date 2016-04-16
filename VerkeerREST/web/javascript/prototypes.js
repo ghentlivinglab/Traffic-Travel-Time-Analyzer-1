@@ -226,13 +226,14 @@ var Route = {
 				color: 'gray'
 			};
 		}
-		if (liveData.speed < avgData.speed*0.7){
+		if (liveData.speed < 20){
 			return {
 				text: 'Stilstaand verkeer',
 				color: 'red'
 			};
 		}
-		if (liveData.speed < avgData.speed*0.9){
+
+		if (liveData.speed < 30 || (avgData.speed > 50 && liveData.speed < 50)){
 			return {
 				text: 'Traag verkeer',
 				color: 'orange'
@@ -244,6 +245,13 @@ var Route = {
 			color: 'green'
 		};
 	},
+	getWarnings: function(liveData, avgData){
+		if (liveData.speed < avgData.speed*0.7){
+			return ['Uitzonderlijk traag'];
+		}
+		return [];
+	},
+
 	// TODO: translate lines below
 	// avgData is een mapping van de providerId op een TrafficGraph object
 	// We kunnen dus altijd een bepaalde gemiddelde snelheid en tijd lezen voor een bepaalde provider (of alles)

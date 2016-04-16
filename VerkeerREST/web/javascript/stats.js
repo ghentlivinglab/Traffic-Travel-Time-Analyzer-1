@@ -67,6 +67,17 @@ function floatToHour(i){
 
 */
 function drawChart(element, data, width, height, dotted) {
+	for (var key in data) {
+		// lege keys negeren we
+		if (Object.keys(data[key]).length == 0){
+			delete data[key];
+		}
+	}
+	if (Object.keys(data).length == 0){
+		$(element).html('<p>Geen data beschikbaar</p>');
+		return;
+	}
+
 	var arr = [
 	      ['Tijdstip'],
 	];
@@ -80,13 +91,16 @@ function drawChart(element, data, width, height, dotted) {
 	// Dit stuk converteert het data object naar hetgene google verwacht (zie hun documentatie hiervoor)
 
 	for (var key in data) {
-			arr[0].push(key);
+		// lege keys negeren we
+		arr[0].push(key);
 	}
          console.log(data);
 	for (var i = 6; i <= 24; i+= Api.intervalDecimal) {
+
 		var a = [floatToHour(i)];
 
 		for (var key in data) {
+
             a.push(data[key][i]);
             if (typeof data[key][i] != 'undefined' && data[key][i] && (minimum == 0 || data[key][i] < minimum)) {
             	minimum = data[key][i];
@@ -114,8 +128,12 @@ function drawChart(element, data, width, height, dotted) {
 	if (dotted) {
 		series = {0: defSettings, 1: avgSettings};
 	}else{
-		legend = { position: 'right', alignment: 'start' };
-		padding = {left:90,top:20,right:140, bottom: 70};
+		if (Object.keys(data).length > 2){
+			legend = { position: 'right', alignment: 'start' };
+			padding = {left:90,top:20,right:140, bottom: 70};
+		}else{
+			colors = ['#800024', '#005AC1'];
+		}
 
 		for (var i = 0; i < arr[0].length-1; i++) {
 			// Dupliceren

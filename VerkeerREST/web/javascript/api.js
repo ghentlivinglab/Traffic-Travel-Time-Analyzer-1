@@ -368,6 +368,47 @@ var Api = {
 
     // fetches the acumulated data of every route
 	syncIntervalGraph: function(interval, routeId, provider, callback, context) {
+        var qid = this.getQueueId();
+
+        var route = routes[routeId];
+
+        // Hier alle data van de server halen.
+        // Uiteindelijk moet dit ongeveer het resultaat zijn: 
+
+        
+
+        var me = this;
+
+        $.getJSON("/VerkeerREST/api/trafficdata/weekday?providerID=" + provider + "&routeID=" + routeId + "&from=" + dateToRestString(interval.start) + "&to=" + dateToRestString(interval.end), function(result) {
+            if (result.result === "success") {
+                var resultdata = result.data;
+                for (var weekday in resultdata){
+                    var graph = route.getIntervalData(interval, weekday, provider)
+                    if (!graph){
+                        graph = TrafficGraph.create(null);
+                        route.setIntervalData(interval, weekday, provider, graph);
+                    }
+
+                    var data = {};
+                    for (var key in resultdata[weekday]) {
+                        var times = key.split(":");
+                        var hour = parseInt(times[0]);
+                        var minutes = parseInt(times[1]);
+                        hour += (minutes / 60);
+                        data[hour] = (resultdata[weekday][key]) / 60;
+                    }
+                    graph.data = data;
+                }
+                route.generateIntervalAvg(interval, provider);
+                me.callDelayed(qid, callback, context);
+            } else {
+                alert(result.reason);
+            }
+        }).fail(function() {
+            console.log("something went wrong loading the interval graph data.");
+        });
+
+
 		/*var route = routes[routeId];
 
 		for (var day = 0; day < 7; day++) {
