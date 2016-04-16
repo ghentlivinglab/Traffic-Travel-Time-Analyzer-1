@@ -48,3 +48,5 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 12/04/2016,19:15,23:59,Thuis,Projectwerk,Vergelijken van intervallen pagina + periode werken met ander soort data + bespreken hiervan,,
 13/04/2016,00:00,00:45,Thuis,Projectwerk,Server timezone juist zetten en alle db records aanpassen,,
 15/04/2016,09:30,18:00,Thuis,Projectwerk,Server synchroon maken + optimalisaties + Api request interval toevoegen,,
+15/04/2016,19:30,22:00,Thuis,Projectwerk,Period dashboard,,
+16/04/2016,02:00,03:30,Thuis,Projectwerk,Grafieken toevoegen aan periode dashboard,,
