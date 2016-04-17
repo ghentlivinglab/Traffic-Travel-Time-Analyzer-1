@@ -16,7 +16,7 @@ var map; // object for the map
 var mapCenter = {"lat":51.076317,"lng":3.7096717};
 var zoomCurrent = 12;
 // colors
-var normalTrafficColor = '#555555';
+var normalTrafficColor = '#39D930';
 var mediumTrafficColor = '#e67e22';
 var heavyTrafficColor = '#C10037';
 var selectedColor = '#3333AA';
