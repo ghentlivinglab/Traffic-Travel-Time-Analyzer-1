@@ -170,9 +170,10 @@ $(document).ready( function(){
  * runs when DOM-tree is finished and all objects from it are loaded
  ****************************/
 $(window).load( function(){
-	
 	// checks if mapView or overview has to be displayed
-	if(getQueryVariable("mapView")==="true" && $("#dashboard").css("left")==="250px"){
+	var showDashboard = getQueryVariable("dashboardView")==="true"; // checks if URL contains directives
+        var dashboardShown = $("#dashboard").css("left")==="250px"; // checks in which state the dashboard currently resides
+	if( showDashboard ? !dashboardShown : dashboardShown ){
 		togglePanel();
 	}
 });

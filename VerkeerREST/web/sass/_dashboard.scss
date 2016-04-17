@@ -2,7 +2,7 @@
 #dashboard {
 	position: fixed;
 	top: 0;
-	left: $settings-width;
+	left: $settings-width - $dashboard-width;
 	bottom: 0;
 	width: $dashboard-width;
 	background: $background-gray;
