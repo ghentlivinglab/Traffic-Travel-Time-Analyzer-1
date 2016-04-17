@@ -25,7 +25,8 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 03/03/2016,20:45,23:30,Thuis,verderwerken logging,,,
 04/03/2016,11:00,16:30,Thuis,Afwerken logging,,,probleem met duplicate logging 
 04/03/2016,19:00,21:20,Thuis,Afwerken geheel na logging,,,probleem met logbestanden
-04/03/2016,22:40,01:00,Thuis,Merken van lokaal naar master,,,Github merge die lastig doet
+04/03/2016,22:40,23:59,Thuis,Merken van lokaal naar master,,,Github merge die lastig doet
+04/03/2016,00:00,01:00,Thuis,Merken van lokaal naar master,,,Github merge die lastig doet
 06/03/2016,14:10,15:45,Thuis,Indelig repository in README,,,
 06/03/2016,16:40,17:50,Thuis,Richtlijnen in README,,,
 07/03/2016,13:50,16:40,Thuis,Voor wiki en analysedocumenten kijken,,,
@@ -35,20 +36,22 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 12/03/2016,10:00,12:00,School,Werken aan project als voorstelling opendeurdag,,,
 12/03/2016,14:45,17:30,Thuis,Verderwerken REST API,,31,
 13/03/2016,11:15,13:00,Thuis,Verderwerken REST API,,31,
-13/03/2016,23:00,01:30,Thuis,Basisfunctionaliteit REST API getest en gepusht,,31,
+13/03/2016,23:00,23:59,Thuis,Basisfunctionaliteit REST API getest en gepusht,,31,
+13/03/2016,00:00,01:30,Thuis,Basisfunctionaliteit REST API getest en gepusht,,31,
 15/03/2016,08:15,12:30,School,Contacturen en peerassessment presentaties,,,
 15/03/2016,20:30,21:45,Thuis,Properties gebruiken voor JPA Query's in REST API,,31,
 16/03/2016,00:30,02:00,Thuis,Verderwerken properties en moeilijke query voor REST API,,31,
 17/03/2016,13:30,17:30,School,Contacturen,,31,
 17/03/2016,18:00,19:15,Thuis,API query uittesten,,31,
-18/03/2016,21:50,00:15,Thuis,API query vervangen door soort CTE met nieuwe tabellen,,31,
-19/03/2016,00:15,01:10,Thuis,Oplossen van REST API probleem,,31,Het was fout in mijn variabelen
+18/03/2016,21:50,23:59,Thuis,API query vervangen door soort CTE met nieuwe tabellen,,31,
+19/03/2016,00:00,01:10,Thuis,Oplossen van REST API probleem,,31,Het was fout in mijn variabelen
 22/03/2016,08:15,12:30,School,Contacturen en presentatie geven,,31,in contacturen pushen van correcte REST API
 24/03/2016,13:30,17:45,School,Contacturen,,, rest api en query's logging
 24/03/2016,21:45,23:30,Thuis,Rest api ? voor goede query strings proberen,,,
 25/03/2016,11:00,13:40,Thuis,REST API authentication en empty path problemen,,,
 25/03/2016,14:50,17:10,Thuis,Zoeken naar mogelijke oplossing voor URL-probleem,,,
-25/03/2016,23:30,01:30,Thuis,Robin's REST oplossing bekijken en mogelijke aanpassingen,,,
+25/03/2016,23:30,23:59,Thuis,Robin's REST oplossing bekijken en mogelijke aanpassingen,,,
+25/03/2016,00:00,01:30,Thuis,Robin's REST oplossing bekijken en mogelijke aanpassingen,,,
 26/03/2016,10:00,11:50,Thuis,REST API query strings en opschonen code,,,
 27/03/2016,16:00,17:30,Thuis,REST API verderwerken,,,
 27/03/2016,20:30,23:15,Thuis,Verderwerken REST API,,,
@@ -56,7 +59,8 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 28/03/2016,13:30,15:00,Thuis,Probleem oplossen met weekday's casten naar long,,,
 30/03/2016,15:30,18:00,Thuis,Zoeken naar mogelijkheden api authentication,,,
 31/03/2016,09:00,12:15,Thuis,Mogelijkheden vergelijken api authentication,,,
-31/03/2016,20:45,00:30,Thuis,Uitwerken mogelijkheid met  containerrequestfilter,,,
+31/03/2016,20:45,23:59,Thuis,Uitwerken mogelijkheid met  containerrequestfilter,,,
+31/03/2016,00:00,00:30,Thuis,Uitwerken mogelijkheid met  containerrequestfilter,,,
 01/04/2016,16:30,18:30,Thuis,Verderwerken api authentication met containerrequestfilter,,,
 01/04/2016,19:45,21:15,Thuis,Verderwerken api authentication met containerrequestfilter,,,
 02/04/2016,00:30,01:45,Thuis,Api authentication met web service security bekijken en proberen,,,
