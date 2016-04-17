@@ -125,15 +125,15 @@ function updateColors(){
 		switch(colorStatus.color){
 			case 'red':
 				colors[i] = heavyTrafficColor; // heavy traffic
-				lines[i].setOptions({strokeColor: heavyTrafficColor});
+				lines[i].setOptions({strokeColor: heavyTrafficColor, zIndex: getZIndex(heavyTrafficColor)});
 				break;
 			case 'orange':
 				colors[i] = mediumTrafficColor; // medium traffic
-				lines[i].setOptions({strokeColor: mediumTrafficColor});
+				lines[i].setOptions({strokeColor: mediumTrafficColor,zIndex:getZIndex(mediumTrafficColor)});
 				break;
 			default:
 				colors[i] = normalTrafficColor; // normal traffic
-				lines[i].setOptions({strokeColor: normalTrafficColor});
+				lines[i].setOptions({strokeColor: normalTrafficColor,zIndex:getZIndex(normalTrafficColor)});
 				break;
 		}
 	}
