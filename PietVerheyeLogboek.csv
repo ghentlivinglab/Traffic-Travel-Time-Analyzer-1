@@ -1,17 +1,17 @@
 Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
-09/02/2016,08:30,12:30,School,Projectwerk,Uitlegsessie bachelorproef + doornemen documentatie,,
-11/02/2016,13:30,17:45,School,Projectwerk,Opstellen analysedocumenten+ taakverdeling begin,,
-16/02/2016,08:15,12:30,School,Communicatie,Infomoment met klant,,presentatie van onderwerp door klant + mogelijkheid tot vragen
+09/02/2016,08:30,12:30,School,Projectwerk,Uitlegsessie bachelorproef en doornemen documentatie,,
+11/02/2016,13:30,17:45,School,Projectwerk,Opstellen analysedocumenten en taakverdeling begin,,
+16/02/2016,08:15,12:30,School,Communicatie,Infomoment met klant,,presentatie van onderwerp door klant en mogelijkheid tot vragen
 16/02/2016,21:00,23:00,Thuis,Bijleren over de databank,,,
 18/02/2016,10:30,11:00,School,Lezing door bedrijven,,,Verplichte contacturen
-18/02/2016,13:15,17:45,School,Job- en stagebeurs,,,Verplichte contacturen
+18/02/2016,13:15,17:45,School,Job en stagebeurs,,,Verplichte contacturen
 22/02/2016,00:30,01:30,Thuis,Werking github herhalen,,,
 22/02/2016,17:00,20:00,Thuis,Bekijken van alle code en starten van code DummyDbConnector,,,
 23/02/2016,08:15,12:30,School,Projectwerk,Werken aan VM werkend krijgen,,
 23/02/2016,20:15,23:00,Thuis,afwerken DummyDbConnectore en werking github wat uittesten,,,github problemen oplossen
-25/02/2016,13:30,15:00,School,Communicatie,Module 4: eindwerken schrijven,,Verplichte contacturen
+25/02/2016,13:30,15:00,School,Communicatie,Module 4 eindwerken schrijven,,Verplichte contacturen
 25/02/2016,15:15,17:45,School,Projectwerk,,,
-26/02/2016,09:45,12:00,Thuis,Proberen pushen naar branch. Github werkt tegen met detached head,,,
+26/02/2016,09:45,12:00,Thuis,Proberen pushen naar branch Github werkt tegen met detached head,,,
 27/02/2016,10:15,12:15,Thuis,Github eindelijk kunnen committen,,,
 27/02/2016,19:45,20:45,Thuis,Opzoeken hoe project naar Proxy krijgen,,22,
 28/02/2016,10:45,13:10,Thuis,Project executable jar maken en kijken voor exporteren,,22,
@@ -21,13 +21,13 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 01/03/2016,19:15,22:25,Thuis,Uitzoeken hoe best logging realiseren,,,
 02/03/2016,10:25,12:00,Thuis,Logging beginnen programmeren,,,
 02/03/2016,18:45,20:50,Thuis,Verderwerken logging,,,
-03/03/2016,13:30,17:45,School,communicatieles & contacturen,,,
+03/03/2016,13:30,17:45,School,communicatieles en contacturen,,,
 03/03/2016,20:45,23:30,Thuis,verderwerken logging,,,
 04/03/2016,11:00,16:30,Thuis,Afwerken logging,,,probleem met duplicate logging 
 04/03/2016,19:00,21:20,Thuis,Afwerken geheel na logging,,,probleem met logbestanden
 04/03/2016,22:40,01:00,Thuis,Merken van lokaal naar master,,,Github merge die lastig doet
-06/03/2016,14:10,15:45,Thuis,Indelig repository in README.md,,,
-06/03/2016,16:40,17:50,Thuis,Richtlijnen in README.md,,,
+06/03/2016,14:10,15:45,Thuis,Indelig repository in README,,,
+06/03/2016,16:40,17:50,Thuis,Richtlijnen in README,,,
 07/03/2016,13:50,16:40,Thuis,Voor wiki en analysedocumenten kijken,,,
 08/03/2016,08:00,10:30,School,Voorstelling en ontmoeting klant voor einde sprint 1,,,
 10/03/2016,13:30,17:45,School,Contacturen begin sprint 2 en kijken voor REST API,,31,
@@ -44,10 +44,10 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 18/03/2016,21:50,00:15,Thuis,API query vervangen door soort CTE met nieuwe tabellen,,31,
 19/03/2016,00:15,01:10,Thuis,Oplossen van REST API probleem,,31,Het was fout in mijn variabelen
 22/03/2016,08:15,12:30,School,Contacturen en presentatie geven,,31,in contacturen pushen van correcte REST API
-24/03/2016,13:30,17:45,School,Contacturen,,, rest api & query's logging
+24/03/2016,13:30,17:45,School,Contacturen,,, rest api en query's logging
 24/03/2016,21:45,23:30,Thuis,Rest api ? voor goede query strings proberen,,,
 25/03/2016,11:00,13:40,Thuis,REST API authentication en empty path problemen,,,
-25/03/2016,14:50,17:10,Thuis,Zoeken naar mogelijke oplossing voor URL-probleem (? enzo),,,
+25/03/2016,14:50,17:10,Thuis,Zoeken naar mogelijke oplossing voor URL-probleem,,,
 25/03/2016,23:30,01:30,Thuis,Robin's REST oplossing bekijken en mogelijke aanpassingen,,,
 26/03/2016,10:00,11:50,Thuis,REST API query strings en opschonen code,,,
 27/03/2016,16:00,17:30,Thuis,REST API verderwerken,,,
@@ -78,7 +78,7 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 16/04/2016,16:45,18:00,Thuis,Issues bekijken en code nog eens bekijken,,,
 16/04/2016,19:30,22:15,Thuis,Klassendiagram verkeer maken leren werken met LucidChart,,55,
 17/04/2016,10:15,12:40,Thuis,Klassendiagram dbConnectors en providerConnectors maken,,55,
-17/04/2016,13:30,16:40,Thuis,Klassendiagram REST API,,55,Geprutst mt Visual Paradigm
+17/04/2016,13:30,16:40,Thuis,Klassendiagram REST API,,55,Geprutst met Visual Paradigm
 17/04/2016,17:25,18:30,Thuis,Klassendiagram REST api met LucidChart,,55,
 
 
