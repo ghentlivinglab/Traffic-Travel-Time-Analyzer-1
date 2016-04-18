@@ -3,6 +3,15 @@
 
 Onze applicatie bestaat uit 2 delen: de REST api, die zorgt voor de communicatie met de server, en de polling applicatie: deze zorgt dat we de data van de verschillende providers elke 5 minuten aanvragen en opslaan.
 
+### Eigen computer benodigdheden
+
+* Windows gebruikers hebben een bash nodig (Bourne Again Shell, dit is een tekstuele console waar unix-commando's kunnen ingevoerd worden).
+Een mogelijkheid is 'Cygwin64 Terminal': download de cygwin64 terminal: (link: https://www.cygwin.com/) kies voor de opties ->net->ssh.
+* Netbeans
+* Zorg dat Perl op je eigen computer staat geïnstalleerd
+* Installeer SASS op je eigen computer. Hoe dit moet vind je op http://sass-lang.com/install
+* Mac OSX: Installatie met ```sudo ``` moet vermeden worden, dit kan voor problemen zorgen. Gebruik bij voorkeur [rbenv](https://github.com/rbenv/rbenv)  om een nieuwe ruby environment aan te maken waarin je de SASS gem zonder sudo kan installeren.
+
 ### Server benodigdheden
 * Bij voorkeur met Ubuntu 14.04.4 of een gelijkaardige linux distributie op geïnstalleerd.
 * MySQL moet zijn geïnstalleerd. Wij gebruiken versie 5.5.47, andere versies zouden normaal gezien ook moeten werken. Tenzij ze erg afwijken van onze gebruikte versie. MariaDB werkt ook.
@@ -11,28 +20,28 @@ Onze applicatie bestaat uit 2 delen: de REST api, die zorgt voor de communicatie
   ```sudo perl -MCPAN -e 'install JSON'```
 * Glassfish is noodzakelijk
 
-### Code compileren
+### Database tabellen aanmaken
+
+TODO
+
+### Polling app deployen
+
+* Open het Verkeer netbeans project uit deze repository (Open netbeans > bestand > open project en selecteer /Verkeer) 
+* Klik op het hamertje met de bezem ervoor. De gecompileerde bestanden en andere scripts vinden we nu in /Verkeer/dist deze zal ons script straks naar de server verplaatsen.
+* Open nu je terminal (of cygwin64 terminal in Windows) venster in de scripts map, en voer ``` ./deploy-polling.sh ipadreshier ``` uit, vul hierbij eerst het ipadres of domeinnaam van de server in, bv. ``` ./deploy-polling.sh 146.185.150.100 ``` Indien een fout 'permission denied' voorkomt, probeer dan eerst ```chmod 500 deploy-polling.sh``` uit te voeren en probeer het nog eens opnieuw.
+* Als dit is gelukt dan staan de bestanden van uit de beide /dist folders op de server in /root/verkeer
+* Het aanzetten moet voorlopig nog manueel gebeuren
+* TODO
+
+### REST app deployten
 Om de software op de server te deployen hebben we enkele handige scriptjes geschreven. Toch moet er nog wat handwerk gebeuren:
 
-* Zorg dat Perl op je eigen computer staat geïnstalleerd
-* Installeer SASS op je eigen computer. Hoe dit moet vind je op http://sass-lang.com/install
-* Mac OSX: Installatie met ```sudo ``` moet vermeden worden, dit kan voor problemen zorgen. Gebruik bij voorkeur [rbenv](https://github.com/rbenv/rbenv)  om een nieuwe ruby environment aan te maken waarin je de SASS gem zonder sudo kan installeren.
-* Open een nieuw terminal venster (of cmd op windows) en gebruik het ```cd``` commando om naar de map /scripts uit deze reposiotory te navigeren.
-* Voer daar ``` perl voor-compileren.pl ``` uit. Die zou moeten eindigen met 'klaar' als alles gelukt is. Los anders de aangeggeven problemen op. 
+* Open een nieuw terminal venster (of cygwin64) en gebruik het ```cd``` commando om naar de map /scripts uit deze reposiotory te navigeren.
+* Voer daar ``` perl sass.pl ``` uit. Die zou moeten eindigen met 'klaar' als alles gelukt is. Los anders de aangeggeven problemen op. 
 * Zorg ervoor dat Netbeans geïnstalleerd is op je eigen computer, en open VerkeerREST uit deze repository. 
-* Klik op het hamer symbool met de bezem erbij. Het project zou nu zonder problemen moeten compileren en in de map /VerkeerREST/dist geplaatst worden: VerkeerREST.war Het is dit bestand dat we straks zullen deployen op glassfish.
-* Unix (Mac/Linux) gebruikers kunnen deze stap overslaan: Windows gebruikers hebben een bash nodig (Bourne Again Shell, dit is een tekstuele console waar unix-commando's kunnen ingevoerd worden).
-Een mogelijkheid is 'Cygwin64 Terminal': download de cygwin64 terminal: (link: https://www.cygwin.com/) kies voor de opties ->net->ssh.
-* Open nu het Verkeer project uit deze repository. Dit is de polling applicatie.
-* Ook hier klik je op het hamertje met de bezem ervoor. De gecompileerde bestanden en andere scripts vinden we in /Verkeer/dist deze zal ons script straks naar de server verplaatsen.
-* Open nu je terminal (of cygwin64 terminal in Windows) venster in de scripts map, en voer ``` ./deploy-polling.sh ipadreshier ``` uit, vul hierbij eerst het ipadres of domeinnaam van de server in, bv. ``` ./deploy-polling.sh 146.185.150.100 ``` Indien een fout 'permission denied' voorkomt, probeer dan eerst ```chmod 500 deploy-polling.sh``` uit te voeren en probeer het nog eens opnieuw.
-* Als dit is gelukt dan staan de bestanden van uit de /dist folder op de server.
-
-### De polling app aanzetten
-
-
-### De webapp aanzetten
-
+* Klik op het hamer symbool met de bezem erbij. Het project zou nu zonder problemen moeten compileren en in de map /VerkeerREST/dist geplaatst worden: VerkeerREST.war Het is dit bestand dat we straks zullen deployen op glassfish (automatisch met scripts).
+* Open nu je terminal (of cygwin64 terminal in Windows) venster in de scripts map, en voer ``` ./deploy-rest.sh ipadreshier ``` uit, vul hierbij eerst het ipadres of domeinnaam van de server in, bv. ``` ./deploy-rest.sh 146.185.150.100 ``` Indien een fout 'permission denied' voorkomt, probeer dan eerst ```chmod 500 deploy-rest.sh``` uit te voeren en probeer het nog eens opnieuw.
+* TODO
 
 ## Richtlijnen toegang tot applicatie (in de productieomgeving)
 De applicatie is opgebouwd in een linux-omgeving. Hierdoor is een linux-besturingssysteem vereist ofwel
