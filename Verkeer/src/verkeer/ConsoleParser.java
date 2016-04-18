@@ -21,33 +21,36 @@ public class ConsoleParser {
 
     public void processCommandLineInput() {
         if (console == null) {
-            log.error("No console found. Don't try to start this in an IDE ;)");
-            System.exit(1);
-        }
-        boolean keepRunning = true;
-        while (keepRunning) {
-            String command = console.readLine(" $ ");
-            if (command.equals("exit")) {
-                System.exit(2);
-            } else if (command.equals("status")) {
-                printStatus();
-            } else if (command.equals("properties")) {
-                printProperties();
-            } else if (command.equals("reload")) {
-                pollThread.reloadProperties();
-            } else if (command.equals("poll")) {
-                pollThread.forceUpdate();
-            } else {
-                String words[] = command.split(" ");
-                if (words[0].equals("properties")) {
-                    if (words.length >= 2) {
-                        properties(words);
-                    } else {
-                        System.out.println("  Usage: properties db|app get|set propertyname propertyvalue");
+            log.info("No console found. No input allowed.");
+            while (true){
+                // bezig houden
+            }
+        }else {
+            boolean keepRunning = true;
+            while (keepRunning) {
+                String command = console.readLine(" $ ");
+                if (command.equals("exit")) {
+                    System.exit(2);
+                } else if (command.equals("status")) {
+                    printStatus();
+                } else if (command.equals("properties")) {
+                    printProperties();
+                } else if (command.equals("reload")) {
+                    pollThread.reloadProperties();
+                } else if (command.equals("poll")) {
+                    pollThread.forceUpdate();
+                } else {
+                    String words[] = command.split(" ");
+                    if (words[0].equals("properties")) {
+                        if (words.length >= 2) {
+                            properties(words);
+                        } else {
+                            System.out.println("  Usage: properties db|app get|set propertyname propertyvalue");
+                        }
                     }
                 }
+                //To be continued..
             }
-            //To be continued..
         }
     }
 

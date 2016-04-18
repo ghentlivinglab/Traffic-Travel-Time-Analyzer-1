@@ -68,6 +68,8 @@ public class PollThread extends Thread {
             cal.setTime(date);
             int hours = cal.get(Calendar.HOUR_OF_DAY);
             int minutes = cal.get(Calendar.MINUTE);
+            
+            log.info("nieuwe poll");
 
             // Enkel na 6 uur of voor half 1
             if (hours >= 6 || (hours == 0 && minutes <= 30)) {
