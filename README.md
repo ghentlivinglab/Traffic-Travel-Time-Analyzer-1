@@ -31,16 +31,23 @@ TODO
 * Open nu je terminal (of cygwin64 terminal in Windows) venster in de scripts map, en voer ``` ./deploy-polling.sh ipadreshier ``` uit, vul hierbij eerst het ipadres of domeinnaam van de server in, bv. ``` ./deploy-polling.sh 146.185.150.100 ``` Indien een fout 'permission denied' voorkomt, probeer dan eerst ```chmod 500 deploy-polling.sh``` uit te voeren en probeer het nog eens opnieuw.
 * Als dit is gelukt dan staan de bestanden van uit de beide /dist folders op de server in /root/verkeer
 * Het aanzetten moet voorlopig nog manueel gebeuren
-* TODO
+* Open je terminal venster en voer ``` ssh root@jouwserverip  ``` uit
+* ``` cd /root/verkeer  ```
+* ``` screen java -Xmx256m -jar ./Verkeer.jar  ```
+* Nu zie je de output van het programma en kan je een 'poll' forceren met het commando poll.
+* Je kan de status zien met het commando 'status'.
+* Om dit in de achtergrond te houden is het heel belangrijk om het volgende te doen: druk ctrl + a (hiervan zal je geen visuele feedback zien) en druk daarna op de 'd' toets. Daarna zal je terug in de terminal belanden.
+* Gebruik ```screen -ls ``` om te zien of de polling applicatie draait. Er zou (detached) moeten staan achter verkeer-1
+* Gebruik ``` screen -r ``` om terug in de console van onze app te gaan, vergeet ook hier niet om ctrl + a, d te gebruiken om terug te keren, anders wordt de applicatie afgesloten. We willen dit process later vereenvoudigen en in ons deploy-polling.sh script plaatsen, maar dit is ons momenteel nog niet gelukt.
 
-### REST app deployen
+### Web app deployen
 
 * Open een nieuw terminal venster (of cygwin64) en gebruik het ```cd``` commando om naar de map /scripts uit deze reposiotory te navigeren.
 * Voer daar ``` perl sass.pl ``` uit. Die zou moeten eindigen met 'klaar' als alles gelukt is. Los anders de aangeggeven problemen op. 
 * Zorg ervoor dat Netbeans geïnstalleerd is op je eigen computer, en open VerkeerREST uit deze repository. 
 * Klik op het hamer symbool met de bezem erbij. Het project zou nu zonder problemen moeten compileren en in de map /VerkeerREST/dist geplaatst worden: VerkeerREST.war Het is dit bestand dat we straks zullen deployen op glassfish (automatisch met scripts).
 * Open nu je terminal (of cygwin64 terminal in Windows) venster in de scripts map, en voer ``` ./deploy-rest.sh ipadreshier gebruikersnaam wachtwoord ``` uit, vul hierbij eerst het ipadres of domeinnaam van de server in en de glassfish gebruikersnaam en wachtwoord. Bv. ``` ./deploy-rest.sh 146.185.150.100 admin aeSqFPbpUl ``` voor onze DigitalOcean server. Indien een fout 'permission denied' voorkomt, probeer dan eerst ```chmod 500 deploy-rest.sh``` uit te voeren en probeer het nog eens opnieuw.
-* TODO
+* Als deployment lukt, dan kan je naar je server surfen http://mijndomein.com/VerkeerREST/ om het controle paneel te bekijken.
 
 ## Richtlijnen toegang tot applicatie (in de productieomgeving)
 De applicatie is opgebouwd in een linux-omgeving. Hierdoor is een linux-besturingssysteem vereist ofwel
