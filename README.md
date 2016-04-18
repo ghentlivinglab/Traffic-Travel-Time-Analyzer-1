@@ -19,10 +19,12 @@ Een mogelijkheid is 'Cygwin64 Terminal': download de cygwin64 terminal: (link: h
 * De JSON library voor Perl moet geïnstalleerd zijn. Als ```perl -MJSON -e 1``` geen errors geeft, is deze al geïnstalleerd. Anders kan dit via 
   ```sudo perl -MCPAN -e 'install JSON'```
 * Glassfish is noodzakelijk
+* Java
 
 ### Database tabellen aanmaken
 
-TODO
+*  Open een terminal (of cygwin64 terminal in Windows) venster in de scripts map van onze repostory (navigeer hierheen met het cd commando). Voer ``` ./init-database.sh ipadreshier mysqlusername mysqlpassword ``` uit, vul hierbij eerst het ipadres of domeinnaam van de server in en de mysql logingegevens. Dit moet het root account zijn. bv. ``` ./init-database.sh 146.185.150.100 root wachtwoord ``` Indien een fout 'permission denied' voorkomt, probeer dan eerst ```chmod 500 init-database.sh``` uit te voeren en probeer het nog eens opnieuw. Dit script zal het root wachtwoord veranderen in root.
+*  **Voer dit script slechst 1 keer uit, aangezien het mogelijks data kan wissen als de database al eens aangemaakt is geweest.**
 
 ### Polling app deployen
 
