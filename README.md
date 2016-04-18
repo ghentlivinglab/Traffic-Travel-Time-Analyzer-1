@@ -21,16 +21,18 @@ Een mogelijkheid is 'Cygwin64 Terminal': download de cygwin64 terminal: (link: h
 * Glassfish is noodzakelijk
 * Java
 
-### Database tabellen aanmaken
+### Database aanmaken
 
-*  Open een terminal (of cygwin64 terminal in Windows) venster in de scripts map van onze repostory (navigeer hierheen met het cd commando). Voer ``` ./init-database.sh ipadreshier mysqlusername mysqlpassword ``` uit, vul hierbij eerst het ipadres of domeinnaam van de server in en de mysql logingegevens. Dit moet het root account zijn. bv. ``` ./init-database.sh 146.185.150.100 root wachtwoord ``` Indien een fout 'permission denied' voorkomt, probeer dan eerst ```chmod 500 init-database.sh``` uit te voeren en probeer het nog eens opnieuw. Dit script zal het root wachtwoord veranderen in root.
-*  **Voer dit script slechst 1 keer uit, aangezien het mogelijks data kan wissen als de database al eens aangemaakt is geweest.**
+*  Open een terminal (of cygwin64 terminal in Windows) venster in de scripts map van onze repostory (navigeer hierheen met het cd commando). 
+*  Voer het commando ``` ./init-database.sh ipadreshier mysqlusername mysqlpassword ``` uit, vul hierbij eerst het ipadres of domeinnaam van de server in en de mysql logingegevens. Dit moet het root account zijn. bv. ``` ./init-database.sh 146.185.150.100 root wachtwoord ``` Indien een fout 'permission denied' voorkomt, probeer dan eerst ```chmod 500 init-database.sh``` uit te voeren en probeer het nog eens opnieuw. **Dit script zal het root wachtwoord veranderen in root.** Dit is voorlopig noodzakelijk omdat dit zo in onze app configuratie opgeslagen staat.
+*  **Voer dit script slechst 1 keer uit, aangezien het mogelijk data kan wissen als de database al eens aangemaakt is geweest.**
 
 ### Polling app deployen
 
 * Open het Verkeer netbeans project uit deze repository (Open netbeans > bestand > open project en selecteer /Verkeer) 
-* Klik op het hamertje met de bezem ervoor. De gecompileerde bestanden en andere scripts vinden we nu in /Verkeer/dist deze zal ons script straks naar de server verplaatsen.
-* Open nu je terminal (of cygwin64 terminal in Windows) venster in de scripts map, en voer ``` ./deploy-polling.sh ipadreshier ``` uit, vul hierbij eerst het ipadres of domeinnaam van de server in, bv. ``` ./deploy-polling.sh 146.185.150.100 ``` Indien een fout 'permission denied' voorkomt, probeer dan eerst ```chmod 500 deploy-polling.sh``` uit te voeren en probeer het nog eens opnieuw.
+* Klik op het hamertje met de bezem ervoor. De gecompileerde bestanden en andere scripts vinden we nu in /Verkeer/dist.
+* Open een terminal (of cygwin64 terminal in Windows) venster in de scripts map van onze repostory (navigeer hierheen met het cd commando).
+* Voer het commando ``` ./deploy-polling.sh ipadreshier ``` uit, vul hierbij eerst het ipadres of domeinnaam van de server in, bv. ``` ./deploy-polling.sh 146.185.150.100 ``` Indien een fout 'permission denied' voorkomt, probeer dan eerst ```chmod 500 deploy-polling.sh``` uit te voeren en probeer het nog eens opnieuw.
 * Als dit is gelukt dan staan de bestanden van uit de beide /dist folders op de server in /root/verkeer
 * Het aanzetten moet voorlopig nog manueel gebeuren
 * Open je terminal venster en voer ``` ssh root@jouwserverip  ``` uit
@@ -39,7 +41,7 @@ Een mogelijkheid is 'Cygwin64 Terminal': download de cygwin64 terminal: (link: h
 * Nu zie je de output van het programma en kan je een 'poll' forceren met het commando poll.
 * Je kan de status zien met het commando 'status'.
 * Om dit in de achtergrond te houden is het heel belangrijk om het volgende te doen: druk ctrl + a (hiervan zal je geen visuele feedback zien) en druk daarna op de 'd' toets. Daarna zal je terug in de terminal belanden.
-* Gebruik ```screen -ls ``` om te zien of de polling applicatie draait. Er zou (detached) moeten staan achter verkeer-1
+* Gebruik ```screen -ls ``` om te zien of de polling applicatie draait. Normaal gezien staat '(detached)' achter verkeer-1.
 * Gebruik ``` screen -r ``` om terug in de console van onze app te gaan, vergeet ook hier niet om ctrl + a, d te gebruiken om terug te keren, anders wordt de applicatie afgesloten. We willen dit process later vereenvoudigen en in ons deploy-polling.sh script plaatsen, maar dit is ons momenteel nog niet gelukt.
 
 ### Web app deployen
@@ -48,7 +50,7 @@ Een mogelijkheid is 'Cygwin64 Terminal': download de cygwin64 terminal: (link: h
 * Voer daar ``` perl sass.pl ``` uit. Die zou moeten eindigen met 'klaar' als alles gelukt is. Los anders de aangeggeven problemen op. 
 * Zorg ervoor dat Netbeans geïnstalleerd is op je eigen computer, en open VerkeerREST uit deze repository. 
 * Klik op het hamer symbool met de bezem erbij. Het project zou nu zonder problemen moeten compileren en in de map /VerkeerREST/dist geplaatst worden: VerkeerREST.war Het is dit bestand dat we straks zullen deployen op glassfish (automatisch met scripts).
-* Open nu je terminal (of cygwin64 terminal in Windows) venster in de scripts map, en voer ``` ./deploy-rest.sh ipadreshier gebruikersnaam wachtwoord ``` uit, vul hierbij eerst het ipadres of domeinnaam van de server in en de glassfish gebruikersnaam en wachtwoord. Bv. ``` ./deploy-rest.sh 146.185.150.100 admin aeSqFPbpUl ``` voor onze DigitalOcean server. Indien een fout 'permission denied' voorkomt, probeer dan eerst ```chmod 500 deploy-rest.sh``` uit te voeren en probeer het nog eens opnieuw.
+* Open terug hetzelfde terminal venster, en voer ``` ./deploy-rest.sh ipadreshier gebruikersnaam wachtwoord ``` uit, vul hierbij eerst het ipadres of domeinnaam van de server in en de glassfish gebruikersnaam en wachtwoord. Bv. ``` ./deploy-rest.sh 146.185.150.100 admin aeSqFPbpUl ``` voor onze DigitalOcean server. Indien een fout 'permission denied' voorkomt, voer dan eerst ```chmod 500 deploy-rest.sh``` uit te voeren en probeer het nog eens opnieuw.
 * Als deployment lukt, dan kan je naar je server surfen http://mijndomein.com/VerkeerREST/ om het controle paneel te bekijken.
 
 ## Richtlijnen toegang tot applicatie (in de productieomgeving)
