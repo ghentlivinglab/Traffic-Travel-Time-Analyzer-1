@@ -25,7 +25,8 @@ Om de software op de server te deployen hebben we enkele handige scriptjes gesch
 Een mogelijkheid is 'Cygwin64 Terminal': download de cygwin64 terminal: (link: https://www.cygwin.com/) kies voor de opties ->net->ssh.
 * Open nu het Verkeer project uit deze repository. Dit is de polling applicatie.
 * Ook hier klik je op het hamertje met de bezem ervoor. De gecompileerde bestanden en andere scripts vinden we in /Verkeer/dist deze zal ons script straks naar de server verplaatsen.
-* Open nu je terminal (of cygwin64 terminal in Windows) venster in de scripts map, en voer ``` ./deploy-polling.sh ipadreshier ``` uit, vul hierbij eerst het ipadres of domeinnaam van de server in. Indien een fout 'permission denied' voorkomt, probeer dan eerst ```chmod 500 deploy-polling.sh``` uit te voeren en probeer het nog eens opnieuw.
+* Open nu je terminal (of cygwin64 terminal in Windows) venster in de scripts map, en voer ``` ./deploy-polling.sh ipadreshier ``` uit, vul hierbij eerst het ipadres of domeinnaam van de server in, bv. ``` ./deploy-polling.sh 146.185.150.100 ``` Indien een fout 'permission denied' voorkomt, probeer dan eerst ```chmod 500 deploy-polling.sh``` uit te voeren en probeer het nog eens opnieuw.
+* Als dit is gelukt dan staan de bestanden van uit de /dist folder op de server.
 
 ### De polling app aanzetten
 
