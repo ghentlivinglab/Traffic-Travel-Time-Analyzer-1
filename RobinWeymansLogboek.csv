@@ -1,6 +1,6 @@
 Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
-09/02/2016,8:30,12:30,School,Projectwerk,Uitlegsessie bachelorproef + doornemen documentatie,,
-11/02/2016,13:30,17:45,School,Projectwerk,Opstellen analysedocumenten+ taakverdeling begin,,
+9/2/2016,8:30,12:30,School,Projectwerk,Uitlegsessie bachelorproef + doornemen documentatie,,
+11/2/2016,13:30,17:45,School,Projectwerk,Opstellen analysedocumenten+ taakverdeling begin,,
 16/02/2016,8:15,12:30,School,Communicatie,Infomoment met klant,,presentatie van onderwerp door klant + mogelijkheid tot vragen
 17/02/2016,11:00,14:00,Kot,Projectwerk,Ontwerp databank in orde brengen (tabellen aanmaken ..),,
 17/02/2016,13:00,19:00,Kot,Projectwerk,Programmeren van DAO,,
@@ -11,17 +11,17 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 25/02/2016,13:30,15:00,School,Communicatie,Module 4: eindwerken schrijven,,Verplichte contacturen
 25/02/2016,15:15,17:45,School,Projectwerk,afwerken pollingmechanisme (1),,
 25/02/2016,19:00,21:00,Kot,Projectwerk,afwerken pollingmechanisme (2),,
-01/03/2016,13:00,15:30,Kot,Projectwerk,scripts om project naar VM te pushen,22,
-02/03/2016,18:00,19:00,Kot,Projectwerk,script om project naar productieomgeving te pushen,22,dit maakt het testen eenvoudiger
-03/03/2016,13:30,17:45,School,Communicatie,Module 4: presentatietechnieken,,Verplichte contacturen
-03/03/2016,23:00,23:59,Kot,Projectwerk,"Vereenvoudigen van Consoleparser, Fout afhandeling",26,
-04/03/2016,0:00,4:00,Kot,Projectwerk,"Vereenvoudigen van Consoleparser, Fout afhandeling",26,
-05/03/2016,12:00,16:00,Kot,Projectwerk,Toevoegen TomTomProvider en propertiesfile,7 & 27,
-06/03/2016,11:00,19:00,Thuis,Presentatie,Presentatie sprint 1 maken van de presentatie,,
-07/03/2016,14:30,21:00,Thuis,Presentatie,Presentatie sprint 1 inoefenen en laatste aanpassingen maken aan de code,,
-10/03/2016,12:00,18:00,Thuis,Projectwerk,ontwikkelen Rest API,,
-11/03/2016,13:30,21:00,Thuis,Projectwerk,ontwikkelen Rest API,,
-15/03/2016,08:15,10:15,School,Projectwerk,Werken aan de Rest API,,
+1/3/2016,13:00,15:30,Kot,Projectwerk,scripts om project naar VM te pushen,22,
+2/3/2016,18:00,19:00,Kot,Projectwerk,script om project naar productieomgeving te pushen,22,dit maakt het testen eenvoudiger
+3/3/2016,13:30,17:45,School,Communicatie,Module 4: presentatietechnieken,,Verplichte contacturen
+3/3/2016,23:00,23:59,Kot,Projectwerk,"Vereenvoudigen van Consoleparser, Fout afhandeling",26,
+4/3/2016,0:00,4:00,Kot,Projectwerk,"Vereenvoudigen van Consoleparser, Fout afhandeling",26,
+5/3/2016,12:00,16:00,Kot,Projectwerk,Toevoegen TomTomProvider en propertiesfile,7 & 27,
+6/3/2016,11:00,19:00,Thuis,Presentatie,Presentatie sprint 1 maken van de presentatie,,
+7/3/2016,14:30,21:00,Thuis,Presentatie,Presentatie sprint 1 inoefenen en laatste aanpassingen maken aan de code,,
+10/3/2016,12:00,18:00,Thuis,Projectwerk,ontwikkelen Rest API,,
+11/3/2016,13:30,21:00,Thuis,Projectwerk,ontwikkelen Rest API,,
+15/03/2016,8:15,10:15,School,Projectwerk,Werken aan de Rest API,,
 15/03/2016,10:30,12:30,School,Communicatie,Presentaties van andere groepen bijwonen,,
 15/03/2016,13:00,14:00,Kot,Projectwerk,SQL querry's ontwerpen,,
 16/03/2016,14:00,19:00,Kot,Projectwerk,Netbeans+glassfish aan de praat krijgen,,
@@ -33,5 +33,16 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 22/03/2016,8:15,10:15,School,Projectwerk,Ontwerpen dashboard en leren van meester Simon,,
 22/03/2016,10:30,12:30,School,Communicatie,Presentaties,,
 23/03/2016,12:00,23:59,Kot,Projectwerk,Javascript opnieuw gewoon worden en animaties toevoegen aan dashboard + waypoints,,
-24/03/2016,00:00,01:00,Kot,Projectwerk,Javascript opnieuw gewoon worden en animaties toevoegen aan dashboard + waypoints,,
+24/03/2016,0:00,1:00,Kot,Projectwerk,Javascript opnieuw gewoon worden en animaties toevoegen aan dashboard + waypoints,,
 24/03/2016,13:30,17:45,School,Projectwerk,Algemene werken,,
+28/03/2016,12:00,17:00,Thuis,Projectwerk,Opzoekwerk authenticatie API,,Voorlopig zonder succes
+29/03/2016,12:00,17:00,Thuis,Projectwerk,Eigen testomgeving opzetten,,De VM was gewoon echt veel te traag + tijd kwam niet meer overeen
+31/03/2016,12:00,17:00,Thuis,Projectwerk,Opzoekwerk authenticatie API,,"Via glassfish, maar niet ideaal"
+1/4/2016,12:00,17:00,Thuis,Projectwerk,Authenticatie API,,Poging via Oauth 2
+2/4/2016,10:00,13:00,Thuis,Projectwerk,Nieuwe functies implementeren Rest API,,Live modus
+4/4/2016,12:00,17:00,Thuis,Projectwerk,Nieuwe functies implementeren Rest API,,Voorizen van data voo de grafieken in webapp
+7/4/2016,12:00,17:00,Thuis,Projectwerk,"Opkuisen project (properties bestanden,...)",,
+11/4/2016,13:30,19:00,Kot,Projectwerk,Bug fixes in de webapplicatie,,
+12/4/2016,8:15,12:30,School,Projectwerk,Samenkomen groep en bespreking presentatie + documentatie,,
+14/4/2016,13:30,17:45,School,Projectwerk,Samenkomen groep en bespreking presentatie + documentatie,,
+16/4/2016,15:00,20:00,Thuis,Projectwerk,Documentatie schrijven,,
