@@ -55,16 +55,6 @@ Een mogelijkheid is 'Cygwin64 Terminal': download de cygwin64 terminal: (link: h
 * Open terug hetzelfde terminal venster, en voer ``` ./deploy-rest.sh ipadreshier gebruikersnaam wachtwoord ``` uit, vul hierbij eerst het ipadres of domeinnaam van de server in en de glassfish gebruikersnaam en wachtwoord. Bv. ``` ./deploy-rest.sh 146.185.150.100 admin aeSqFPbpUl ``` voor onze DigitalOcean server. Indien een fout 'permission denied' voorkomt, voer dan eerst ```chmod 500 deploy-rest.sh``` uit te voeren en probeer het nog eens opnieuw.
 * Als deployment lukt, dan kan je naar je server surfen http://mijndomein.com/VerkeerREST/ om het controle paneel te bekijken.
 
-## Richtlijnen toegang tot applicatie (in de productieomgeving)
-De applicatie is opgebouwd in een linux-omgeving. Hierdoor is een linux-besturingssysteem vereist ofwel
-een bash (Bourne Again Shell, dit is een tekstuele console waar linux-commando's kunnen ingevoerd worden).
-Een mogelijkheid is 'Cygwin64 Terminal'.
- 1. Downloaden van cygwin64 terminal: (link: https://www.cygwin.com/) kiezen voor de opties ->net->ssh.
- 2. Eerst moeten op de proxy kunnen. Omdat deze zich op het ugent netwerk bevindt zullen we eerst een VPN-verbinding maken met UGent ASA VPN (via Cisco AnyConnect Secure Mobility Client).
- 3. commando 'ssh student@tiwibp1.ugent.be', wachtwoord is 'vop2016'. Hierdoor bevinden we ons op de proxy.
- 4. Voer in de proxy-console het commando 'ssh root@localhost -p 3022' uit. -p 30022 omdat de ssh-poort van onze productieomgeving op 30022 is ingesteld. Wachtwoord is 'aeSqFPbpUl'.
-Nu bevinden we ons op de productieomgeving waar de applicatie zich bevindt. Verdere instructies met het uitvoeren van de applicatie zijn hieronder te vinden.
-
 ## Richtlijnen testen in lokale omgeving
 Om de applicatie lokaal te kunnen uittesten is een virtuele machine noodzakelijk. Hierop dient MariaDB reeds geïnstalleerd te zijn. Een andere mogelijkheid is om deze database lokaal te installeren: een lokaal mysql process zou normaal gezien ook moeten werken, mits het properties bestand correct wordt ingesteld.
 
