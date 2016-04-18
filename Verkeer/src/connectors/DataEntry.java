@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package connectors;
 
 import java.sql.Timestamp;
@@ -10,18 +5,14 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-/**
- *
- * @author Simon
- */
 public class DataEntry {
+
     private Timestamp timestamp;
     private int travelTime;
     private RouteEntry route;
     private ProviderEntry provider;
 
     /**
-     * 
      * @param timestamp time of the measurement
      * @param travelTime estimated duration of the route
      * @param route route of the measurement
@@ -33,8 +24,10 @@ public class DataEntry {
         this.route = route;
         this.provider = provider;
     }
+
     /**
      * Convenient constructor. Uses 'now' as timestamp
+     *
      * @param travelTime estimated duration of the route
      * @param route route of the measurement
      * @param provider provider of the measurement
@@ -45,17 +38,18 @@ public class DataEntry {
         this.route = route;
         this.provider = provider;
     }
-    
+
     /**
-     * 
+     *
      */
-    public DataEntry(){
+    public DataEntry() {
         this.route = new RouteEntry();
         this.provider = new ProviderEntry();
     }
 
     /**
      * Returns the time of the measurement.
+     *
      * @return integer with time in seconds
      */
     public Timestamp getTimestamp() {
@@ -65,8 +59,8 @@ public class DataEntry {
     public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
     }
-    
-    public final void setTimestampNow(){ 
+
+    public final void setTimestampNow() {
         // create a java calendar instance
         Calendar calendar = Calendar.getInstance();
 
@@ -80,6 +74,7 @@ public class DataEntry {
 
     /**
      * Returns the duration of the trip of this measurement.
+     *
      * @return integer with time in seconds
      */
     public int getTravelTime() {
@@ -92,7 +87,8 @@ public class DataEntry {
 
     /**
      * Returns the RouteEntry-object of this measurement.
-     * @return  RouteEntry with route-info
+     *
+     * @return RouteEntry with route-info
      */
     public RouteEntry getRoute() {
         return route;
@@ -104,6 +100,7 @@ public class DataEntry {
 
     /**
      * Returns the ProviderEntry-object of this measurement.
+     *
      * @return ProviderEntry with provider-info
      */
     public ProviderEntry getProvider() {
@@ -113,13 +110,13 @@ public class DataEntry {
     public void setProvider(ProviderEntry provider) {
         this.provider = provider;
     }
-    
+
     @Override
-    public String toString(){
+    public String toString() {
         // Convert Timestamp in readable string
         DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         String reportDate = df.format(timestamp);
 
-        return "DataEntry {\n\troute: \""+route+"\",\n\ttimestamp: \""+reportDate+"\",\n\ttravelTime: "+travelTime+",\n\tprovider: \""+provider.getName()+"\"\n}";
+        return "DataEntry {\n\troute: \"" + route + "\",\n\ttimestamp: \"" + reportDate + "\",\n\ttravelTime: " + travelTime + ",\n\tprovider: \"" + provider.getName() + "\"\n}";
     }
 }

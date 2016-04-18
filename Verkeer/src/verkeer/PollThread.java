@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package verkeer;
 
 import connectors.database.ConnectionException;
@@ -23,10 +18,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.apache.log4j.Logger;
 
-/**
- *
- * @author HP
- */
 public class PollThread extends Thread {
 
     private Properties prop;
@@ -43,7 +34,7 @@ public class PollThread extends Thread {
             FileInputStream fis = new FileInputStream(new File("./config/app.properties"));
             prop.load(fis);
         } catch (IOException ex) {
-            System.err.println("./config/app.properties niet gevonden. "+ex.getMessage());
+            System.err.println("./config/app.properties niet gevonden. " + ex.getMessage());
             System.exit(1);
 
         }
@@ -81,7 +72,7 @@ public class PollThread extends Thread {
             // Enkel na 6 uur of voor half 1
             if (hours >= 6 || (hours == 0 && minutes <= 30)) {
                 for (AProviderConnector a : providers) {
-                    if (a.shouldTriggerUpdate()){
+                    if (a.shouldTriggerUpdate()) {
                         executor.submit(new Runnable() {
                             @Override
                             public void run() {
