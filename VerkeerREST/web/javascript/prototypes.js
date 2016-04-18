@@ -390,6 +390,7 @@ var Route = {
 	
 	// maintains graphs for each day (0-6) or all days (7)
 	// eg intervalData["04/07/2015T12:00>08/07/2015T14:00"][0][providerId] -> TrafficGraph
+	// met de 1e parameter de toString van een interval of event object (geven hetzelfde weer voor hetzelfde datum en uur bereik)
 	intervalData: {
 
 	}
@@ -630,6 +631,6 @@ var Interval = {
 
 	// TODO: beter maken!!
 	toString: function() {
-		return dateToDate(this.start)+' > '+dateToDate(this.end); 
+		return dateToString(this.start)+' > '+dateToString(this.end); 
 	}
 };

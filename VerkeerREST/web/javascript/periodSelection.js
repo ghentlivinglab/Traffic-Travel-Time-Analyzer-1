@@ -2,6 +2,7 @@
  * Converteer functies (formaat is voor achter de schermen, niet voor display!) Niet aanpassen aub
  ****************************/
 
+// Date naar een leesbare string (zonder tijd) voor mensen
 function dateToDate(date){
 	if (!date){
 		return '';
@@ -11,8 +12,9 @@ function dateToDate(date){
 	var year = date.getFullYear();
 	return day+"/"+month+"/"+year;
 }
-function dateToRestString(date){
-    
+
+// Date naar een leesbare string voor mensen
+function dateToString(date){
 	if (!date){
 		return '';
 	}
@@ -20,9 +22,25 @@ function dateToRestString(date){
 	var month = pad(date.getMonth()+1);
 	var year = pad(date.getFullYear());
         
-        var hours = pad(date.getHours());
-        var minutes = pad(date.getMinutes());
-        var seconds = pad(date.getSeconds());
+    var hours = pad(date.getHours());
+    var minutes = pad(date.getMinutes());
+    
+	return year+"-"+month+"-"+day+" om "+hours+":"+minutes;
+}
+
+// Date naar leesbare string voor onze REST api
+// Gebruik hier dateToString niet omdat deze functie haar output niet mag veranderen moesten we dateToString wijzigen
+function dateToRestString(date){
+	if (!date){
+		return '';
+	}
+	var day = pad(date.getDate());
+	var month = pad(date.getMonth()+1);
+	var year = pad(date.getFullYear());
+        
+    var hours = pad(date.getHours());
+    var minutes = pad(date.getMinutes());
+    var seconds = pad(date.getSeconds());
 	return year+"-"+month+"-"+day+" "+hours+":"+minutes+":"+seconds;
 }
 
