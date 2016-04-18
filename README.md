@@ -34,13 +34,12 @@ TODO
 * TODO
 
 ### REST app deployten
-Om de software op de server te deployen hebben we enkele handige scriptjes geschreven. Toch moet er nog wat handwerk gebeuren:
 
 * Open een nieuw terminal venster (of cygwin64) en gebruik het ```cd``` commando om naar de map /scripts uit deze reposiotory te navigeren.
 * Voer daar ``` perl sass.pl ``` uit. Die zou moeten eindigen met 'klaar' als alles gelukt is. Los anders de aangeggeven problemen op. 
 * Zorg ervoor dat Netbeans geïnstalleerd is op je eigen computer, en open VerkeerREST uit deze repository. 
 * Klik op het hamer symbool met de bezem erbij. Het project zou nu zonder problemen moeten compileren en in de map /VerkeerREST/dist geplaatst worden: VerkeerREST.war Het is dit bestand dat we straks zullen deployen op glassfish (automatisch met scripts).
-* Open nu je terminal (of cygwin64 terminal in Windows) venster in de scripts map, en voer ``` ./deploy-rest.sh ipadreshier ``` uit, vul hierbij eerst het ipadres of domeinnaam van de server in, bv. ``` ./deploy-rest.sh 146.185.150.100 ``` Indien een fout 'permission denied' voorkomt, probeer dan eerst ```chmod 500 deploy-rest.sh``` uit te voeren en probeer het nog eens opnieuw.
+* Open nu je terminal (of cygwin64 terminal in Windows) venster in de scripts map, en voer ``` ./deploy-rest.sh ipadreshier gebruikersnaam wachtwoord ``` uit, vul hierbij eerst het ipadres of domeinnaam van de server in, bv. ``` ./deploy-rest.sh 146.185.150.100 admin aeSqFPbpUl ``` voor onze digitalocean server. Indien een fout 'permission denied' voorkomt, probeer dan eerst ```chmod 500 deploy-rest.sh``` uit te voeren en probeer het nog eens opnieuw.
 * TODO
 
 ## Richtlijnen toegang tot applicatie (in de productieomgeving)
