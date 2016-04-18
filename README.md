@@ -1,7 +1,7 @@
 # Verkeercentrum Gent (groep 1)
 ## Installatie handleiding
 
-Onze applicatie bestaat uit 2 delen: de REST api, die zorgt voor de communicatie met de server, en de polling applicatie: deze zorgt dat we de data van de verschillende providers elke 5 minuten aanvragen en opslaan.
+Onze applicatie bestaat uit 2 delen: de REST api, die zorgt voor de communicatie met de server, en de polling applicatie: deze zorgt dat we de data van de verschillende providers elke 5 minuten aanvragen en opslaan. Dit stuk legt uit hoe we de code kunnen compileren en op een server uitvoeren.
 
 ### Eigen computer benodigdheden
 
@@ -20,6 +20,7 @@ Een mogelijkheid is 'Cygwin64 Terminal': download de cygwin64 terminal: (link: h
   ```sudo perl -MCPAN -e 'install JSON'```
 * Glassfish is noodzakelijk
 * Java
+* Screen commando. Installeren kan via ```sudo apt-get install screen```. [Meer info](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-screen-on-an-ubuntu-cloud-server)
 
 ### Database aanmaken
 
