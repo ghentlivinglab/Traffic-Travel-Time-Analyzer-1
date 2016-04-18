@@ -6,7 +6,7 @@ else
     exit
 fi
 
-ssh root@$1 'mkdir -p /root/verkeerREST/ &> /dev/null | rm /root/verkeerREST/VerkeerREST.war &> /dev/null' 
+ssh root@$1 'mkdir -p /root/verkeerREST/ > /dev/null 2>&1 | rm /root/verkeerREST/VerkeerREST.war > /dev/null 2>&1' 
 echo "WAR bestand verplaatsen..."
 scp -rp ../VerkeerREST/dist/VerkeerREST.war root@$1:/root/verkeerREST/VerkeerREST.war &> /dev/null
 
