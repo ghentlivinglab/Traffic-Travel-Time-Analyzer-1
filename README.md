@@ -104,21 +104,11 @@ ook nog een Perl bestand voor de Coyoteprovider de data op te halen en enkele sc
 #### Scripts
 Om de scripts uit te voeren op een Windows besturingssysteem zal je een bash (Bourne Again Shell) moeten downloaden 
 om deze scripts te kunnen uitvoeren, anders kan je het ssh en scp commando niet uitvoeren. (bv: Cygwin64 Terminal)
- 1. pushNaarVM : script om het project automatisch naar je lokale VM te pushen.
-Hiervoor moet je wel in je VM's netwerkinstelling portforwarding doen van je ssh-poort (poort 122 in ons script) en
-moet je ook de directory van waar je project's dist bestand staat en de directory van waar je het project wil 
-plaatsen op je VM veranderen.
-Om te zorgen dat we geen wachtwoord meer nodig hebben, zullen we een ssh-key zonder wachtwoord moeten genereren. (-> zie script sshAuthorize)
- 2. pushNaarProductie : script om het project automatisch naar de productieomgeving te pushen.
-net als bij het pushen naar je lokale VM moet je de directory van waar je dist bestand staat en de directory
-van waar je het wil in je productieomgeving veranderen.
-De poort van onze productieomgeving die we hebben meegekregen is 30022.
-Omdat we een wachtwoord nodig hebben om op de proxy en op de productieomgeving in te loggen is het nodig om lokaal en 
-op de proxy een ssh-key te generaten zonder wachtwoord. (-> hiervoor hebben we nog geen script) 
- 3. sshAuthorize : dient dus om ssh-keys zonder wachtwoord te genereren. (Voorlopig enkel voor naar je lokale VM)
+
+Zie 1. Installatie handleiding voor informatie over de scripts.
 
 #### Verkeer 
-Dit is het project zelf. 
+Dit is het polling project. 
 Hierin bevinden zich de libraries, die zullen toegevoegd worden aan het dist bestand bij builden van het project.
 Het belangrijkste is natuurlijk de src, waar al onze klassen inzitten.
 De opdeling van het src bestand is als volgt:
