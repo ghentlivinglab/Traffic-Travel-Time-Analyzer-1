@@ -1,7 +1,7 @@
 # Verkeercentrum Gent (groep 1)
 ## Installatie handleiding
 
-Onze applicatie bestaat uit 2 delen: de REST api, die zorgt voor de communicatie met de server, en de polling applicatie: deze zorgt dat we de data van de verschillende providers elke 5 minuten aanvragen en opslaan. Dit stuk legt uit hoe we de code kunnen compileren en op een server uitvoeren.
+Onze applicatie bestaat uit 2 delen: de REST api, die zorgt voor de communicatie met de server, en de polling applicatie: deze zorgt dat we de data van de verschillende providers elke 5 minuten opvragen en opslaan. Dit stuk legt uit hoe we de code kunnen compileren en op een server uitvoeren.
 
 ### Eigen computer benodigdheden
 
