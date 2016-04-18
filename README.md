@@ -1,5 +1,40 @@
-# verkeer-1
-### Richtlijnen toegang tot applicatie (in de productieomgeving)
+# Verkeercentrum Gent (groep 1)
+## Installatie handleiding
+
+Onze applicatie bestaat uit 2 delen: de REST api, die zorgt voor de communicatie met de server, en de polling applicatie: deze zorgt dat we de data van de verschillende providers elke 5 minuten aanvragen en opslaan.
+
+### Server benodigdheden
+* Bij voorkeur met Ubuntu 14.04.4 of een gelijkaardige linux distributie op geïnstalleerd.
+* MySQL moet zijn geïnstalleerd. Wij gebruiken versie 5.5.47, andere versies zouden normaal gezien ook moeten werken. Tenzij ze erg afwijken van onze gebruikte versie. MariaDB werkt ook.
+* Perl v5.18 of nieuwer. Komt standaard met Ubuntu, kan geïnstalleerd worden / geüpdate worden met ```sudo apt-get install perl```
+* De JSON library voor Perl moet geïnstalleerd zijn. Als ```perl -MJSON -e 1``` geen errors geeft, is deze al geïnstalleerd. Anders kan dit via 
+  ```sudo perl -MCPAN -e 'install JSON'```
+* Glassfish is noodzakelijk
+
+### Code compileren
+Om de software op de server te deployen hebben we enkele handige scriptjes geschreven. Toch moet er nog wat handwerk gebeuren:
+
+* Zorg dat Perl op je eigen computer staat geïnstalleerd
+* Installeer SASS op je eigen computer. Hoe dit moet vind je op http://sass-lang.com/install
+* Mac OSX: Installatie met ```sudo ``` moet vermeden worden, dit kan voor problemen zorgen. Gebruik bij voorkeur [rbenv](https://github.com/rbenv/rbenv)  om een nieuwe ruby environment aan te maken waarin je de SASS gem zonder sudo kan installeren.
+* Open een nieuw terminal venster (of cmd op windows) en gebruik het ```cd``` commando om naar de map /scripts uit deze reposiotory te navigeren.
+* Voer daar ``` perl voor-compileren.pl ``` uit. Die zou moeten eindigen met 'klaar' als alles gelukt is. Los anders de aangeggeven problemen op. 
+* Zorg ervoor dat Netbeans geïnstalleerd is op je eigen computer, en open VerkeerREST uit deze repository. 
+* Klik op het hamer symbool met de bezem erbij. Het project zou nu zonder problemen moeten compileren en in de map /VerkeerREST/dist geplaatst worden: VerkeerREST.war Het is dit bestand dat we straks zullen deployen op glassfish.
+* Unix (Mac/Linux) gebruikers kunnen deze stap overslaan: Windows gebruikers hebben een bash nodig (Bourne Again Shell, dit is een tekstuele console waar unix-commando's kunnen ingevoerd worden).
+Een mogelijkheid is 'Cygwin64 Terminal': download de cygwin64 terminal: (link: https://www.cygwin.com/) kies voor de opties ->net->ssh.
+* Open nu het Verkeer project uit deze repository. Dit is de polling applicatie.
+* Ook hier klik je op het hamertje met de bezem ervoor. De gecompileerde bestanden en andere scripts vinden we in /Verkeer/dist deze zal ons script straks naar de server verplaatsen.
+* Open nu je terminal (of cygwin64 terminal in Windows) venster in de scripts map, en voer ``` ./deploy-polling.sh ipadreshier ``` uit, vul hierbij eerst het ipadres of domeinnaam van de server in, bv. ``` ./deploy-polling.sh 146.185.150.100 ``` Indien een fout 'permission denied' voorkomt, probeer dan eerst ```chmod 500 deploy-polling.sh``` uit te voeren en probeer het nog eens opnieuw.
+* Als dit is gelukt dan staan de bestanden van uit de /dist folder op de server.
+
+### De polling app aanzetten
+
+
+### De webapp aanzetten
+
+
+## Richtlijnen toegang tot applicatie (in de productieomgeving)
 De applicatie is opgebouwd in een linux-omgeving. Hierdoor is een linux-besturingssysteem vereist ofwel
 een bash (Bourne Again Shell, dit is een tekstuele console waar linux-commando's kunnen ingevoerd worden).
 Een mogelijkheid is 'Cygwin64 Terminal'.
@@ -9,7 +44,7 @@ Een mogelijkheid is 'Cygwin64 Terminal'.
  4. Voer in de proxy-console het commando 'ssh root@localhost -p 3022' uit. -p 30022 omdat de ssh-poort van onze productieomgeving op 30022 is ingesteld. Wachtwoord is 'aeSqFPbpUl'.
 Nu bevinden we ons op de productieomgeving waar de applicatie zich bevindt. Verdere instructies met het uitvoeren van de applicatie zijn hieronder te vinden.
 
-### Richtlijnen testen in lokale omgeving
+## Richtlijnen testen in lokale omgeving
 Om de applicatie lokaal te kunnen uittesten is een virtuele machine noodzakelijk. Hierop dient MariaDB reeds geïnstalleerd te zijn. Een andere mogelijkheid is om deze database lokaal te installeren: een lokaal mysql process zou normaal gezien ook moeten werken, mits het properties bestand correct wordt ingesteld.
 
 In [connectors.database/database.properties](Verkeer/src/connectors/database/database.properties) vind je een lijst met allerlei properties die gebruikt worden om de connectie te starten met *jdbc*. Het kan zijn dat hier aanpassingen aan moeten gebeuren (bv het wachtwoord, de database naam, poort of ip adres...).
@@ -24,7 +59,7 @@ mdir /root/verkeer/logs
 ```
 in de Terminal.
 
-### Richtlijnen uitvoeren programma
+## Richtlijnen uitvoeren programma
 In onze productieomgeving bevindt zich een bestand verkeer. Hierin hebben wij het dist-bestand van ons project geïmporteerd. Wij hebben een alias gecreeërd die zorgt dat je gewoon 'verkeer' moet intypen in de tekstuele console
 die dan het executable jar bestand van ons project uitvoerd.
 

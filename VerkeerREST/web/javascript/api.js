@@ -79,7 +79,7 @@ var Api = {
 				var array=[];
 				result.sort(function(a,b){return a.sequence-b.sequence;});
 				for(var i in result){
-					array.push({"lat":result[i].longitude,"lng":result[i].latitude});
+					array.push({"lat":result[i].latitude,"lng":result[i].longitude});
 				}
 				routes[result[0].routeID].waypoints=array;
 			}
