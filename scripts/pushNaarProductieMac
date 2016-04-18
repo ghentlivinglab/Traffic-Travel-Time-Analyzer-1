@@ -1,1 +1,0 @@
-scp -rp ../Verkeer/dist/* root@146.185.150.100:/root/verkeer
