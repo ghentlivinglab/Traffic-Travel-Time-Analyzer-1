@@ -36,19 +36,21 @@ Een mogelijkheid is 'Cygwin64 Terminal': download de cygwin64 terminal: (link: h
 * Als dit is gelukt dan staan de bestanden van uit de beide /dist folders op de server in /root/verkeer
 * Het aanzetten moet voorlopig nog manueel gebeuren
 * Open je terminal venster en voer ``` ssh root@jouwserverip  ``` uit
-* ``` cd /root/verkeer  ```
-* ``` screen java -Xmx256m -jar ./Verkeer.jar  ```
+* Gebruik ``` cd /root/verkeer  ``` om in de map te belanden met onze jar.
+* Voer``` screen java -Xmx256m -jar ./Verkeer.jar  ``` uit om onze jar uit te voeren in een nieuwe 'venster'.
 * Nu zie je de output van het programma en kan je een 'poll' forceren met het commando poll.
 * Je kan de status zien met het commando 'status'.
 * Om dit in de achtergrond te houden is het heel belangrijk om het volgende te doen: druk ctrl + a (hiervan zal je geen visuele feedback zien) en druk daarna op de 'd' toets. Daarna zal je terug in de terminal belanden.
 * Gebruik ```screen -ls ``` om te zien of de polling applicatie draait. Normaal gezien staat '(detached)' achter verkeer-1.
-* Gebruik ``` screen -r ``` om terug in de console van onze app te gaan, vergeet ook hier niet om ctrl + a, d te gebruiken om terug te keren, anders wordt de applicatie afgesloten. We willen dit process later vereenvoudigen en in ons deploy-polling.sh script plaatsen, maar dit is ons momenteel nog niet gelukt.
+* Gebruik ``` screen -r ``` om terug in de console van onze app te gaan. Het kan zijn dat om een id wordt gevraagd, die bekom je door ```screen -ls```. 
+* **Vergeet ook hier niet om ctrl + a, d te gebruiken om terug te keren.** 
+* We willen dit process later vereenvoudigen en in ons deploy-polling.sh script plaatsen, maar dit is ons momenteel nog niet gelukt. Onze web app deployen verloopt wel volledig automatisch.
 
 ### Web app deployen
 
-* Open een nieuw terminal venster (of cygwin64) en gebruik het ```cd``` commando om naar de map /scripts uit deze reposiotory te navigeren.
-* Voer daar ``` perl sass.pl ``` uit. Die zou moeten eindigen met 'klaar' als alles gelukt is. Los anders de aangeggeven problemen op. 
-* Zorg ervoor dat Netbeans geïnstalleerd is op je eigen computer, en open VerkeerREST uit deze repository. 
+* Open een nieuw terminal venster (of cygwin64) en gebruik het ```cd``` commando om naar de map /scripts uit onze reposiotory te navigeren.
+* Voer daar ``` perl sass.pl ``` uit. Dit script compileert onze scss code aangezien we onze css code (bewust) niet in onze repository opslaan. Het commando geeft 'klaar' als alles gelukt is. Los anders de aangeggeven problemen op. 
+* Zorg ervoor dat Netbeans geïnstalleerd is op je eigen computer, en open VerkeerREST uit onze repository. 
 * Klik op het hamer symbool met de bezem erbij. Het project zou nu zonder problemen moeten compileren en in de map /VerkeerREST/dist geplaatst worden: VerkeerREST.war Het is dit bestand dat we straks zullen deployen op glassfish (automatisch met scripts).
 * Open terug hetzelfde terminal venster, en voer ``` ./deploy-rest.sh ipadreshier gebruikersnaam wachtwoord ``` uit, vul hierbij eerst het ipadres of domeinnaam van de server in en de glassfish gebruikersnaam en wachtwoord. Bv. ``` ./deploy-rest.sh 146.185.150.100 admin aeSqFPbpUl ``` voor onze DigitalOcean server. Indien een fout 'permission denied' voorkomt, voer dan eerst ```chmod 500 deploy-rest.sh``` uit te voeren en probeer het nog eens opnieuw.
 * Als deployment lukt, dan kan je naar je server surfen http://mijndomein.com/VerkeerREST/ om het controle paneel te bekijken.
