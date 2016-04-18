@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package connectors.database;
 
 import connectors.DataEntry;
@@ -15,16 +10,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- *
- * @author jarno
- */
-public class DummyDbConnector implements IDbConnector{
+public class DummyDbConnector implements IDbConnector {
+
     private Map<Integer, ProviderEntry> providerEntries;
     private List<DataEntry> dataEntries;
     private List<RouteEntry> routeEntries;
-    
-    public DummyDbConnector(){
+
+    public DummyDbConnector() {
         providerEntries = new HashMap<>();
         dataEntries = new ArrayList<>();
         routeEntries = new ArrayList<>();
@@ -33,7 +25,7 @@ public class DummyDbConnector implements IDbConnector{
         vulRoutesOp();
         vulTrafficDataOp();
     }
-    
+
     @Override
     public void insert(DataEntry entry) {
         dataEntries.add(entry);
@@ -52,7 +44,7 @@ public class DummyDbConnector implements IDbConnector{
     @Override
     public ProviderEntry findProviderEntryByName(String name) {
         for (ProviderEntry value : providerEntries.values()) {
-            if (value.getName().equals(name)){
+            if (value.getName().equals(name)) {
                 return value;
             }
         }
@@ -68,8 +60,8 @@ public class DummyDbConnector implements IDbConnector{
     @Override
     public RouteEntry findRouteEntryByName(String name) {
         RouteEntry ret = null;
-        for(RouteEntry value : routeEntries){
-            if(value.getName().equals(name)){
+        for (RouteEntry value : routeEntries) {
+            if (value.getName().equals(name)) {
                 ret = value;
             }
         }
@@ -79,8 +71,8 @@ public class DummyDbConnector implements IDbConnector{
     @Override
     public RouteEntry findRouteEntryByID(int id) {
         RouteEntry ret = null;
-        for(RouteEntry value : routeEntries){
-            if(value.getId() == id){
+        for (RouteEntry value : routeEntries) {
+            if (value.getId() == id) {
                 ret = value;
             }
         }
@@ -90,28 +82,29 @@ public class DummyDbConnector implements IDbConnector{
     @Override
     public DataEntry findDataEntryByID(int routeId, int providerId, Timestamp timestamp) {
         DataEntry det = null;
-        for(DataEntry value : dataEntries){
-            if(value.getRoute().getId() == routeId && value.getProvider().getId() == providerId && value.getTimestamp() == timestamp){
+        for (DataEntry value : dataEntries) {
+            if (value.getRoute().getId() == routeId && value.getProvider().getId() == providerId && value.getTimestamp() == timestamp) {
                 det = value;
             }
         }
         return det;
     }
-    
+
     /**
      * Dummy only, for testing
-     * @return 
+     *
+     * @return
      */
-    public int getDataEntriesSize(){
+    public int getDataEntriesSize() {
         return dataEntries.size();
     }
 
     @Override
     public Collection<DataEntry> findDataEntryBetween(int routeId, int providerId, Timestamp from, Timestamp to) {
         Collection<DataEntry> dets = new ArrayList<>();
-        for(DataEntry value : dataEntries){
-            if(value.getRoute().getId() == routeId && value.getProvider().getId() == providerId 
-                    && value.getTimestamp().getTime() > from.getTime() && value.getTimestamp().getTime() < to.getTime()){  // mischien hier met getMinute werken zoals gezegd, maar dit is verouderd
+        for (DataEntry value : dataEntries) {
+            if (value.getRoute().getId() == routeId && value.getProvider().getId() == providerId
+                    && value.getTimestamp().getTime() > from.getTime() && value.getTimestamp().getTime() < to.getTime()) {  // mischien hier met getMinute werken zoals gezegd, maar dit is verouderd
                 dets.add(value);
             }
         }
@@ -122,8 +115,8 @@ public class DummyDbConnector implements IDbConnector{
     public Collection<RouteEntry> findAllRouteEntries() {
         return routeEntries;
     }
-    
-    public void vulRoutesOp(){
+
+    public void vulRoutesOp() {
         RouteEntry traject1 = new RouteEntry();
         traject1.setId(1);
         traject1.setName("R40 Drongensesteenweg -> Palinghuizen");
@@ -132,7 +125,7 @@ public class DummyDbConnector implements IDbConnector{
         traject1.setEndCoordinateLatitude(51.0663037);
         traject1.setEndCoordinateLongitude(3.6996797);
         routeEntries.add(traject1);
-        
+
         RouteEntry traject2 = new RouteEntry();
         traject2.setId(2);
         traject2.setName("R40 Drongensesteenweg -> Palinghuizen - kopie");
@@ -142,20 +135,20 @@ public class DummyDbConnector implements IDbConnector{
         traject2.setEndCoordinateLongitude(3.6996797);
         routeEntries.add(traject2);
     }
-    
-    public void vulProvidersOp(){
+
+    public void vulProvidersOp() {
         ProviderEntry provider1 = new ProviderEntry();
         provider1.setName("Here");
         provider1.setId(1);
         providerEntries.put(provider1.getId(), provider1);
-        
+
         ProviderEntry provider2 = new ProviderEntry();
         provider2.setName("Waze");
         provider2.setId(2);
         providerEntries.put(provider2.getId(), provider2);
     }
-    
-    public void vulTrafficDataOp(){
+
+    public void vulTrafficDataOp() {
         DataEntry det1 = new DataEntry();
         Timestamp date1 = new Timestamp(2016, 02, 28, 15, 50, 45, 999);
         det1.setProvider(providerEntries.get(1)); // provider here
@@ -163,7 +156,7 @@ public class DummyDbConnector implements IDbConnector{
         det1.setTimestamp(date1);
         det1.setTravelTime(20);
         dataEntries.add(det1);
-        
+
         DataEntry det2 = new DataEntry();
         Timestamp date2 = new Timestamp(2016, 02, 28, 20, 50, 45, 999);
         det2.setProvider(providerEntries.get(2));// provider waze
@@ -177,5 +170,5 @@ public class DummyDbConnector implements IDbConnector{
     public void reloadProperties() throws ConnectionException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
 }
