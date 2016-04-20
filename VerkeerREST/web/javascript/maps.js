@@ -70,7 +70,7 @@ function reloadMap() {
 function loading(boolean) {
     var overlay = $('#map-overlay');
     var content = $(overlay).find("#content");
-    
+
     if (boolean) { // show when loading
         content.fadeIn();
         overlay.show();
@@ -203,14 +203,27 @@ function lineClicked(event) {
     if (infowindow != null) {// if an infoWindow is shown
         updateColors();
     }
+    
+    var currentTime = Number(routes[this['id']].liveData[Dashboard.provider.id].representation.time);
+    var currentMinutes = Math.floor(currentTime);
+    var currentSeconds = currentTime - currentMinutes;
+    currentMinutes += (currentSeconds < .5) ? 0 : 1;
+    
+    var averageTime = Number(routes[this['id']].avgData[Dashboard.provider.id].representation.time);
+    var averageMinutes = Math.floor(averageTime);
+    var averageSeconds = averageTime - averageMinutes;
+    averageMinutes += (averageSeconds < .5) ? 0 : 1;
+    
+    var distance = routes[this['id']].length;
+    
     var message = '<content id="infoWindow">'
             + '<h1>' + routes[this['id']].name + ' <span class=smallTitle>' + routes[this['id']].description + '</span></h1>'
             + '<p class="infoWindowCurrentTime">Huidige reistijd: </p>'
-            + '<p class="infoWindowCurrentTime value">' + routes[this['id']].liveData[Dashboard.provider.id].representation.time + ' minuten</p>'
+            + '<p class="infoWindowCurrentTime value">' + currentMinutes + ' minuten</p>'
             + '<p class="infoWindowAverageTime">Gemiddelde reistijd: </p>'
-            + '<p class="infoWindowAverageTime value">' + routes[this['id']].avgData[Dashboard.provider.id].representation.time + ' minuten</p>'
+            + '<p class="infoWindowAverageTime value">' + averageMinutes + ' minuten</p>'
             + '<p class="infoWindowRouteLenght">Lengte van traject:</p>'
-            + '<p class="infoWindowRouteLenght value">' + routes[this['id']].length + ' meter</p>'
+            + '<p class="infoWindowRouteLenght value">' + Math.round(distance/10)/100 + ' kilometer</p>'
             + '</content>';
     createInfoWindow(event["latLng"], message);
     this.setOptions({strokeWeight: hoverWeight, zIndex: 3, strokeColor: selectedColor}); // add accent to line
