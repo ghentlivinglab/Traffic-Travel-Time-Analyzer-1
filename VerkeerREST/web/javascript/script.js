@@ -56,12 +56,37 @@ Mustache.renderTemplate = function (template_name, view) {
  * toggles the display of the overview panel
  ****************************/
 function togglePanel(){
-	if($("#dashboard").css("left")==="250px"){ // panel is shown
-		$("#dashboard").animate({left:-550}); // hides panel to the left
-		$(".collapse").children().attr({"src":"images/arrow-right.png","alt":">"}); // changes the display of the button
-	} else{ // panel is not shown
-		$("#dashboard").animate({left:250}); // shows panel
-		$(".collapse").children().attr({"src":"images/arrow-left.png","alt":"<"}); // changes the display of the button
+	if($("#dashboard").hasClass('open')){ 
+		// Als het dashboard open is, sluiten we het terug
+		$("#dashboard").removeClass('open');
+
+		// Animeer dat het naar links opschuift, dit is niet stabiel.
+		// Als de breedte van het dashboard wijzigt tijdens het animeren
+		// zal het op het einde niet op de juiste plaats staan.
+		$("#dashboard").animate({'margin-left': -$("#dashboard").outerWidth()}, function() {
+			// Als het terug gesloten is, zorgen we dat de CSS terug 'stabiel' is
+			$("#dashboard").css({'left': 'auto', 'margin-left': 0, 'right': 0});
+		}); 
+		
+		// changes the display of the button
+		$(".collapse").children().attr({"src":"images/arrow-right.png","alt":">"});
+	
+	} else{ 
+		// Als het dashboard gesloten is, openen we het
+		$("#dashboard").addClass('open');
+
+		// We verwijderen right: 0 en stappen over op margin-left, zodat we die kunnen animeren
+		// (right en left tergelijk animeren kan niet zonder jump)
+		// De gebruiker merkt hier niets van, het scherm blijft exact hetzelfde.
+		// We zijn wel niet meer 'stabiel', wijzigingen in de breedte van het dashboard zullen de animatie
+		// beïnvloeden, maar dat blijft heel erg beperkt
+		$("#dashboard").css({'left': '100%', 'right': 'auto', 'margin-left': -$("#dashboard").outerWidth()});
+		
+		// Animeren, op het einde hiervan zijn we terug 'stabiel'
+		$("#dashboard").animate({'margin-left': 0});
+
+		// changes the display of the button
+		$(".collapse").children().attr({"src":"images/arrow-left.png","alt":"<"}); 
 	}
 
 }

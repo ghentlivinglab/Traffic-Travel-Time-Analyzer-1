@@ -93,13 +93,22 @@ span.sub {
     @include bg-gradient-l2r(rgba(0,0,0,0.08), rgba(0,0,0,0));
 }
 
-#settings {
-    position: fixed;
+#bundle {
+    position: absolute;
     left: 0;
     top: 0;
     bottom: 0;
+    width: $settings-width;
+
+}
+
+#settings {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
     background: white;
-    width: $settings-width - 50;
     padding: 30px 25px;
     z-index: 1;
 
