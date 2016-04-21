@@ -149,12 +149,7 @@ function drawChart(element, data, width, height, dotted) {
 			series[i] = obj;
 		}
 	}
-
 	var series_copy = JSON.parse(JSON.stringify(series));
-
-
-
-
 	var options = {
 		legend: legend,
 		fontName: 'Roboto',
