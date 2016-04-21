@@ -128,23 +128,12 @@ function thisReady(){
 	$(this).find('.popup-box').click(function(event) {
 		clickedOnPopup = true;
 	});
-
-	// Scrollbalken
-	if (navigator.userAgent.indexOf('Mac OS X') == -1) {
-		$(this).find(".popup-scroll").niceScroll({zindex:999,cursorcolor:"#CCCCCC"});
-	}
 }
 
 /****************************
  * runs when DOM-tree is finished
  ****************************/
 $(document).ready( function(){
-	
-	// runs the nice-scrollbar script on non-Mac devices
-	if (navigator.userAgent.indexOf('Mac OS X') == -1) {
-		$("#dashboard .content").niceScroll({zindex:999,cursorcolor:"#CCCCCC"});
-	}
-
 	thisReady.call(document);
 	
 	// adds a click listener to the collapse-button

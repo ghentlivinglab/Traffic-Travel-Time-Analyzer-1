@@ -11,125 +11,120 @@
         <link href="css/picker.css" rel="stylesheet">
         <link rel="shortcut icon" href="favicon.png"/>
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.nicescroll/3.6.8-fix/jquery.nicescroll.min.js"></script>
-
 
         <!-- Mustache templates -->
 
         <!-- Route in de periode/vandaag weergave (één kolom met info, één met waarschuwingen) -->
         <script id="template-route" type="text/html">
-        <article onclick="toggleGraph.call(this);" data-route="{{ id }}">
-            <div class="table">
-                <header>
-                    <h1>{{ name }}</h1>
-                    <h2>{{ description }}</h2>
-                    <h2>{{ length }}</h2>
-                </header>
-                <div class="left">
-                    <p class="{{ color }} status">{{ status }}</p>
-                    <p class="speed">{{ title }}</p>
-                    <p class="avg-speed">{{ subtitle }}</p>
+            <article onclick="toggleGraph.call(this);" data-route="{{ id }}">
+                <div class="table">
+                    <header>
+                        <h1>{{ name }}</h1>
+                        <h2>{{ description }}</h2>
+                        <h2>{{ length }}</h2>
+                    </header>
+                    <div class="left">
+                        <p class="{{ color }} status">{{ status }}</p>
+                        <p class="speed">{{ title }}</p>
+                        <p class="avg-speed">{{ subtitle }}</p>
+                    </div>
+                    <div class="right">
+                        {{#warnings}}
+                        <p class="warning">{{ . }}</p>
+                        {{/warnings}}
+                    </div>
                 </div>
-                <div class="right">
-                    {{#warnings}}
-                    <p class="warning">{{ . }}</p>
-                    {{/warnings}}
+            </article>
+        </script>
+
+        <script id="template-compare" type="text/html">
+            <article onclick="toggleGraph.call(this);" data-route="{{ id }}">
+                <div class="table">
+                    <header>
+                        <h1>{{ name }}</h1>
+                        <h2>{{ description }}</h2>
+                    </header>
+                    <div class="left">
+                        <p class="{{ first.color }} status">{{ first.status }}</p>
+                        <p class="speed">{{ first.title }}</p>
+                        <p class="avg-speed">{{ first.subtitle }}</p>
+                    </div>
+                    <div class="right">
+                        <p class="{{ second.color }} status">{{ second.status }}</p>
+                        <p class="speed">{{ second.title }}</p>
+                        <p class="avg-speed">{{ second.subtitle }}</p>
+                    </div>
                 </div>
-            </div>
-        </article>
-    </script>
+            </article>
+        </script>
 
-    <script id="template-compare" type="text/html">
-        <article onclick="toggleGraph.call(this);" data-route="{{ id }}">
-            <div class="table">
-                <header>
-                    <h1>{{ name }}</h1>
-                    <h2>{{ description }}</h2>
-                </header>
-                <div class="left">
-                    <p class="{{ first.color }} status">{{ first.status }}</p>
-                    <p class="speed">{{ first.title }}</p>
-                    <p class="avg-speed">{{ first.subtitle }}</p>
-                </div>
-                <div class="right">
-                    <p class="{{ second.color }} status">{{ second.status }}</p>
-                    <p class="speed">{{ second.title }}</p>
-                    <p class="avg-speed">{{ second.subtitle }}</p>
-                </div>
-            </div>
-        </article>
-    </script>
+        <!-- Dashboard periode-view header: titel + periode dropdown -->
+        <script id="template-period-header" type="text/html">
+            <h1>Periode</h1>
+            <p>
+                {{& period-selection }}
+            </p>
+        </script>
 
-    <!-- Dashboard periode-view header: titel + periode dropdown -->
-    <script id="template-period-header" type="text/html">
-        <h1>Periode</h1>
-        <p>
-            {{& period-selection }}
-        </p>
-    </script>
+        <!-- Dashboard periode-view header: titel + periode dropdown -->
+        <script id="template-compare-header" type="text/html">
+            <h1>Vergelijk</h1>
+            <p>
+                {{& period-selection0 }} <span class="sub">EN</span> {{& period-selection1 }}
+            </p>
+        </script>
 
-    <!-- Dashboard periode-view header: titel + periode dropdown -->
-    <script id="template-compare-header" type="text/html">
-        <h1>Vergelijk</h1>
-        <p>
-            {{& period-selection0 }} <span class="sub">EN</span> {{& period-selection1 }}
-        </p>
-    </script>
-
-    <!-- Dashboard periode-view header: titel + periode dropdown -->
-    <script id="template-period-selection" type="text/html">
-        <div class="period-selection popupable new" id="period-selection{{ num }}" data-num = "{{ num }}">
-            <span class="name">{{ name }}</span><br>
-            <div class="popup-anchor">
-                <div class="popup">
-                    <div class="popup-box">
-                        <div class="popup-arrow"></div>
-                        <div class="popup-arrow-cover"></div>
-                        <div class="popup-scroll">
-                            <div class="view-selection">
-                                <div class="popup-period-header">
-                                    <div class="edit-button">Aanpassen</div>
-                                    <div class="new-button">Nieuw</div>
+        <!-- Dashboard periode-view header: titel + periode dropdown -->
+        <script id="template-period-selection" type="text/html">
+            <div class="period-selection popupable new" id="period-selection{{ num }}" data-num = "{{ num }}">
+                <span class="name">{{ name }}</span><br>
+                <div class="popup-anchor">
+                    <div class="popup">
+                        <div class="popup-box">
+                            <div class="popup-arrow"></div>
+                            <div class="popup-arrow-cover"></div>
+                            <div class="popup-scroll">
+                                <div class="view-selection">
+                                    <div class="popup-period-header">
+                                        <div class="edit-button">Aanpassen</div>
+                                        <div class="new-button">Nieuw</div>
+                                    </div>
+                                    <div class="popup-period-items">
+                                    </div>
                                 </div>
-                                <div class="popup-period-items">
-                                </div>
-                            </div>
-                            <div class="view-edit no-name">
-                                <input type="text" placeholder="Naam" class="name title" value="{{ name }}"/>
-                                <div><span>VAN</span><input type="text" placeholder="Datum" class="from inline datepicker"/><input type="text" placeholder="Tijd" class="from inline timepicker"/></div>
-                                <div><span>TOT</span><input type="text" placeholder="Datum" class="to inline datepicker"/><input type="text" placeholder="Tijd" class="to inline timepicker"/></div>
-                                <div class="buttons">
-                                    <div class="add">HERGEBRUIK</div>
-                                    <div class="delete">VERWIJDEREN</div>
-                                    <div class="close">OK</div>
+                                <div class="view-edit no-name">
+                                    <input type="text" placeholder="Naam" class="name title" value="{{ name }}"/>
+                                    <div><span>VAN</span><input type="text" placeholder="Datum" class="from inline datepicker"/><input type="text" placeholder="Tijd" class="from inline timepicker"/></div>
+                                    <div><span>TOT</span><input type="text" placeholder="Datum" class="to inline datepicker"/><input type="text" placeholder="Tijd" class="to inline timepicker"/></div>
+                                    <div class="buttons">
+                                        <div class="add">HERGEBRUIK</div>
+                                        <div class="delete">VERWIJDEREN</div>
+                                        <div class="close">OK</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </script>
+        </script>
 
-    <!-- Loading template -->
-    <script id="template-loading" type="text/html">
-        <div class="loading">
-            <img src="images/loading.gif" alt="Bezig met laden">
-        </div>
-    </script>
+        <!-- Loading template -->
+        <script id="template-loading" type="text/html">
+            <div class="loading">
+                <img src="images/loading.gif" alt="Bezig met laden">
+            </div>
+        </script>
 
-    <!-- Provider template (in #settings menu) -->
-    <script id="template-provider" type="text/html">
-        <label>
-            <input type="radio" name="provider" onclick="Dashboard.setProvider({{ id }});" {{#checked}}checked{{/checked}}/>
-                   <span></span>
-            {{ name }}
-        </label>
-    </script>
-
-
-
-</head>
+        <!-- Provider template (in #settings menu) -->
+        <script id="template-provider" type="text/html">
+            <label>
+                <input type="radio" name="provider" onclick="Dashboard.setProvider({{ id }});" {{#checked}}checked{{/checked}}/>
+                       <span></span>
+                {{ name }}
+            </label>
+        </script>
+    </head>
 <body>
     <section id="settings">
         <div class="shadow"></div>
@@ -199,3 +194,4 @@
     <script type="text/javascript" defer src="javascript/maps.js"></script>
     <script type="text/javascript" defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuXbnONKM9CrgAR9qrXxkXFss6ZkS7whM&callback=initMap&language=nl"></script>
 </body>
+</html>
