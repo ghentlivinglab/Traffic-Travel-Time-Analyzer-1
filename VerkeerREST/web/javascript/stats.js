@@ -119,7 +119,9 @@ function drawChart(element, data, width, height, dotted) {
 
 	// Options van de grafiek
 	// TODO: opties staan nu gewoon op die van de live grafiek, moet meegestuurd worden!
-	var defSettings = { color: '#63A7FF', 'lineWidth': 2, 'curveType': 'function', pointSize: 0};
+	var defSettings = { color: '#63A7FF', 'lineWidth': 2, 'curveType': 'function', pointSize: 0, calc: function () {
+                            return null;
+                        }};
 	var avgSettings = { color: '#A8A8A8', 'lineWidth': 2, 'lineDashStyle':  [4, 4], 'curveType': 'function' };
 
 	var series = {};
@@ -147,6 +149,10 @@ function drawChart(element, data, width, height, dotted) {
 			series[i] = obj;
 		}
 	}
+
+	var series_copy = JSON.parse(JSON.stringify(series));
+
+
 
 
 	var options = {
@@ -183,4 +189,42 @@ function drawChart(element, data, width, height, dotted) {
 
 	var chart = new google.visualization.LineChart(element);
 	chart.draw(d, options);
+
+	var columns = [];
+    for (var i = 0; i < d.getNumberOfColumns(); i++) {
+        columns.push(i);
+    }
+    
+    google.visualization.events.addListener(chart, 'select', function () {
+        var sel = chart.getSelection();
+        // if selection length is 0, we deselected an element
+        if (sel.length > 0) {
+            // if row is undefined, we clicked on the legend
+            if (sel[0].row === null) {
+            	console.log("clicked");
+                var col = sel[0].column;
+                if (columns[col] == col) {
+                    // hide the data series
+                    columns[col] = {
+                        label: d.getColumnLabel(col),
+                        type: d.getColumnType(col),
+                        calc: function () {
+                            return null;
+                        }
+                    };
+                    
+                    // grey out the legend entry
+                    series[col - 1].color = '#CCCCCC';
+                }
+                else {
+                    // show the data series
+                    columns[col] = col;
+                    series[col - 1].color = series_copy[col - 1].color;
+                }
+                var view = new google.visualization.DataView(d);
+                view.setColumns(columns);
+                chart.draw(view, options);
+            }
+        }
+    });
 }
