@@ -1,195 +1,201 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
 
-    <title>Verkeerscentrum Gent | Slim op weg</title>
+        <title>Verkeerscentrum Gent | Slim op weg</title>
 
-    <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,700' rel='stylesheet' type='text/css'>
-    <link href="css/style.css" rel="stylesheet">
-    <link href="css/picker.css" rel="stylesheet">
-    <link rel="shortcut icon" href="favicon.png"/>
-	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.nicescroll/3.6.8-fix/jquery.nicescroll.min.js"></script>
+        <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,700' rel='stylesheet' type='text/css'>
+        <link href="css/style.css" rel="stylesheet">
+        <link href="css/picker.css" rel="stylesheet">
+        <link rel="shortcut icon" href="favicon.png"/>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.nicescroll/3.6.8-fix/jquery.nicescroll.min.js"></script>
 
 
-    <!-- Mustache templates -->
+        <!-- Mustache templates -->
 
-    <!-- Route in de periode/vandaag weergave (één kolom met info, één met waarschuwingen) -->
-    <script id="template-route" type="text/html">
-    	<article onclick="toggleGraph.call(this);" data-route="{{ id }}">
-			<div class="table">
-				<header>
-					<h1>{{ name }}</h1>
-					<h2>{{ description }}</h2>
-					<h2>{{ length }}</h2>
-				</header>
-				<div class="left">
-					<p class="{{ color }} status">{{ status }}</p>
-					<p class="speed">{{ title }}</p>
-					<p class="avg-speed">{{ subtitle }}</p>
-				</div>
-				<div class="right">
-					{{#warnings}}
-					<p class="warning">{{ . }}</p>
-					{{/warnings}}
-				</div>
-			</div>
-			</article>
+        <!-- Route in de periode/vandaag weergave (één kolom met info, één met waarschuwingen) -->
+        <script id="template-route" type="text/html">
+        <article onclick="toggleGraph.call(this);" data-route="{{ id }}">
+            <div class="table">
+                <header>
+                    <h1>{{ name }}</h1>
+                    <h2>{{ description }}</h2>
+                    <h2>{{ length }}</h2>
+                </header>
+                <div class="left">
+                    <p class="{{ color }} status">{{ status }}</p>
+                    <p class="speed">{{ title }}</p>
+                    <p class="avg-speed">{{ subtitle }}</p>
+                </div>
+                <div class="right">
+                    {{#warnings}}
+                    <p class="warning">{{ . }}</p>
+                    {{/warnings}}
+                </div>
+            </div>
+        </article>
     </script>
 
-     <script id="template-compare" type="text/html">
-    	<article onclick="toggleGraph.call(this);" data-route="{{ id }}">
-			<div class="table">
-				<header>
-					<h1>{{ name }}</h1>
-					<h2>{{ description }}</h2>
-				</header>
-				<div class="left">
-					<p class="{{ first.color }} status">{{ first.status }}</p>
-					<p class="speed">{{ first.title }}</p>
-					<p class="avg-speed">{{ first.subtitle }}</p>
-				</div>
-				<div class="right">
-					<p class="{{ second.color }} status">{{ second.status }}</p>
-					<p class="speed">{{ second.title }}</p>
-					<p class="avg-speed">{{ second.subtitle }}</p>
-				</div>
-			</div>
-			</article>
+    <script id="template-compare" type="text/html">
+        <article onclick="toggleGraph.call(this);" data-route="{{ id }}">
+            <div class="table">
+                <header>
+                    <h1>{{ name }}</h1>
+                    <h2>{{ description }}</h2>
+                </header>
+                <div class="left">
+                    <p class="{{ first.color }} status">{{ first.status }}</p>
+                    <p class="speed">{{ first.title }}</p>
+                    <p class="avg-speed">{{ first.subtitle }}</p>
+                </div>
+                <div class="right">
+                    <p class="{{ second.color }} status">{{ second.status }}</p>
+                    <p class="speed">{{ second.title }}</p>
+                    <p class="avg-speed">{{ second.subtitle }}</p>
+                </div>
+            </div>
+        </article>
     </script>
 
     <!-- Dashboard periode-view header: titel + periode dropdown -->
     <script id="template-period-header" type="text/html">
-    	<h1>Periode</h1>
-    	<p>
-    		{{& period-selection }}
-    	</p>
+        <h1>Periode</h1>
+        <p>
+            {{& period-selection }}
+        </p>
     </script>
 
-     <!-- Dashboard periode-view header: titel + periode dropdown -->
+    <!-- Dashboard periode-view header: titel + periode dropdown -->
     <script id="template-compare-header" type="text/html">
-    	<h1>Vergelijk</h1>
-    	<p>
-    		{{& period-selection0 }} <span class="sub">EN</span> {{& period-selection1 }}
-    	</p>
+        <h1>Vergelijk</h1>
+        <p>
+            {{& period-selection0 }} <span class="sub">EN</span> {{& period-selection1 }}
+        </p>
     </script>
 
     <!-- Dashboard periode-view header: titel + periode dropdown -->
     <script id="template-period-selection" type="text/html">
-    	<div class="period-selection popupable new" id="period-selection{{ num }}" data-num = "{{ num }}">
-    		<span class="name">{{ name }}</span><br>
-    		<div class="popup-anchor">
-    			<div class="popup">
-    				<div class="popup-box">
-    					<div class="popup-arrow"></div>
-    					<div class="popup-arrow-cover"></div>
-    					<div class="popup-scroll">
-    						<div class="view-selection">
-	    						<div class="popup-period-header">
-	    							<div class="edit-button">Aanpassen</div>
-	    							<div class="new-button">Nieuw</div>
-	    						</div>
-	    						<div class="popup-period-items">
-	    						</div>
-    						</div>
-    						<div class="view-edit no-name">
-    							<input type="text" placeholder="Naam" class="name title" value="{{ name }}"/>
-    							<div><span>VAN</span><input type="text" placeholder="Datum" class="from inline datepicker"/><input type="text" placeholder="Tijd" class="from inline timepicker"/></div>
-    							<div><span>TOT</span><input type="text" placeholder="Datum" class="to inline datepicker"/><input type="text" placeholder="Tijd" class="to inline timepicker"/></div>
-    							<div class="buttons">
-	    							<div class="add">HERGEBRUIK</div>
-	    							<div class="delete">VERWIJDEREN</div>
-	    							<div class="close">OK</div>
-    							</div>
-    						</div>
-	    				</div>
-    				</div>
-    			</div>
-    		</div>
-    	</div>
+        <div class="period-selection popupable new" id="period-selection{{ num }}" data-num = "{{ num }}">
+            <span class="name">{{ name }}</span><br>
+            <div class="popup-anchor">
+                <div class="popup">
+                    <div class="popup-box">
+                        <div class="popup-arrow"></div>
+                        <div class="popup-arrow-cover"></div>
+                        <div class="popup-scroll">
+                            <div class="view-selection">
+                                <div class="popup-period-header">
+                                    <div class="edit-button">Aanpassen</div>
+                                    <div class="new-button">Nieuw</div>
+                                </div>
+                                <div class="popup-period-items">
+                                </div>
+                            </div>
+                            <div class="view-edit no-name">
+                                <input type="text" placeholder="Naam" class="name title" value="{{ name }}"/>
+                                <div><span>VAN</span><input type="text" placeholder="Datum" class="from inline datepicker"/><input type="text" placeholder="Tijd" class="from inline timepicker"/></div>
+                                <div><span>TOT</span><input type="text" placeholder="Datum" class="to inline datepicker"/><input type="text" placeholder="Tijd" class="to inline timepicker"/></div>
+                                <div class="buttons">
+                                    <div class="add">HERGEBRUIK</div>
+                                    <div class="delete">VERWIJDEREN</div>
+                                    <div class="close">OK</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </script>
 
     <!-- Loading template -->
     <script id="template-loading" type="text/html">
-    	<div class="loading">
-    		<img src="images/loading.gif" alt="Bezig met laden">
-    	</div>
+        <div class="loading">
+            <img src="images/loading.gif" alt="Bezig met laden">
+        </div>
     </script>
 
     <!-- Provider template (in #settings menu) -->
-     <script id="template-provider" type="text/html">
-	    <label>
-			<input type="radio" name="provider" onclick="Dashboard.setProvider({{ id }});" {{#checked}}checked{{/checked}}/>
-			<span></span>
-			{{ name }}
-		</label>
+    <script id="template-provider" type="text/html">
+        <label>
+            <input type="radio" name="provider" onclick="Dashboard.setProvider({{ id }});" {{#checked}}checked{{/checked}}/>
+                   <span></span>
+            {{ name }}
+        </label>
     </script>
 
 
 
 </head>
 <body>
-	<section id="settings">
-		<div class="shadow"></div>
-		<img id="logo" src="images/logo.png" alt="Logo verkeer stad Gent" />
-		<hr>
-		<h1>Weergave</h1>
-		<label>
-			<input type="radio" id="mode-0" name="dashboard" onclick="Dashboard.setMode(Dashboard.LIVE);" checked/>
-			<span></span>
-			Vandaag
-		</label>
-		<label>
-			<input type="radio" id="mode-1" name="dashboard" onclick="Dashboard.setMode(Dashboard.INTERVAL);"/>
-			<span></span>
-			Periode
-		</label>
-		<label>
-			<input type="radio" id="mode-2" name="dashboard" onclick="Dashboard.setMode(Dashboard.COMPARE_INTERVALS);"/>
-			<span></span>
-			Vergelijk periode
-		</label>
-		<label>
-			<input type="radio" id="mode-3" name="dashboard" onclick="Dashboard.setMode(Dashboard.COMPARE_DAYS);"/>
-			<span></span>
-			Vergelijk dagen
-		</label>
-		<hr>
-		<h1>Providers</h1>
-		<div id="providers">
-			<img src="images/loading.gif" alt="Bezig met laden" class="loading">
-		</div>
-	</section>
+    <section id="settings">
+        <div class="shadow"></div>
+        <img id="logo" src="images/logo.png" alt="Logo verkeer stad Gent" />
+        <hr>
+        <h1>Weergave</h1>
+        <label>
+            <input type="radio" id="mode-0" name="dashboard" onclick="Dashboard.setMode(Dashboard.LIVE);" checked/>
+            <span></span>
+            Vandaag
+        </label>
+        <label>
+            <input type="radio" id="mode-1" name="dashboard" onclick="Dashboard.setMode(Dashboard.INTERVAL);"/>
+            <span></span>
+            Periode
+        </label>
+        <label>
+            <input type="radio" id="mode-2" name="dashboard" onclick="Dashboard.setMode(Dashboard.COMPARE_INTERVALS);"/>
+            <span></span>
+            Vergelijk periode
+        </label>
+        <label>
+            <input type="radio" id="mode-3" name="dashboard" onclick="Dashboard.setMode(Dashboard.COMPARE_DAYS);"/>
+            <span></span>
+            Vergelijk dagen
+        </label>
+        <hr>
+        <h1>Providers</h1>
+        <div id="providers">
+            <img src="images/loading.gif" alt="Bezig met laden" class="loading">
+        </div>
+    </section>
 
-	<section id="dashboard">
-            <div class="collapse"><img src="images/arrow-right.png" alt=">" /></div>
-		<div class="content">
-		</div>
-		<div class="shadow"></div>
-	</section>
+    <section id="dashboard">
+        <div class="collapse"><img src="images/arrow-right.png" alt=">" /></div>
+        <div class="content">
+        </div>
+        <div class="shadow"></div>
+    </section>
 
-	<section id="map-container">
-		<div id="map"></div>
-	</section>
+    <section id="map-container">
+        <div id="map"></div>
+        <div id="map-overlay">
+            <div class="content">
+                <img src="images/loading.gif" alt="" />
+                <p>Bezig met laden...</p>
+            </div>
+        </div>
+    </section>
 
-	<!-- Javascript pas laden na het tonen van de website door achteraan te plaatsen -->
-	<!-- Deze javascript bestanden moeten in de uiteindelijke versie gecombineerd worden tot 1 bestand, maar voor het ontwikkelen is dit gemakkelijker -->
-	<script type="text/javascript" src="javascript/prototypes.js"></script>
-	<script type="text/javascript" src="javascript/dummyApi.js"></script>
-	<script type="text/javascript" src="javascript/api.js"></script>
-	<script type="text/javascript" src="javascript/dashboard.js"></script>
+    <!-- Javascript pas laden na het tonen van de website door achteraan te plaatsen -->
+    <!-- Deze javascript bestanden moeten in de uiteindelijke versie gecombineerd worden tot 1 bestand, maar voor het ontwikkelen is dit gemakkelijker -->
+    <script type="text/javascript" src="javascript/prototypes.js"></script>
+    <script type="text/javascript" src="javascript/dummyApi.js"></script>
+    <script type="text/javascript" src="javascript/api.js"></script>
+    <script type="text/javascript" src="javascript/dashboard.js"></script>
 
-	<script type="text/javascript" src="javascript/mustache.min.js"></script>
-	<script type="text/javascript" src="javascript/picker.js"></script>
-	<script type="text/javascript" src="javascript/periodSelection.js"></script>
-	<script type="text/javascript" src="javascript/script.js"></script>
+    <script type="text/javascript" src="javascript/mustache.min.js"></script>
+    <script type="text/javascript" src="javascript/picker.js"></script>
+    <script type="text/javascript" src="javascript/periodSelection.js"></script>
+    <script type="text/javascript" src="javascript/script.js"></script>
 
-	<!-- Javascript met defer-attribuut wordt pas uitgevoerd na afwerken van volledige HTML parsing en in volgorde van vermelding -->
-	<script type="text/javascript" defer src="https://www.gstatic.com/charts/loader.js"></script>
-	<script type="text/javascript" defer src="javascript/stats.js"></script>
-	
+    <!-- Javascript met defer-attribuut wordt pas uitgevoerd na afwerken van volledige HTML parsing en in volgorde van vermelding -->
+    <script type="text/javascript" defer src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript" defer src="javascript/stats.js"></script>
+
     <script type="text/javascript" defer src="javascript/maps.js"></script>
     <script type="text/javascript" defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuXbnONKM9CrgAR9qrXxkXFss6ZkS7whM&callback=initMap&language=nl"></script>
 </body>
