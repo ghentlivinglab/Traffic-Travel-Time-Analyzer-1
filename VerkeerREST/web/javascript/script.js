@@ -139,12 +139,6 @@ function thisReady(){
  * runs when DOM-tree is finished
  ****************************/
 $(document).ready( function(){
-	
-	// runs the nice-scrollbar script on non-Mac devices
-	if (navigator.userAgent.indexOf('Mac OS X') == -1) {
-		$("#dashboard .content").niceScroll({zindex:999,cursorcolor:"#CCCCCC"});
-	}
-
 	thisReady.call(document);
 	
 	// adds a click listener to the collapse-button
