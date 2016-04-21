@@ -128,11 +128,6 @@ function thisReady(){
 	$(this).find('.popup-box').click(function(event) {
 		clickedOnPopup = true;
 	});
-
-	// Scrollbalken
-	if (navigator.userAgent.indexOf('Mac OS X') == -1) {
-		$(this).find(".popup-scroll").niceScroll({zindex:999,cursorcolor:"#CCCCCC"});
-	}
 }
 
 /****************************
