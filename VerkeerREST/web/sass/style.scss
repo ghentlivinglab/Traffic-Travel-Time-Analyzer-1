@@ -116,7 +116,7 @@ span.sub {
         left: $settings-width;
     }
 
-    // Radio buttons
+    // Radio and select buttons
     label {
         display: block;
         padding: 2px 0;
@@ -125,10 +125,10 @@ span.sub {
         input {
             margin-right: 10px;
         }
-        input[type="radio"]{
+        input[type="radio"], input[type="checkbox"]{
             display: none;
         }
-        input[type="radio"] + span{
+        input[type="radio"] + span, input[type="checkbox"] + span{
             display: inline-block;
             margin-right:.25em;
             padding:0;
@@ -139,7 +139,10 @@ span.sub {
             background-repeat: no-repeat;
             background-size: 1em 2em;
         }
-        input[type="radio"]:checked + span{
+        input[type="checkbox"] + span{
+            background-image: url("../images/select.png");
+        }
+        input[type="radio"]:checked + span,input[type="checkbox"]:checked + span{
             background-position:top left;
         }
     }
