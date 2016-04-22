@@ -74,7 +74,7 @@ var Api = {
         }
     },
 	syncWaypoints: function(id){
-		$.getJSON("/VerkeerREST/api/waypoints",{routeID:id},function(result){
+		$.getJSON("/api/waypoints",{routeID:id},function(result){
 			if(result.length!==0){
 				var array=[];
 				result.sort(function(a,b){return a.sequence-b.sequence;});
@@ -95,7 +95,7 @@ var Api = {
         // Uiteindelijk moet dit ongeveer het resultaat zijn: 
         routes = [];
         var me = this;
-        $.getJSON("/VerkeerREST/api/routes", function(result) {
+        $.getJSON("/api/routes", function(result) {
             for (var i = 0; i < result.length; i++) {
                 routes[result[i].id] = Route.create(result[i].id, result[i].name, result[i].description, result[i].length);
 				Api.syncWaypoints(result[i].id);
@@ -133,7 +133,7 @@ var Api = {
         // Hier alle data van de server halen.
 
         var me = this;
-        $.getJSON("/VerkeerREST/api/trafficdata/live?providerID=" + provider, function(result) {
+        $.getJSON("/api/trafficdata/live?providerID=" + provider, function(result) {
             if (result.result === "success") {
                 var data = result.data;
 
@@ -189,7 +189,7 @@ var Api = {
 
         var me = this;
 
-        $.getJSON("/VerkeerREST/api/trafficdata/weekday?providerID=" + providerId + "&routeID=" + routeId + "&weekday=" + weekday + "&from=" + dateToRestString(from) + "&to=" + dateToRestString(to), function(result) {
+        $.getJSON("/api/trafficdata/weekday?providerID=" + providerId + "&routeID=" + routeId + "&weekday=" + weekday + "&from=" + dateToRestString(from) + "&to=" + dateToRestString(to), function(result) {
             if (result.result === "success") {
                 var resultdata = result.data;
 
@@ -244,7 +244,7 @@ var Api = {
 
         var me = this;
 
-        $.getJSON("/VerkeerREST/api/trafficdata?providerID=" + providerId + "&routeID=" + routeId + "&from=" + dateToRestString(from) + "&to=" + dateToRestString(to), function(result) {
+        $.getJSON("/api/trafficdata?providerID=" + providerId + "&routeID=" + routeId + "&from=" + dateToRestString(from) + "&to=" + dateToRestString(to), function(result) {
             if (result.result === "success") {
             	var data = {};
                 var resultdata = result.data;
@@ -291,7 +291,7 @@ var Api = {
         providers = [];
         var me = this;
         providers[0] = Provider.create(0, 'Alles');
-        $.getJSON("/VerkeerREST/api/providers", function(result) {
+        $.getJSON("/api/providers", function(result) {
             console.log(JSON.stringify(result));
             for (var i = 0; i < result.length; i++) {
                 providers[result[i].id] = Provider.create(result[i].id, result[i].name);
@@ -307,7 +307,7 @@ var Api = {
         var qid = this.getQueueId();
 
         var me = this;
-        $.getJSON("/VerkeerREST/api/trafficdata/interval?providerID=" + provider+"&from="+dateToRestString(interval.start)+"&to="+dateToRestString(interval.end), function(result) {
+        $.getJSON("/api/trafficdata/interval?providerID=" + provider+"&from="+dateToRestString(interval.start)+"&to="+dateToRestString(interval.end), function(result) {
             if (result.result === "success") {
                 var resultdata = result.data;
                 routes.forEach(function(route) {
@@ -379,7 +379,7 @@ var Api = {
 
         var me = this;
 
-        $.getJSON("/VerkeerREST/api/trafficdata/weekday?providerID=" + provider + "&routeID=" + routeId + "&from=" + dateToRestString(interval.start) + "&to=" + dateToRestString(interval.end), function(result) {
+        $.getJSON("/api/trafficdata/weekday?providerID=" + provider + "&routeID=" + routeId + "&from=" + dateToRestString(interval.start) + "&to=" + dateToRestString(interval.end), function(result) {
             if (result.result === "success") {
                 var resultdata = result.data;
                 for (var weekday in resultdata){
