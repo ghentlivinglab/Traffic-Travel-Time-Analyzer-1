@@ -35,14 +35,16 @@ public class TraveltimeFacadeREST extends AbstractFacade<Traveltime> {
         super(Traveltime.class);
     }
 
-
+    /**
+     * 
+     * @return traveltimes
+     */
     @GET
     @Override
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     public List<Traveltime> findAll() {
         return super.findAll();
     }
-
 
     @Override
     protected EntityManager getEntityManager() {

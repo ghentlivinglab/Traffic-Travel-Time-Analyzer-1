@@ -15,13 +15,16 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import simpledomain.SimpleWaypoint;
 
 /**
- *
+ * Contains the methods which handle HTTP-requests 
+ * for path '/api/waypoints'.
+ * 
  * @author Robin
  */
 @Stateless
@@ -35,31 +38,70 @@ public class WaypointFacadeREST extends AbstractFacade<Waypoint> {
         super(Waypoint.class);
     }
 
+    /**
+     * Processes GET HTTP-requests for path '/api/waypoints/{routeID}
+     * {routeID} must be an Integer value
+     * 
+     * @param routeID id of the route you want to retrieve the waypoints for
+     * @return a list of all the waypoints of the route with the specified id
+     */
+    @GET
+    @Path("{routeID}")
+    @Produces({MediaType.APPLICATION_JSON})
+    public String processId(@PathParam("routeID") Integer routeID) {
+        Genson g = new Genson();
+        Query q = getEntityManager().createQuery(prop.getProperty("SELECT_WE_ID"));
+        q.setParameter("routeID", routeID);
+        List<Object[]> objects = (List<Object[]>) q.getResultList();
+        if (!objects.isEmpty()) {
+            ArrayList<SimpleWaypoint> lijst = new ArrayList<>();
+            for (Object[] o : objects) {
+                System.out.println((int) o[0] + " " + (int) o[1] + " latitude : " + (double) o[2] + " longitude : " + (double) o[3]);
+                lijst.add(new SimpleWaypoint((int) o[0], (int) o[1], (double) o[2], (double) o[3]));
+            }
+            return processSuccess(g.serialize(lijst));
+        } else {
+            return processError("No waypoints found for route with id " + routeID + ".");
+        }
+    }
+    
+    /**
+     * Processes GET HTTP-requests for path '/api/waypoints'.
+     * <p>
+     * parameters must be separated from the path by a '?' sign,
+     * multiple parameters must be separated from each other by an '&' sign.
+     * 
+     * @param routeID id of the route you want to retrieve the waypoints for
+     * @return a list of all the waypoints of all the waypoints for all the providers
+     * or a list of all the waypoints for the specified route
+     */
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     public String processRequest(@QueryParam("routeID") Integer routeID) {
-        String json = "";
         Genson g = new Genson();
-        if(routeID != null){
+        if (routeID != null) {
             Query q = getEntityManager().createQuery(prop.getProperty("SELECT_WE_ID"));
             q.setParameter("routeID", routeID);
             List<Object[]> objects = (List<Object[]>) q.getResultList();
-        
-            ArrayList<SimpleWaypoint> lijst = new ArrayList<>();
-            for (Object[] o : objects) {
-                System.out.println((int) o[0] +" " +(int) o[1]+" "+(double) o[2]+" " +(double) o[3]);
-                lijst.add(new SimpleWaypoint((int) o[0],(int) o[1],(double) o[2],(double) o[3]));
+            if (!objects.isEmpty()) {
+                ArrayList<SimpleWaypoint> lijst = new ArrayList<>();
+                for (Object[] o : objects) {
+                    System.out.println((int) o[0] + " " + (int) o[1] + " latitude : " + (double) o[2] + " longitude : " + (double) o[3]);
+                    lijst.add(new SimpleWaypoint((int) o[0], (int) o[1], (double) o[2], (double) o[3]));
+                }
+                return processSuccess(g.serialize(lijst));
+            } else {
+                return processError("No waypoints found for route with id " + routeID + ".");
             }
-            return g.serialize(lijst);
-        }
-        else{
+        } else {
             Query q = getEntityManager().createQuery(prop.getProperty("SELECT_WE"));
             List<Object[]> objects = (List<Object[]>) q.getResultList();
             ArrayList<SimpleWaypoint> lijst = new ArrayList<>();
             for (Object[] o : objects) {
-                lijst.add(new SimpleWaypoint((int) o[0],(int) o[1],(double) o[2],(double) o[3]));
+                System.out.println("latitude : " + (double) o[2] + " longitude : " + (double) o[3]);
+                lijst.add(new SimpleWaypoint((int) o[0], (int) o[1], (double) o[2], (double) o[3]));
             }
-            return g.serialize(lijst);
+            return processSuccess(g.serialize(lijst));
         }
     }
 
@@ -67,5 +109,5 @@ public class WaypointFacadeREST extends AbstractFacade<Waypoint> {
     protected EntityManager getEntityManager() {
         return em;
     }
-    
+
 }

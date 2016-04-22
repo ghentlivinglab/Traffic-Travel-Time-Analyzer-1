@@ -6,7 +6,6 @@
 package service;
 
 import domain.Trafficdata;
-import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -30,6 +29,7 @@ import simpledomain.SimpleTrafficdata;
 import simpledomain.WeekdayTrafficdata;
 
 /**
+ * Contains the methods which handle HTTP-requests for path '/api/trafficdata'.
  *
  * @author Robin
  */
@@ -44,6 +44,24 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
         super(Trafficdata.class);
     }
 
+    /**
+     * Processes GET HTTP-requests for path '/api/trafficdata/live'.
+     * <p>
+     * parameters must be separated from the path by a '?' sign, multiple
+     * parameters must be separated from each other by an '&' sign.
+     *
+     * @param routeID id of the route you want to retrieve data for
+     * @param providerID id of the provider you want to retrieve data for
+     * @param interval interval (in minutes) used to calculate the average data.
+     * Thus the data {interval} minutes before and after the live-time is used.
+     * Interval is default 15 minutes
+     * @param period the period (in days) used to calculate the average data.
+     * Thus the data {period} days before the live-time is used. Period is
+     * default 30 days
+     * @return Most recent data for specified route and provider. Data includes
+     * createdOn, time and speed for live data and time and speed for average
+     * data.
+     */
     @GET
     @Path("/live")
     @Produces({MediaType.APPLICATION_JSON})
@@ -53,12 +71,31 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
             @DefaultValue("15") @QueryParam("interval") Integer interval,
             @DefaultValue("30") @QueryParam("period") Integer period) {
         try {
-            return "{\"result\":\"success\",\"data\":" + processLive(providerID, routeID, interval, period) + "}";
+            return processSuccess(processLive(providerID, routeID, interval, period));
         } catch (Exception ex) {
             return processError(ex.getMessage());
         }
     }
 
+    /**
+     * Processes GET HTTP-requests for path '/api/trafficdata/weekday'.
+     * <p>
+     * parameters must be separated from the path by a '?' sign, multiple
+     * parameters must be separated from each other by an '&' sign.
+     *
+     * @param from Timestamp {format yyyy-MM-dd HH:mm:ss} which specifies the
+     * start of the period you want the data for
+     * @param to Timestamp {format yyyy-MM-dd HH:mm:ss} which specifies the end
+     * of the period you want the data for
+     * @param routeID id of the route you want to retrieve data for
+     * @param providerID id of the provider you want to retrieve data for
+     * @param interval interval (in minutes) between the data. Interval is
+     * default 15 minutes
+     * @param weekday the day you want to retrieve data for. (monday=0,
+     * tuesday=1, ..., sunday=6)
+     * @return data for every day (0..6) for specified route and provider. Data
+     * includes Time {format HH:mm} and traveltime.
+     */
     @GET
     @Path("/weekday")
     @Produces({MediaType.APPLICATION_JSON})
@@ -69,15 +106,34 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
             @QueryParam("providerID") Integer providerID,
             @DefaultValue("15") @QueryParam("interval") Integer interval,
             @QueryParam("weekday") Integer weekday) {
-        if (from == null) from = new Timestamp(0);
-        if (to == null) to = new Timestamp(Calendar.getInstance().getTimeInMillis());
+        if (from == null) {
+            from = new Timestamp(0);
+        }
+        if (to == null) {
+            to = new Timestamp(Calendar.getInstance().getTimeInMillis());
+        }
         try {
-            return "{\"result\":\"success\",\"data\":" + processWeekday(from, to, routeID, providerID, interval, weekday) + "}";
+            return processSuccess(processWeekday(from, to, routeID, providerID, interval, weekday));
         } catch (Exception ex) {
             return processError(ex.getMessage());
         }
     }
-    
+
+    /**
+     * Processes GET HTTP-requests for path '/api/trafficdata/interval'.
+     * <p>
+     * parameters must be separated from the path by a '?' sign, multiple
+     * parameters must be separated from each other by an '&' sign.
+     *
+     * @param from Timestamp {format yyyy-MM-dd HH:mm:ss} which specifies the
+     * start of the period you want the data for
+     * @param to Timestamp {format yyyy-MM-dd HH:mm:ss} which specifies the end
+     * of the period you want the data for
+     * @param providerID id of the provider you want to retrieve data for
+     * @param slowSpeed
+     * @return data for every day (0..6) for specified route and provider. Data
+     * includes Time {format HH:mm} and traveltime.
+     */
     @GET
     @Path("/interval")
     @Produces({MediaType.APPLICATION_JSON})
@@ -86,17 +142,37 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
             @QueryParam("to") Timestamp to,
             @QueryParam("providerID") Integer providerID,
             @DefaultValue("30") @QueryParam("slowSpeed") Integer slowSpeed) {
-        if (from == null) from = new Timestamp(0);
-        if (to == null) to = new Timestamp(Calendar.getInstance().getTimeInMillis());
+        if (from == null) {
+            from = new Timestamp(0);
+        }
+        if (to == null) {
+            to = new Timestamp(Calendar.getInstance().getTimeInMillis());
+        }
         try {
-            return "{\"result\":\"success\",\"data\":" + processInterval(from, to, providerID, slowSpeed) + "}";
+            return processSuccess(processInterval(from, to, providerID, slowSpeed));
         } catch (Exception ex) {
             return processError(ex.getMessage());
         }
     }
 
+    /**
+     * Processes GET HTTP-requests for path '/api/trafficdata'.
+     * <p>
+     * parameters must be separated from the path by a '?' sign, multiple
+     * parameters must be separated from each other by an '&' sign.
+     *
+     * @param from Timestamp {format yyyy-MM-dd HH:mm:ss} which specifies the
+     * start of the period you want the data for
+     * @param to Timestamp {format yyyy-MM-dd HH:mm:ss} which specifies the end
+     * of the period you want the data for
+     * @param routeID id of the route you want to retrieve data for
+     * @param providerID id of the provider you want to retrieve data for
+     * @param interval interval (in minutes) between the data. Interval is
+     * default 15 minutes
+     * @return a list of data for the specified period. Data includes Timestamp
+     * {format yyyy-MM-dd HH:mm:ss} and traveltime.
+     */
     @GET
-    //Used to be mode = default
     @Produces({MediaType.APPLICATION_JSON})
     public String processRequest(
             @QueryParam("from") Timestamp from,
@@ -112,19 +188,10 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
         }
 
         try {
-            return "{\"result\":\"success\",\"data\":" + processDefault(from, to, routeID, providerID, interval) + "}";
+            return processSuccess(processDefault(from, to, routeID, providerID, interval));
         } catch (Exception ex) {
             return processError(ex.getMessage());
         }
-    }
-
-    private String processError(String message) {
-        StringBuilder sb = new StringBuilder();
-        sb.append('{');
-        sb.append("\"result\": ").append("\"error\",");
-        sb.append("\"reason\": \"").append(message).append('"');
-        sb.append('}');
-        return sb.toString();
     }
 
     @Override
@@ -148,11 +215,9 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
         q.setParameter(4, providerID);
         q.setParameter(5, routeID);
 
-        // Formaat is met die T ertussen! ' en ' zorgen ervoor dat hij dit letterlijk overneemt
-        // -> dit is javascript formaat
-        SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"); 
+        // dateformat in javascript format ('T' is required)
+        SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
-        
         StringBuilder json = new StringBuilder();
         try {
             json.append('{');
@@ -219,7 +284,7 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
         }
         String queryString = "SELECT x.routeID,max(x.timestamp),y.length, round((SELECT avg(traveltime) FROM   trafficdata  WHERE  providerid = x.providerid and routeid = x.routeid and timestamp = max(x.timestamp))) ,Round((SELECT Avg(traveltime)  FROM   trafficdata WHERE  providerid = x.providerid AND routeid = x.routeid AND timestamp > max(x.timestamp) - INTERVAL ?1 day  AND Abs(Minute(Timediff(Time(timestamp), Time(max(x.timestamp))))) < ?2 AND Weekday(timestamp) = Weekday(max(x.timestamp))), 0) from trafficdata x JOIN routes y ON x.routeid = y.id where x.providerID = ?3";
         //String queryString = "select x.routeID, x.timestamp, y.length, x.traveltime, round((select   avg(traveltime) from     trafficdata where    providerID=x.providerID and routeID=x.routeID and timestamp > now() - interval ?1 day and Abs(Minute(Timediff(Time(timestamp), Time(x.timestamp)))) < ?2 and weekday(timestamp) = weekday(x.timestamp) ),0) from trafficdata x join routes y on x.routeID=y.id where x.providerID=?3 ";
-        if(routeID != null){
+        if (routeID != null) {
             queryString += " and routeID=?4 ";
         }
         queryString += " group by x.routeID;";
@@ -228,31 +293,31 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
         q.setParameter(1, period);
         q.setParameter(2, interval);
         q.setParameter(3, providerID);
-        if(routeID != null){
+        if (routeID != null) {
             q.setParameter(4, routeID);
         }
-        
+
         StringBuilder json = new StringBuilder();
-         ArrayList<LiveTrafficdata> lijst = new ArrayList<>();
-        try{
+        ArrayList<LiveTrafficdata> lijst = new ArrayList<>();
+        try {
             List<Object[]> rl = q.getResultList();
-            if(rl != null){
-            for (Object[] o : rl) {
-                System.out.println(o[2].toString());
-                LiveTrafficdata l = new LiveTrafficdata(Integer.parseInt(o[0].toString()));
-                
-                l.live.put("createdOn", o[1].toString());
-                l.live.put("speed", "" + Math.round(Integer.parseInt(o[2].toString()) / Integer.parseInt(o[3].toString()) * 3.6 * 10.0) / 10.0);
-                l.live.put("time", "" + Double.parseDouble(o[3].toString()) / 60 );
-                l.avg.put("speed", "" + Math.round(Integer.parseInt(o[2].toString()) / Integer.parseInt(o[4].toString()) * 3.6 * 10.0) / 10.0);
-                l.avg.put("time", "" + Double.parseDouble(o[4].toString()) / 60 );
-                lijst.add(l);
-            }
+            if (rl != null) {
+                for (Object[] o : rl) {
+                    System.out.println(o[2].toString());
+                    LiveTrafficdata l = new LiveTrafficdata(Integer.parseInt(o[0].toString()));
+
+                    l.live.put("createdOn", o[1].toString());
+                    l.live.put("speed", "" + Math.round(Integer.parseInt(o[2].toString()) / Integer.parseInt(o[3].toString()) * 3.6 * 10.0) / 10.0);
+                    l.live.put("time", "" + Double.parseDouble(o[3].toString()) / 60);
+                    l.avg.put("speed", "" + Math.round(Integer.parseInt(o[2].toString()) / Integer.parseInt(o[4].toString()) * 3.6 * 10.0) / 10.0);
+                    l.avg.put("time", "" + Double.parseDouble(o[4].toString()) / 60);
+                    lijst.add(l);
+                }
             }
         } catch (Exception e) {
             throw new Exception(e.getClass().getName() + "deel 1");
         }
-        
+
         json.append('{');
         String delimiter = "";
         for (LiveTrafficdata l : lijst) {
@@ -262,36 +327,35 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
         json.append('}');
         return json.toString();
     }
-    
-    private String processInterval(Timestamp from, Timestamp to,Integer providerID, Integer slowSpeed) throws Exception {
+
+    private String processInterval(Timestamp from, Timestamp to, Integer providerID, Integer slowSpeed) throws Exception {
         if (providerID == null) {
             throw new Exception(MessageState.PIDNP);
         }
         String queryString = "SELECT routeid, Round(length / Avg(gem) * 3.6), Round(Avg(gem)), Sum(CASE WHEN weekday = 0 THEN slow_traffic END) AS ma, Sum(CASE WHEN weekday = 1 THEN slow_traffic END) AS di, Sum(CASE WHEN weekday = 2 THEN slow_traffic END) AS wo, Sum(CASE WHEN weekday = 3 THEN slow_traffic END) AS do, Sum(CASE WHEN weekday = 4 THEN slow_traffic END) AS vr, Sum(CASE WHEN weekday = 5 THEN slow_traffic END) AS za, Sum(CASE WHEN weekday = 6 THEN slow_traffic END) AS zo, Sum(CASE WHEN weekday is null THEN slow_traffic END) AS alles FROM (SELECT trafficdata.routeid, routes.length, Weekday(timestamp) AS weekday, Avg(trafficdata.traveltime) AS gem, Round(Count(CASE WHEN routes.length / trafficdata.traveltime * 3.6 < ?4 THEN 1 ELSE NULL END) / Count(*) * 100) AS slow_traffic FROM   trafficdata JOIN routes ON trafficdata.routeid = routes.id WHERE  providerid = ?3 AND trafficdata.timestamp BETWEEN ?1 AND ?2 GROUP  BY trafficdata.routeid, routes.length, Weekday(timestamp) WITH rollup HAVING trafficdata.routeid IS NOT NULL AND routes.length IS NOT NULL) x GROUP  BY routeid, length ";
         System.out.println(queryString);
         Query q = getEntityManager().createNativeQuery(queryString);
-        
+
         q.setParameter(1, from, TemporalType.TIMESTAMP);
         q.setParameter(2, to, TemporalType.TIMESTAMP);
         q.setParameter(3, providerID);
         q.setParameter(4, slowSpeed);
 
-        
         StringBuilder json = new StringBuilder();
-         ArrayList<IntervalTrafficData> lijst = new ArrayList<>();
-        try{
+        ArrayList<IntervalTrafficData> lijst = new ArrayList<>();
+        try {
             List<Object[]> rl = q.getResultList();
-            if(rl != null){
+            if (rl != null) {
                 for (Object[] o : rl) {
                     IntervalTrafficData l = new IntervalTrafficData(Integer.parseInt(o[0].toString()), Integer.parseInt(o[1].toString()), Integer.parseInt(o[2].toString()));
-                    
-                    for(int i = 0; i<8; i++){
-                        int a = i+3;
-                        if (o[a] == null){
-                           l.weekdays[i] = 0;
-                        }else{
+
+                    for (int i = 0; i < 8; i++) {
+                        int a = i + 3;
+                        if (o[a] == null) {
+                            l.weekdays[i] = 0;
+                        } else {
                             System.out.println(o[a]);
-                           l.weekdays[i] = Integer.parseInt(o[a].toString()); 
+                            l.weekdays[i] = Integer.parseInt(o[a].toString());
                         }
                     }
 
@@ -301,7 +365,7 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
         } catch (Exception e) {
             throw new Exception(e.getClass().getName() + "deel 1");
         }
-        
+
         json.append('{');
         String delimiter = "";
         for (IntervalTrafficData l : lijst) {
@@ -311,5 +375,5 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
         json.append('}');
         return json.toString();
     }
-    
+
 }
