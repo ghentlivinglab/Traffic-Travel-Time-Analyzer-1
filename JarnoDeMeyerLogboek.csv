@@ -86,4 +86,4 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 20/04/16,13:30,14:30,School,Projectwerk,waypoints route 11 zoeken en toevoegen,62,
 20/04/16,14:30,17:45,School,Projectwerk,ontwerpen checkbox en optimalisaties,75,
 24/04/16,15:30,15:45,Thuis,Projectwerk,invullen peerevaluatie,,ook opzoeken wat iedereen precies heeft gedaan
-25/04/16,15:15,,Thuis,Projectwerk,Toevoegen URL parameters,78,basic framework gemaakt (URL kan eenvoudig worden aangepast met behoud van vorige versie in de history)
+25/04/16,15:15,17:00,Thuis,Projectwerk,Toevoegen URL parameters,78,basic framework gemaakt (URL kan eenvoudig worden aangepast met behoud van vorige versie in de history)
