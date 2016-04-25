@@ -70,7 +70,7 @@ function togglePanel() {
 
         // changes the display of the button
         $(".collapse").children().attr({"src": "images/arrow-right.png", "alt": ">"});
-
+        setQueryVariable("dashboardView");
     } else {
         // Als het dashboard gesloten is, openen we het
         $("#dashboard").addClass('open');
@@ -87,6 +87,7 @@ function togglePanel() {
 
         // changes the display of the button
         $(".collapse").children().attr({"src": "images/arrow-left.png", "alt": "<"});
+        setQueryVariable("dashboardView","true");
     }
 
 }
