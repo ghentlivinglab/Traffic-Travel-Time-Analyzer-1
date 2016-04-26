@@ -172,11 +172,15 @@ $(document).ready(function () {
  ****************************/
 $(window).load(function () {
     updateViewByURLParams();
+    $("[name=dashboard]").on('click',function(event){
+        url.setQueryParam("weergave",this.id.split('-')[1]);
+    });
 });
 
 function updateViewByURLParams(){
     URLParamsShowDashboard();
     URLParamsChangeView();
+    URLParamsChangeMap();
 }
 
 function URLParamsShowDashboard(){
@@ -190,7 +194,20 @@ function URLParamsShowDashboard(){
 }
 
 function URLParamsChangeView(){
-    var view = Number(url.getQueryParam("Weergave"));
+    var view = Number(url.getQueryParam("weergave"));
     view = (view===NaN ? 0 : view);
     $("#mode-"+view).click();
+}
+
+function URLParamsChangeMap(){
+    var center = url.getQueryParam("mapCenter");
+    center = center.split(',');
+    if(center.length===2){
+        map.setCenter({lat:Number(center[0]),lng:Number(center[1])});
+    }
+    var zoom = Number(url.getQueryParam("mapZoom"));
+    zoom = (zoom===NaN ? 12 : zoom);
+    zoomCurrent=zoom;
+    map.setZoom(zoom);
+    
 }

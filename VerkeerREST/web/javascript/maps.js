@@ -57,7 +57,17 @@ function initMap() {
         }
     });
     map.addListener('zoom_changed', zoomChanged); // change line weight on different zoom levels
+    map.idleAdder = map.addListener('idle',addIdleListener);
+}
 
+function addIdleListener(event){
+    map.addListener('idle', function(event){
+        var center = map.getCenter();
+        url.setQueryParam("mapCenter",center.lat()+","+center.lng());
+        url.setQueryParam("mapZoom",map.getZoom());
+    });
+    
+    google.maps.event.removeListener(map.idleAdder);
 }
 
 function reloadMap() {

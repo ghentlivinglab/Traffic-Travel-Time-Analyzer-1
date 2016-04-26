@@ -133,15 +133,15 @@ var Dashboard = {
 
 	setProvider: function(providerId){
 		if (typeof providers[providerId] != "undefined"){
-			var reload = false;
-			if (!this.provider || this.provider.id != providerId) {
-				reload = true;
-			}
-			this.provider = providers[providerId];
-			localStorage.setItem('provider', this.provider.id);
-			if (reload) {
-				this.reload();
-			}
+                    var reload = false;
+                    if (!this.provider || this.provider.id != providerId) {
+                            reload = true;
+                    }
+                    this.provider = providers[providerId];
+                    localStorage.setItem('provider', this.provider.id);
+                    if (reload) {
+                            this.reload();
+                    }
 		} else {
 			console.error('No provider found with id '+providerId);
 		}
@@ -169,7 +169,6 @@ var Dashboard = {
 		// Dus kan dit deeltje later weg. Maar voorlopig niet, zodat we deze oorzaak snel zien (dashboard zal leeg zijn). 
 		// (zie ook commentaar bij thisReady hieronder)
 		dashboard.html('');
-                url.setQueryParam("Weergave",this.mode);
 		switch(this.mode){
 			case Dashboard.LIVE: 
 				this.reloadLive();
