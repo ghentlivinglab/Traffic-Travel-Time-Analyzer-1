@@ -59,7 +59,7 @@ var Api = {
     callDelayed: function(qid, callback, context) {
         var q = this.getQueue(qid);
         if (!q) {
-            console.log("request klaar zonder queue ");
+            //console.log("request klaar zonder queue ");
             callback.call(context);
         } else {
             q.count = Math.max(0, q.count - 1);
@@ -106,7 +106,7 @@ var Api = {
         $.getJSON("/api/routes", function(result) {
             if (result.result === "success") {
                 var resultdata = result.data;
-                console.log(JSON.stringify(resultdata));
+                //console.log(JSON.stringify(resultdata));
                 for (var i = 0; i < resultdata.length; i++) {
                     routes[resultdata[i].id] = Route.create(resultdata[i].id, resultdata[i].name, resultdata[i].description, resultdata[i].length);
                     Api.syncWaypoints(resultdata[i].id);
@@ -307,7 +307,7 @@ var Api = {
         $.getJSON("/api/providers", function(result) {
             if (result.result === "success") {
                 var resultdata = result.data;
-                console.log(JSON.stringify(resultdata));
+                //console.log(JSON.stringify(resultdata));
                 for (var i = 0; i < resultdata.length; i++) {
                     providers[resultdata[i].id] = Provider.create(resultdata[i].id, resultdata[i].name);
                 }
