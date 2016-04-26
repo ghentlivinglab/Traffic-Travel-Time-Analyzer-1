@@ -122,7 +122,7 @@ var Api = {
     syncLiveData: function(provider, callback, context) {
         var newCallback = function(){
             reloadMap();
-            this.callback();
+            callback.call(this);
         };
 
         // Bij begin van alle requests uitvoeren. 

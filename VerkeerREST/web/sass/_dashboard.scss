@@ -34,6 +34,7 @@ top: 0;
 		padding: 30px 20px 0 40px;
 		overflow: auto;
 		overflow-y: scroll;
+		-webkit-overflow-scrolling: touch; // smooth scrolling op smarpthones
 		background: $background-gray;
 		z-index: 11;
 
@@ -88,6 +89,13 @@ article {
 		display: table-cell;
 		padding-right: 40px;
 		width: 40%;
+
+		@media screen and (max-width: $responsive-smartphone) {
+	      width: auto;
+	      display: block;
+	      margin: 10px 0;
+	      padding-right: 0;
+	    }
 	}
 
 	.right {
@@ -154,8 +162,6 @@ article {
 			position: absolute;
 			background: white;
 			z-index: 2;
-			left: -40px;
-			right: -20px;
 			bottom: 0;
 			top: 0;
 			box-shadow: $box-shadow;
@@ -165,11 +171,11 @@ article {
 			position: absolute;
 			background: white;
 			z-index: 3;
-			left: -40px;
-			right: -20px;
+
 			bottom: 0;
 			top: 0;
 			overflow: hidden; // Voorkomt vreemd gedrag van grafiek die klikbaar is buiten haar bounding box
+
 
 			div {
 				// DUPLICATE CODE!
@@ -180,6 +186,15 @@ article {
 				padding: 30px;
 				font-weight: 500;
 			}
+		}
+
+		.graph-shadow, .graph {
+			left: -40px;
+			right: -20px;
+			@media screen and (max-width: $responsive-smartphone) {
+		      left: -15px;
+		      right: -10px;
+		    }
 		}
 
 		&:hover {
