@@ -169,7 +169,7 @@ var Dashboard = {
 		// Dus kan dit deeltje later weg. Maar voorlopig niet, zodat we deze oorzaak snel zien (dashboard zal leeg zijn). 
 		// (zie ook commentaar bij thisReady hieronder)
 		dashboard.html('');
-
+                url.setQueryParam("Weergave",this.mode);
 		switch(this.mode){
 			case Dashboard.LIVE: 
 				this.reloadLive();
