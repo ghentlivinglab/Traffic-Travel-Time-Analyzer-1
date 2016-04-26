@@ -1,4 +1,5 @@
 $settings-width: 250px;
+$settings-width-small: 200px;
 $medium-size: 15px;
 $dashboard-width: 800px;
 $gray: #4D4D4D;
@@ -15,6 +16,9 @@ $arrow-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
 $red: #C10037;//#FF6363;
 $orange: #E79334;
 $green: #20D713;
+
+$responsive-tablet: 800px;
+$responsive-smartphone: 500px;
 
 @mixin bg-gradient-t2b($start-colour, $end-colour) {
     background-image: -webkit-gradient(linear, left top, left bottom, from($start-colour), to($end-colour));
@@ -95,11 +99,19 @@ span.sub {
 
 #bundle {
     position: absolute;
-    left: 0;
+    left: $settings-width;
     top: 0;
     bottom: 0;
-    width: $settings-width;
+    right: 0;
+    z-index: -2; // nodig voor google maps dragging te laten werken
 
+    @media screen and (max-width: $responsive-tablet) {
+      left: $settings-width-small;
+    }
+
+    @media screen and (max-width: $responsive-smartphone) {
+      left: 0;
+    }
 }
 
 #settings {
@@ -111,9 +123,22 @@ span.sub {
     background: white;
     padding: 30px 25px;
     z-index: 1;
+    width: $settings-width;
+    box-sizing: border-box;
+    margin-left: -$settings-width;
+    //overflow: hidden;
+    
+    @media screen and (max-width: $responsive-tablet) {
+      width: $settings-width-small;
+      margin-left: -$settings-width-small;
+    }
+
+    @media screen and (max-width: $responsive-smartphone) {
+      display: none;
+    }
 
     .shadow {
-        left: $settings-width;
+        right: -10px;
     }
 
     // Radio and select buttons
@@ -155,13 +180,13 @@ span.sub {
 }
 #map-container {
     background: gray;
-    left: $settings-width;
     top: 0;
+    left: 0;
     bottom: 0;
     right: 0;
     z-index: -1;
 
-    position: fixed;
+    position: absolute;
 }
 #map-overlay {
     z-index: 99;
