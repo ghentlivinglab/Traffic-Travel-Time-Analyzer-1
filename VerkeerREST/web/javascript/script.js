@@ -176,13 +176,21 @@ $(window).load(function () {
 
 function updateViewByURLParams(){
     URLParamsShowDashboard();
+    URLParamsChangeView();
 }
 
 function URLParamsShowDashboard(){
     // checks if mapView or overview has to be displayed
     var showDashboard = url.getQueryParam("dashboardView") === "true"; // checks if URL contains directives
     var dashboardShown = $("#dashboard").hasClass('open'); // checks in which state the dashboard currently resides
-    if (showDashboard ? !dashboardShown : dashboardShown) {
+    
+    if (showDashboard ? !dashboardShown : dashboardShown) { // showDashboard XOR dashboardShown
         togglePanel();
     }
+}
+
+function URLParamsChangeView(){
+    var view = Number(url.getQueryParam("Weergave"));
+    view = (view===NaN ? 0 : view);
+    $("#mode-"+view).click();
 }
