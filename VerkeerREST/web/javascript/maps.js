@@ -217,7 +217,8 @@ function lineClicked(event) {
     var distance = routes[this['id']].length;
     
     var message = '<content id="infoWindow">'
-            + '<h1>' + routes[this['id']].name + ' <span class=smallTitle>' + routes[this['id']].description + '</span></h1>'
+            + '<h1>' + routes[this['id']].name + ' </h1>'
+            + '<h2>' + routes[this['id']].description + '</h2>'
             + '<p class="infoWindowCurrentTime">Huidige reistijd: </p>'
             + '<p class="infoWindowCurrentTime value">' + currentMinutes + ' minuten</p>'
             + '<p class="infoWindowAverageTime">Gemiddelde reistijd: </p>'
