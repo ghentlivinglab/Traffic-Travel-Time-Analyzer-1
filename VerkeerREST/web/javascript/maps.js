@@ -228,6 +228,7 @@ function lineClicked(event) {
             + '</content>';
     createInfoWindow(event["latLng"], message);
     this.setOptions({strokeWeight: hoverWeight, zIndex: 3, strokeColor: selectedColor}); // add accent to line
+    google.maps.event.addListener(infowindow,'closeclick',generateLines);
 }
 
 /****************************
