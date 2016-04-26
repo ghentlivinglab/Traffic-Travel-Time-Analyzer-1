@@ -201,12 +201,13 @@ function URLParamsChangeView(){
 
 function URLParamsChangeMap(){
     var center = url.getQueryParam("mapCenter");
+    center = (center ? center : "");
     center = center.split(',');
     if(center.length===2){
         map.setCenter({lat:Number(center[0]),lng:Number(center[1])});
     }
     var zoom = Number(url.getQueryParam("mapZoom"));
-    zoom = (zoom===NaN ? 12 : zoom);
+    zoom = (zoom ? zoom : zoomCurrent);
     zoomCurrent=zoom;
     map.setZoom(zoom);
     
