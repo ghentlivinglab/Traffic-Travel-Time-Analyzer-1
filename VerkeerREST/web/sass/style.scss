@@ -221,9 +221,11 @@ span.sub {
     #infoWindow {
         > h1 {
             font-size: 1.5em;
-            .smallTitle {
-                font-size: 0.5em;
-            }
+            padding:0;
+        }
+        > h2 {
+            font-size:1.25em;
+            padding: 0 0 .25em 0;
         }
         > p {
             padding: 0;
