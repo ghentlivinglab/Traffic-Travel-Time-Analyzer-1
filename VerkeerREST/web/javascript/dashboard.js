@@ -403,6 +403,12 @@ var Dashboard = {
 				if (b.color == "orange"){
 					return 1;
 				}
+				if (a.color == "green"){
+					return -1;
+				}
+				if (b.color == "green"){
+					return 1;
+				}
 			}
 			// Nog sorteren op status op eerste plaats toeveogen hier
 			return a.score - b.score;
