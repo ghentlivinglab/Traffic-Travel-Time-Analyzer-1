@@ -10,10 +10,10 @@ public class Verkeer {
         try {
             log.info("Launching application");
 
-            PollThread t = new PollThread();
-            t.start();
-
-            ConsoleParser cp = new ConsoleParser(t);
+            PollControl pollControl = new PollControl();
+            pollControl.init();
+            
+            ConsoleParser cp = new ConsoleParser(pollControl);
             cp.processCommandLineInput();
         } catch (Exception e) {
             log.error(e.getMessage());

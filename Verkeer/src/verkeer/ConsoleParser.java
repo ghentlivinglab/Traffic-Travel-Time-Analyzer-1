@@ -11,21 +11,18 @@ import org.apache.log4j.Logger;
 public class ConsoleParser {
 
     private final Console console;
-    private final PollThread pollThread;
+    private final PollControl pollControl;
     private static final Logger log = Logger.getLogger(ConsoleParser.class);
 
-    public ConsoleParser(PollThread pollThread) {
+    public ConsoleParser(PollControl pollControl) {
         console = System.console();
-        this.pollThread = pollThread;
+        this.pollControl = pollControl;
     }
 
     public void processCommandLineInput() {
         if (console == null) {
             log.info("No console found. No input allowed.");
-            while (true){
-                // bezig houden
-            }
-        }else {
+        } else {
             boolean keepRunning = true;
             while (keepRunning) {
                 String command = console.readLine(" $ ");
@@ -35,10 +32,14 @@ public class ConsoleParser {
                     printStatus();
                 } else if (command.equals("properties")) {
                     printProperties();
-                } else if (command.equals("reload")) {
-                    pollThread.reloadProperties();
                 } else if (command.equals("poll")) {
-                    pollThread.forceUpdate();
+                    pollControl.forcePoll();
+                } else if (command.equals("stop")) {
+                    pollControl.stopPolling();
+                } else if (command.equals("restart")) {
+                    pollControl.stopPolling();
+                    pollControl.init();
+                    pollControl.startPolling();
                 } else {
                     String words[] = command.split(" ");
                     if (words[0].equals("properties")) {
@@ -55,18 +56,13 @@ public class ConsoleParser {
     }
 
     private void printStatus() {
-        System.out.println("  Status of the polling thread: " + pollThread.getState().name());
-        System.out.println("  Number of updates since launch: " + pollThread.getUpdateCounter());
+        System.out.println("  Number of updates since restart: " + pollControl.getUpdateCounter());
     }
 
     private void properties(String[] command) {
-        //index 0 is al zeker properties.
-        //doLog(Level.INFO, command[0] + " " + command[1] + " " + command[2] + " " + command[3] + " " + command[4] + " uitgevoerd.");
         if (command[1].equals("db")) {
             if (command.length >= 3 && command[2].equals("get")) {
                 showPropertiesDatabase(command);
-            } else if (command.length >= 3 && command[2].equals("set")) {
-                changePropertiesDatabase(command);
             } else {
                 System.out.println("  Usage: properties db|app get|set propertyname propertyvalue");
             }
@@ -154,27 +150,4 @@ public class ConsoleParser {
 
     }
 
-    private void changePropertiesDatabase(String[] command) {
-        /*try {
-            
-            Properties prop = new Properties();
-            InputStream is = getClass().getClassLoader().getResourceAsStream("connectors/database/database.properties");
-            
-            prop.load(is);
-            is.close();
-            int size = command.length;
-            if(size != 5)
-                System.out.println("Usage: props db set propertyname propertyvalue");
-            else{
-                File f = new File("connectors/database/database.properties");
-                FileOutputStream out = new FileOutputStream(f);
-                prop.setProperty(command[3], command[4]);
-                prop.store(out, null);
-                out.close();
-            }*/
-        System.out.println("  Nog niet geimplementeerd.");
-        /*} catch (IOException ex) {
-            Logger.getLogger(ConsoleParser.class.getName()).log(Level.SEVERE, null, ex);
-        }*/
-    }
 }
