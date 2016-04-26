@@ -117,25 +117,6 @@ var Api = {
             }
         });
 
-        /*routes = [];
-         routes[2] = Route.create(2, 'Route 1', 'Van E40 tot X', 2854);
-         routes[3] = Route.create(3, 'Route 2', 'Van E40 tot X', 2254);
-         routes[4] = Route.create(4, 'Route 3', 'Van E40 tot X', 1254);
-         routes[5] = Route.create(5, 'Route 4', 'Van E40 tot X', 6783);
-         routes[6] = Route.create(6, 'Route 5', 'Van E40 tot X', 234);
-         routes[7] = Route.create(7, 'Route 6', 'Van E40 tot X', 2823);
-         routes[8] = Route.create(8, 'Route 7', 'Van E40 tot X', 3854);
-         routes[9] = Route.create(9, 'Route 8', 'Van E40 tot X', 4854);
-         routes[10] = Route.create(10, 'Route 9', 'Van E40 tot X', 1858);
-         routes[11] = Route.create(11, 'Route 10', 'Van E40 tot X', 1858);
-         routes[12] = Route.create(12, 'Route 11', 'Van E40 tot X', 1858);
-         routes[13] = Route.create(13, 'Route 12', 'Van E40 tot X', 1858);
-         routes[14] = Route.create(14, 'Route 13', 'Van E40 tot X', 1858);*/
-
-        // Hier alle data van de server halen
-
-        // Callback zodra we de data hebben (moet dus in success van ajax)
-
     },
     // fetches the live data (= current traffic and an average of last month(s) ) of every route
     syncLiveData: function(provider, callback, context) {
@@ -308,7 +289,6 @@ var Api = {
         // Uiteindelijk moet dit ongeveer het resultaat zijn:
         providers = [];
         var me = this;
-        providers[0] = Provider.create(0, 'Alles');
         $.getJSON("/api/providers", function(result) {
             if (result.result === "success") {
                 var resultdata = result.data;

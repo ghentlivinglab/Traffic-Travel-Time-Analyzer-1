@@ -17,8 +17,9 @@ $red: #C10037;//#FF6363;
 $orange: #E79334;
 $green: #20D713;
 
-$responsive-tablet: 800px;
-$responsive-smartphone: 500px;
+$responsive-tablet: 900px;
+$responsive-hide-settings: 700px;
+$responsive-smartphone: 600px;
 
 @mixin bg-gradient-t2b($start-colour, $end-colour) {
     background-image: -webkit-gradient(linear, left top, left bottom, from($start-colour), to($end-colour));
@@ -109,7 +110,7 @@ span.sub {
       left: $settings-width-small;
     }
 
-    @media screen and (max-width: $responsive-smartphone) {
+    @media screen and (max-width: $responsive-hide-settings) {
       left: 0;
     }
 }
@@ -133,7 +134,7 @@ span.sub {
       margin-left: -$settings-width-small;
     }
 
-    @media screen and (max-width: $responsive-smartphone) {
+    @media screen and (max-width: $responsive-hide-settings) {
       display: none;
     }
 

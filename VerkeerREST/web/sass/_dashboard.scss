@@ -65,14 +65,14 @@ article {
 		@media screen and (max-width: $responsive-smartphone) {
 	      display: block;
 	      padding-bottom: 20px;
-	      border-bottom: 1px solid $gray;
+	      border-bottom: 1px solid $light-gray;
 	    }
 	}
 
 	h1 {
-		font-size: 13pt;
 		font-weight: 500;
 		padding-bottom: 5px;
+		font-size: 15pt
 	}
 
 	h2 {
@@ -109,6 +109,10 @@ article {
 			font-weight: 500;
 			padding-bottom: 5px;
 			color: $green;
+
+			@media screen and (max-width: $responsive-smartphone) {
+				font-size: 13pt;
+			}
 
 			&.red {
 				color: $red;
