@@ -139,6 +139,11 @@ var Api = {
     },
     // fetches the live data (= current traffic and an average of last month(s) ) of every route
     syncLiveData: function(provider, callback, context) {
+        var newCallback = function(){
+            reloadMap();
+            this.callback();
+        };
+
         // Bij begin van alle requests uitvoeren. 
         // Hebben deze nodig voor de callback wanneer de request klaar is.
         var qid = this.getQueueId();
@@ -173,7 +178,7 @@ var Api = {
             } else {
                 alert(result.reason);
             }
-            me.callDelayed(qid, callback, context);
+            me.callDelayed(qid, newCallback, context);
         }).fail(function() {
             console.log("something went wrong loading the live data.");
         });
