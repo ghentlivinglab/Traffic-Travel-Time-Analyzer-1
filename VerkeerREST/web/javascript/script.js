@@ -70,7 +70,7 @@ function togglePanel() {
 
         // changes the display of the button
         $(".collapse").children().attr({"src": "images/arrow-right.png", "alt": ">"});
-        setQueryVariable("dashboardView");
+        url.setQueryParam("dashboardView");
     } else {
         // Als het dashboard gesloten is, openen we het
         $("#dashboard").addClass('open');
@@ -87,7 +87,7 @@ function togglePanel() {
 
         // changes the display of the button
         $(".collapse").children().attr({"src": "images/arrow-left.png", "alt": "<"});
-        setQueryVariable("dashboardView","true");
+        url.setQueryParam("dashboardView","true");
     }
 
 }
@@ -109,65 +109,6 @@ function togglePopup(close) {
             anchor.removeClass('open');
         }
     }
-}
-
-/****************************
- * reads the key-value pairs from the location-URL
- * eg: for the URL http://test.com/?food=banana&drink=beer the method getQueryVariable("food") returns "banana"
- ****************************/
-function getQueryVariable(variable) {
-    var query = window.location.search.substring(1); // removes '?'
-    var vars = query.split("&"); // splits the key-value pairs
-    for (var i = 0; i < vars.length; i++) {
-        var pair = vars[i].split("="); // splits keys from values
-        if (pair[0] === variable) {
-            return pair[1];
-        } //returns value when requested key has been found
-    }
-    return false; // key not found
-}
-
-/****************************
- * adds/updates the query parameter with name and/to value
- * if no value or empty value is provided, it removes the name/value-pair
- ***************************/
-function setQueryVariable(name, value) {
-    var query = window.location.search.substring(1); // removes '?'
-    var vars = query.split("&"); // splits the key-value pairs
-
-    var variableFound = false; // check if parameter is already in use
-    for (var i = 0; i < vars.length; i++) {
-        var pair = vars[i].split("="); // splits key from value
-        if (pair[0] === name) { // parameter is in use
-            if (!value) { // there is no value or empty value provided
-                vars[i] = ""; // removes element
-            } else {
-                vars[i] = pair[0] + "=" + value; // updates element
-            }
-            variableFound = true; // parameter is in use
-        }
-    }
-
-    if (!variableFound) { // if parameter is not in use, add to the back
-        vars.push(name + "=" + value);
-    }
-
-    query = "?"; // reset query string
-    if (vars.length > 0) { // only if there are parameters
-        for (var i in vars) { // build new query string
-            if (vars[i] !== "") {
-                query += vars[i];
-                query += "&";
-            }
-        }
-    }
-    query = query.slice(0, -1); // removes trailing '&'
-
-    // build new location
-    var newLocation = window.location.protocol + "//" + window.location.host + window.location.pathname + query;
-
-    // update current location and pushes previous to the history
-    history.pushState(null, document.title, newLocation);
 }
 
 /****************************
@@ -231,7 +172,7 @@ $(document).ready(function () {
  ****************************/
 $(window).load(function () {
     // checks if mapView or overview has to be displayed
-    var showDashboard = getQueryVariable("dashboardView") === "true"; // checks if URL contains directives
+    var showDashboard = url.getQueryParam("dashboardView") === "true"; // checks if URL contains directives
     var dashboardShown = $("#dashboard").css("left") === "250px"; // checks in which state the dashboard currently resides
     if (showDashboard ? !dashboardShown : dashboardShown) {
         togglePanel();
