@@ -171,10 +171,18 @@ $(document).ready(function () {
  * runs when DOM-tree is finished and all objects from it are loaded
  ****************************/
 $(window).load(function () {
+    updateViewByURLParams();
+});
+
+function updateViewByURLParams(){
+    URLParamsShowDashboard();
+}
+
+function URLParamsShowDashboard(){
     // checks if mapView or overview has to be displayed
     var showDashboard = url.getQueryParam("dashboardView") === "true"; // checks if URL contains directives
-    var dashboardShown = $("#dashboard").css("left") === "250px"; // checks in which state the dashboard currently resides
+    var dashboardShown = $("#dashboard").hasClass('open'); // checks in which state the dashboard currently resides
     if (showDashboard ? !dashboardShown : dashboardShown) {
         togglePanel();
     }
-});
+}
