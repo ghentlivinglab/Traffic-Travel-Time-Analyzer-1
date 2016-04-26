@@ -159,16 +159,16 @@ span.sub {
             padding:0;
             width: 1em;
             height: 1em;
-            background-image: url("../images/radio.png");
-            background-position: 0 -1em;
+            background-image: url("../images/inputs.png");
+            background-position: 0 -2em;
             background-repeat: no-repeat;
-            background-size: 1em 2em;
+            background-size: 1em 3em;
         }
-        input[type="checkbox"] + span{
-            background-image: url("../images/select.png");
+        input[type="checkbox"]:checked + span{
+            background-position: top left;
         }
-        input[type="radio"]:checked + span,input[type="checkbox"]:checked + span{
-            background-position:top left;
+        input[type="radio"]:checked + span {
+            background-position: 0 -1em;
         }
     }
 }

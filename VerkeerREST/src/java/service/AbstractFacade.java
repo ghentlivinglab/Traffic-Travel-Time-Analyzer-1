@@ -53,4 +53,36 @@ public abstract class AbstractFacade<T> {
         return getEntityManager().createQuery(cq).getResultList();
     }
     
+    /**
+     * Parses an error http-response in JSON-format.
+     * 
+     * @param errormessage the errormessage returned
+     * @return String in JSON-format.
+     */
+    protected String processError(String errormessage) {
+        String delimiter = ",";
+        StringBuilder sb = new StringBuilder();
+        sb.append('{');
+        sb.append("\"result\":").append("\"error\"");
+        sb.append(delimiter).append("\"reason\":\"").append(errormessage).append('"');
+        sb.append('}');
+        return sb.toString();
+    }
+    
+    /**
+     * Parses the given data in an http-response in JSON-format.
+     * 
+     * @param data data in JSON-format which will be returned in the response
+     * @return String in JSON-format
+     */
+    protected String processSuccess(String data) {
+        String delimiter = ",";
+        StringBuilder sb = new StringBuilder();
+        sb.append('{');
+        sb.append("\"result\":").append("\"success\"");
+        sb.append(delimiter).append("\"data\":").append(data);
+        sb.append('}');
+        return sb.toString();
+    }
+    
 }
