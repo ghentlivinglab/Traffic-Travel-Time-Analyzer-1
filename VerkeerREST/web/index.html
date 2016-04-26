@@ -138,19 +138,19 @@
             Vandaag
         </label>
         <label>
-            <input type="radio" id="mode-1" name="dashboard" onclick="Dashboard.setMode(Dashboard.INTERVAL);"/>
+            <input type="radio" id="mode-1" name="dashboard" onclick="Dashboard.setMode(Dashboard.DAY);"/>
+            <span></span>
+            Dag
+        </label>
+        <label>
+            <input type="radio" id="mode-2" name="dashboard" onclick="Dashboard.setMode(Dashboard.INTERVAL);"/>
             <span></span>
             Periode
         </label>
         <label>
-            <input type="radio" id="mode-2" name="dashboard" onclick="Dashboard.setMode(Dashboard.COMPARE_INTERVALS);"/>
+            <input type="radio" id="mode-3" name="dashboard" onclick="Dashboard.setMode(Dashboard.COMPARE_INTERVALS);"/>
             <span></span>
             Vergelijk periode
-        </label>
-        <label>
-            <input type="radio" id="mode-3" name="dashboard" onclick="Dashboard.setMode(Dashboard.COMPARE_DAYS);"/>
-            <span></span>
-            Vergelijk dagen
         </label>
         <hr>
         <h1>Providers</h1>

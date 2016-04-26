@@ -9,9 +9,9 @@ var Dashboard = {
 
 	// Mogelijke dashboard standen cte's
 	LIVE: 0, // Vandaag
-	INTERVAL: 1, // Periode
-	COMPARE_INTERVALS: 2, // Vergelijk periodes
-	COMPARE_DAYS: 3, // Vergelijk dagen
+	INTERVAL: 2, // Periode
+	COMPARE_INTERVALS: 3, // Vergelijk periodes
+	DAY: 1, // Vergelijk dagen
 
 	// Geselecteerde intervallen en datums. Ofwel Interval ofwel Event objecten
 	selectedIntervals: [Interval.create(null, null), Interval.create(null, null)],
@@ -178,9 +178,6 @@ var Dashboard = {
 			break;
 			case Dashboard.COMPARE_INTERVALS: 
 				this.reloadCompareIntervals(); 
-			break;
-			case Dashboard.COMPARE_DAYS: 
-				this.reloadCompareDays(); 
 			break;
 			default:
 				this.displayNotImplemented();
@@ -400,6 +397,12 @@ var Dashboard = {
 					return -1;
 				}
 				if (b.color == "orange"){
+					return 1;
+				}
+				if (a.color == "green"){
+					return -1;
+				}
+				if (b.color == "green"){
 					return 1;
 				}
 			}
