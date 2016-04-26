@@ -20,6 +20,7 @@ var Dashboard = {
 	// (hierdoor ontvangen we niet voortdurend change events) gebruiken we nog een extra
 	// property die de laatst gebruikte intervallen opslaat
 	lastKnownIntervals: [],
+	initialSync: false,
 
 
 	init: function() {
@@ -157,6 +158,10 @@ var Dashboard = {
 			return;
 		}
 
+		if (!this.initialSync){
+			this.initialSync = true;
+			Api.syncLiveData(this.provider.id, Dashboard.reload, this);
+		}
 		var dashboard = $('#dashboard .content');
 
 		// Alles wissen (dit kan later weg, maar is om te voorkomen dat thisReady meerdere keren wordt uitgevoerd op dezelfde elementen)
@@ -417,7 +422,6 @@ var Dashboard = {
 		});
 
 		dashboard.html(str);
-		reloadMap();
 	},
 	// Genereert HTML voor periode modus
 	reloadInterval: function() {
