@@ -175,11 +175,24 @@ $(window).load(function () {
     $("[name=dashboard]").on('click',function(event){
         url.setQueryParam("weergave",this.id.split('-')[1]);
     });
+    $("[name=provider]").on('click',changeURLParamProvider);
 });
+
+function changeURLParamProvider(){
+    var providers = $("[name=provider]");
+    var indices = [];
+    for(var i=0;i<providers.length;i++){
+        if($(providers[i]).is(':checked')){
+            indices.push(i);
+        }
+    }
+    url.setQueryParam("providers","["+indices+"]");
+}
 
 function updateViewByURLParams(){
     URLParamsShowDashboard();
     URLParamsChangeView();
+    URLParamsChangeProvider();
     URLParamsChangeMap();
 }
 
@@ -197,6 +210,15 @@ function URLParamsChangeView(){
     var view = Number(url.getQueryParam("weergave"));
     view = (view===NaN ? 0 : view);
     $("#mode-"+view).click();
+}
+
+function URLParamsChangeProvider(){
+    var URLProviders = JSON.parse(url.getQueryParam("providers"));
+    var providers = $("[name=provider]");
+    URLProviders = (URLProviders===NaN ? 0 : URLProviders);
+    for(var i=0;i<URLProviders.length;i++){
+        $($(providers[URLProviders[i]])).prop("checked",true);
+    }
 }
 
 function URLParamsChangeMap(){
