@@ -74,23 +74,29 @@ var Api = {
         }
     },
     syncWaypoints: function(id) {
-        $.getJSON("/api/waypoints", {routeID: id}, function(result) {
-            if (result.result === "success") {
-                var resultdata = result.data;
-                //console.log(JSON.stringify(resultdata));
-                if(resultdata.length !== 0){ // lengte van 0 waypoints wordt eigenlijk al opgevangen in REST API door error & reason terug te geven
-                    var array = [];
-                    resultdata.sort(function(a, b) {
-                        return a.sequence - b.sequence;
-                    });
-                    for (var i in resultdata) {
-                        array.push({"lat": resultdata[i].latitude, "lng": resultdata[i].longitude});
+        $.ajax({
+            type: "GET",
+            url: "/api/waypoints",
+            data: {routeID: id},
+            success: function(result, status, jqXHR) {
+                if (result.result === "success") {
+                    var resultdata = result.data;
+                    //console.log(JSON.stringify(resultdata));
+                    if (resultdata.length !== 0) { // lengte van 0 waypoints wordt eigenlijk al opgevangen in REST API door error & reason terug te geven
+                        var array = [];
+                        resultdata.sort(function(a, b) {
+                            return a.sequence - b.sequence;
+                        });
+                        for (var i in resultdata) {
+                            array.push({"lat": resultdata[i].latitude, "lng": resultdata[i].longitude});
+                        }
+                        routes[resultdata[0].routeID].waypoints = array;
                     }
-                    routes[resultdata[0].routeID].waypoints = array;
+                } else {
+                    console.error(result.reason);
                 }
-            } else {
-                console.error(result.reason);
-            }
+            },
+            error: handleAjaxError
         });
     },
     // fetches all routes of the API and places them in routes[]
@@ -103,20 +109,24 @@ var Api = {
         // Uiteindelijk moet dit ongeveer het resultaat zijn: 
         routes = [];
         var me = this;
-        $.getJSON("/api/routes", function(result) {
-            if (result.result === "success") {
-                var resultdata = result.data;
-                //console.log(JSON.stringify(resultdata));
-                for (var i = 0; i < resultdata.length; i++) {
-                    routes[resultdata[i].id] = Route.create(resultdata[i].id, resultdata[i].name, resultdata[i].description, resultdata[i].length);
-                    Api.syncWaypoints(resultdata[i].id);
+        $.ajax({
+            type: "GET",
+            url: "/api/routes",
+            success: function(result, status, jqXHR) {
+                if (result.result === "success") {
+                    var resultdata = result.data;
+                    //console.log(JSON.stringify(resultdata));
+                    for (var i = 0; i < resultdata.length; i++) {
+                        routes[resultdata[i].id] = Route.create(resultdata[i].id, resultdata[i].name, resultdata[i].description, resultdata[i].length);
+                        Api.syncWaypoints(resultdata[i].id);
+                    }
+                    me.callDelayed(qid, callback, context);
+                } else {
+                    console.error(result.reason);
                 }
-                me.callDelayed(qid, callback, context);
-            } else {
-                console.error(result.reason);
-            }
+            },
+            error: handleAjaxError
         });
-
     },
     // fetches the live data (= current traffic and an average of last month(s) ) of every route
     syncLiveData: function(provider, callback, context) {
@@ -132,36 +142,42 @@ var Api = {
         // Hier alle data van de server halen.
 
         var me = this;
-        $.getJSON("/api/trafficdata/live?providerID=" + provider, function(result) {
-            if (result.result === "success") {
-                var data = result.data;
+        
+        $.ajax({
+            type: "GET",
+            url: "/api/trafficdata/live",
+            data: {providerID: provider},
+            success: function(result, status, jqXHR) {
+                if (result.result === "success") {
+                    var data = result.data;
 
-                routes.forEach(function(route) {
-                    var rdata = data[route.id];
-                    if (typeof rdata !== "undefined") {
-                        var avgData = TrafficData.create(rdata.avg.speed, rdata.avg.time);
-                        var liveData = TrafficData.create(rdata.live.speed, rdata.live.time);
-                    } else {
-                        var avgData = TrafficData.createEmpty();
-                        var liveData = TrafficData.createEmpty();
-                    }
-                    if (route.hasAvgData(provider))
-                        route.avgData[provider].representation = avgData;
-                    else
-                        route.avgData[provider] = TrafficGraph.create(avgData);
+                    routes.forEach(function(route) {
+                        var rdata = data[route.id];
+                        if (typeof rdata !== "undefined") {
+                            var avgData = TrafficData.create(rdata.avg.speed, rdata.avg.time);
+                            var liveData = TrafficData.create(rdata.live.speed, rdata.live.time);
+                        } else {
+                            var avgData = TrafficData.createEmpty();
+                            var liveData = TrafficData.createEmpty();
+                        }
+                        if (route.hasAvgData(provider))
+                            route.avgData[provider].representation = avgData;
+                        else
+                            route.avgData[provider] = TrafficGraph.create(avgData);
 
-                    if (route.hasLiveData(provider))
-                        route.liveData[provider].representation = liveData;
-                    else
-                        route.liveData[provider] = TrafficGraph.create(liveData);
+                        if (route.hasLiveData(provider))
+                            route.liveData[provider].representation = liveData;
+                        else
+                            route.liveData[provider] = TrafficGraph.create(liveData);
 
-                });
-            } else {
-                alert(result.reason);
-            }
-            me.callDelayed(qid, newCallback, context);
-        }).fail(function() {
-            console.log("something went wrong loading the live data.");
+                    });
+                } else {
+                    alert(result.reason);
+                }
+                me.callDelayed(qid, newCallback, context);
+                
+            },
+            error: handleAjaxError
         });
     },
     // fetches the graph for average data (= averages for every hour of last month)
@@ -188,36 +204,38 @@ var Api = {
 
         var me = this;
 
-        $.getJSON("/api/trafficdata/weekday?providerID=" + providerId + "&routeID=" + routeId + "&weekday=" + weekday + "&from=" + dateToRestString(from) + "&to=" + dateToRestString(to), function(result) {
-            if (result.result === "success") {
-                var resultdata = result.data;
+        $.ajax({
+            type: "GET",
+            url: "/api/trafficdata/weekday",
+            data: {providerID: providerId, routeID: routeId, weekday: weekday, from: dateToRestString(from), to: dateToRestString(to)},
+            success: function(result, status, jqXHR) {
+                if (result.result === "success") {
+                    var resultdata = result.data;
 
-                for (var key in resultdata[weekday]) {
-                    var times = key.split(":");
-                    var hour = parseInt(times[0]);
-                    var minutes = parseInt(times[1]);
-                    hour += (minutes / 60);
-                    data[hour] = (resultdata[weekday][key]) / 60;
-                }
+                    for (var key in resultdata[weekday]) {
+                        var times = key.split(":");
+                        var hour = parseInt(times[0]);
+                        var minutes = parseInt(times[1]);
+                        hour += (minutes / 60);
+                        data[hour] = (resultdata[weekday][key]) / 60;
+                    }
 
-                console.log('avgGraph api data:');
-                console.log(data);
+                    console.log('avgGraph api data:');
+                    console.log(data);
 
-                if (route.hasAvgData(providerId)) {
-                    route.avgData[providerId].setData(data);
-                    me.callDelayed(qid, callback, context);
+                    if (route.hasAvgData(providerId)) {
+                        route.avgData[providerId].setData(data);
+                        me.callDelayed(qid, callback, context);
+                    } else {
+                        // impossible
+                        console.error('Route ' + route.name + ' has no avgData for provider with id ' + providerId);
+                    }
                 } else {
-                    // impossible
-                    console.error('Route ' + route.name + ' has no avgData for provider with id ' + providerId);
+                    alert(result.reason);
                 }
-
-            } else {
-                alert(result.reason);
-            }
-        }).fail(function() {
-            console.log("something went wrong loading the live data.");
+            },
+            error: handleAjaxError
         });
-
     },
     // fetches graph for today (right up to current time)
     syncLiveGraph: function(routeId, providerId, callback, context) {
@@ -243,40 +261,43 @@ var Api = {
 
         var me = this;
 
-        $.getJSON("/api/trafficdata?providerID=" + providerId + "&routeID=" + routeId + "&from=" + dateToRestString(from) + "&to=" + dateToRestString(to), function(result) {
-            if (result.result === "success") {
-            	var data = {};
-                var resultdata = result.data;
-                console.log(resultdata);
+        $.ajax({
+            type: "GET",
+            url: "/api/trafficdata",
+            data: {providerID: providerId, routeID: routeId, from: dateToRestString(from), to: dateToRestString(to)},
+            success: function(result, status, jqXHR) {
+                if (result.result === "success") {
+                    var data = {};
+                    var resultdata = result.data;
+                    console.log(resultdata);
 
-                for (var key in resultdata) {
-                    var time = new Date(key);
-                    var hour = time.getUTCHours();
-                    var minutes = time.getUTCMinutes();
-                    hour += (minutes / 60);
-                    if (isNaN(hour)){
-                    	console.error('Unreadable date format: "'+key+'" - Make sure the REST server is running the latest version.');
-                    	continue;
+                    for (var key in resultdata) {
+                        var time = new Date(key);
+                        var hour = time.getUTCHours();
+                        var minutes = time.getUTCMinutes();
+                        hour += (minutes / 60);
+                        if (isNaN(hour)) {
+                            console.error('Unreadable date format: "' + key + '" - Make sure the REST server is running the latest version.');
+                            continue;
+                        }
+                        data[hour] = (resultdata[key]) / 60;
                     }
-                    data[hour] = (resultdata[key]) / 60;
-                }
 
-                console.log('liveGraph api data:');
-                console.log(data);
+                    console.log('liveGraph api data:');
+                    console.log(data);
 
-                if (route.hasLiveData(providerId)) {
-                    route.liveData[providerId].setData(data);
-                    me.callDelayed(qid, callback, context);
+                    if (route.hasLiveData(providerId)) {
+                        route.liveData[providerId].setData(data);
+                        me.callDelayed(qid, callback, context);
+                    } else {
+                        // impossible
+                        console.error('Route ' + route.name + ' heeft geen liveData voor provider met id ' + providerId);
+                    }
                 } else {
-                    // impossible
-                    console.error('Route ' + route.name + ' heeft geen liveData voor provider met id ' + providerId);
+                    alert(result.reason);
                 }
-               
-            } else {
-                alert(result.reason);
-            }
-        }).fail(function() {
-            console.log("something went wrong loading the live data.");
+            },
+            error: handleAjaxError
         });
     },
     //
@@ -288,18 +309,25 @@ var Api = {
         // Hier alle data van de server halen.
         // Uiteindelijk moet dit ongeveer het resultaat zijn:
         providers = [];
+        
         var me = this;
-        $.getJSON("/api/providers", function(result) {
-            if (result.result === "success") {
-                var resultdata = result.data;
-                //console.log(JSON.stringify(resultdata));
-                for (var i = 0; i < resultdata.length; i++) {
-                    providers[resultdata[i].id] = Provider.create(resultdata[i].id, resultdata[i].name);
+        
+        $.ajax({
+            type: "GET",
+            url: "/api/providers",
+            success: function(result, status, jqXHR) {
+                if (result.result === "success") {
+                    var resultdata = result.data;
+                    //console.log(JSON.stringify(resultdata));
+                    for (var i = 0; i < resultdata.length; i++) {
+                        providers[resultdata[i].id] = Provider.create(resultdata[i].id, resultdata[i].name);
+                    }
+                    me.callDelayed(qid, callback, context);
+                } else {
+                    console.error(result.reason);
                 }
-                me.callDelayed(qid, callback, context);
-            } else {
-                console.error(result.reason);
-            }
+            },
+            error: handleAjaxError
         });
     },
     // fetches the live data (= current traffic and an average of last month(s) ) of every route
@@ -309,44 +337,45 @@ var Api = {
         var qid = this.getQueueId();
 
         var me = this;
-        $.getJSON("/api/trafficdata/interval?providerID=" + provider+"&from="+dateToRestString(interval.start)+"&to="+dateToRestString(interval.end), function(result) {
-            if (result.result === "success") {
-                var resultdata = result.data;
-                routes.forEach(function(route) {
-                    var rdata = resultdata[route.id];
-                    var representation;
-                    if (typeof rdata != "undefined") {
-                        var days = rdata.days;
-                        for (var i = 0; i < days.length; i++) {
-                            days[i] = parseInt(days[i]);
+        
+        $.ajax({
+            type: "GET",
+            url: "/api/trafficdata/interval",
+            data: {providerID: provider, from: dateToRestString(interval.start), to: dateToRestString(interval.end)},
+            success: function(result, status, jqXHR) {
+                if (result.result === "success") {
+                    var resultdata = result.data;
+                    routes.forEach(function(route) {
+                        var rdata = resultdata[route.id];
+                        var representation;
+                        if (typeof rdata != "undefined") {
+                            var days = rdata.days;
+                            for (var i = 0; i < days.length; i++) {
+                                days[i] = parseInt(days[i]);
+                            }
+                            representation = IntervalRepresentation.create(parseInt(rdata.speed), parseInt(rdata.time)/60, days);
+                        } else {
+                            representation = IntervalRepresentation.createEmpty();
                         }
-                        representation = IntervalRepresentation.create(parseInt(rdata.speed), parseInt(rdata.time)/60, days);
-                    } else {
-                        representation = IntervalRepresentation.createEmpty();
+                        var data = route.getIntervalData(interval, 7, provider);
+                        if (data){
+                            data.representation = representation;
+                        }else{
+                            route.setIntervalData(interval, 7, provider, TrafficGraph.create(representation));
+                        }
+                    });
+                    if (routes.length == 0){
+                        console.error("Routes zijn leeg! Infinte loop voorkomen.");
+                        return;
                     }
-                    var data = route.getIntervalData(interval, 7, provider);
-                    if (data){
-                        data.representation = representation;
-                    }else{
-                        route.setIntervalData(interval, 7, provider, TrafficGraph.create(representation));
-                    }
-                });
-                if (routes.length == 0){
-                    console.error("Routes zijn leeg! Infinte loop voorkomen.");
-                    return;
+                    me.callDelayed(qid, callback, context);
+                } else {
+                    console.error(result.reason);
                 }
-                me.callDelayed(qid, callback, context);
-            } else {
-                console.error(result.reason);
-            }
-            //me.callDelayed(qid, callback, context);
-        }).fail(function() {
-            console.error("something went wrong loading the interval data.");
+            },
+            error: handleAjaxError
         });
-
-
-
-
+        
         // Hier alle data van de server halen.
         // Uiteindelijk moet dit ongeveer het resultaat zijn: 
 
@@ -377,39 +406,40 @@ var Api = {
         // Hier alle data van de server halen.
         // Uiteindelijk moet dit ongeveer het resultaat zijn: 
 
-        
-
         var me = this;
 
-        $.getJSON("/api/trafficdata/weekday?providerID=" + provider + "&routeID=" + routeId + "&from=" + dateToRestString(interval.start) + "&to=" + dateToRestString(interval.end), function(result) {
-            if (result.result === "success") {
-                var resultdata = result.data;
-                for (var weekday in resultdata){
-                    var graph = route.getIntervalData(interval, weekday, provider)
-                    if (!graph){
-                        graph = TrafficGraph.create(null);
-                        route.setIntervalData(interval, weekday, provider, graph);
-                    }
+        $.ajax({
+            type: "GET",
+            url: "/api/trafficdata/weekday",
+            data: {providerID: provider, routeID: routeId, from: dateToRestString(interval.start), to: dateToRestString(interval.end)},
+            success: function(result, status, jqXHR) {
+                if (result.result === "success") {
+                    var resultdata = result.data;
+                    for (var weekday in resultdata) {
+                        var graph = route.getIntervalData(interval, weekday, provider)
+                        if (!graph) {
+                            graph = TrafficGraph.create(null);
+                            route.setIntervalData(interval, weekday, provider, graph);
+                        }
 
-                    var data = {};
-                    for (var key in resultdata[weekday]) {
-                        var times = key.split(":");
-                        var hour = parseInt(times[0]);
-                        var minutes = parseInt(times[1]);
-                        hour += (minutes / 60);
-                        data[hour] = (resultdata[weekday][key]) / 60;
+                        var data = {};
+                        for (var key in resultdata[weekday]) {
+                            var times = key.split(":");
+                            var hour = parseInt(times[0]);
+                            var minutes = parseInt(times[1]);
+                            hour += (minutes / 60);
+                            data[hour] = (resultdata[weekday][key]) / 60;
+                        }
+                        graph.data = data;
                     }
-                    graph.data = data;
+                    route.generateIntervalAvg(interval, provider);
+                    me.callDelayed(qid, callback, context);
+                } else {
+                    console.log(result.reason);
                 }
-                route.generateIntervalAvg(interval, provider);
-                me.callDelayed(qid, callback, context);
-            } else {
-                alert(result.reason);
-            }
-        }).fail(function() {
-            console.log("something went wrong loading the interval graph data.");
-        });
-
+            },
+            error: handleAjaxError
+        });   
 
 		/*var route = routes[routeId];
 
@@ -447,4 +477,19 @@ var Api = {
 
 };
 
-//var Api = DummyApi;
+function handleAjaxError(jqXHR, textStatus, errorThrown) {
+    var requestError = "Url request error : ";
+    switch (jqXHR.status) {
+        case 400:
+            console.log(requestError + "bad request. The requested url contains invalid content.");
+            break;
+        case 401:
+            console.log(requestError + "unauthorized. " + jqXHR.responseText); // responseText wordt meegegeven in AuthorizationFilter
+            break;
+        case 404:
+            console.log(requestError + "not found. The requested resource does not exist, change the url-path.");
+            break;
+        default :
+            console.log("An error occured while performing an url-request with http status-code " + jqXHR.status + ". Error message : " + errorThrown + ".");
+    }
+}
