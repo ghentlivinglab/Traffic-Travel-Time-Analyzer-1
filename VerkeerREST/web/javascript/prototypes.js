@@ -515,7 +515,7 @@ var Event = {
 		// Delete reference from memory
 		var index = getEventIndex(this.name);
 		if (index != -1){
-			events.slice(index, 1);
+			events.splice(index, 1);
 			this.saveLocalStorage();
 		}
 

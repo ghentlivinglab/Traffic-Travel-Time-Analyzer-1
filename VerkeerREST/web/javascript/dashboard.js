@@ -9,9 +9,9 @@ var Dashboard = {
 
 	// Mogelijke dashboard standen cte's
 	LIVE: 0, // Vandaag
-	INTERVAL: 1, // Periode
-	COMPARE_INTERVALS: 2, // Vergelijk periodes
-	COMPARE_DAYS: 3, // Vergelijk dagen
+	INTERVAL: 2, // Periode
+	COMPARE_INTERVALS: 3, // Vergelijk periodes
+	DAY: 1, // Vergelijk dagen
 
 	// Geselecteerde intervallen en datums. Ofwel Interval ofwel Event objecten
 	selectedIntervals: [Interval.create(null, null), Interval.create(null, null)],
@@ -20,6 +20,7 @@ var Dashboard = {
 	// (hierdoor ontvangen we niet voortdurend change events) gebruiken we nog een extra
 	// property die de laatst gebruikte intervallen opslaat
 	lastKnownIntervals: [],
+	initialSync: false,
 
 
 	init: function() {
@@ -132,15 +133,15 @@ var Dashboard = {
 
 	setProvider: function(providerId){
 		if (typeof providers[providerId] != "undefined"){
-			var reload = false;
-			if (!this.provider || this.provider.id != providerId) {
-				reload = true;
-			}
-			this.provider = providers[providerId];
-			localStorage.setItem('provider', this.provider.id);
-			if (reload) {
-				this.reload();
-			}
+                    var reload = false;
+                    if (!this.provider || this.provider.id != providerId) {
+                            reload = true;
+                    }
+                    this.provider = providers[providerId];
+                    localStorage.setItem('provider', this.provider.id);
+                    if (reload) {
+                            this.reload();
+                    }
 		} else {
 			console.error('No provider found with id '+providerId);
 		}
@@ -157,6 +158,10 @@ var Dashboard = {
 			return;
 		}
 
+		if (!this.initialSync){
+			this.initialSync = true;
+			Api.syncLiveData(this.provider.id, Dashboard.reload, this);
+		}
 		var dashboard = $('#dashboard .content');
 
 		// Alles wissen (dit kan later weg, maar is om te voorkomen dat thisReady meerdere keren wordt uitgevoerd op dezelfde elementen)
@@ -164,7 +169,6 @@ var Dashboard = {
 		// Dus kan dit deeltje later weg. Maar voorlopig niet, zodat we deze oorzaak snel zien (dashboard zal leeg zijn). 
 		// (zie ook commentaar bij thisReady hieronder)
 		dashboard.html('');
-
 		switch(this.mode){
 			case Dashboard.LIVE: 
 				this.reloadLive();
@@ -174,9 +178,6 @@ var Dashboard = {
 			break;
 			case Dashboard.COMPARE_INTERVALS: 
 				this.reloadCompareIntervals(); 
-			break;
-			case Dashboard.COMPARE_DAYS: 
-				this.reloadCompareDays(); 
 			break;
 			default:
 				this.displayNotImplemented();
@@ -398,6 +399,12 @@ var Dashboard = {
 				if (b.color == "orange"){
 					return 1;
 				}
+				if (a.color == "green"){
+					return -1;
+				}
+				if (b.color == "green"){
+					return 1;
+				}
 			}
 			// Nog sorteren op status op eerste plaats toeveogen hier
 			return a.score - b.score;
@@ -417,7 +424,6 @@ var Dashboard = {
 		});
 
 		dashboard.html(str);
-		reloadMap();
 	},
 	// Genereert HTML voor periode modus
 	reloadInterval: function() {

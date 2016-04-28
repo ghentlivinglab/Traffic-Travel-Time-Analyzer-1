@@ -1,4 +1,5 @@
 $settings-width: 250px;
+$settings-width-small: 200px;
 $medium-size: 15px;
 $dashboard-width: 800px;
 $gray: #4D4D4D;
@@ -15,6 +16,10 @@ $arrow-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
 $red: #C10037;//#FF6363;
 $orange: #E79334;
 $green: #20D713;
+
+$responsive-tablet: 900px;
+$responsive-hide-settings: 700px;
+$responsive-smartphone: 600px;
 
 @mixin bg-gradient-t2b($start-colour, $end-colour) {
     background-image: -webkit-gradient(linear, left top, left bottom, from($start-colour), to($end-colour));
@@ -95,11 +100,19 @@ span.sub {
 
 #bundle {
     position: absolute;
-    left: 0;
+    left: $settings-width;
     top: 0;
     bottom: 0;
-    width: $settings-width;
+    right: 0;
+    z-index: -2; // nodig voor google maps dragging te laten werken
 
+    @media screen and (max-width: $responsive-tablet) {
+      left: $settings-width-small;
+    }
+
+    @media screen and (max-width: $responsive-hide-settings) {
+      left: 0;
+    }
 }
 
 #settings {
@@ -111,9 +124,22 @@ span.sub {
     background: white;
     padding: 30px 25px;
     z-index: 1;
+    width: $settings-width;
+    box-sizing: border-box;
+    margin-left: -$settings-width;
+    //overflow: hidden;
+    
+    @media screen and (max-width: $responsive-tablet) {
+      width: $settings-width-small;
+      margin-left: -$settings-width-small;
+    }
+
+    @media screen and (max-width: $responsive-hide-settings) {
+      display: none;
+    }
 
     .shadow {
-        left: $settings-width;
+        right: -10px;
     }
 
     // Radio and select buttons
@@ -155,13 +181,13 @@ span.sub {
 }
 #map-container {
     background: gray;
-    left: $settings-width;
     top: 0;
+    left: 0;
     bottom: 0;
     right: 0;
     z-index: -1;
 
-    position: fixed;
+    position: absolute;
 }
 #map-overlay {
     z-index: 99;
@@ -195,9 +221,11 @@ span.sub {
     #infoWindow {
         > h1 {
             font-size: 1.5em;
-            .smallTitle {
-                font-size: 0.5em;
-            }
+            padding:0;
+        }
+        > h2 {
+            font-size:1.25em;
+            padding: 0 0 .25em 0;
         }
         > p {
             padding: 0;

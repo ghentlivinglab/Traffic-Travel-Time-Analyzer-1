@@ -149,6 +149,7 @@ function drawChart(element, data, width, height, dotted) {
 			series[i] = obj;
 		}
 	}
+
 	var series_copy = JSON.parse(JSON.stringify(series));
 	var options = {
 		legend: legend,
@@ -183,12 +184,36 @@ function drawChart(element, data, width, height, dotted) {
 	};
 
 	var chart = new google.visualization.LineChart(element);
-	chart.draw(d, options);
+
 
 	var columns = [];
     for (var i = 0; i < d.getNumberOfColumns(); i++) {
         columns.push(i);
     }
+
+    if (columns.length > 3){
+        for (var col = 2; col < columns.length; col++) {
+            if (columns[col] == col) {
+                // hide the data series
+                columns[col] = {
+                    label: d.getColumnLabel(col),
+                    type: d.getColumnType(col),
+                    calc: function () {
+                        return null;
+                    }
+                };
+                
+                // grey out the legend entry
+                series[col - 1].color = '#CCCCCC';
+            }
+        }
+        var view = new google.visualization.DataView(d);
+        view.setColumns(columns);
+        chart.draw(view, options);
+    }else{
+        chart.draw(d, options);
+    }
+
     
     google.visualization.events.addListener(chart, 'select', function () {
         var sel = chart.getSelection();
