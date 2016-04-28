@@ -75,7 +75,7 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 13/04/2016,12:30,13:45,Thuis,Projectwerk,Via ajax routes en providers ophalen,,
 13/04/2016,14:45,17:40,Thuis,Projectwerk,Via ajax proberen trafficdata ophalen,,
 14/04/2016,13:30,18:00,School,Projectwerk,Api javascript ophalen van data via rest api,,Contacturen
-15/04/2016,13:00,16:40,Thuis,Projectwerk,Kijken voor dump en testen lokaal,,,
+15/04/2016,13:00,16:40,Thuis,Projectwerk,Kijken voor dump en testen lokaal,,
 15/04/2016,19:45,20:30,Thuis,Projectwerk,Kijken voor syncIntervalData en presentatie,,Simon had dit al gedaan
 16/04/2016,00:50,01:30,Thuis,Projectwerk,Kijken voor latitude en longitude om te wisselen in databank,,
 16/04/2016,16:45,18:00,Thuis,Projectwerk,Issues bekijken en code nog eens bekijken,,
