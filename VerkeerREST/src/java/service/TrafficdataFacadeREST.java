@@ -282,7 +282,7 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
         if (providerID == null) {
             throw new Exception(MessageState.PIDNP);
         }
-        String queryString = "SELECT x.routeID,max(x.timestamp),y.length, round((SELECT avg(traveltime) FROM   trafficdata  WHERE  providerid = x.providerid and routeid = x.routeid and timestamp = max(x.timestamp))) ,Round((SELECT Avg(traveltime)  FROM   trafficdata WHERE  providerid = x.providerid AND routeid = x.routeid AND timestamp > max(x.timestamp) - INTERVAL ?1 day  AND Abs(Minute(Timediff(Time(timestamp), Time(max(x.timestamp))))) < ?2 AND Weekday(timestamp) = Weekday(max(x.timestamp))), 0) from trafficdata x JOIN routes y ON x.routeid = y.id where x.providerID = ?3";
+        String queryString = "SELECT x.routeid, Max(x.timestamp), y.length, Round((SELECT Avg(traveltime) FROM   trafficdata WHERE  providerid = x.providerid AND routeid = x.routeid AND timestamp = Max(x.timestamp))), avgtraveltimeday FROM   trafficdata x JOIN routes y ON x.routeid = y.id WHERE  x.providerid = ?3";
         //String queryString = "select x.routeID, x.timestamp, y.length, x.traveltime, round((select   avg(traveltime) from     trafficdata where    providerID=x.providerID and routeID=x.routeID and timestamp > now() - interval ?1 day and Abs(Minute(Timediff(Time(timestamp), Time(x.timestamp)))) < ?2 and weekday(timestamp) = weekday(x.timestamp) ),0) from trafficdata x join routes y on x.routeID=y.id where x.providerID=?3 ";
         if (routeID != null) {
             queryString += " and routeID=?4 ";

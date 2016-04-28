@@ -473,10 +473,9 @@ var Api = {
 		// Gemiddelde berekenen van alle weekdagen
 		route.generateIntervalAvg(interval, provider);*/
 	},
-
-
 };
 
+// TOSO : alle exceptie messages in de rest api zelf steken
 function handleAjaxError(jqXHR, textStatus, errorThrown) {
     var requestError = "Url request error : ";
     switch (jqXHR.status) {
