@@ -287,7 +287,9 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
         if (routeID != null) {
             queryString += " and routeID=?4 ";
         }
-        queryString += " group by x.routeID;";
+        queryString += " and avgtraveltimeday != 0 ";
+        queryString += " group by x.routeID, y.length, avgtraveltimeday;";
+        
         System.out.println(queryString);
         Query q = getEntityManager().createNativeQuery(queryString);
         q.setParameter(1, period);
