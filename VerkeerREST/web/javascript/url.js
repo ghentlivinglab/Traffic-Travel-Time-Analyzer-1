@@ -74,7 +74,7 @@ var url = {
             }
         }
 
-        if (!variableFound) { // if parameter is not in use, add to the back
+        if (!variableFound && value) { // if parameter is not in use, add to the back
             vars.push(name + "=" + value);
         }
 
