@@ -39,6 +39,18 @@ var Dashboard = {
 	},
 
 	intervalsDidChange: function() {
+                var interval = this.selectedIntervals[0];
+                var param = (interval.hasName ? encodeURIComponent(interval.getName()) : "") + "," + dateToDate(interval.start) + "," + dateToDate(interval.end);
+                url.setQueryParam("periode",param);
+                
+                interval = this.selectedIntervals[1];
+                if(this.mode===Dashboard.COMPARE_INTERVALS) {
+                    var param = (interval.hasName ? encodeURIComponent(interval.getName()) : "") + "," + dateToDate(interval.start) + "," + dateToDate(interval.end);
+                    url.setQueryParam("vergelijkPeriode",param);
+                } else {
+                    url.setQueryParam("vergelijkPeriode","");
+                }
+                
 		var changed = false;
 		for (var i = 0; i < this.selectedIntervals.length; i++) {
 			var sel = this.selectedIntervals[i];

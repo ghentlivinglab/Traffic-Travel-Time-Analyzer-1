@@ -1,3 +1,5 @@
+/* global Dashboard, Interval, Event */
+
 /****************************
  * global variables
  * API fills these once only
@@ -193,6 +195,7 @@ function updateViewByURLParams(){
     URLParamsShowDashboard();
     URLParamsChangeView();
     URLParamsChangeProvider();
+    URLParamsChangePeriod();
     URLParamsChangeMap();
 }
 
@@ -233,4 +236,42 @@ function URLParamsChangeMap(){
     zoomCurrent=zoom;
     map.setZoom(zoom);
     
+}
+function createValidDate(dateString){
+    var dateString = dateString.split("/");
+    var day = Number(dateString[0]);
+    var month = Number(dateString[1]);
+    var year = Number(dateString[2]);
+    if( (day < 1 || 31 < day ) || ( month < 1 || 12 < month ) || (year===NaN)){
+        return NaN;
+    }
+    return new Date(year, month - 1, day);
+}
+
+function URLParamsChangePeriod(){
+    var period = url.getQueryParam("periode").split(',');
+    if(period.length===3){
+        var name = decodeURIComponent(period[0]);
+        
+        var from = createValidDate(period[1]);
+        var to = createValidDate(period[2]);
+
+        if ( name && from && to ) {
+            var event = Event.create(name,from,to);
+            Dashboard.selectedIntervals[0] = event;
+            Dashboard.intervalsDidChange();
+            console.log("valid event");
+        } else if(from && to) {
+            var interval = Interval.create(from,to);
+            Dashboard.selectedIntervals[0] = interval;
+            Dashboard.intervalsDidChange();
+            console.log("valid interval");
+        } else {
+            console.log("failed to create period");
+        }
+    }
+}
+
+function URLParamsChangeComparePeriod(){
+    var period = url.getQueryParam("vergelijkPeriode").split(',');
 }
