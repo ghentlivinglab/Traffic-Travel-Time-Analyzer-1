@@ -1,4 +1,4 @@
-/* global Dashboard, Interval, Event */
+/* global Dashboard, Interval, Event, url */
 
 /****************************
  * global variables
@@ -196,6 +196,7 @@ function updateViewByURLParams(){
     URLParamsChangeView();
     URLParamsChangeProvider();
     URLParamsChangePeriod();
+    URLParamsChangeComparePeriod();
     URLParamsChangeMap();
 }
 
@@ -249,8 +250,11 @@ function createValidDate(dateString){
 }
 
 function URLParamsChangePeriod(){
-    var period = url.getQueryParam("periode").split(',');
-    if(period.length===3){
+    var period = url.getQueryParam("periode");
+    if(period){
+        period=period.split(',');
+    }
+    if(period && period.length===3){
         var name = decodeURIComponent(period[0]);
         
         var from = createValidDate(period[1]);
@@ -259,19 +263,42 @@ function URLParamsChangePeriod(){
         if ( name && from && to ) {
             var event = Event.create(name,from,to);
             Dashboard.selectedIntervals[0] = event;
-            Dashboard.intervalsDidChange();
-            console.log("valid event");
+            if(!url.getQueryParam("vergelijkPeriode")){
+                Dashboard.intervalsDidChange();
+            }
         } else if(from && to) {
             var interval = Interval.create(from,to);
             Dashboard.selectedIntervals[0] = interval;
-            Dashboard.intervalsDidChange();
-            console.log("valid interval");
+            if(!url.getQueryParam("vergelijkPeriode")){
+                Dashboard.intervalsDidChange();
+            }
         } else {
-            console.log("failed to create period");
+            console.error("failed to create period");
         }
     }
 }
 
 function URLParamsChangeComparePeriod(){
-    var period = url.getQueryParam("vergelijkPeriode").split(',');
+    var period = url.getQueryParam("vergelijkPeriode");
+    if(period){
+        period=period.split(',');
+    }
+    if(period && period.length===3){
+        var name = decodeURIComponent(period[0]);
+        
+        var from = createValidDate(period[1]);
+        var to = createValidDate(period[2]);
+
+        if ( name && from && to ) {
+            var event = Event.create(name,from,to);
+            Dashboard.selectedIntervals[1] = event;
+            Dashboard.intervalsDidChange();
+        } else if(from && to) {
+            var interval = Interval.create(from,to);
+            Dashboard.selectedIntervals[1] = interval;
+            Dashboard.intervalsDidChange();
+        } else {
+            console.error("failed to create period");
+        }
+    }
 }
