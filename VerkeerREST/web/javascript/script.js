@@ -212,32 +212,131 @@ function URLParamsShowDashboard(){
 
 function URLParamsChangeView(){
     var view = Number(url.getQueryParam("weergave"));
-    view = (view===NaN ? 0 : view);
+    if(!view){
+        view = 0;
+        console.error("incorrect parameter: weergave");
+        url.setQueryParam("weergave");
+        console.error("has been removed");
+    }
     $("#mode-"+view).click();
 }
 
 function URLParamsChangeProvider(){
-    var URLProviders = JSON.parse(url.getQueryParam("providers"));
-    var providers = $("[name=provider]");
-    URLProviders = (URLProviders===NaN ? 0 : URLProviders);
-    for(var i=0;i<URLProviders.length;i++){
-        $($(providers[URLProviders[i]])).prop("checked",true);
+    try{
+        var URLProviders = JSON.parse(url.getQueryParam("providers"));
+    } catch (error){
+        var URLProviders = [0];
+        console.error("incorrect parameter: providers");
+        url.setQueryParam("providers");
+        console.error("has been removed");
     }
+        var providers = $("[name=provider]");
+        URLProviders = ( URLProviders === NaN ? [0] : URLProviders);
+        for(var i=0;i<URLProviders.length;i++){
+            $($(providers[URLProviders[i]])).prop("checked",true);
+        }
 }
 
 function URLParamsChangeMap(){
     var center = url.getQueryParam("mapCenter");
-    center = (center ? center : "");
-    center = center.split(',');
-    if(center.length===2){
-        map.setCenter({lat:Number(center[0]),lng:Number(center[1])});
+    if(center){
+        center = center.split(',');
+        if(center.length===2){
+            var latitude = Number(center[0]);
+            var longitude = Number(center[1]);
+            if( latitude && longitude ){
+                map.setCenter({lat:latitude,lng:longitude});
+           } else{
+                console.error("incorrect parameter: mapCenter (coords are not numbers)");
+                url.setQueryParam("mapCenter");
+                console.error("has been removed");
+           }
+        } else{
+            console.error("incorrect parameter: mapCenter (wrong number of coords)");
+            url.setQueryParam("mapCenter");
+            console.error("has been removed");
+        }
     }
-    var zoom = Number(url.getQueryParam("mapZoom"));
-    zoom = (zoom ? zoom : zoomCurrent);
-    zoomCurrent=zoom;
-    map.setZoom(zoom);
-    
+    var zoom = url.getQueryParam("mapZoom");
+    if(zoom){
+        zoom = Number(zoom);
+        if(!zoom){
+            zoom = zoomCurrent;
+            console.error("incorrect parameter: mapZoom");
+            url.setQueryParam("mapZoom");
+            console.error("has been removed");
+        }
+        zoomCurrent=zoom;
+        map.setZoom(zoom);
+    }
 }
+
+function URLParamsChangePeriod(){
+    var period = url.getQueryParam("periode");
+    if(period){
+        period=period.split(',');
+        if(period.length===3){
+            var name = decodeURIComponent(period[0]);
+
+            var from = createValidDate(period[1]);
+            var to = createValidDate(period[2]);
+
+            if ( name && from && to ) {
+                var event = Event.create(name,from,to);
+                Dashboard.selectedIntervals[0] = event;
+                if(!url.getQueryParam("vergelijkPeriode")){
+                    Dashboard.intervalsDidChange();
+                }
+            } else if(from && to) {
+                var interval = Interval.create(from,to);
+                Dashboard.selectedIntervals[0] = interval;
+                if(!url.getQueryParam("vergelijkPeriode")){
+                    Dashboard.intervalsDidChange();
+                }
+            } else {
+                console.error("incorrect parameter: periode (wrong format of date)");
+                url.setQueryParam("periode");
+                console.error("has been removed");
+            }
+        } else {
+            console.error("incorrect parameter: periode (wrong number of arguments)");
+            url.setQueryParam("periode");
+            console.error("has been removed");
+        }
+    }
+}
+
+function URLParamsChangeComparePeriod(){
+    var period = url.getQueryParam("vergelijkPeriode");
+    if(period){
+        period=period.split(',');
+        if(period && period.length===3){
+            var name = decodeURIComponent(period[0]);
+
+            var from = createValidDate(period[1]);
+            var to = createValidDate(period[2]);
+
+            if ( name && from && to ) {
+                var event = Event.create(name,from,to);
+                Dashboard.selectedIntervals[1] = event;
+                Dashboard.intervalsDidChange();
+            } else if(from && to) {
+                var interval = Interval.create(from,to);
+                Dashboard.selectedIntervals[1] = interval;
+                Dashboard.intervalsDidChange();
+            } else {
+                console.error("incorrect parameter: vergelijkPeriode (wrong format of date)");
+                url.setQueryParam("vergelijkPeriode");
+                console.error("has been removed");
+            }
+        } else {
+            console.error("incorrect parameter: vergelijkPeriode (wrong number of arguments)");
+            url.setQueryParam("vergelijkPeriode");
+            console.error("has been removed");
+        }
+    }
+}
+
 function createValidDate(dateString){
     var dateString = dateString.split("/");
     var day = Number(dateString[0]);
@@ -247,58 +346,4 @@ function createValidDate(dateString){
         return NaN;
     }
     return new Date(year, month - 1, day);
-}
-
-function URLParamsChangePeriod(){
-    var period = url.getQueryParam("periode");
-    if(period){
-        period=period.split(',');
-    }
-    if(period && period.length===3){
-        var name = decodeURIComponent(period[0]);
-        
-        var from = createValidDate(period[1]);
-        var to = createValidDate(period[2]);
-
-        if ( name && from && to ) {
-            var event = Event.create(name,from,to);
-            Dashboard.selectedIntervals[0] = event;
-            if(!url.getQueryParam("vergelijkPeriode")){
-                Dashboard.intervalsDidChange();
-            }
-        } else if(from && to) {
-            var interval = Interval.create(from,to);
-            Dashboard.selectedIntervals[0] = interval;
-            if(!url.getQueryParam("vergelijkPeriode")){
-                Dashboard.intervalsDidChange();
-            }
-        } else {
-            console.error("failed to create period");
-        }
-    }
-}
-
-function URLParamsChangeComparePeriod(){
-    var period = url.getQueryParam("vergelijkPeriode");
-    if(period){
-        period=period.split(',');
-    }
-    if(period && period.length===3){
-        var name = decodeURIComponent(period[0]);
-        
-        var from = createValidDate(period[1]);
-        var to = createValidDate(period[2]);
-
-        if ( name && from && to ) {
-            var event = Event.create(name,from,to);
-            Dashboard.selectedIntervals[1] = event;
-            Dashboard.intervalsDidChange();
-        } else if(from && to) {
-            var interval = Interval.create(from,to);
-            Dashboard.selectedIntervals[1] = interval;
-            Dashboard.intervalsDidChange();
-        } else {
-            console.error("failed to create period");
-        }
-    }
 }

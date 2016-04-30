@@ -94,3 +94,5 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 28/04/16,15:30,16:30,School,Masterproef,bekijken presentaties van studenten,,
 28/04/16,16:30,17:45,School,Projectwerk,Toevoegen URL parameters,78,implementatie periodes in url parameter
 29/04/16,12:45,16:00,Thuis,Projectwerk,Toevoegen URL parameters,78,implementatie periodes in url parameter (veel problemen gehad met correct te laten updaten vanuit de url)
+30/04/16,12:30,13:00,Thuis,Projectwerk,Toevoegen URL parameters,78,implementatie vergelijk periodes in url parameter
+30/04/16,13:30,14:00,Thuis,Projectwerk,Toevoegen URL parameters,78,paar bugs opgelost
