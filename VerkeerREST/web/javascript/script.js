@@ -1,4 +1,4 @@
-/* global Dashboard, Interval, Event, url */
+/* global Dashboard, Interval, Event, url, Mustache */
 
 /****************************
  * global variables
@@ -51,7 +51,7 @@ Mustache.renderTemplate = function (template_name, view) {
     var template = document.getElementById("template-" + template_name).innerHTML;
     Mustache.parse(template); // Speeding things up in the future
     return Mustache.render(template, view);
-}
+};
 
 
 /****************************
@@ -173,7 +173,7 @@ $(document).ready(function () {
  * runs when DOM-tree is finished and all objects from it are loaded
  ****************************/
 $(window).load(function () {
-    updateViewByURLParams();
+    url.updatePageByParams();
     $("[name=dashboard]").on('click',changeURLParamDisplay);
     $("[name=provider]").on('click',changeURLParamProvider);
 });
@@ -190,164 +190,4 @@ function changeURLParamProvider(){
 }
 function changeURLParamDisplay(){
     url.setQueryParam("weergave",this.id.split('-')[1]);
-}
-
-function updateViewByURLParams(){
-    URLParamsShowDashboard();
-    URLParamsChangeView();
-    URLParamsChangeProvider();
-    URLParamsChangePeriod();
-    URLParamsChangeComparePeriod();
-    URLParamsChangeMap();
-}
-
-function URLParamsShowDashboard(){
-    // checks if mapView or overview has to be displayed
-    var showDashboard = url.getQueryParam("dashboardView") === "true"; // checks if URL contains directives
-    var dashboardShown = $("#dashboard").hasClass('open'); // checks in which state the dashboard currently resides
-    
-    if (showDashboard ? !dashboardShown : dashboardShown) { // showDashboard XOR dashboardShown
-        togglePanel();
-    }
-}
-
-function URLParamsChangeView(){
-    var view = url.getQueryParam("weergave");
-    if( view ){
-        view = Number( view );
-        if(!view){
-            view = 0;
-            console.error("incorrect parameter: weergave");
-            url.setQueryParam("weergave");
-            console.error("has been removed");
-        }
-        $("#mode-"+view).click();
-    }
-}
-
-function URLParamsChangeProvider(){
-    try{
-        var URLProviders = JSON.parse(url.getQueryParam("providers"));
-    } catch (error){
-        var URLProviders = [0];
-        console.error("incorrect parameter: providers");
-        url.setQueryParam("providers");
-        console.error("has been removed");
-    }
-        var providers = $("[name=provider]");
-        URLProviders = ( URLProviders === NaN ? [0] : URLProviders);
-        for(var i=0;i<URLProviders.length;i++){
-            $($(providers[URLProviders[i]])).prop("checked",true);
-        }
-}
-
-function URLParamsChangeMap(){
-    var center = url.getQueryParam("mapCenter");
-    if(center){
-        center = center.split(',');
-        if(center.length===2){
-            var latitude = Number(center[0]);
-            var longitude = Number(center[1]);
-            if( latitude && longitude ){
-                map.setCenter({lat:latitude,lng:longitude});
-           } else{
-                console.error("incorrect parameter: mapCenter (coords are not numbers)");
-                url.setQueryParam("mapCenter");
-                console.error("has been removed");
-           }
-        } else{
-            console.error("incorrect parameter: mapCenter (wrong number of coords)");
-            url.setQueryParam("mapCenter");
-            console.error("has been removed");
-        }
-    }
-    var zoom = url.getQueryParam("mapZoom");
-    if(zoom){
-        zoom = Number(zoom);
-        if(!zoom){
-            zoom = zoomCurrent;
-            console.error("incorrect parameter: mapZoom");
-            url.setQueryParam("mapZoom");
-            console.error("has been removed");
-        }
-        zoomCurrent=zoom;
-        map.setZoom(zoom);
-    }
-}
-
-function URLParamsChangePeriod(){
-    var period = url.getQueryParam("periode");
-    if(period){
-        period=period.split(',');
-        if(period.length===3){
-            var name = decodeURIComponent(period[0]);
-
-            var from = createValidDate(period[1]);
-            var to = createValidDate(period[2]);
-
-            if ( name && from && to ) {
-                var event = Event.create(name,from,to);
-                Dashboard.selectedIntervals[0] = event;
-                if(!url.getQueryParam("vergelijkPeriode")){
-                    Dashboard.intervalsDidChange();
-                }
-            } else if(from && to) {
-                var interval = Interval.create(from,to);
-                Dashboard.selectedIntervals[0] = interval;
-                if(!url.getQueryParam("vergelijkPeriode")){
-                    Dashboard.intervalsDidChange();
-                }
-            } else {
-                console.error("incorrect parameter: periode (wrong format of date)");
-                url.setQueryParam("periode");
-                console.error("has been removed");
-            }
-        } else {
-            console.error("incorrect parameter: periode (wrong number of arguments)");
-            url.setQueryParam("periode");
-            console.error("has been removed");
-        }
-    }
-}
-
-function URLParamsChangeComparePeriod(){
-    var period = url.getQueryParam("vergelijkPeriode");
-    if(period){
-        period=period.split(',');
-        if(period && period.length===3){
-            var name = decodeURIComponent(period[0]);
-
-            var from = createValidDate(period[1]);
-            var to = createValidDate(period[2]);
-
-            if ( name && from && to ) {
-                var event = Event.create(name,from,to);
-                Dashboard.selectedIntervals[1] = event;
-                Dashboard.intervalsDidChange();
-            } else if(from && to) {
-                var interval = Interval.create(from,to);
-                Dashboard.selectedIntervals[1] = interval;
-                Dashboard.intervalsDidChange();
-            } else {
-                console.error("incorrect parameter: vergelijkPeriode (wrong format of date)");
-                url.setQueryParam("vergelijkPeriode");
-                console.error("has been removed");
-            }
-        } else {
-            console.error("incorrect parameter: vergelijkPeriode (wrong number of arguments)");
-            url.setQueryParam("vergelijkPeriode");
-            console.error("has been removed");
-        }
-    }
-}
-
-function createValidDate(dateString){
-    var dateString = dateString.split("/");
-    var day = Number(dateString[0]);
-    var month = Number(dateString[1]);
-    var year = Number(dateString[2]);
-    if( (day < 1 || 31 < day ) || ( month < 1 || 12 < month ) || (year===NaN)){
-        return NaN;
-    }
-    return new Date(year, month - 1, day);
 }
