@@ -174,9 +174,7 @@ $(document).ready(function () {
  ****************************/
 $(window).load(function () {
     updateViewByURLParams();
-    $("[name=dashboard]").on('click',function(event){
-        url.setQueryParam("weergave",this.id.split('-')[1]);
-    });
+    $("[name=dashboard]").on('click',changeURLParamDisplay);
     $("[name=provider]").on('click',changeURLParamProvider);
 });
 
@@ -189,6 +187,9 @@ function changeURLParamProvider(){
         }
     }
     url.setQueryParam("providers","["+indices+"]");
+}
+function changeURLParamDisplay(){
+    url.setQueryParam("weergave",this.id.split('-')[1]);
 }
 
 function updateViewByURLParams(){
@@ -211,14 +212,17 @@ function URLParamsShowDashboard(){
 }
 
 function URLParamsChangeView(){
-    var view = Number(url.getQueryParam("weergave"));
-    if(!view){
-        view = 0;
-        console.error("incorrect parameter: weergave");
-        url.setQueryParam("weergave");
-        console.error("has been removed");
+    var view = url.getQueryParam("weergave");
+    if( view ){
+        view = Number( view );
+        if(!view){
+            view = 0;
+            console.error("incorrect parameter: weergave");
+            url.setQueryParam("weergave");
+            console.error("has been removed");
+        }
+        $("#mode-"+view).click();
     }
-    $("#mode-"+view).click();
 }
 
 function URLParamsChangeProvider(){
