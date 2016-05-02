@@ -543,7 +543,7 @@ var Api = {
 };
 
 function addHeaders(request) {
-    // request.setRequestHeader("Authorization", "1235");
+    request.setRequestHeader("Authorization", "6qKKfkX7u2lmJqxd8RrpLk7m");
 }
 
 function handleAjaxError(jqXHR, textStatus, errorThrown) {
