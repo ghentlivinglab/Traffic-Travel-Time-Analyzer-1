@@ -78,6 +78,10 @@ var Api = {
             type: "GET",
             url: "/api/waypoints",
             data: {routeID: id},
+            beforeSend: function (jqXHR, settings) {
+                jqXHR.url = settings.url;
+                addHeaders(jqXHR);
+            },
             success: function(result, status, jqXHR) {
                 if (result.result === "success") {
                     var resultdata = result.data;
@@ -108,10 +112,16 @@ var Api = {
         // Hier alle data van de server halen.
         // Uiteindelijk moet dit ongeveer het resultaat zijn: 
         routes = [];
+        
         var me = this;
+        
         $.ajax({
             type: "GET",
             url: "/api/routes",
+            beforeSend: function (jqXHR, settings) {
+                jqXHR.url = settings.url;
+                addHeaders(jqXHR);
+            },
             success: function(result, status, jqXHR) {
                 if (result.result === "success") {
                     var resultdata = result.data;
@@ -147,6 +157,10 @@ var Api = {
             type: "GET",
             url: "/api/trafficdata/live",
             data: {providerID: provider},
+            beforeSend: function (jqXHR, settings) {
+                jqXHR.url = settings.url;
+                addHeaders(jqXHR);
+            },
             success: function(result, status, jqXHR) {
                 if (result.result === "success") {
                     var data = result.data;
@@ -208,6 +222,10 @@ var Api = {
             type: "GET",
             url: "/api/trafficdata/weekday",
             data: {providerID: providerId, routeID: routeId, weekday: weekday, from: dateToRestString(from), to: dateToRestString(to)},
+            beforeSend: function (jqXHR, settings) {
+                jqXHR.url = settings.url;
+                addHeaders(jqXHR);
+            },
             success: function(result, status, jqXHR) {
                 if (result.result === "success") {
                     var resultdata = result.data;
@@ -265,6 +283,10 @@ var Api = {
             type: "GET",
             url: "/api/trafficdata",
             data: {providerID: providerId, routeID: routeId, from: dateToRestString(from), to: dateToRestString(to)},
+            beforeSend: function (jqXHR, settings) {
+                jqXHR.url = settings.url;
+                addHeaders(jqXHR);
+            },
             success: function(result, status, jqXHR) {
                 if (result.result === "success") {
                     var data = {};
@@ -300,7 +322,6 @@ var Api = {
             error: handleAjaxError
         });
     },
-    //
     syncProviders: function(callback, context) {
         // Bij begin van alle requests uitvoeren. 
         // Hebben deze nodig voor de callback wanneer de request klaar is.
@@ -315,6 +336,10 @@ var Api = {
         $.ajax({
             type: "GET",
             url: "/api/providers",
+            beforeSend: function (jqXHR, settings) {
+                jqXHR.url = settings.url;
+                addHeaders(jqXHR);
+            },
             success: function(result, status, jqXHR) {
                 if (result.result === "success") {
                     var resultdata = result.data;
@@ -342,6 +367,10 @@ var Api = {
             type: "GET",
             url: "/api/trafficdata/interval",
             data: {providerID: provider, from: dateToRestString(interval.start), to: dateToRestString(interval.end)},
+            beforeSend: function (jqXHR, settings) {
+                jqXHR.url = settings.url;
+                addHeaders(jqXHR);
+            },
             success: function(result, status, jqXHR) {
                 if (result.result === "success") {
                     var resultdata = result.data;
@@ -396,6 +425,10 @@ var Api = {
             type: "GET",
             url: "/api/trafficdata/interval",
             data: {providerID: provider, from: dateToRestString(start), to: dateToRestString(end)},
+            beforeSend: function (jqXHR, settings) {
+                jqXHR.url = settings.url;
+                addHeaders(jqXHR);
+            },
             success: function(result, status, jqXHR) {
                 if (result.result === "success") {
                     var resultdata = result.data;
@@ -447,6 +480,10 @@ var Api = {
             type: "GET",
             url: "/api/trafficdata/weekday",
             data: {providerID: provider, routeID: routeId, from: dateToRestString(interval.start), to: dateToRestString(interval.end)},
+            beforeSend: function (jqXHR, settings) {
+                jqXHR.url = settings.url;
+                addHeaders(jqXHR);
+            },
             success: function(result, status, jqXHR) {
                 if (result.result === "success") {
                     var resultdata = result.data;
@@ -496,6 +533,10 @@ var Api = {
             type: "GET",
             url: "/api/trafficdata/weekday",
             data: {providerID: provider, routeID: routeId, from: dateToRestString(start), to: dateToRestString(end)},
+            beforeSend: function (jqXHR, settings) {
+                jqXHR.url = settings.url;
+                addHeaders(jqXHR);
+            },
             success: function(result, status, jqXHR) {
                 if (result.result === "success") {
                     var resultdata = result.data;
@@ -541,7 +582,10 @@ var Api = {
     }
 };
 
-// TOSO : alle exceptie messages in de rest api zelf steken
+function addHeaders(request) {
+    request.setRequestHeader("Authorization", "6qKKfkX7u2lmJqxd8RrpLk7m");
+}
+
 function handleAjaxError(jqXHR, textStatus, errorThrown) {
     var requestError = "Url request error : ";
     switch (jqXHR.status) {

@@ -34,7 +34,9 @@ public class ApplicationConfig extends Application {
         resources.add(service.TrafficdataFacadeREST.class);
         resources.add(service.TraveltimeFacadeREST.class);
         resources.add(service.WaypointFacadeREST.class);
+        resources.add(util.AuthorizationFilter.class);
         resources.add(util.CORSFilter.class);
+        resources.add(util.CustomWebApplicationExceptionMapper.class);
     }
     
 }
