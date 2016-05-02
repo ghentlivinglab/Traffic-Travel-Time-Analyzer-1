@@ -172,7 +172,7 @@ var Api = {
 
                     });
                 } else {
-                    alert(result.reason);
+                    console.error(result.reason);
                 }
                 me.callDelayed(qid, newCallback, context);
                 
@@ -231,7 +231,7 @@ var Api = {
                         console.error('Route ' + route.name + ' has no avgData for provider with id ' + providerId);
                     }
                 } else {
-                    alert(result.reason);
+                    console.error(result.reason);
                 }
             },
             error: handleAjaxError
@@ -294,7 +294,7 @@ var Api = {
                         console.error('Route ' + route.name + ' heeft geen liveData voor provider met id ' + providerId);
                     }
                 } else {
-                    alert(result.reason);
+                    console.error(result.reason);
                 }
             },
             error: handleAjaxError

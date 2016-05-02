@@ -71,13 +71,13 @@ function addIdleListener(event){
 }
 
 function reloadMap() {
-    loading(true);
+    loadingMap(true);
     generateLines();
     updateColors();
-    loading(false);
+    loadingMap(false);
 }
 
-function loading(boolean) {
+function loadingMap(boolean) {
     var overlay = $('#map-overlay');
     var content = $(overlay).find("#content");
 

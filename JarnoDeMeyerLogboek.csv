@@ -89,4 +89,12 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 25/04/16,15:15,17:00,Thuis,Projectwerk,Toevoegen URL parameters,78,basic framework gemaakt (URL kan eenvoudig worden aangepast met behoud van vorige versie in de history)
 26/04/16,08:15,12:30,School,Projectwerk,Toevoegen URL parameters,78,framework herwerkt om duidelijker te zijn + implementatie weergave in url parameter
 26/04/16,19:00,20:45,Thuis,Projectwerk,Toevoegen URL parameters,78,implementatie mapCenter en mapZoom in url parameter
-27/04/16,16:45,18:00,Thuis,Projectwerk,Toevoegen URL parameters,78,implementatie mapCenter en mapZoom in url parameter
+27/04/16,16:45,18:00,Thuis,Projectwerk,Toevoegen URL parameters,78,implementatie providers in url parameter
+28/04/16,13:30,15:30,School,Projectwerk,Toevoegen URL parameters,78,implementatie periodes in url parameter
+28/04/16,15:30,16:30,School,Masterproef,bekijken presentaties van studenten,,
+28/04/16,16:30,17:45,School,Projectwerk,Toevoegen URL parameters,78,implementatie periodes in url parameter
+29/04/16,12:45,16:00,Thuis,Projectwerk,Toevoegen URL parameters,78,implementatie periodes in url parameter (veel problemen gehad met correct te laten updaten vanuit de url)
+30/04/16,12:30,13:00,Thuis,Projectwerk,Toevoegen URL parameters,78,implementatie vergelijk periodes in url parameter
+30/04/16,13:30,14:00,Thuis,Projectwerk,Toevoegen URL parameters,78,paar bugs opgelost
+01/05/16,14:45,15:45,Thuis,Projectwerk,Toevoegen URL parameters,78,herwerken van framework om duidelijker en draagbaarder te zijn.
+02/05/16,08:15,11:45,Thuis,Projectwerk,Filteren van routes in overzicht,81,eerste ruwe implementatie (zoekt letterlijk naar de opgegeven string)

@@ -1,3 +1,5 @@
+/* global Dashboard, Interval, Event, url, Mustache */
+
 /****************************
  * global variables
  * API fills these once only
@@ -49,7 +51,7 @@ Mustache.renderTemplate = function (template_name, view) {
     var template = document.getElementById("template-" + template_name).innerHTML;
     Mustache.parse(template); // Speeding things up in the future
     return Mustache.render(template, view);
-}
+};
 
 
 /****************************
@@ -171,10 +173,8 @@ $(document).ready(function () {
  * runs when DOM-tree is finished and all objects from it are loaded
  ****************************/
 $(window).load(function () {
-    updateViewByURLParams();
-    $("[name=dashboard]").on('click',function(event){
-        url.setQueryParam("weergave",this.id.split('-')[1]);
-    });
+    url.updatePageByParams();
+    $("[name=dashboard]").on('click',changeURLParamDisplay);
     $("[name=provider]").on('click',changeURLParamProvider);
 });
 
@@ -188,49 +188,6 @@ function changeURLParamProvider(){
     }
     url.setQueryParam("providers","["+indices+"]");
 }
-
-function updateViewByURLParams(){
-    URLParamsShowDashboard();
-    URLParamsChangeView();
-    URLParamsChangeProvider();
-    URLParamsChangeMap();
-}
-
-function URLParamsShowDashboard(){
-    // checks if mapView or overview has to be displayed
-    var showDashboard = url.getQueryParam("dashboardView") === "true"; // checks if URL contains directives
-    var dashboardShown = $("#dashboard").hasClass('open'); // checks in which state the dashboard currently resides
-    
-    if (showDashboard ? !dashboardShown : dashboardShown) { // showDashboard XOR dashboardShown
-        togglePanel();
-    }
-}
-
-function URLParamsChangeView(){
-    var view = Number(url.getQueryParam("weergave"));
-    view = (view===NaN ? 0 : view);
-    $("#mode-"+view).click();
-}
-
-function URLParamsChangeProvider(){
-    var URLProviders = JSON.parse(url.getQueryParam("providers"));
-    var providers = $("[name=provider]");
-    URLProviders = (URLProviders===NaN ? 0 : URLProviders);
-    for(var i=0;i<URLProviders.length;i++){
-        $($(providers[URLProviders[i]])).prop("checked",true);
-    }
-}
-
-function URLParamsChangeMap(){
-    var center = url.getQueryParam("mapCenter");
-    center = (center ? center : "");
-    center = center.split(',');
-    if(center.length===2){
-        map.setCenter({lat:Number(center[0]),lng:Number(center[1])});
-    }
-    var zoom = Number(url.getQueryParam("mapZoom"));
-    zoom = (zoom ? zoom : zoomCurrent);
-    zoomCurrent=zoom;
-    map.setZoom(zoom);
-    
+function changeURLParamDisplay(){
+    url.setQueryParam("weergave",this.id.split('-')[1]);
 }
