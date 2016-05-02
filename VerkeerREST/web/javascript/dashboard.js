@@ -23,6 +23,7 @@ var Dashboard = {
 	// property die de laatst gebruikte intervallen opslaat
 	lastKnownIntervals: [],
 	initialSync: false,
+	selectedDay: null,
 
 	init: function() {
 		this.provider = null;
@@ -68,6 +69,13 @@ var Dashboard = {
 		}
 		this.saveSelectedIntervals();
 	},
+	setSelectedDay: function(date){
+		this.selectedDay = date;
+		this.dayDidChange();
+	},
+	dayDidChange: function() {
+		this.reload()
+	},
 	saveSelectedIntervals: function () {
 		var selected_intervals = {}; // number of selection -> object data
 		var selected_events = {}; // name -> number of selection
@@ -85,6 +93,7 @@ var Dashboard = {
 		localStorage.setItem('selected_intervals', JSON.stringify(selected_intervals));
 		localStorage.setItem('selected_events', JSON.stringify(selected_events));
 	},
+	
 	loadSelectedIntervals: function () {
 		try {
 			var selected_intervals = JSON.parse(localStorage.getItem('selected_intervals')); // number of selection -> object data
@@ -198,6 +207,9 @@ var Dashboard = {
 			break;
 			case Dashboard.COMPARE_INTERVALS: 
 				this.reloadCompareIntervals(filterValue,currentFilterPos); 
+			break;
+			case Dashboard.DAY: 
+				this.reloadDay(); 
 			break;
 			default:
 				this.displayNotImplemented();
@@ -443,6 +455,107 @@ var Dashboard = {
                 this.selectFilterInput(currentFilterPos);
 	},
 	// Genereert HTML voor periode modus
+	reloadDay: function() {
+		console.log("reload day");
+		var dashboard = $('#dashboard .content');
+		var day = this.selectedDay;
+
+		// Opgegeven interval checken
+		if (day === null || typeof day == "undefined"){
+			var str = Mustache.renderTemplate("day-header", {day: ''});
+			str += "<p>Selecteer een dag.</p>";
+			dashboard.html(str);
+			return;
+		} else {
+			var dayString = dateToDate(day);
+			var str = Mustache.renderTemplate("day-header", {day: dayString});
+
+			// Hebben we alle benodigde data? 
+			// Dat is: de representatie van elke periode + het gemiddelde van de afgelopen maand
+			var hasData = false;
+
+			var p = this.provider.id;
+
+			routes.forEach(function(route){
+				if (route.getDayData(day, p) !== null){
+					hasData = true;
+					// TODO: Loop kan hier eig stoppen (omzetten in for loop)
+				}
+			});
+
+			if (!hasData){
+				Api.syncDayData(day, p, Dashboard.reload, this);
+
+				str += Mustache.renderTemplate("loading", []);
+				dashboard.html(str);
+				return;
+			}
+		}
+		// Als alles in orde is: resultaat tonen
+
+		str += "<p>Resultaat voor dag: "+ dayString +"</p>";
+					
+		// Dit stuk code sorteert de resultaten van alle routes en voegt ze toe aan de html
+		// Met de juiste Mustache template
+		var dataArr = [];
+		routes.forEach(function(route){
+			if (route.getDayData(day, p) === null){
+				var data = {
+					id: route.id,
+					name: route.name,
+					description: route.getDescription(),
+					length: route.getLength(),
+					status: 'Niet beschikbaar',
+					color: 'gray',
+					score: 10000, // Voor sorteren
+					title: '',
+					subtitle: 'Geen data van deze provider over deze route',
+					warnings: [] // TODO: wanneer we oorzaken toevoegen moeten deze hier doorgegeven worden
+				};
+				dataArr.push(data);
+				return;
+			}
+			var representation = route.getDayData(day, p).representation;
+			var status = representation.getStatus();
+
+			var data = {
+				id: route.id,
+				name: route.name,
+				description: route.getDescription(),
+				length: route.getLength(),
+				status: status.text,
+				color: status.color,
+				score: representation.speed, // Voor sorteren
+				title: representation.toString(),
+				subtitle: '',
+				warnings: [] // TODO: wanneer we oorzaken toevoegen moeten deze hier doorgegeven worden
+			};
+
+			dataArr.push(data);
+		});
+
+		dataArr.sort(function(a, b) {
+			// Nog sorteren op status op eerste plaats toeveogen hier
+			return a.score - b.score;
+		});
+
+		// Juiste subtitels (en evt lijn) ondertussen toevoegen
+		var lastStatus = '';
+		dataArr.forEach(function (data){
+			if (lastStatus != data.status){
+				if (lastStatus != ''){
+					str += '<hr>';
+				}
+				lastStatus = data.status;
+				str += "<h1>"+lastStatus+"</h1>";
+			}
+			str += Mustache.renderTemplate("route", data);
+		});
+
+		dashboard.html(str);
+	},
+
+	// Genereert HTML voor periode modus
 	reloadInterval: function(filterValue,currentFilterPos) {
 		var dashboard = $('#dashboard .content');
 		var interval = this.selectedIntervals[0];
@@ -450,6 +563,7 @@ var Dashboard = {
 			num: 0,
 			name: this.selectedIntervals[0].getName(),
 		};
+
 		var period_selection = Mustache.renderTemplate("period-selection", data);
 
 		var str = Mustache.renderTemplate("period-header", { 'period-selection': period_selection});

@@ -137,7 +137,7 @@ function thisReady() {
     // Alle functinaliteiten toevoegen (= binds) bv. onClick, onChange, ...
     // voor period selections in this
     bindPeriodSelection.call(this);
-
+    bindDaySelection.call(this);
 
     $(this).find('.popup-box').click(function (event) {
         clickedOnPopup = true;
