@@ -119,7 +119,7 @@ var url = {
         var view = url.getQueryParam("weergave");
         if (view) {
             view = Number(view);
-            if (!view) {
+            if ( !view && view!==0 ) {
                 view = 0;
                 console.error("incorrect parameter: weergave");
                 url.setQueryParam("weergave");

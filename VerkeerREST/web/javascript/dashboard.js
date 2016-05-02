@@ -1,3 +1,5 @@
+/* global Mustache, Interval, Api, url, events, providers, routes, weekdays */
+
 // De dashboard 'namespace' (vergelijk met static klasse) bevat methodes om het dashboard up te daten
 // Aanroepen:
 // Dashboard.reload();
@@ -22,7 +24,6 @@ var Dashboard = {
 	lastKnownIntervals: [],
 	initialSync: false,
 
-
 	init: function() {
 		this.provider = null;
 		this.loadSelectedIntervals();
@@ -37,7 +38,6 @@ var Dashboard = {
 		this.reload();
 		Api.syncProviders(this.loadProviders, this);
 	},
-
 	intervalsDidChange: function() {
                 var interval = this.selectedIntervals[0];
                 var param = (interval.hasName ? encodeURIComponent(interval.getName()) : "") + "," + dateToDate(interval.start) + "," + dateToDate(interval.end);
@@ -68,7 +68,6 @@ var Dashboard = {
 		}
 		this.saveSelectedIntervals();
 	},
-
 	saveSelectedIntervals: function () {
 		var selected_intervals = {}; // number of selection -> object data
 		var selected_events = {}; // name -> number of selection
@@ -113,7 +112,6 @@ var Dashboard = {
 			// niets doen
 		}
 	},
-
 	loadProviders: function() {
 		var str = '';
 
@@ -136,13 +134,11 @@ var Dashboard = {
 
 		$('#providers').html(str);
 	},
-
 	setMode: function(mode){
 		this.mode = mode;
 		localStorage.setItem('mode', this.mode);
 		this.reload();
 	},
-
 	setProvider: function(providerId){
 		if (typeof providers[providerId] != "undefined"){
                     var reload = false;
@@ -158,7 +154,6 @@ var Dashboard = {
 			console.error('No provider found with id '+providerId);
 		}
 	},
-	
 	// Herlaad het dashboard op de huidige stand
 	reload: function() {
 		if (!this.provider){
@@ -175,6 +170,19 @@ var Dashboard = {
 			Api.syncLiveData(this.provider.id, Dashboard.reload, this);
 		}
 		var dashboard = $('#dashboard .content');
+                
+                var filterInput = dashboard.find("#filterInput");
+                var filterValue;
+                var currentFilterPos;
+                if(filterInput.length>0){
+                    filterValue = filterInput.val();
+                    filterValue = (filterValue?filterValue:"");
+                    filterValue = filterValue.replace(/\"/g,"'"); // TODO: find reason why replace is not working
+                    currentFilterPos = filterInput[0].selectionStart;
+                } else {
+                    filterValue="";
+                    currentFilterPos=0;
+                }
 
 		// Alles wissen (dit kan later weg, maar is om te voorkomen dat thisReady meerdere keren wordt uitgevoerd op dezelfde elementen)
 		// Als alles juist geprogrammeerd is, dan zal het dashboard nooit leeg zijn.
@@ -183,13 +191,13 @@ var Dashboard = {
 		dashboard.html('');
 		switch(this.mode){
 			case Dashboard.LIVE: 
-				this.reloadLive();
+				this.reloadLive(filterValue,currentFilterPos);
 			break;
 			case Dashboard.INTERVAL: 
-				this.reloadInterval(); 
+				this.reloadInterval(filterValue,currentFilterPos); 
 			break;
 			case Dashboard.COMPARE_INTERVALS: 
-				this.reloadCompareIntervals(); 
+				this.reloadCompareIntervals(filterValue,currentFilterPos); 
 			break;
 			default:
 				this.displayNotImplemented();
@@ -201,18 +209,15 @@ var Dashboard = {
 		// Het deel hierboven moet dus 100% zeker het dashboard resetten
 		thisReady.call(dashboard);
 	},
-
 	// Als niet voldoende gegevens beschikbaar zijn -> loading screen
 	displayLoading: function() {
 		var dashboard = $('#dashboard .content');
 		dashboard.html(Mustache.renderTemplate("loading", []));
 	},
-
 	displayNotImplemented: function() {
 		var dashboard = $('#dashboard .content');
 		dashboard.html('<p>Deze functie is nog niet geïmplementeerd</p>');
 	},
-
 	openGraph: function(routeId, element, width, height) {
 		if (this.mode == this.LIVE){
 			this.openLiveGraph(routeId, element, width, height);
@@ -271,7 +276,7 @@ var Dashboard = {
 		var okay = true;
 		var data = {};
 		for (var day = 0; day < 7; day++) {
-			var graph = route.getIntervalData(interval, day, this.provider.id)
+			var graph = route.getIntervalData(interval, day, this.provider.id);
 			if (!graph || !graph.data){
 				okay = false;
 				break;
@@ -287,7 +292,6 @@ var Dashboard = {
 
 		drawChart(element, data, width, height);
 	},
-
 	// Opent de grafiek horende bij 2 intervallen
 	openCompareGraph: function(interval0, interval1, routeId, element, width, height) {
 		var route = routes[routeId];
@@ -300,7 +304,7 @@ var Dashboard = {
 		var data = {};
 		var c = 0;
 
-		var graph = route.getIntervalData(interval0, 7, this.provider.id)
+		var graph = route.getIntervalData(interval0, 7, this.provider.id);
 		if (!graph || !graph.data){
 			okay0 = false;
 			c++;
@@ -332,11 +336,9 @@ var Dashboard = {
 
 		drawChart(element, data, width, height);
 	},
-
 	//syncIntervalGraph
-
 	// Genereert HTML voor live modus
-	reloadLive: function() {
+	reloadLive: function(filterValue,currentFilterPos) {
 		var hasData = false;
 		var p = this.provider.id;
 
@@ -353,13 +355,14 @@ var Dashboard = {
 		}
 
 		var dashboard = $('#dashboard .content');
-		var str = '';
+                
+		var str = this.addFilter(filterValue);
 
 		// Dit stuk code sorteert de resultaten van alle routes en voegt ze toe aan de html
 		// Met de juiste Mustache template
 		var dataArr = [];
 		routes.forEach(function(route){
-
+                    if( Dashboard.routeSatisfiesFilter(route,filterValue) ){ // checks if route satisfies the filter
 			if (!route.hasRecentAvgRepresentation(p) || !route.hasRecentLiveRepresentation(p)){
 				var data = {
 					id: route.id,
@@ -395,6 +398,7 @@ var Dashboard = {
 				warnings: route.getWarnings(live, avg) // TODO: wanneer we oorzaken toevoegen moeten deze hier doorgegeven worden
 			};
 			dataArr.push(data);
+                    }
 		});
 
 		dataArr.sort(function(a, b) {
@@ -425,20 +429,21 @@ var Dashboard = {
 		// Juiste subtitels (en evt lijn) ondertussen toevoegen
 		var lastStatus = '';
 		dataArr.forEach(function (data){
-			if (lastStatus != data.status){
-				if (lastStatus != ''){
-					str += '<hr>';
-				}
-				lastStatus = data.status;
-				str += "<h1>"+lastStatus+"</h1>";
-			}
-			str += Mustache.renderTemplate("route", data);
+                    if (lastStatus != data.status){
+                        if (lastStatus != ''){
+                            str += '<hr>';
+                        }
+                        lastStatus = data.status;
+                        str += "<h1>"+lastStatus+"</h1>";
+                    }
+                    str += Mustache.renderTemplate("route", data);
 		});
 
 		dashboard.html(str);
+                this.selectFilterInput(currentFilterPos);
 	},
 	// Genereert HTML voor periode modus
-	reloadInterval: function() {
+	reloadInterval: function(filterValue,currentFilterPos) {
 		var dashboard = $('#dashboard .content');
 		var interval = this.selectedIntervals[0];
 		var data = {
@@ -448,7 +453,6 @@ var Dashboard = {
 		var period_selection = Mustache.renderTemplate("period-selection", data);
 
 		var str = Mustache.renderTemplate("period-header", { 'period-selection': period_selection});
-
 		
 		// Opgegeven interval checken
 		if (interval.isEmpty()){
@@ -486,11 +490,13 @@ var Dashboard = {
 		// Als alles in orde is: resultaat tonen
 
 		str += "<p>Resultaat voor periode: "+ dateToDate(interval.start) +" tot "+dateToDate(interval.end) +"</p>";
-					
+                str+=this.addFilter(filterValue);
+                
 		// Dit stuk code sorteert de resultaten van alle routes en voegt ze toe aan de html
 		// Met de juiste Mustache template
 		var dataArr = [];
 		routes.forEach(function(route){
+                    if(Dashboard.routeSatisfiesFilter(route,filterValue)){ // checks if route satisfies the filter
 			if (!route.getIntervalDataRepresentation(interval, 7, p) || route.getIntervalDataRepresentation(interval, 7, p).empty){
 				var data = {
 					id: route.id,
@@ -524,6 +530,7 @@ var Dashboard = {
 			};
 
 			dataArr.push(data);
+                    }
 		});
 
 		dataArr.sort(function(a, b) {
@@ -545,22 +552,22 @@ var Dashboard = {
 		});
 
 		dashboard.html(str);
+                this.selectFilterInput(currentFilterPos);
 	},
-
 	// Genereert HTML voor live modus
-	reloadCompareIntervals: function() {
+	reloadCompareIntervals: function(filterValue,currentFilterPos) {
 		var dashboard = $('#dashboard .content');
 		var interval0 = this.selectedIntervals[0];
 		var data = {
 			num: 0,
-			name: interval0.getName(),
+			name: interval0.getName()
 		};
 		var period_selection0 = Mustache.renderTemplate("period-selection", data);
 
 		var interval1 = this.selectedIntervals[1];
 		var data = {
 			num: 1,
-			name: interval1.getName(),
+			name: interval1.getName()
 		};
 		var period_selection1 = Mustache.renderTemplate("period-selection", data);
 
@@ -619,10 +626,11 @@ var Dashboard = {
 			}
 		}
 		str += "<p>Resultaat voor periode: "+ dateToDate(interval0.start) +" tot "+dateToDate(interval0.end) +' en '+ dateToDate(interval1.start) +" tot "+dateToDate(interval1.end) +"</p>";
-
+                str += this.addFilter(filterValue); // adds filter to the dashboard
 		var dataArr = [];
 
 		routes.forEach(function(route){
+                    if(Dashboard.routeSatisfiesFilter(route,filterValue)){ // checks if route satisfies the filter
 			if (!route.getIntervalDataRepresentation(interval0, 7, p) || !route.getIntervalDataRepresentation(interval1, 7, p) || route.getIntervalDataRepresentation(interval1, 7, p).empty || route.getIntervalDataRepresentation(interval0, 7, p).empty){
 				var data = {
 					id: route.id,
@@ -635,13 +643,13 @@ var Dashboard = {
 						status: 'Niet beschikbaar',
 						color:  'gray',
 						title: '',
-						subtitle: 'Deze route is niet beschikbaar in deze provider.',
+						subtitle: 'Deze route is niet beschikbaar in deze provider.'
 					},
 					second: {
 						status: '',
 						color: '',
 						title: '',
-						subtitle: '',
+						subtitle: ''
 					}
 				};
 
@@ -678,17 +686,18 @@ var Dashboard = {
 					status: status0.text,
 					color: status0.color,
 					title: representation0.toString(),
-					subtitle: representation0.getSubtitle(),
+					subtitle: representation0.getSubtitle()
 				},
 				second: {
 					status: status1.text,
 					color: status1.color,
 					title: representation1.toString(),
-					subtitle: representation1.getSubtitle(),
+					subtitle: representation1.getSubtitle()
 				}
 			};
 
 			dataArr.push(data);
+                    }
 		});
 
 		dataArr.sort(function(a, b) {
@@ -713,9 +722,25 @@ var Dashboard = {
 		});
 
 		dashboard.html(str);
+                this.selectFilterInput(currentFilterPos);
 	},
 	reloadCompareDays: function() {
 		this.displayNotImplemented();
 	},
+        addFilter: function(value){
+            return '<div id="filter"><label for="filterInput">Filter routes: </label><input type="text" id="filterInput" value="'+(value?value:"")+'" oninput="Dashboard.reload()" /></div>';
+        },
+        routeSatisfiesFilter: function(route,filter){
+            if(filter==="" || route.name.toLowerCase().includes(filter.toLowerCase()) 
+                    || route.getDescription().toLowerCase().includes(filter.toLowerCase())){
+                return true;
+            }
+            return false;
+        },
+        selectFilterInput: function(currentPos){
+            var input = $("#dashboard #filterInput");
+            input[0].selectionStart = input[0].selectionEnd = currentPos;
+            input.focus();
+        }
 };
 
