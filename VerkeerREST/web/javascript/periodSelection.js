@@ -160,12 +160,25 @@ function fillPeriodSelectionEvents(){
 	});
 	container.find('.item .edit-period').click(function(e) {
 		e.preventDefault();
+		// Als we op de knop klikken om een 'event' aan te passsen (3 puntjes)
+
 		var popup = $(this).parents('.period-selection');
+
+		// Event zoeken dat bij dit item hoort
 		var event = events[$(this).parent().attr('data-index')];
+		
 		if (event){
+			// Als het event bestaat:
+			// Het toevoegen als geselecteerd itnerval
 			Dashboard.selectedIntervals[popup.attr('data-num')] = event;
+
+			// Naam van het selectiebereik aanpassen
 			updatePeriodSelectionName.call(popup[0]);
+
+			// De inputs aanpassen aan het geselecteerde event
 			fillPeriodSelectionInputs.call(popup[0]);
+
+			// Naar edit modus gaan, zodat we deze inputs ook zien
 			popup.addClass('edit');
 		}
 	});
@@ -282,8 +295,36 @@ function bindPeriodSelection() {
 		labelMonthPrev: 'Vorige maand',
 		labelMonthSelect: 'Selecteer een maand',
 		labelYearSelect: 'Selecteer een jaar',
-		format: 'dd/mm/yyyy',
-		formatSubmit: 'dd/m/yyyy',
+		format: 'dd/mm/yyyy'
 	});
 	$(this).find('.timepicker').pickatime({format: 'H:i'});
 }
+
+function bindDaySelection() {
+	console.log("binddayselection");
+	var w = $(this).find('#day-selection');
+	w.change(function() {
+		if (ignoreChangePickadate) {
+			// we hebben het programatisch aangepast
+			// voorkomen infinite loop
+			return
+		}
+
+		var day = w.pickadate('picker').get('select');
+		if (day) {
+			var date = new Date(day.year, day.month, day.date);
+    		Dashboard.setSelectedDay(date);
+    	} else {
+    		Dashboard.setSelectedDay(null);
+    	}
+	});
+
+	// Selectie juist zetten voor de datepicker (deze leest value attribuut niet in)
+	if (Dashboard.selectedDay !== null) {
+		// infinite loop voorkomen
+		ignoreChangePickadate = true;
+		w.pickadate('picker').set('select', Dashboard.selectedDay);
+		ignoreChangePickadate = false;
+	}
+}
+

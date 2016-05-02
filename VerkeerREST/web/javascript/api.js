@@ -186,7 +186,7 @@ var Api = {
 
                     });
                 } else {
-                    alert(result.reason);
+                    console.error(result.reason);
                 }
                 me.callDelayed(qid, newCallback, context);
                 
@@ -249,7 +249,7 @@ var Api = {
                         console.error('Route ' + route.name + ' has no avgData for provider with id ' + providerId);
                     }
                 } else {
-                    alert(result.reason);
+                    console.error(result.reason);
                 }
             },
             error: handleAjaxError
@@ -316,7 +316,7 @@ var Api = {
                         console.error('Route ' + route.name + ' heeft geen liveData voor provider met id ' + providerId);
                     }
                 } else {
-                    alert(result.reason);
+                    console.error(result.reason);
                 }
             },
             error: handleAjaxError
@@ -405,25 +405,59 @@ var Api = {
             error: handleAjaxError
         });
         
-        // Hier alle data van de server halen.
-        // Uiteindelijk moet dit ongeveer het resultaat zijn: 
+    },
 
-        /*var p = provider;
-         routes.forEach(function(route){
-         
-         var representation = TrafficData.create(Math.floor((Math.random() * 40) + 50), Math.floor((Math.random() * 10) + 6));
-         var data = route.getIntervalData(interval, 7, p);
-         if (data){
-         data.representation = representation;
-         }else{
-         route.setIntervalData(interval, 7, p, TrafficGraph.create(representation));
-         }
-         });*/
+    syncDayData: function(day, provider, callback, context) {
+        // Bij begin van alle requests uitvoeren. 
+        // Hebben deze nodig voor de callback wanneer de request klaar is.
+        var qid = this.getQueueId();
 
-        // Hier alle data van de server halen
-        // 
-        // Callback zodra we de data hebben (moet dus in success van ajax)
-        //this.callDelayed(qid, callback, context);
+        var me = this;
+
+        var start = new Date(day.getTime());
+        start.setHours(0,0,0,0);
+
+        var end = new Date(day.getTime());
+        end.setHours(23,59,59,999);
+        
+        $.ajax({
+            type: "GET",
+            url: "/api/trafficdata/interval",
+            data: {providerID: provider, from: dateToRestString(start), to: dateToRestString(end)},
+            success: function(result, status, jqXHR) {
+                if (result.result === "success") {
+                    var resultdata = result.data;
+                    routes.forEach(function(route) {
+                        var rdata = resultdata[route.id];
+                        var representation;
+                        if (typeof rdata != "undefined") {
+                            var days = rdata.days;
+                            for (var i = 0; i < days.length; i++) {
+                                days[i] = parseInt(days[i]);
+                            }
+                            representation = IntervalRepresentation.create(parseInt(rdata.speed), parseInt(rdata.time)/60, days);
+                        } else {
+                            representation = IntervalRepresentation.createEmpty();
+                        }
+                        var data = route.getDayData(day, provider);
+                        if (data){
+                            data.representation = representation;
+                        }else{
+                            route.setDayData(day, provider, TrafficGraph.create(representation));
+                        }
+                    });
+                    if (routes.length == 0){
+                        console.error("Routes zijn leeg! Infinte loop voorkomen.");
+                        return;
+                    }
+                    me.callDelayed(qid, callback, context);
+                } else {
+                    console.error(result.reason);
+                }
+            },
+            error: handleAjaxError
+        });
+        
     },
 
     // fetches the acumulated data of every route

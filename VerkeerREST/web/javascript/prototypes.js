@@ -310,11 +310,30 @@ var Route = {
 
 	},
 
+	getDayData: function(day, providerId) {
+		var str = dateToDate(day);
+		if (typeof this.dayData[str] == "undefined"){
+			return null; // undefined
+		}
+		if (typeof this.dayData[str][providerId] == "undefined"){
+			return null; // undefined
+		}
+		return this.dayData[str][providerId];
+	},
+
+	// returns trafficGraph for interval, or null
+	setDayData: function(day, providerId, value) {
+		var str = dateToDate(day);
+		if (typeof this.dayData[str] == "undefined"){
+			this.dayData[str] = {};
+		}
+		this.dayData[str][providerId] = value;
+	},
 	// Information per day is stored here (in a graph)
 	// eg: 4 july 2015
 	// dayData["04/07/2015"][providerId] -> TrafficGraph object
 	dayData: {
-
+		
 	},
 
 	// returns trafficGraph for interval, or null
