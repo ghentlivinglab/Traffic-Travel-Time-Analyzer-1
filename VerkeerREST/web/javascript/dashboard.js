@@ -240,7 +240,9 @@ var Dashboard = {
 		if (this.mode == this.COMPARE_INTERVALS){
 			this.openCompareGraph(this.selectedIntervals[0], this.selectedIntervals[1], routeId, element, width, height);
 		}
-
+		if (this.mode == this.DAY){
+			this.openDayGraph(this.selectedDay, routeId, element, width, height);
+		}
 	},
 	// Opent de live grafiek = grafiek in de vandaag weergave
 	// element = het DOM element waarin we de grafiek willen toevoegen
@@ -279,6 +281,7 @@ var Dashboard = {
 	},
 	// Opent de grafiek horende bij 1 interval (met weekdagen etc)
 	openIntervalGraph: function(interval, routeId, element, width, height) {
+
 		var route = routes[routeId];
 
 		var callback = function(){
@@ -304,6 +307,29 @@ var Dashboard = {
 
 		drawChart(element, data, width, height);
 	},
+	// Opent de grafiek horende bij 1 interval (met weekdagen etc)
+	openDayGraph: function(day, routeId, element, width, height) {
+		console.log("openDayGraph");
+		if (typeof day == "undefined" || day === null) {
+			return;
+		}
+
+		var route = routes[routeId];
+
+		var callback = function(){
+			Dashboard.openDayGraph(day, routeId, element, width, height);
+		};
+
+		var graph = route.getDayData(day, this.provider.id);
+		if (graph === null || graph.data === null){
+			Api.syncDayGraph(day, routeId, this.provider.id, callback, this);
+			return;
+		}
+		var data = {};
+		data[dateToDate(day)] = graph.data;
+		drawChart(element, data, width, height);
+	},
+
 	// Opent de grafiek horende bij 2 intervallen
 	openCompareGraph: function(interval0, interval1, routeId, element, width, height) {
 		var route = routes[routeId];

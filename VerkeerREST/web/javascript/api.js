@@ -391,6 +391,7 @@ var Api = {
         var end = new Date(day.getTime());
         end.setHours(23,59,59,999);
         
+        // Optimalisatie mogelijk: apart API request voor 1 dag maken
         $.ajax({
             type: "GET",
             url: "/api/trafficdata/interval",
@@ -475,38 +476,69 @@ var Api = {
             error: handleAjaxError
         });   
 
-		/*var route = routes[routeId];
-
-		for (var day = 0; day < 7; day++) {
-			var graph = route.getIntervalData(interval, day, provider)
-			if (!graph){
-				graph = TrafficGraph.create(null);
-				route.setIntervalData(interval, day, provider, graph);
-			}
-			var data = {};
-			var base = 8;
-			for (var i = 6; i <= 24; i+=this.intervalDecimal) {
-				if (i > 7 && i < 10 || i > 16 && i < 18){
-					base += Math.random();
-				}
-				if (i > 18){
-					base -= Math.random();
-				}
-				if (base > 5){
-					base += Math.random() * 1 - 0.7;
-				}else{
-					base += Math.random() * 2;
-				}
-				data[i] = base;
-			}
-			graph.data = data;
-			//graph.representation = null;
-
-		}
-
-		// Gemiddelde berekenen van alle weekdagen
-		route.generateIntervalAvg(interval, provider);*/
 	},
+
+    syncDayGraph: function(day, routeId, provider, callback, context) {
+        var qid = this.getQueueId();
+
+        var route = routes[routeId];
+
+        var start = new Date(day.getTime());
+        start.setHours(0,0,0,0);
+
+        var end = new Date(day.getTime());
+        end.setHours(23,59,59,999);
+
+        var me = this;
+
+        // Optimalisatie mogelijk: apart API request voor 1 dag maken
+        $.ajax({
+            type: "GET",
+            url: "/api/trafficdata/weekday",
+            data: {providerID: provider, routeID: routeId, from: dateToRestString(start), to: dateToRestString(end)},
+            success: function(result, status, jqXHR) {
+                if (result.result === "success") {
+                    var resultdata = result.data;
+                    console.log(resultdata);
+
+                    var graph = route.getDayData(day, provider);
+                    if (!graph) {
+                        graph = TrafficGraph.create(null);
+                        route.setDayData(day, provider, graph);
+                    }
+
+                    // Hier krijgen we data per dag van de week doorgestuurd
+                    // Die is eigenlijk overbodig.
+                    // Maar hiervan geeft slechts één dag data terug die we nodig hebben.
+                    
+                    // Leeg zetten voor als we geen data tegen komen
+                    // Dit vermijdt een infinite loop
+                    graph.data = {};
+
+                    for (var weekday in resultdata) {
+                        var data = {};
+                        for (var key in resultdata[weekday]) {
+                            var times = key.split(":");
+                            var hour = parseInt(times[0]);
+                            var minutes = parseInt(times[1]);
+                            hour += (minutes / 60);
+                            data[hour] = (resultdata[weekday][key]) / 60;
+                        }
+                        if (Object.keys(data).length > 0) {
+                            // Deze dag bevat data
+                            graph.data = data;
+                        }
+                    }
+
+                    me.callDelayed(qid, callback, context);
+                } else {
+                    console.error(result.reason);
+                }
+            },
+            error: handleAjaxError
+        });   
+
+    }
 };
 
 // TOSO : alle exceptie messages in de rest api zelf steken
@@ -514,15 +546,15 @@ function handleAjaxError(jqXHR, textStatus, errorThrown) {
     var requestError = "Url request error : ";
     switch (jqXHR.status) {
         case 400:
-            console.log(requestError + "bad request. The requested url contains invalid content.");
+            console.error(requestError + "bad request. The requested url contains invalid content.");
             break;
         case 401:
-            console.log(requestError + "unauthorized. " + jqXHR.responseText); // responseText wordt meegegeven in AuthorizationFilter
+            console.error(requestError + "unauthorized. " + jqXHR.responseText); // responseText wordt meegegeven in AuthorizationFilter
             break;
         case 404:
-            console.log(requestError + "not found. The requested resource does not exist, change the url-path.");
+            console.error(requestError + "not found. The requested resource does not exist, change the url-path.");
             break;
         default :
-            console.log("An error occured while performing an url-request with http status-code " + jqXHR.status + ". Error message : " + errorThrown + ".");
+            console.error("An error occured while performing an url-request with http status-code " + jqXHR.status + ". Error message : " + errorThrown + ".");
     }
 }
