@@ -275,7 +275,7 @@ var Dashboard = {
 		if (c == 0){
 			var data = {
 				'Vandaag': route.liveData[this.provider.id].data,
-				'Normaal': route.avgData[this.provider.id].data,
+				'Gemiddelde': route.avgData[this.provider.id].data,
 			};
 			drawChart(element, data, width, height, true);
 		}else{
