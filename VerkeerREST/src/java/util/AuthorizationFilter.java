@@ -25,7 +25,7 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class AuthorizationFilter implements ContainerRequestFilter {
     
-    private static final String AUTHORIZATION_PROPERTY = "Authorization";
+    private static final String AUTHORIZATION_PROPERTY = "X-API-KEY";
     private static final Response.ResponseBuilder ACCESS_DENIED = Response.status(Response.Status.UNAUTHORIZED);
     
     /**
@@ -37,7 +37,7 @@ public class AuthorizationFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
         
-        String authorization = requestContext.getHeaderString("Authorization");
+        String authorization = requestContext.getHeaderString(AUTHORIZATION_PROPERTY);
         
         // checking if there was an authorization header
         if(authorization == null){

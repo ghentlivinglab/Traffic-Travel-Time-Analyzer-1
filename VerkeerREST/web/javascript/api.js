@@ -583,7 +583,7 @@ var Api = {
 };
 
 function addHeaders(request) {
-    request.setRequestHeader("Authorization", "6qKKfkX7u2lmJqxd8RrpLk7m");
+    request.setRequestHeader("x-api-key", "6qKKfkX7u2lmJqxd8RrpLk7m");
 }
 
 function handleAjaxError(jqXHR, textStatus, errorThrown) {

@@ -36,6 +36,10 @@ var Dashboard = {
 			$('#mode-'+this.mode).prop("checked", true);
 		}
 
+		if (localStorage.getItem('selectedDay') !== null){
+			this.selectedDay = new Date(localStorage.getItem('selectedDay'));
+		}
+
 		this.reload();
 		Api.syncProviders(this.loadProviders, this);
 	},
@@ -71,6 +75,7 @@ var Dashboard = {
 	},
 	setSelectedDay: function(date){
 		this.selectedDay = date;
+		localStorage.setItem('selectedDay', date.toJSON());
 		this.dayDidChange();
 	},
 	dayDidChange: function() {
