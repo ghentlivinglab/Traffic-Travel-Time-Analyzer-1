@@ -8,6 +8,10 @@ var providers = [];
 var routes = [];
 var events = [];
 
+// Snelheid waarvoor we het percentage hieronder bereken bij intervallen en dagen
+var intervalPercentageSpeed = 10; 
+
+
 // Weekdays
 var weekdays = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag', 'Zaterdag', 'Zondag'];
 var weekdays_short = ['ma', 'di', 'wo', 'do', 'vr', 'za', 'zo'];
@@ -141,7 +145,7 @@ function thisReady() {
 
     $(this).find('.popup-box').click(function (event) {
         clickedOnPopup = true;
-    });
+    })
 }
 
 /****************************

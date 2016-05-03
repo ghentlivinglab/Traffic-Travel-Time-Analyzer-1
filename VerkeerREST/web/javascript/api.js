@@ -366,7 +366,7 @@ var Api = {
         $.ajax({
             type: "GET",
             url: "/api/trafficdata/interval",
-            data: {providerID: provider, from: dateToRestString(interval.start), to: dateToRestString(interval.end)},
+            data: {providerID: provider, from: dateToRestString(interval.start), to: dateToRestString(interval.end), slowSpeed: intervalPercentageSpeed},
             beforeSend: function (jqXHR, settings) {
                 jqXHR.url = settings.url;
                 addHeaders(jqXHR);
@@ -424,7 +424,7 @@ var Api = {
         $.ajax({
             type: "GET",
             url: "/api/trafficdata/interval",
-            data: {providerID: provider, from: dateToRestString(start), to: dateToRestString(end)},
+            data: {providerID: provider, from: dateToRestString(start), to: dateToRestString(end), slowSpeed: intervalPercentageSpeed},
             beforeSend: function (jqXHR, settings) {
                 jqXHR.url = settings.url;
                 addHeaders(jqXHR);
