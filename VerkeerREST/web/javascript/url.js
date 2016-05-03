@@ -100,8 +100,10 @@ var url = {
     },
     updatePageByParams: function () {
         this.showDashboardByParam();
+        this.changeFilterByParam();
         this.changeViewByParam();
         this.changeProviderByParam();
+        this.changeDayByParam();
         this.changePeriodByParam();
         this.changeComparePeriodByParam();
         this.changeMapByParams();
@@ -243,6 +245,27 @@ var url = {
             }
             zoomCurrent = zoom;
             map.setZoom(zoom);
+        }
+    },
+    changeFilterByParam: function(){
+        var value = decodeURIComponent(url.getQueryParam("filter"));
+        if(value!=="false"){
+            Dashboard.initialFilter = value;
+            $("form#filter #filterInput").val(Dashboard.initialFilter);
+            $("form#filter #filterInput").submit();
+        }
+    },
+    changeDayByParam: function(){
+        var value = url.getQueryParam("dag");
+        if(value){
+            var date = this.createValidDate(value);
+            if(date){
+                Dashboard.setSelectedDay(date);
+            } else {
+                console.error("incorrect parameter: dag (wrong format of date)");
+                url.setQueryParam("dag");
+                console.error("has been removed");
+            }
         }
     },
     createValidDate: function (dateString) {
