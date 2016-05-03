@@ -63,3 +63,4 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 30/04/2016,9:30,17:30,Thuis,Projectwerk,Irritante bug proberen oplossen bij de day selection,,
 01/05/2016,13:30,18:00,Thuis,Projectwerk,Day selection implementeren,,
 02/05/2016,09:30,16:00,Thuis,Projectwerk,Day selection afwerken + grafieken toevoegen aan day selection,,
+02/05/2016,17:30,19:30,Thuis,Projectwerk,Grafieken toevoegen aan day selection + mergen en api keys toevoegen aan requests,,
