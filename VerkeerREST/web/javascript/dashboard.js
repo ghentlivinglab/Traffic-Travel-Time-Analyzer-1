@@ -88,9 +88,25 @@ var Dashboard = {
         var filterInput = $("#filterInput");
         this.filterValue = filterInput.val();
         url.setQueryParam("filter",encodeURIComponent(this.filterValue));
+
+        this.updateFilter();
     },
 
-	saveSelectedIntervals: function () {
+    updateFilter: function() {
+    	$('.route').each(function() {
+        	var routeId = $(this).attr('data-route');
+        	if (typeof routeId != "undefined") {
+        		var route = routes[routeId];
+        		if (Dashboard.routeSatisfiesFilter(route)) {
+        			$(this).show();
+        		} else {
+        			$(this).hide();
+        		}
+        	}
+        });
+    },
+
+	saveSelectedIntervals: function() {
 		var selected_intervals = {}; // number of selection -> object data
 		var selected_events = {}; // name -> number of selection
 		for (var num in this.selectedIntervals){
@@ -108,7 +124,7 @@ var Dashboard = {
 		localStorage.setItem('selected_events', JSON.stringify(selected_events));
 	},
 	
-	loadSelectedIntervals: function () {
+	loadSelectedIntervals: function() {
 		try {
 			var selected_intervals = JSON.parse(localStorage.getItem('selected_intervals')); // number of selection -> object data
 			var selected_events = JSON.parse(localStorage.getItem('selected_events')); // name -> number of selection
@@ -217,6 +233,7 @@ var Dashboard = {
 			break;
 		}
 		
+		this.updateFilter();
 		// thisReady mag NOOIT meerdere keren uitgevoerd worden op hetzelfde element (wel zelfde parent element)
 		// , niet op dezelfde kinderen.
 		// Het deel hierboven moet dus 100% zeker het dashboard resetten
@@ -398,9 +415,6 @@ var Dashboard = {
 		// Met de juiste Mustache template
 		var dataArr = [];
 		routes.forEach(function(route){
-            if(!Dashboard.routeSatisfiesFilter(route) ){ // checks if route satisfies the filter
-				return;
-            }
 			if (!route.hasRecentAvgRepresentation(p) || !route.hasRecentLiveRepresentation(p)){
 				var data = {
 					id: route.id,
@@ -524,7 +538,6 @@ var Dashboard = {
 		// Met de juiste Mustache template
 		var dataArr = [];
 		routes.forEach(function(route){
-                    if(Dashboard.routeSatisfiesFilter(route)){
 			if (route.getDayData(day, p) === null){
 				var data = {
 					id: route.id,
@@ -558,7 +571,6 @@ var Dashboard = {
 			};
 
 			dataArr.push(data);
-                    }
 		});
 
 		dataArr.sort(function(a, b) {
@@ -635,9 +647,6 @@ var Dashboard = {
 		// Met de juiste Mustache template
 		var dataArr = [];
 		routes.forEach(function(route){
-            if(!Dashboard.routeSatisfiesFilter(route)){ // checks if route satisfies the filter
-				return;
-            }
 			if (!route.getIntervalDataRepresentation(interval, 7, p) || route.getIntervalDataRepresentation(interval, 7, p).empty){
 				var data = {
 					id: route.id,
@@ -767,7 +776,6 @@ var Dashboard = {
 		var dataArr = [];
 
 		routes.forEach(function(route){
-                    if(Dashboard.routeSatisfiesFilter(route)){ // checks if route satisfies the filter
 			if (!route.getIntervalDataRepresentation(interval0, 7, p) || !route.getIntervalDataRepresentation(interval1, 7, p) || route.getIntervalDataRepresentation(interval1, 7, p).empty || route.getIntervalDataRepresentation(interval0, 7, p).empty){
 				var data = {
 					id: route.id,
@@ -834,7 +842,6 @@ var Dashboard = {
 			};
 
 			dataArr.push(data);
-                    }
 		});
 
 		dataArr.sort(function(a, b) {

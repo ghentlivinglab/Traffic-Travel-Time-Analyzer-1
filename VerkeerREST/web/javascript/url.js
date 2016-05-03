@@ -250,9 +250,9 @@ var url = {
     changeFilterByParam: function(){
         var value = decodeURIComponent(url.getQueryParam("filter"));
         if(value!=="false"){
-            Dashboard.initialFilter = value;
+            Dashboard.filterValue = value;
+            Dashboard.updateFilter();
             $("#filter #filterInput").val(Dashboard.initialFilter);
-            $("#filter #filterInput").submit();
         }
     },
     changeDayByParam: function(){

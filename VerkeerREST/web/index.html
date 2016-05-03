@@ -16,7 +16,7 @@
 
         <!-- Route in de periode/vandaag weergave (één kolom met info, één met waarschuwingen) -->
         <script id="template-route" type="text/html">
-            <article onclick="toggleGraph.call(this);" data-route="{{ id }}">
+            <article onclick="toggleGraph.call(this);" class="route" data-route="{{ id }}">
                 <div class="table">
                     <header>
                         <h1>{{ name }}</h1>
@@ -38,7 +38,7 @@
         </script>
 
         <script id="template-compare" type="text/html">
-            <article onclick="toggleGraph.call(this);" data-route="{{ id }}">
+            <article onclick="toggleGraph.call(this);" class="route" data-route="{{ id }}">
                 <div class="table">
                     <header>
                         <h1>{{ name }}</h1>
