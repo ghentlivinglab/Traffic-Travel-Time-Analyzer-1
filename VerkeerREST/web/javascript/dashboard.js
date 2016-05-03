@@ -46,14 +46,14 @@ var Dashboard = {
 	intervalsDidChange: function() {
                 var interval = this.selectedIntervals[0];
                 var param = (interval.hasName ? encodeURIComponent(interval.getName()) : "") + "," + dateToDate(interval.start) + "," + dateToDate(interval.end);
-                url.setQueryParam("periode",param);
+                if(this.mode===Dashboard.INTERVAL){
+                    url.setQueryParams("periode",param,"vergelijkPeriode","","","dag","");
+                }
                 
-                interval = this.selectedIntervals[1];
-                if(this.mode===Dashboard.COMPARE_INTERVALS) {
-                    var param = (interval.hasName ? encodeURIComponent(interval.getName()) : "") + "," + dateToDate(interval.start) + "," + dateToDate(interval.end);
-                    url.setQueryParam("vergelijkPeriode",param);
-                } else {
-                    url.setQueryParam("vergelijkPeriode","");
+                var interval2 = this.selectedIntervals[1];
+                if (this.mode===Dashboard.COMPARE_INTERVALS) {
+                    var param2 = (interval2.hasName ? encodeURIComponent(interval2.getName()) : "") + "," + dateToDate(interval2.start) + "," + dateToDate(interval2.end);
+                    url.setQueryParams("periode",param,"vergelijkPeriode",param2,"dag","");
                 }
                 
 		var changed = false;
@@ -79,7 +79,8 @@ var Dashboard = {
 		this.dayDidChange();
 	},
 	dayDidChange: function() {
-		this.reload()
+		this.reload();
+                url.setQueryParams("periode","","vergelijkPeriode","","dag",dateToDate(this.selectedDay));
 	},
 	saveSelectedIntervals: function () {
 		var selected_intervals = {}; // number of selection -> object data
@@ -193,9 +194,13 @@ var Dashboard = {
                     filterValue = (filterValue?filterValue:"");
                     filterValue = filterValue.replace(/\"/g,"'"); // TODO: find reason why replace is not working
                     currentFilterPos = filterInput[0].selectionStart;
-                } else {
+                } else if(this.initialFilter){
+                    filterValue=this.initialFilter;
+                    currentFilterPos=this.initialFilter.length;
+                    delete this.initialFilter;
+                } else{
                     filterValue="";
-                    currentFilterPos=0;
+                    currentFilterPos = 0;
                 }
 
 		// Alles wissen (dit kan later weg, maar is om te voorkomen dat thisReady meerdere keren wordt uitgevoerd op dezelfde elementen)
@@ -214,7 +219,7 @@ var Dashboard = {
 				this.reloadCompareIntervals(filterValue,currentFilterPos); 
 			break;
 			case Dashboard.DAY: 
-				this.reloadDay(); 
+				this.reloadDay(filterValue,currentFilterPos); 
 			break;
 			default:
 				this.displayNotImplemented();
@@ -334,7 +339,6 @@ var Dashboard = {
 		data[dateToDate(day)] = graph.data;
 		drawChart(element, data, width, height);
 	},
-
 	// Opent de grafiek horende bij 2 intervallen
 	openCompareGraph: function(interval0, interval1, routeId, element, width, height) {
 		var route = routes[routeId];
@@ -486,7 +490,7 @@ var Dashboard = {
                 this.selectFilterInput(currentFilterPos);
 	},
 	// Genereert HTML voor periode modus
-	reloadDay: function() {
+	reloadDay: function(filterValue, currentFilterPos) {
 		console.log("reload day");
 		var dashboard = $('#dashboard .content');
 		var day = this.selectedDay;
@@ -525,11 +529,14 @@ var Dashboard = {
 		// Als alles in orde is: resultaat tonen
 
 		str += "<p>Resultaat voor dag: "+ dayString +"</p>";
+                
+                str += this.addFilter(filterValue);
 					
 		// Dit stuk code sorteert de resultaten van alle routes en voegt ze toe aan de html
 		// Met de juiste Mustache template
 		var dataArr = [];
 		routes.forEach(function(route){
+                    if(Dashboard.routeSatisfiesFilter(route,filterValue)){
 			if (route.getDayData(day, p) === null){
 				var data = {
 					id: route.id,
@@ -563,6 +570,7 @@ var Dashboard = {
 			};
 
 			dataArr.push(data);
+                    }
 		});
 
 		dataArr.sort(function(a, b) {
@@ -584,6 +592,7 @@ var Dashboard = {
 		});
 
 		dashboard.html(str);
+                this.selectFilterInput(currentFilterPos);
 	},
 
 	// Genereert HTML voor periode modus
@@ -873,12 +882,27 @@ var Dashboard = {
 		this.displayNotImplemented();
 	},
         addFilter: function(value){
-            return '<div id="filter"><label for="filterInput">Filter routes: </label><input type="text" id="filterInput" value="'+(value?value:"")+'" oninput="Dashboard.reload()" /></div>';
+            return '<form id="filter" onsubmit="Dashboard.filterChanged()">'
+                    + '<label for="filterInput">Filter routes: </label>'
+                    + '<input type="text" id="filterInput" value="'+(value?value:"")+'" />'
+                    + '<button type="submit">Filter</button>'
+                 + '</form>';
+        },
+        filterChanged: function(){
+            Dashboard.reload();
+            url.setQueryParam("filter",encodeURIComponent($("form#filter #filterInput").val()));
+            return false;
         },
         routeSatisfiesFilter: function(route,filter){
-            if(filter==="" || route.name.toLowerCase().includes(filter.toLowerCase()) 
-                    || route.getDescription().toLowerCase().includes(filter.toLowerCase())){
+            if(!filter){
                 return true;
+            }
+            filter = filter.trim().split(" ");
+            for(var i = 0;i<filter.length;i++){
+                if(route.name.toLowerCase().includes(filter[i].toLowerCase()) 
+                        || route.getDescription().toLowerCase().includes(filter[i].toLowerCase())){
+                    return true;
+                }
             }
             return false;
         },
