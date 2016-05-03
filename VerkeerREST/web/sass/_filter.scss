@@ -1,0 +1,13 @@
+#filter {
+    text-align: right;
+}
+
+#filterInput {
+    display: inline-block;
+    background: url('../images/search.png') no-repeat 2px;
+    padding-left: 25px;
+    width: 100%;
+    max-width: 200px;
+    box-sizing: border-box;
+    min-width: 100px;
+}

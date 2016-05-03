@@ -58,28 +58,62 @@
             </article>
         </script>
 
-        <!-- Dashboard periode-view header: titel + periode dropdown -->
-        <script id="template-period-header" type="text/html">
-            <h1>Periode</h1>
-            <p>
-                {{& period-selection }}
-            </p>
+        <script id="template-search" type="text/html">
+           <div id="filter">
+                <input type="text" id="filterInput" placeholder="Zoeken" oninput="Dashboard.filterChanged();" value="{{ filter }}" />
+            </div>
         </script>
 
         <!-- Dashboard periode-view header: titel + periode dropdown -->
-        <script id="template-day-header" type="text/html">
-            <h1>Dag</h1>
-            <p>
-                <input type="text" id="day-selection" placeholder="Datum" value="{{ day }}" class="period-selection datepicker"/>
-            </p>
+        <script id="template-header-live" type="text/html">
+            <div class="oneline">
+                <div class="left">
+                    <h1>Live</h1>
+                </div>
+                <div class="right">
+                    {{& search }}
+                </div>
+            </div>
         </script>
 
         <!-- Dashboard periode-view header: titel + periode dropdown -->
-        <script id="template-compare-header" type="text/html">
-            <h1>Vergelijk</h1>
-            <p>
-                {{& period-selection0 }} <span class="sub">EN</span> {{& period-selection1 }}
-            </p>
+        <script id="template-header-period" type="text/html">
+            <div class="oneline">
+                <div class="left">
+                    <h1>Toon </h1>
+                    
+                    {{& period-selection }}
+                </div>
+                <div class="right">
+                    {{& search }}
+                </div>
+            </div>
+        </script>
+
+        <!-- Dashboard periode-view header: titel + periode dropdown -->
+        <script id="template-header-day" type="text/html">
+            <div class="oneline">
+                <div class="left">
+                    <h1>Toon </h1>
+                    <input type="text" id="day-selection" placeholder="Datum" value="{{ day }}" class="period-selection datepicker"/>
+                </div>
+                <div class="right">
+                    {{& search }}
+                </div>
+            </div>
+        </script>
+
+        <!-- Dashboard periode-view header: titel + periode dropdown -->
+        <script id="template-header-compare" type="text/html">
+            <div class="oneline">
+                <div class="left">
+                    <h1>Vergelijk </h1>
+                    <div class="selection-bundle">{{& period-selection0 }} <span class="sub">EN</span> {{& period-selection1 }}</div>
+                </div>
+                <div class="right">
+                    {{& search }}
+                </div>
+            </div>
         </script>
 
         <!-- Dashboard periode-view header: titel + periode dropdown -->

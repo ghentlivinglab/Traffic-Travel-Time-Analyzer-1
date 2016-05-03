@@ -18,12 +18,6 @@ input[type=text] {
 	&.inline {
 		display: inline-block;
 	}
-	&.datepicker {
-		width: 100px;
-	}
-	&.timepicker {
-		width: 50px;
-	}
 	&:focus {
 		border-color: $red;
 	}
@@ -37,19 +31,40 @@ input[type=text] {
 	}
 }
 
-
-
+// selection bundle voorkomt dat haar kinderen 
+// los van elkaar worden gewrapped
+// en zorgt dus dat ze liefst op 1 lijn blijven, maar dat ze 
+// nog steeds kunnen wrappen als het niet anders kan
+.selection-bundle {
+	display: inline-block;
+}
 // Custom inputs
-.period-selection {
+.period-selection, #day-selection {
 	border-bottom: 2px solid $light-gray;
 	color: $gray;
 	font-weight: 500;
+	font-size: 11pt;
 	display: inline-block;
-	min-width: 200px;
+	width: 150px;
 	padding: 5px 30px 5px 10px;
+	margin: 0;
 
 	// Hieronder: CSS3, offset 10 vanaf rechts, werkt niet in IE8
 	background: url(../images/dropdown-arrow.png) no-repeat right 10px center;
+
+	input.datepicker {
+		width: 100px;
+	}
+	input.timepicker {
+		width: 50px;
+	}
+
+	span.name {
+		white-space: nowrap;
+		overflow: hidden;
+		width: 100%;
+		display: inline-block;
+	}
 }
 
 // Voor in de popup: (in .popup-scroll)

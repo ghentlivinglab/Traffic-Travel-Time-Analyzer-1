@@ -46,25 +46,27 @@ top: 0;
 			text-align: center;
 			padding: 50px 0;
 		}
-		#filter {
+
+		.oneline {
+			display: table;
 			width: 100%;
-			
-			label {
-				width: 20%;
-				display: inline-block;
-				padding: 0;
+			padding: 10px 0;
+
+			.left {
+				display: table-cell;
+				vertical-align: text-top;
+
+				h1 {
+					display: inline-block;
+					margin-right: 10px;
+				}
 			}
-			input {
-				width: 60%;
-				display: inline-block;
-				padding: 0;
-				margin: 0;
-			}
-			button {
-				width: 20%;
-				display: inline-block;
-				padding: 0;
-				margin: 0;
+
+			.right {
+				display: table-cell;
+				vertical-align: text-top;
+
+				padding-left: 10px;
 			}
 		}
 	}

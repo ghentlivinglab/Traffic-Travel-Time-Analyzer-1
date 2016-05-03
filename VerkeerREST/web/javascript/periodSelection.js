@@ -303,6 +303,9 @@ function bindPeriodSelection() {
 function bindDaySelection() {
 	console.log("binddayselection");
 	var w = $(this).find('#day-selection');
+	if (w.length == 0) {
+		return;
+	}
 	w.change(function() {
 		if (ignoreChangePickadate) {
 			// we hebben het programatisch aangepast

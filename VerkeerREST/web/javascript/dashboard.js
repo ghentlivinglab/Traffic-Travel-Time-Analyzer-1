@@ -24,6 +24,7 @@ var Dashboard = {
 	lastKnownIntervals: [],
 	initialSync: false,
 	selectedDay: null,
+	filterValue: "",
 
 	init: function() {
 		this.provider = null;
@@ -82,6 +83,13 @@ var Dashboard = {
 		this.reload();
                 url.setQueryParams("periode","","vergelijkPeriode","","dag",dateToDate(this.selectedDay));
 	},
+
+	filterChanged: function(){
+        var filterInput = $("#filterInput");
+        this.filterValue = filterInput.val();
+        url.setQueryParam("filter",encodeURIComponent(this.filterValue));
+    },
+
 	saveSelectedIntervals: function () {
 		var selected_intervals = {}; // number of selection -> object data
 		var selected_events = {}; // name -> number of selection
@@ -185,23 +193,6 @@ var Dashboard = {
 			Api.syncLiveData(this.provider.id, Dashboard.reload, this);
 		}
 		var dashboard = $('#dashboard .content');
-                
-                var filterInput = dashboard.find("#filterInput");
-                var filterValue;
-                var currentFilterPos;
-                if(filterInput.length>0){
-                    filterValue = filterInput.val();
-                    filterValue = (filterValue?filterValue:"");
-                    filterValue = filterValue.replace(/\"/g,"'"); // TODO: find reason why replace is not working
-                    currentFilterPos = filterInput[0].selectionStart;
-                } else if(this.initialFilter){
-                    filterValue=this.initialFilter;
-                    currentFilterPos=this.initialFilter.length;
-                    delete this.initialFilter;
-                } else{
-                    filterValue="";
-                    currentFilterPos = 0;
-                }
 
 		// Alles wissen (dit kan later weg, maar is om te voorkomen dat thisReady meerdere keren wordt uitgevoerd op dezelfde elementen)
 		// Als alles juist geprogrammeerd is, dan zal het dashboard nooit leeg zijn.
@@ -210,16 +201,16 @@ var Dashboard = {
 		dashboard.html('');
 		switch(this.mode){
 			case Dashboard.LIVE: 
-				this.reloadLive(filterValue,currentFilterPos);
+				this.reloadLive();
 			break;
 			case Dashboard.INTERVAL: 
-				this.reloadInterval(filterValue,currentFilterPos); 
+				this.reloadInterval(); 
 			break;
 			case Dashboard.COMPARE_INTERVALS: 
-				this.reloadCompareIntervals(filterValue,currentFilterPos); 
+				this.reloadCompareIntervals(); 
 			break;
 			case Dashboard.DAY: 
-				this.reloadDay(filterValue,currentFilterPos); 
+				this.reloadDay(); 
 			break;
 			default:
 				this.displayNotImplemented();
@@ -319,7 +310,6 @@ var Dashboard = {
 	},
 	// Opent de grafiek horende bij 1 interval (met weekdagen etc)
 	openDayGraph: function(day, routeId, element, width, height) {
-		console.log("openDayGraph");
 		if (typeof day == "undefined" || day === null) {
 			return;
 		}
@@ -385,7 +375,7 @@ var Dashboard = {
 	},
 	//syncIntervalGraph
 	// Genereert HTML voor live modus
-	reloadLive: function(filterValue,currentFilterPos) {
+	reloadLive: function() {
 		var hasData = false;
 		var p = this.provider.id;
 
@@ -403,13 +393,14 @@ var Dashboard = {
 
 		var dashboard = $('#dashboard .content');
                 
-		var str = this.addFilter(filterValue);
-
+        var str = this.renderHeader("live", {});
 		// Dit stuk code sorteert de resultaten van alle routes en voegt ze toe aan de html
 		// Met de juiste Mustache template
 		var dataArr = [];
 		routes.forEach(function(route){
-                    if( Dashboard.routeSatisfiesFilter(route,filterValue) ){ // checks if route satisfies the filter
+            if(!Dashboard.routeSatisfiesFilter(route) ){ // checks if route satisfies the filter
+				return;
+            }
 			if (!route.hasRecentAvgRepresentation(p) || !route.hasRecentLiveRepresentation(p)){
 				var data = {
 					id: route.id,
@@ -445,7 +436,6 @@ var Dashboard = {
 				warnings: route.getWarnings(live, avg) // TODO: wanneer we oorzaken toevoegen moeten deze hier doorgegeven worden
 			};
 			dataArr.push(data);
-                    }
 		});
 
 		dataArr.sort(function(a, b) {
@@ -476,34 +466,34 @@ var Dashboard = {
 		// Juiste subtitels (en evt lijn) ondertussen toevoegen
 		var lastStatus = '';
 		dataArr.forEach(function (data){
-                    if (lastStatus != data.status){
-                        if (lastStatus != ''){
-                            str += '<hr>';
-                        }
-                        lastStatus = data.status;
-                        str += "<h1>"+lastStatus+"</h1>";
-                    }
-                    str += Mustache.renderTemplate("route", data);
+            if (lastStatus != data.status){
+                if (lastStatus != ''){
+                    str += '<hr>';
+                }
+                lastStatus = data.status;
+                str += "<h1>"+lastStatus+"</h1>";
+            }
+            str += Mustache.renderTemplate("route", data);
 		});
 
 		dashboard.html(str);
-                this.selectFilterInput(currentFilterPos);
 	},
 	// Genereert HTML voor periode modus
-	reloadDay: function(filterValue, currentFilterPos) {
+	reloadDay: function() {
 		console.log("reload day");
 		var dashboard = $('#dashboard .content');
 		var day = this.selectedDay;
 
 		// Opgegeven interval checken
 		if (day === null || typeof day == "undefined"){
-			var str = Mustache.renderTemplate("day-header", {day: ''});
+
+			var str = this.renderHeader("day", {day: ''});
 			str += "<p>Selecteer een dag.</p>";
 			dashboard.html(str);
 			return;
 		} else {
 			var dayString = dateToDate(day);
-			var str = Mustache.renderTemplate("day-header", {day: dayString});
+			var str = this.renderHeader("day", {day: dayString});
 
 			// Hebben we alle benodigde data? 
 			// Dat is: de representatie van elke periode + het gemiddelde van de afgelopen maand
@@ -530,13 +520,11 @@ var Dashboard = {
 
 		str += "<p>Resultaat voor dag: "+ dayString +"</p>";
                 
-                str += this.addFilter(filterValue);
-					
 		// Dit stuk code sorteert de resultaten van alle routes en voegt ze toe aan de html
 		// Met de juiste Mustache template
 		var dataArr = [];
 		routes.forEach(function(route){
-                    if(Dashboard.routeSatisfiesFilter(route,filterValue)){
+                    if(Dashboard.routeSatisfiesFilter(route)){
 			if (route.getDayData(day, p) === null){
 				var data = {
 					id: route.id,
@@ -592,11 +580,10 @@ var Dashboard = {
 		});
 
 		dashboard.html(str);
-                this.selectFilterInput(currentFilterPos);
 	},
 
 	// Genereert HTML voor periode modus
-	reloadInterval: function(filterValue,currentFilterPos) {
+	reloadInterval: function() {
 		var dashboard = $('#dashboard .content');
 		var interval = this.selectedIntervals[0];
 		var data = {
@@ -606,7 +593,8 @@ var Dashboard = {
 
 		var period_selection = Mustache.renderTemplate("period-selection", data);
 
-		var str = Mustache.renderTemplate("period-header", { 'period-selection': period_selection});
+
+		var str = this.renderHeader("period", { 'period-selection': period_selection});
 		
 		// Opgegeven interval checken
 		if (interval.isEmpty()){
@@ -642,15 +630,14 @@ var Dashboard = {
 			}
 		}
 		// Als alles in orde is: resultaat tonen
-
-		str += "<p>Resultaat voor periode: "+ dateToDate(interval.start) +" tot "+dateToDate(interval.end) +"</p>";
-                str+=this.addFilter(filterValue);
                 
 		// Dit stuk code sorteert de resultaten van alle routes en voegt ze toe aan de html
 		// Met de juiste Mustache template
 		var dataArr = [];
 		routes.forEach(function(route){
-                    if(Dashboard.routeSatisfiesFilter(route,filterValue)){ // checks if route satisfies the filter
+            if(!Dashboard.routeSatisfiesFilter(route)){ // checks if route satisfies the filter
+				return;
+            }
 			if (!route.getIntervalDataRepresentation(interval, 7, p) || route.getIntervalDataRepresentation(interval, 7, p).empty){
 				var data = {
 					id: route.id,
@@ -684,7 +671,6 @@ var Dashboard = {
 			};
 
 			dataArr.push(data);
-                    }
 		});
 
 		dataArr.sort(function(a, b) {
@@ -706,10 +692,9 @@ var Dashboard = {
 		});
 
 		dashboard.html(str);
-                this.selectFilterInput(currentFilterPos);
 	},
 	// Genereert HTML voor live modus
-	reloadCompareIntervals: function(filterValue,currentFilterPos) {
+	reloadCompareIntervals: function() {
 		var dashboard = $('#dashboard .content');
 		var interval0 = this.selectedIntervals[0];
 		var data = {
@@ -725,8 +710,7 @@ var Dashboard = {
 		};
 		var period_selection1 = Mustache.renderTemplate("period-selection", data);
 
-
-		var str = Mustache.renderTemplate("compare-header", { 'period-selection0': period_selection0, 'period-selection1': period_selection1});
+		var str = this.renderHeader('compare', { 'period-selection0': period_selection0, 'period-selection1': period_selection1})
 
 		if (interval0.isEmpty() || interval1.isEmpty()){
 			str += "<p>Selecteer twee reeds opgeslagen periodes of kies zelf een bereik.</p>";
@@ -779,12 +763,11 @@ var Dashboard = {
 				return;
 			}
 		}
-		str += "<p>Resultaat voor periode: "+ dateToDate(interval0.start) +" tot "+dateToDate(interval0.end) +' en '+ dateToDate(interval1.start) +" tot "+dateToDate(interval1.end) +"</p>";
-                str += this.addFilter(filterValue); // adds filter to the dashboard
+        
 		var dataArr = [];
 
 		routes.forEach(function(route){
-                    if(Dashboard.routeSatisfiesFilter(route,filterValue)){ // checks if route satisfies the filter
+                    if(Dashboard.routeSatisfiesFilter(route)){ // checks if route satisfies the filter
 			if (!route.getIntervalDataRepresentation(interval0, 7, p) || !route.getIntervalDataRepresentation(interval1, 7, p) || route.getIntervalDataRepresentation(interval1, 7, p).empty || route.getIntervalDataRepresentation(interval0, 7, p).empty){
 				var data = {
 					id: route.id,
@@ -876,39 +859,30 @@ var Dashboard = {
 		});
 
 		dashboard.html(str);
-                this.selectFilterInput(currentFilterPos);
 	},
 	reloadCompareDays: function() {
 		this.displayNotImplemented();
 	},
-        addFilter: function(value){
-            return '<div id="filter">'
-                    + '<label for="filterInput">Filter routes: </label>'
-                    + '<input type="text" id="filterInput" oninput="Dashboard.filterChanged();" value="'+(value?value:"")+'" />'
-                 + '</div>';
-        },
-        filterChanged: function(){
-            Dashboard.reload();
-            url.setQueryParam("filter",encodeURIComponent($("#filter #filterInput").val()));
-            return false;
-        },
-        routeSatisfiesFilter: function(route,filter){
-            if(!filter){
+
+    routeSatisfiesFilter: function(route){
+        var filter = this.filterValue.trim().split(" ");
+        for(var i = 0;i<filter.length;i++){
+            if(route.name.toLowerCase().includes(filter[i].toLowerCase()) 
+                    || route.getDescription().toLowerCase().includes(filter[i].toLowerCase())){
                 return true;
             }
-            filter = filter.trim().split(" ");
-            for(var i = 0;i<filter.length;i++){
-                if(route.name.toLowerCase().includes(filter[i].toLowerCase()) 
-                        || route.getDescription().toLowerCase().includes(filter[i].toLowerCase())){
-                    return true;
-                }
-            }
-            return false;
-        },
-        selectFilterInput: function(currentPos){
-            var input = $("#dashboard #filterInput");
-            input[0].selectionStart = input[0].selectionEnd = currentPos;
-            input.focus();
         }
+        return false;
+    },
+    selectFilterInput: function(currentPos){
+        var input = $("#dashboard #filterInput");
+        input[0].selectionStart = input[0].selectionEnd = currentPos;
+        input.focus();
+    },
+
+    renderHeader: function(headerName, data) {
+    	data.search = Mustache.renderTemplate("search", {filter: this.filterValue});
+    	return Mustache.renderTemplate("header-"+headerName, data);
+    }
 };
 
