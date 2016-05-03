@@ -9,7 +9,7 @@ var routes = [];
 var events = [];
 
 // Snelheid waarvoor we het percentage hieronder bereken bij intervallen en dagen
-var intervalPercentageSpeed = 10; 
+var intervalPercentageSpeed = 30; 
 
 
 // Weekdays
