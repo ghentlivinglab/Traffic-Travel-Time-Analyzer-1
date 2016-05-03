@@ -587,18 +587,6 @@ function addHeaders(request) {
 }
 
 function handleAjaxError(jqXHR, textStatus, errorThrown) {
-    var requestError = "Url request error : ";
-    switch (jqXHR.status) {
-        case 400:
-            console.error(requestError + "bad request. The requested url contains invalid content.");
-            break;
-        case 401:
-            console.error(requestError + "unauthorized. " + jqXHR.responseText); // responseText wordt meegegeven in AuthorizationFilter
-            break;
-        case 404:
-            console.error(requestError + "not found. The requested resource does not exist, change the url-path.");
-            break;
-        default :
-            console.error("An error occured while performing an url-request with http status-code " + jqXHR.status + ". Error message : " + errorThrown + ".");
-    }
+    console.log("Error while performing request for url : " + jqXHR.url + "\n" + jqXHR.status + " " + errorThrown + ". " + jqXHR.responseText);
 }
+
