@@ -37,7 +37,7 @@ public class AuthorizationFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
         
-        String authorization = requestContext.getHeaderString("X-API-KEY");
+        String authorization = requestContext.getHeaderString(AUTHORIZATION_PROPERTY);
         
         // checking if there was an authorization header
         if(authorization == null){
