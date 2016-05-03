@@ -251,8 +251,8 @@ var url = {
         var value = decodeURIComponent(url.getQueryParam("filter"));
         if(value!=="false"){
             Dashboard.initialFilter = value;
-            $("form#filter #filterInput").val(Dashboard.initialFilter);
-            $("form#filter #filterInput").submit();
+            $("#filter #filterInput").val(Dashboard.initialFilter);
+            $("#filter #filterInput").submit();
         }
     },
     changeDayByParam: function(){
