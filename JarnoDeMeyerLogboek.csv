@@ -101,4 +101,4 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 03/05/16,08:15,12:00,School,Masterproef,Infomoment IBCN,,
 03/05/16,13:30,15:00,Thuis,Projectwerk,Filteren van routes in overzicht,81,elk woord wordt apart geëvalueerd + toevoegen knop in GUI
 03/05/16,15:00,15:30,Thuis,Projectwerk,Toevoegen URL Parameters,78,implementatie filter in url parameter
-03/05/16,16:00,17:00,Thuis,Projectwerk,Toevoegen URL Parameters,78,implementatie filter/dag in url parameter
+03/05/16,16:00,17:30,Thuis,Projectwerk,Toevoegen URL Parameters,78,implementatie filter/dag in url parameter

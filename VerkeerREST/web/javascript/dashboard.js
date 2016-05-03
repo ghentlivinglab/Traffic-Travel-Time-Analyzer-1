@@ -882,15 +882,14 @@ var Dashboard = {
 		this.displayNotImplemented();
 	},
         addFilter: function(value){
-            return '<form id="filter" onsubmit="Dashboard.filterChanged()">'
+            return '<div id="filter">'
                     + '<label for="filterInput">Filter routes: </label>'
-                    + '<input type="text" id="filterInput" value="'+(value?value:"")+'" />'
-                    + '<button type="submit">Filter</button>'
-                 + '</form>';
+                    + '<input type="text" id="filterInput" oninput="Dashboard.filterChanged();" value="'+(value?value:"")+'" />'
+                 + '</div>';
         },
         filterChanged: function(){
             Dashboard.reload();
-            url.setQueryParam("filter",encodeURIComponent($("form#filter #filterInput").val()));
+            url.setQueryParam("filter",encodeURIComponent($("#filter #filterInput").val()));
             return false;
         },
         routeSatisfiesFilter: function(route,filter){
