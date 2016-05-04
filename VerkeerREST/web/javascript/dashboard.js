@@ -393,24 +393,21 @@ var Dashboard = {
 	//syncIntervalGraph
 	// Genereert HTML voor live modus
 	reloadLive: function() {
-		var hasData = false;
 		var p = this.provider.id;
 
-		routes.forEach(function(route){
-			if (route.hasRecentAvgRepresentation(p) && route.hasRecentLiveRepresentation(p)){
-				hasData = true;
-			}
+		var hasData = this.routesDoHaveData(function(route) {
+			return route.hasRecentAvgRepresentation(p) && route.hasRecentLiveRepresentation(p);
 		});
+
+		var dashboard = $('#dashboard .content');
+		var str = this.renderHeader("live", {});
 
 		if (!hasData){
 			Api.syncLiveData(p, Dashboard.reload, this);
-			this.displayLoading();
+			str += Mustache.renderTemplate("loading", []);
+			dashboard.html(str);
 			return;
 		}
-
-		var dashboard = $('#dashboard .content');
-                
-        var str = this.renderHeader("live", {});
 
         var builder = ListBuilder.create();
         builder.setLeft(ListBuilder.DEFAULT_REPRESENTATION, function(route) {
@@ -466,15 +463,9 @@ var Dashboard = {
 
 			// Hebben we alle benodigde data? 
 			// Dat is: de representatie van elke periode + het gemiddelde van de afgelopen maand
-			var hasData = false;
-
 			var p = this.provider.id;
-
-			routes.forEach(function(route){
-				if (route.getDayData(day, p) !== null){
-					hasData = true;
-					// TODO: Loop kan hier eig stoppen (omzetten in for loop)
-				}
+			var hasData = this.routesDoHaveData(function(route) {
+				return route.getDayData(day, p) !== null;
 			});
 
 			if (!hasData){
@@ -520,7 +511,6 @@ var Dashboard = {
 
 		var period_selection = Mustache.renderTemplate("period-selection", data);
 
-
 		var str = this.renderHeader("period", { 'period-selection': period_selection});
 		
 		// Opgegeven interval checken
@@ -532,15 +522,9 @@ var Dashboard = {
 			if (interval.isValid()){
 				// Hebben we alle benodigde data? 
 				// Dat is: de representatie van elke periode + het gemiddelde van de afgelopen maand
-				var hasData = false;
-
 				var p = this.provider.id;
-
-				routes.forEach(function(route){
-					if (route.getIntervalDataRepresentation(interval, 7, p)){
-						hasData = true;
-						// TODO: Loop kan hier eig stoppen (omzetten in for loop)
-					}
+				var hasData = this.routesDoHaveData(function(route) {
+					return route.getIntervalDataRepresentation(interval, 7, p);
 				});
 
 				if (!hasData){
@@ -600,18 +584,13 @@ var Dashboard = {
 			if (interval0.isValid() && interval1.isValid()){
 				// Hebben we alle benodigde data? 
 				// Dat is: de representatie van elke periode + het gemiddelde van de afgelopen maand
-				var hasData0 = false;
-				var hasData1 = false;
-
 				var p = this.provider.id;
 
-				routes.forEach(function(route){
-					if (route.getIntervalDataRepresentation(interval0, 7, p)){
-						hasData0 = true;
-					}
-					if (route.getIntervalDataRepresentation(interval1, 7, p)){
-						hasData1 = true;
-					}
+				var hasData0 = this.routesDoHaveData(function(route) {
+					return route.getIntervalDataRepresentation(interval0, 7, p);
+				});
+				var hasData1 = this.routesDoHaveData(function(route) {
+					return route.getIntervalDataRepresentation(interval1, 7, p);
 				});
 
 				var c = 0;
@@ -714,7 +693,7 @@ var Dashboard = {
 		wordt uitgeroepen als een route (dus this = route die gecontrolleerd
 		 moet worden)
 		arguments:
-		 * check: function(){...}
+		 * check: function(route){...}
 		return: boolean true/false
     */
     routesDoHaveData: function(check) {
@@ -724,7 +703,10 @@ var Dashboard = {
     	}
 		for (var i = routes.length - 1; i >= 0; i--) {
 			var route = routes[i];
-			if (check.call(route)){
+			if (typeof route == "undefined") {
+				continue;
+			}
+			if (check(route)){
 				return true;
 			}
 		}
