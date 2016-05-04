@@ -68,10 +68,22 @@ function floatToHour(i){
 */
 function drawChart(element, data, width, height, dotted) {
 	for (var key in data) {
+
 		// lege keys negeren we
 		if (Object.keys(data[key]).length == 0){
 			delete data[key];
+            continue;
 		}
+        var count = 0;
+        for (var i = 6; i <= 24; i+= Api.intervalDecimal) {
+            if (typeof data[key][i] != 'undefined' && data[key][i]) {
+                count++;
+                break;
+            }
+        }
+        if (count == 0){
+            delete data[key];
+        }
 	}
 	if (Object.keys(data).length == 0){
 		$(element).html('<p>Geen data beschikbaar</p>');
