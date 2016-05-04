@@ -38,8 +38,18 @@ var ListBuilder = {
             'speed': representation.toSpeedString(),
             'time': representation.toTimeString(),
             'color': route.getColor(representation),
-            'percentage': Math.ceil(representation.speed / route.speedLimit * 100)
+            'percentage': 100-representation.slowPercentage+1
         });
+    },
+
+    UNUSUAL_REPRESENTATION: function(route, representation) {
+        var str = '';
+
+        for (var i = 0; i < representation.unusual.length && i < 4; i++) {
+            var date = representation.unusual[i];
+            str += '<p class="warning">'+dateToString(date)+'</p>';
+        }
+        return str;
     },
 
     DAY_REPRESENTATION: function(route, representation) {

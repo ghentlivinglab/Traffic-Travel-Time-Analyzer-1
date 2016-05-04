@@ -55,18 +55,20 @@ var TrafficData = {
  * will be stored in a TrafficGraph object
  ****************************/
 var IntervalRepresentation = {
-	slowTraffic: [], // 0 -> percentage op maandag, ...
 	speed: 0,
 	time: 0,
+	slowPercentage: 0,
+	unusual: null,
 	empty: false,
 
 	createdOn: null, // instance of Date
 	
-	create: function(speed, time, slowTraffic) { // Constructor
+	create: function(speed, time, slowPercentage, unusual) { // Constructor
 		var obj = Object.create(this);
-		obj.slowTraffic = slowTraffic.slice();
+		obj.unusual = unusual.slice();
 		obj.speed = speed;
 		obj.time = time;
+		obj.slowPercentage = slowPercentage;
 
 		obj.createdOn = new Date();
 		return obj;
@@ -74,8 +76,7 @@ var IntervalRepresentation = {
 	createEmpty: function() {
 		var obj = Object.create(this);
 		obj.empty = true;
-		obj.slowTraffic = null;
-		obj.stationaryTraffic = null;
+		obj.unusual = [];
 
 		obj.createdOn = new Date();
 		return obj;
@@ -85,7 +86,7 @@ var IntervalRepresentation = {
 		if (this.empty){
 			return '';
 		}
-		return Math.floor(this.time)+' min. '+this.speed+' km/h en '+this.slowTraffic[7]+'% trager dan '+ intervalPercentageSpeed +' km/h';
+		return Math.floor(this.time)+' min. '+this.speed+' km/h';
 	},
 
 	// TODO: overerving toevoegen
@@ -102,32 +103,6 @@ var IntervalRepresentation = {
 		return Math.floor(this.time*10)/10+' minuten';
 	},
 
-	getSubtitle: function() {
-		if (this.empty){
-			return '';
-		}
-		var s = [];
-		for (var i = 0; i < Math.min(7, this.slowTraffic.length); i++) {
-			s.push({
-				percentage: this.slowTraffic[i],
-				day: i
-			});
-		}
-		s.sort(function(a, b) {
-			// Nog sorteren op status op eerste plaats toeveogen hier
-			return b.percentage - a.percentage;
-		});
-		var str = '';
-		for (var i = 0; i < s.length && i < 3; i++) {
-			if (i > 0){
-				str += ', ';
-			}
-			var d = s[i];
-			str += weekdays_short[d.day] + ' ('+d.percentage+'%)';
-		}
-
-		return str;
-	},
 	// TODO: moet hier weg
 	getStatus: function () {
 		if (this.empty){
@@ -253,10 +228,10 @@ var Route = {
 		if (representation.empty){
 			return 'gray';
 		}
-		if (representation.speed < 15){
+		if (representation.speed < this.speedLimit - 30){
 			return 'red';
 		}
-		if (representation.speed < 30){
+		if (representation.speed < this.speedLimit - 15){
 			return 'orange';
 		}
 		return 'green';
@@ -266,13 +241,13 @@ var Route = {
 		// TODO: hier nieuwe property gebruiken om te bepalen of het traag verkeer is of niet
 		// op bais van de toegelaten snelheid op deze route
 
-		if (representation.speed < 15){
+		if (representation.speed < this.speedLimit - 30){
 			return {
 				name: 'Heel traag verkeer',
 				index: 10
 			};
 		}
-		if (representation.speed < 30){
+		if (representation.speed < this.speedLimit - 15){
 			return {
 				name: 'Traag verkeer',
 				index: 5

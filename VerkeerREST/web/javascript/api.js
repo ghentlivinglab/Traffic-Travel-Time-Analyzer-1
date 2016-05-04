@@ -365,7 +365,7 @@ var Api = {
         $.ajax({
             type: "GET",
             url: "/api/trafficdata/interval",
-            data: {providerID: provider, from: dateToRestString(interval.start), to: dateToRestString(interval.end), slowSpeed: intervalPercentageSpeed},
+            data: {providerID: provider, from: dateToRestString(interval.start), to: dateToRestString(interval.end), slowSpeed: consideredSlowSpeed},
             beforeSend: function (jqXHR, settings) {
                 jqXHR.url = settings.url;
                 addHeaders(jqXHR);
@@ -373,15 +373,20 @@ var Api = {
             success: function(result, status, jqXHR) {
                 if (result.result === "success") {
                     var resultdata = result.data;
+                    console.log(resultdata);
                     routes.forEach(function(route) {
                         var rdata = resultdata[route.id];
                         var representation;
                         if (typeof rdata != "undefined") {
-                            var days = rdata.days;
-                            for (var i = 0; i < days.length; i++) {
-                                days[i] = parseInt(days[i]);
+                            var unusual = rdata.unusual;
+                            var arr = [];
+                            if (typeof unusual != "undefined" && unusual) {
+                                for (var i = 0; i < unusual.length; i++) {
+                                    arr[i] = new Date(unusual[i]);
+                                }
                             }
-                            representation = IntervalRepresentation.create(parseInt(rdata.speed), parseInt(rdata.time)/60, days);
+                            
+                            representation = IntervalRepresentation.create(parseInt(rdata.speed), parseInt(rdata.time)/60, parseInt(rdata.slow), arr);
                         } else {
                             representation = IntervalRepresentation.createEmpty();
                         }
@@ -423,7 +428,7 @@ var Api = {
         $.ajax({
             type: "GET",
             url: "/api/trafficdata/interval",
-            data: {providerID: provider, from: dateToRestString(start), to: dateToRestString(end), slowSpeed: intervalPercentageSpeed},
+            data: {providerID: provider, from: dateToRestString(start), to: dateToRestString(end), slowSpeed: consideredSlowSpeed},
             beforeSend: function (jqXHR, settings) {
                 jqXHR.url = settings.url;
                 addHeaders(jqXHR);
@@ -435,11 +440,15 @@ var Api = {
                         var rdata = resultdata[route.id];
                         var representation;
                         if (typeof rdata != "undefined") {
-                            var days = rdata.days;
-                            for (var i = 0; i < days.length; i++) {
-                                days[i] = parseInt(days[i]);
+                           var unusual = rdata.unusual;
+                            var arr = [];
+                            if (typeof unusual != "undefined" && unusual) {
+                                for (var i = 0; i < unusual.length; i++) {
+                                    arr[i] = new Date(unusual[i]);
+                                }
                             }
-                            representation = IntervalRepresentation.create(parseInt(rdata.speed), parseInt(rdata.time)/60, days);
+                            
+                            representation = IntervalRepresentation.create(parseInt(rdata.speed), parseInt(rdata.time)/60, parseInt(rdata.slow), arr);
                         } else {
                             representation = IntervalRepresentation.createEmpty();
                         }
@@ -562,7 +571,7 @@ var Api = {
                             var hour = parseInt(times[0]);
                             var minutes = parseInt(times[1]);
                             hour += (minutes / 60);
-                            data[hour] = (resultdata[weekday][key]) / 60;
+                            data[hour] = route.length/1000 / ((resultdata[weekday][key]) / 60 / 60);
                         }
                         if (Object.keys(data).length > 0) {
                             // Deze dag bevat data

@@ -141,7 +141,7 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
             @QueryParam("from") Timestamp from,
             @QueryParam("to") Timestamp to,
             @QueryParam("providerID") Integer providerID,
-            @DefaultValue("30") @QueryParam("slowSpeed") Integer slowSpeed) {
+            @DefaultValue("15") @QueryParam("slowSpeed") Integer slowSpeed) {
         if (from == null) {
             from = new Timestamp(0);
         }
@@ -334,13 +334,13 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
         if (providerID == null) {
             throw new Exception(MessageState.PIDNP);
         }
-        String queryString = "SELECT routeid, Round(length / Avg(gem) * 3.6), Round(Avg(gem)), Sum(CASE WHEN weekday = 0 THEN slow_traffic END) AS ma, Sum(CASE WHEN weekday = 1 THEN slow_traffic END) AS di, Sum(CASE WHEN weekday = 2 THEN slow_traffic END) AS wo, Sum(CASE WHEN weekday = 3 THEN slow_traffic END) AS do, Sum(CASE WHEN weekday = 4 THEN slow_traffic END) AS vr, Sum(CASE WHEN weekday = 5 THEN slow_traffic END) AS za, Sum(CASE WHEN weekday = 6 THEN slow_traffic END) AS zo, Sum(CASE WHEN weekday is null THEN slow_traffic END) AS alles FROM (SELECT trafficdata.routeid, routes.length, Weekday(timestamp) AS weekday, Avg(trafficdata.traveltime) AS gem, Round(Count(CASE WHEN routes.length / trafficdata.traveltime * 3.6 < ?4 THEN 1 ELSE NULL END) / Count(*) * 100) AS slow_traffic FROM   trafficdata JOIN routes ON trafficdata.routeid = routes.id WHERE  providerid = ?3 AND trafficdata.timestamp BETWEEN ?1 AND ?2 GROUP  BY trafficdata.routeid, routes.length, Weekday(timestamp) WITH rollup HAVING trafficdata.routeid IS NOT NULL AND routes.length IS NOT NULL) x GROUP  BY routeid, length ";
+        String queryString = "SELECT x.routeid, round(Avg(routes.length / x.traveltime * 3.6)), round(Avg(traveltime)), Ceil(Count(CASE WHEN routes.length / x.traveltime * 3.6 < routes.speedlimit - ?4 THEN 1 end) / Count(*) * 100), Group_concat(DISTINCT CASE WHEN x.traveltime > x.avgtraveltimeday*2 THEN Concat( '\"', Date(x.timestamp), 'T', LPAD(Hour(x.timestamp), 2, '0'), ':00:00\"') end ORDER BY x.traveltime/x.avgtraveltimeday DESC) FROM trafficdata x JOIN routes ON x.routeid = routes.id WHERE providerid = ?1 AND x.timestamp BETWEEN ?2 AND ?3 GROUP BY x.routeid, routes.length HAVING x.routeid IS NOT NULL AND routes.length IS NOT NULL;";
         //System.out.println(queryString);
         Query q = getEntityManager().createNativeQuery(queryString);
 
-        q.setParameter(1, from, TemporalType.TIMESTAMP);
-        q.setParameter(2, to, TemporalType.TIMESTAMP);
-        q.setParameter(3, providerID);
+        q.setParameter(1, providerID);
+        q.setParameter(2, from, TemporalType.TIMESTAMP);
+        q.setParameter(3, to, TemporalType.TIMESTAMP);
         q.setParameter(4, slowSpeed);
 
         StringBuilder json = new StringBuilder();
@@ -349,17 +349,11 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
             List<Object[]> rl = q.getResultList();
             if (rl != null) {
                 for (Object[] o : rl) {
-                    IntervalTrafficData l = new IntervalTrafficData(Integer.parseInt(o[0].toString()), Integer.parseInt(o[1].toString()), Integer.parseInt(o[2].toString()));
-
-                    for (int i = 0; i < 8; i++) {
-                        int a = i + 3;
-                        if (o[a] == null) {
-                            l.weekdays[i] = 0;
-                        } else {
-                            //System.out.println(o[a]);
-                            l.weekdays[i] = Integer.parseInt(o[a].toString());
-                        }
+                    String str = null;
+                    if (o[4] != null) {
+                        str = o[4].toString();
                     }
+                    IntervalTrafficData l = new IntervalTrafficData(Integer.parseInt(o[0].toString()), Integer.parseInt(o[1].toString()), Integer.parseInt(o[2].toString()), Integer.parseInt(o[3].toString()), str);
 
                     lijst.add(l);
                 }

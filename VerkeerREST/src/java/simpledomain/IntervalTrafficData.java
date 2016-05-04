@@ -18,14 +18,15 @@ public class IntervalTrafficData {
     int routeID;
     int speed;
     int time;
-    // weekdays: houdt voor elke dag een % bij. weekdays[0] = maandag, weekdays[7] = alle dagen
-    public int[] weekdays;
+    String unusual = null;
+    int slowPercentage;
 
-    public IntervalTrafficData(int routeID, int speed, int time){
+    public IntervalTrafficData(int routeID, int speed, int time, int slowPercentage, String unusual){
         this.routeID = routeID;
         this.speed = speed;
         this.time = time;
-        weekdays = new int[8];
+        this.slowPercentage = slowPercentage;
+        this.unusual = unusual;
 
     }
     
@@ -34,13 +35,10 @@ public class IntervalTrafficData {
         sb.append("\"").append(routeID).append("\": {");
         sb.append("\"speed\": \"").append(speed).append("\",");
         sb.append("\"time\": \"").append(time).append("\",");
-        sb.append("\"days\": [");
-        sb.append("\"").append(weekdays[0]).append("\"");
-        for (int i = 1; i < 8; i++) {
-          sb.append(",");
-          sb.append("\"").append(weekdays[i]).append("\"");
+        sb.append("\"slow\": \"").append(slowPercentage).append("\"");
+        if (unusual != null) {
+            sb.append(", \"unusual\": [").append(unusual).append("]");
         }
-        sb.append("]");
         sb.append("}");
         return sb.toString();
     }

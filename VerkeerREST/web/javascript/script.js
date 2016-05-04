@@ -8,8 +8,8 @@ var providers = [];
 var routes = [];
 var events = [];
 
-// Snelheid waarvoor we het percentage hieronder bereken bij intervallen en dagen
-var intervalPercentageSpeed = 30; 
+// Snelheid trager dan de toegelaten snelheid, die we beschouwen als traag
+var consideredSlowSpeed = 10; // bv toegalten = 50; traag = 50 - 15 => 35 km/h
 
 
 // Weekdays

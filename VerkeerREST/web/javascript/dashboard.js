@@ -545,6 +545,9 @@ var Dashboard = {
         builder.setLeft(ListBuilder.INTERVAL_REPRESENTATION, function(route) {
         	return route.getIntervalDataRepresentation(interval, 7, p);
         });
+        builder.setRight(ListBuilder.UNUSUAL_REPRESENTATION, function(route) {
+        	return route.getIntervalDataRepresentation(interval, 7, p);
+        });
 
         builder.setStatusFunction(function(route, dayData) {
         	return route.getStatusFor(dayData);
