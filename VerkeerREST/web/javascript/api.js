@@ -571,7 +571,7 @@ var Api = {
                             var hour = parseInt(times[0]);
                             var minutes = parseInt(times[1]);
                             hour += (minutes / 60);
-                            data[hour] = route.length/1000 / ((resultdata[weekday][key]) / 60 / 60);
+                            data[hour] = resultdata[weekday][key] / 60;
                         }
                         if (Object.keys(data).length > 0) {
                             // Deze dag bevat data
