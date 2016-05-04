@@ -411,85 +411,40 @@ var Dashboard = {
 		var dashboard = $('#dashboard .content');
                 
         var str = this.renderHeader("live", {});
-		// Dit stuk code sorteert de resultaten van alle routes en voegt ze toe aan de html
-		// Met de juiste Mustache template
-		var dataArr = [];
-		routes.forEach(function(route){
-			if (!route.hasRecentAvgRepresentation(p) || !route.hasRecentLiveRepresentation(p)){
-				var data = {
-					id: route.id,
-					name: route.name,
-					description: route.getDescription(),
-					length: route.getLength(),
-					status: '',
-					color: '',
-					score: 100000000, // Voor sorteren
-					title: 'Niet beschikbaar',
-					subtitle: 'Geen data van deze provider over deze route',
-					warnings: [] // TODO: wanneer we oorzaken toevoegen moeten deze hier doorgegeven worden
-				};
-				dataArr.push(data);
-				return;
-			}
 
-			var avg = route.avgData[p].representation;
-			var live = route.liveData[p].representation;
-			var status = route.getStatus(live, avg);
+        var builder = ListBuilder.create();
+        builder.setLeft(ListBuilder.DEFAULT_REPRESENTATION, function(route) {
+        	if (!route.hasRecentLiveRepresentation(p)) {
+        		return null;
+        	}
+        	return route.liveData[p].representation;
+        });
 
-			// Data voor in de template
-			var data = {
-				id: route.id,
-				name: route.name,
-				description: route.getDescription(),
-				length: route.getLength(),
-				status: status.text,
-				color: status.color,
-				score: live.speed, // Voor sorteren
-				title: live.toString(),
-				subtitle: avg.toString(),
-				warnings: route.getWarnings(live, avg) // TODO: wanneer we oorzaken toevoegen moeten deze hier doorgegeven worden
-			};
-			dataArr.push(data);
-		});
+        builder.setRight(ListBuilder.AVERAGE_REPRESENTATION, function(route) {
+        	if (!route.hasRecentAvgRepresentation(p)) {
+        		return null;
+        	}
+        	return route.avgData[p].representation;
+        });
 
-		dataArr.sort(function(a, b) {
-			if (a.status != b.status){
-				if (a.color == "red"){
-					return -1;
-				}
-				if (b.color == "red"){
-					return 1;
-				}
-				if (a.color == "orange"){
-					return -1;
-				}
-				if (b.color == "orange"){
-					return 1;
-				}
-				if (a.color == "green"){
-					return -1;
-				}
-				if (b.color == "green"){
-					return 1;
-				}
-			}
-			// Nog sorteren op status op eerste plaats toeveogen hier
-			return a.score - b.score;
-		});
+        builder.setStatusFunction(function(route, liveData, avgData) {
+        	if (route.isExceptional()) {
+        		return {
+        			name: 'Abnormaal verkeer',
+        			index: 10
+        		};
+        	}
+        	return {
+    			name: 'Gewoonlijk verkeer',
+    			index: 0
+    		};
+        });
 
-		// Juiste subtitels (en evt lijn) ondertussen toevoegen
-		var lastStatus = '';
-		dataArr.forEach(function (data){
-            if (lastStatus != data.status){
-                if (lastStatus != ''){
-                    str += '<hr>';
-                }
-                lastStatus = data.status;
-                str += "<h1>"+lastStatus+"</h1>";
-            }
-            str += Mustache.renderTemplate("route", data);
-		});
+        builder.setSortIndexFunction(function(route, liveData, avgData) {
+        	return -liveData.speed;
+        });
 
+		str += builder.render();
 		dashboard.html(str);
 	},
 	// Genereert HTML voor periode modus
@@ -533,64 +488,24 @@ var Dashboard = {
 		// Als alles in orde is: resultaat tonen
 
 		str += "<p>Resultaat voor dag: "+ dayString +"</p>";
-                
-		// Dit stuk code sorteert de resultaten van alle routes en voegt ze toe aan de html
-		// Met de juiste Mustache template
-		var dataArr = [];
-		routes.forEach(function(route){
-			if (route.getDayData(day, p) === null){
-				var data = {
-					id: route.id,
-					name: route.name,
-					description: route.getDescription(),
-					length: route.getLength(),
-					status: 'Niet beschikbaar',
-					color: 'gray',
-					score: 10000, // Voor sorteren
-					title: '',
-					subtitle: 'Geen data van deze provider over deze route',
-					warnings: [] // TODO: wanneer we oorzaken toevoegen moeten deze hier doorgegeven worden
-				};
-				dataArr.push(data);
-				return;
-			}
-			var representation = route.getDayData(day, p).representation;
-			var status = representation.getStatus();
 
-			var data = {
-				id: route.id,
-				name: route.name,
-				description: route.getDescription(),
-				length: route.getLength(),
-				status: status.text,
-				color: status.color,
-				score: representation.speed, // Voor sorteren
-				title: representation.toString(),
-				subtitle: '',
-				warnings: [] // TODO: wanneer we oorzaken toevoegen moeten deze hier doorgegeven worden
-			};
+		var builder = ListBuilder.create();
+        builder.setLeft(ListBuilder.DAY_REPRESENTATION, function(route) {
+        	if (route.getDayData(day, p) === null) {
+        		return null;
+        	}
+        	return route.getDayData(day, p).representation;
+        });
 
-			dataArr.push(data);
-		});
+        builder.setStatusFunction(function(route, dayData) {
+        	return route.getStatusFor(dayData);
+        });
 
-		dataArr.sort(function(a, b) {
-			// Nog sorteren op status op eerste plaats toeveogen hier
-			return a.score - b.score;
-		});
+        builder.setSortIndexFunction(function(route, dayData) {
+        	return -dayData.speed;
+        });
 
-		// Juiste subtitels (en evt lijn) ondertussen toevoegen
-		var lastStatus = '';
-		dataArr.forEach(function (data){
-			if (lastStatus != data.status){
-				if (lastStatus != ''){
-					str += '<hr>';
-				}
-				lastStatus = data.status;
-				str += "<h1>"+lastStatus+"</h1>";
-			}
-			str += Mustache.renderTemplate("route", data);
-		});
-
+		str += builder.render();
 		dashboard.html(str);
 	},
 
@@ -641,65 +556,21 @@ var Dashboard = {
 				return;
 			}
 		}
-		// Als alles in orde is: resultaat tonen
-                
-		// Dit stuk code sorteert de resultaten van alle routes en voegt ze toe aan de html
-		// Met de juiste Mustache template
-		var dataArr = [];
-		routes.forEach(function(route){
-			if (!route.getIntervalDataRepresentation(interval, 7, p) || route.getIntervalDataRepresentation(interval, 7, p).empty){
-				var data = {
-					id: route.id,
-					name: route.name,
-					description: route.getDescription(),
-					length: route.getLength(),
-					status: 'Niet beschikbaar',
-					color: 'gray',
-					score: 10000, // Voor sorteren
-					title: '',
-					subtitle: 'Geen data van deze provider over deze route',
-					warnings: [] // TODO: wanneer we oorzaken toevoegen moeten deze hier doorgegeven worden
-				};
-				dataArr.push(data);
-				return;
-			}
-			var representation = route.getIntervalDataRepresentation(interval, 7, p);
-			var status = representation.getStatus();
 
-			var data = {
-				id: route.id,
-				name: route.name,
-				description: route.getDescription(),
-				length: route.getLength(),
-				status: status.text,
-				color: status.color,
-				score: representation.speed, // Voor sorteren
-				title: representation.toString(),
-				subtitle: representation.getSubtitle(),
-				warnings: [] // TODO: wanneer we oorzaken toevoegen moeten deze hier doorgegeven worden
-			};
+		var builder = ListBuilder.create();
+        builder.setLeft(ListBuilder.INTERVAL_REPRESENTATION, function(route) {
+        	return route.getIntervalDataRepresentation(interval, 7, p);
+        });
 
-			dataArr.push(data);
-		});
+        builder.setStatusFunction(function(route, dayData) {
+        	return route.getStatusFor(dayData);
+        });
 
-		dataArr.sort(function(a, b) {
-			// Nog sorteren op status op eerste plaats toeveogen hier
-			return a.score - b.score;
-		});
+        builder.setSortIndexFunction(function(route, dayData) {
+        	return -dayData.speed;
+        });
 
-		// Juiste subtitels (en evt lijn) ondertussen toevoegen
-		var lastStatus = '';
-		dataArr.forEach(function (data){
-			if (lastStatus != data.status){
-				if (lastStatus != ''){
-					str += '<hr>';
-				}
-				lastStatus = data.status;
-				str += "<h1>"+lastStatus+"</h1>";
-			}
-			str += Mustache.renderTemplate("route", data);
-		});
-
+		str += builder.render();
 		dashboard.html(str);
 	},
 	// Genereert HTML voor live modus
@@ -772,103 +643,44 @@ var Dashboard = {
 				return;
 			}
 		}
-        
-		var dataArr = [];
 
-		routes.forEach(function(route){
-			if (!route.getIntervalDataRepresentation(interval0, 7, p) || !route.getIntervalDataRepresentation(interval1, 7, p) || route.getIntervalDataRepresentation(interval1, 7, p).empty || route.getIntervalDataRepresentation(interval0, 7, p).empty){
-				var data = {
-					id: route.id,
-					name: route.name,
-					description: route.getDescription(),
-					length: route.getLength(),
-					status: 'Niet beschikbaar',
-					score: 10000000,
-					first: {
-						status: 'Niet beschikbaar',
-						color:  'gray',
-						title: '',
-						subtitle: 'Deze route is niet beschikbaar in deze provider.'
-					},
-					second: {
-						status: '',
-						color: '',
-						title: '',
-						subtitle: ''
-					}
-				};
+		var builder = ListBuilder.create();
+        builder.setLeft(ListBuilder.INTERVAL_REPRESENTATION, function(route) {
+        	return route.getIntervalDataRepresentation(interval0, 7, p);
+        });
 
-				dataArr.push(data);
-				return;
-			}
+        builder.setRight(ListBuilder.INTERVAL_REPRESENTATION, function(route) {
+        	return route.getIntervalDataRepresentation(interval1, 7, p);
+        });
 
-			var representation0 = route.getIntervalDataRepresentation(interval0, 7, p);
-			var representation1 = route.getIntervalDataRepresentation(interval1, 7, p);
-
-			var status0 = representation0.getStatus();
-			var status1 = representation1.getStatus();
-
-			var diff = representation0.speed - representation1.speed;
-
-			var t = 'Slechter';
+        builder.setStatusFunction(function(route, representation0, representation1) {
+        	var diff = representation0.speed - representation1.speed;
+			var t = {
+				name: 'Slechter',
+				index: 0
+			};
 			if (diff > 0){
-				t = 'Verbeterd';
+				t = {
+					name: 'Verbeterd',
+					index: 2
+				};
 			}
 			if (Math.abs(diff) < 5){
-				t = 'Gelijk';
+				t = {
+					name: 'Gelijk',
+					index: 1
+				};
 			}
-			
+        	return t;
+        });
 
-			var data = {
-				id: route.id,
-				name: route.name,
-				description: route.getDescription(),
-				length: route.getLength(),
-				status: t,
-				statusScore: diff,
-				score: diff, // Sorteren op grootste verschillen
-				first: {
-					status: status0.text,
-					color: status0.color,
-					title: representation0.toString(),
-					subtitle: representation0.getSubtitle()
-				},
-				second: {
-					status: status1.text,
-					color: status1.color,
-					title: representation1.toString(),
-					subtitle: representation1.getSubtitle()
-				}
-			};
+        builder.setSortIndexFunction(function(route, representation0, representation1) {
+        	var diff = representation0.speed - representation1.speed;
+        	return diff;
+        });
 
-			dataArr.push(data);
-		});
-
-		dataArr.sort(function(a, b) {
-			if (a.status == b.status) {
-				return a.score - b.score;
-			}
-			// Nog sorteren op status op eerste plaats toeveogen hier
-			return a.score - b.score;
-		});
-
-		// Juiste subtitels (en evt lijn) ondertussen toevoegen
-		var lastStatus = '';
-		dataArr.forEach(function (data){
-			if (lastStatus != data.status){
-				if (lastStatus != ''){
-					str += '<hr>';
-				}
-				lastStatus = data.status;
-				str += "<h1>"+lastStatus+"</h1>";
-			}
-			str += Mustache.renderTemplate("compare", data);
-		});
-
+		str += builder.render();
 		dashboard.html(str);
-	},
-	reloadCompareDays: function() {
-		this.displayNotImplemented();
 	},
 
     routeSatisfiesFilter: function(route){
@@ -890,6 +702,34 @@ var Dashboard = {
     renderHeader: function(headerName, data) {
     	data.search = Mustache.renderTemplate("search", {filter: this.filterValue});
     	return Mustache.renderTemplate("header-"+headerName, data);
+    },
+
+
+    // Functies die hergebruikt moeten worden, en dup code voorkomen
+
+    /**
+		Controleert voor elke route of een conditie waar is. En returnt 
+		true als voor ten minste 1 route deze conditie waar is. Conditie 
+		wordt doorgegeven als een functie in het argument. Deze functie
+		wordt uitgeroepen als een route (dus this = route die gecontrolleerd
+		 moet worden)
+		arguments:
+		 * check: function(){...}
+		return: boolean true/false
+    */
+    routesDoHaveData: function(check) {
+    	if (typeof check != "function") {
+    		console.error("Dashboard.routesDoHaveData expects a function for parameter 'check'");
+    		return false;
+    	}
+		for (var i = routes.length - 1; i >= 0; i--) {
+			var route = routes[i];
+			if (check.call(route)){
+				return true;
+			}
+		}
+		return false;
     }
+
 };
 

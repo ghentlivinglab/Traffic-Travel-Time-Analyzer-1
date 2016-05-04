@@ -166,6 +166,37 @@
                 {{ name }}
             </label>
         </script>
+
+
+         <!-- Mustache templates voor ListBuilder -->
+         <script id="template-listbuilder" type="text/html">
+            <article onclick="toggleGraph.call(this);" class="route" data-route="{{ id }}">
+                <div class="table">
+                    <header>
+                        <h1>{{ name }}</h1>
+                        <h2>{{ description }}</h2>
+                        <h2>{{ length }}</h2>
+                    </header>
+                    <div class="left">
+                       {{& left }}
+                    </div>
+                    <div class="right">
+                        {{& right }}
+                    </div>
+                </div>
+            </article>
+        </script>
+
+         <!-- Normal representation template -->
+        <script id="template-listbuilder-normal" type="text/html">
+            <p class="{{ color }} status">{{ speed }}</p>
+            <p class="speed">{{ time }}</p>
+        </script>
+         <!-- Normal representation template -->
+        <script id="template-listbuilder-average" type="text/html">
+            <p>Gemiddeld {{ time }} aan {{ speed }} rond dit tijdstip</p>
+        </script>
+
     </head>
 <body>
     <div id="bundle">
@@ -228,6 +259,7 @@
     <script type="text/javascript" src="javascript/prototypes.js"></script>
     <script type="text/javascript" src="javascript/dummyApi.js"></script>
     <script type="text/javascript" src="javascript/api.js"></script>
+    <script type="text/javascript" src="javascript/listBuilder.js"></script>
     <script type="text/javascript" src="javascript/dashboard.js"></script>
     <script type="text/javascript" src="javascript/url.js"></script>
 

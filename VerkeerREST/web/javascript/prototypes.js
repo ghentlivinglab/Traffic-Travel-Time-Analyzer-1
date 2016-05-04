@@ -33,6 +33,19 @@ var TrafficData = {
 			return '';
 		}
 		return Math.floor(this.time*10)/10+' min. '+Math.floor(this.speed)+' km/h';
+	},
+
+	toSpeedString: function() {
+		if (this.empty) {
+			return '';
+		}
+		return Math.floor(this.speed)+' km/h';
+	},
+	toTimeString: function() {
+		if (this.empty) {
+			return '';
+		}
+		return Math.floor(this.time*10)/10+' minuten';
 	}
 };
 
@@ -74,6 +87,21 @@ var IntervalRepresentation = {
 		}
 		return Math.floor(this.time)+' min. '+this.speed+' km/h en '+this.slowTraffic[7]+'% trager dan '+ intervalPercentageSpeed +' km/h';
 	},
+
+	// TODO: overerving toevoegen
+	toSpeedString: function() {
+		if (this.empty) {
+			return '';
+		}
+		return Math.floor(this.speed)+' km/h';
+	},
+	toTimeString: function() {
+		if (this.empty) {
+			return '';
+		}
+		return Math.floor(this.time*10)/10+' minuten';
+	},
+
 	getSubtitle: function() {
 		if (this.empty){
 			return '';
@@ -100,6 +128,7 @@ var IntervalRepresentation = {
 
 		return str;
 	},
+	// TODO: moet hier weg
 	getStatus: function () {
 		if (this.empty){
 			return {
@@ -218,8 +247,45 @@ var Route = {
 		return Math.floor(this.length / 100)/10 + " km";
 	},
 
-	// returns status object, based on liveData and avgData
-	getStatus: function(liveData, avgData){
+	getColor: function(representation) {
+		if (representation.empty){
+			return 'gray';
+		}
+		if (representation.speed < 15){
+			return 'red';
+		}
+		if (representation.speed < 30){
+			return 'orange';
+		}
+		return 'green';
+	},
+
+	getStatusFor: function(representation) {
+		// TODO: hier nieuwe property gebruiken om te bepalen of het traag verkeer is of niet
+		// op bais van de toegelaten snelheid op deze route
+
+		if (representation.speed < 15){
+			return {
+				name: 'Heel traag verkeer',
+				index: 10
+			};
+		}
+		if (representation.speed < 30){
+			return {
+				name: 'Traag verkeer',
+				index: 5
+			};
+		}
+		return {
+				name: 'Vlot verkeer',
+				index: 0
+			};
+	},
+
+	// TODO: deze moet weg!
+	// Returnt status voor live situatie indien geen paramters gegeven
+	// Geeft anders een status voor de opgegeven representatie(s)
+	getStatus: function(liveData,  avgData){
 		if (liveData.empty || avgData.empty) {
 			return {
 				text: 'Niet beschikbaar',
@@ -245,6 +311,23 @@ var Route = {
 			color: 'green'
 		};
 	},
+
+	// Geeft terug of de live situatie normaal is of niet
+	isExceptional: function(providerId) {
+		if (!this.hasRecentAvgRepresentation(providerId)) {
+			return false;
+		}
+		if (!this.hasRecentLiveRepresentation(providerId)) {
+			return false;
+		}
+
+		var liveData = this.liveData[providerId].representation;
+		var avgData = this.avgData[providerId].representation;
+
+		return liveData.speed < avgData.speed*0.6;
+	},
+
+	// TODO: Moet weg!!
 	getWarnings: function(liveData, avgData){
 		if (liveData.speed < avgData.speed*0.7){
 			return ['Uitzonderlijk traag'];
@@ -282,6 +365,8 @@ var Route = {
 	avgData: {
 
 	},
+
+
 
 	// LiveData is a mapping of a providerId on a TrafficGraph object that contains the most recent measurements
 	// eg: liveData[providerId] -> TrafficGraph
