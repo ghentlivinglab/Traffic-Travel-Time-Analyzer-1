@@ -115,6 +115,7 @@ public class RouteFacadeREST extends AbstractFacade<Route> {
         sb.append(delimiter).append("\"name\":\"").append(r.getName()).append('"');
         sb.append(delimiter).append("\"startlat\":").append(r.getStartlat());
         sb.append(delimiter).append("\"startlong\":").append(r.getStartlong());
+        sb.append(delimiter).append("\"speedLimit\":").append(r.getSpeedLimit());
         sb.append("}");
         return sb.toString();
     }

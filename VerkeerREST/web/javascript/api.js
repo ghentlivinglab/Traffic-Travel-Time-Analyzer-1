@@ -125,9 +125,8 @@ var Api = {
             success: function(result, status, jqXHR) {
                 if (result.result === "success") {
                     var resultdata = result.data;
-                    //console.log(JSON.stringify(resultdata));
                     for (var i = 0; i < resultdata.length; i++) {
-                        routes[resultdata[i].id] = Route.create(resultdata[i].id, resultdata[i].name, resultdata[i].description, resultdata[i].length);
+                        routes[resultdata[i].id] = Route.create(resultdata[i].id, resultdata[i].name, resultdata[i].description, resultdata[i].length, resultdata[i].speedLimit);
                         Api.syncWaypoints(resultdata[i].id);
                     }
                     me.callDelayed(qid, callback, context);

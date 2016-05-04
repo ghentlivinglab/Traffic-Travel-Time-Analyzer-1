@@ -214,16 +214,18 @@ var Route = {
 	id: 0,
 	length: 0,
 	name: '',
+	speedLimit: 30,
 	description: '',
 	waypoints: [], // Array of google.maps.LatLng
 
 	// Constructor with optional argument waypoints
-	create: function(id, name, description, length, waypoints) {
+	create: function(id, name, description, length, speedLimit, waypoints) {
 		var obj = Object.create(this);
 		obj.id = id;
 		obj.length = length;
 		obj.name = name;
 		obj.description = description;
+		obj.speedLimit = speedLimit;
 
 		// create new references (otherwise we edit the same references for every object)
 		obj.avgData = {};

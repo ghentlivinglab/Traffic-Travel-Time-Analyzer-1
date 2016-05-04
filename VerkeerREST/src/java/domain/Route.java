@@ -60,7 +60,9 @@ public class Route implements Serializable {
     private Collection<Waypoint> waypointCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "routeID")
     private Collection<Traveltime> traveltimeCollection;
-
+    @Column(name = "speedLimit")
+    private Integer speedLimit;
+    
     public Route() {
     }
 
@@ -130,6 +132,14 @@ public class Route implements Serializable {
 
     public void setEndlong(Double endlong) {
         this.endlong = endlong;
+    }
+    
+    public Integer getSpeedLimit() {
+        return speedLimit;
+    }
+
+    public void setSpeedLimit(Integer speedLimit) {
+        this.speedLimit = speedLimit;
     }
 
     @XmlTransient
