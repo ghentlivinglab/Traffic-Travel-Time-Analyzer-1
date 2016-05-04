@@ -93,6 +93,31 @@ article {
 	    }
 	}
 
+	.speed-indicator {
+		display: block;
+		height: 2px;
+		background: white;
+		overflow: hidden;
+		margin-bottom: 10px;
+		border-radius: 2px;
+
+		div {
+			height: 2px;
+			width: 50%;
+			border-radius: 2px;
+
+			&.green {
+				background: $green;
+			}
+			&.orange {
+				background: $orange;
+			}
+			&.red {
+				background: $red;
+			}
+		}
+	}
+
 	h1 {
 		font-weight: 500;
 		padding-bottom: 5px;
@@ -110,8 +135,9 @@ article {
 
 	header {
 		display: table-cell;
-		padding-right: 40px;
+		padding: 10px 20px 10px 0;
 		width: 40%;
+		box-sizing: border-box;
 
 		@media screen and (max-width: $responsive-smartphone) {
 	      width: auto;
@@ -119,14 +145,30 @@ article {
 	      margin: 10px 0;
 	      padding-right: 0;
 	    }
+
+	    h1 {
+	    	font-size: 13pt;
+	    }
 	}
 
+	.left {
+		padding-right: 10px;
+
+		@media screen and (max-width: $responsive-smartphone) {
+	      padding: 0;
+	    }
+	}
 	.right {
-		padding-left: 20px;
+		padding-left: 10px;
+
+		@media screen and (max-width: $responsive-smartphone) {
+	      padding: 0;
+	    }
 	}
 
 	.left, .right{
 		display: table-cell;
+		box-sizing: border-box;
 		width: 30%;
 
 		@media screen and (max-width: $responsive-smartphone) {
@@ -156,8 +198,8 @@ article {
 			}
 		}
 
-		.speed {
-			font-size: 10pt;
+		.subtitle {
+			font-size: 11pt;
 			font-weight: 500;
 		}
 

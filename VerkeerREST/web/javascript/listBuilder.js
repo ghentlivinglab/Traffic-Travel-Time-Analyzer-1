@@ -18,7 +18,8 @@ var ListBuilder = {
         return Mustache.renderTemplate("listbuilder-normal", {
             'speed': representation.toSpeedString(),
             'time': representation.toTimeString(),
-            'color': route.getColor(representation)
+            'color': route.getColor(representation),
+            'percentage': Math.ceil(representation.speed / route.speedLimit * 100)
         });
     },
 
@@ -36,7 +37,8 @@ var ListBuilder = {
         return Mustache.renderTemplate("listbuilder-normal", {
             'speed': representation.toSpeedString(),
             'time': representation.toTimeString(),
-            'color': route.getColor(representation)
+            'color': route.getColor(representation),
+            'percentage': Math.ceil(representation.speed / route.speedLimit * 100)
         });
     },
 
@@ -44,7 +46,8 @@ var ListBuilder = {
         return Mustache.renderTemplate("listbuilder-normal", {
             'speed': representation.toSpeedString(),
             'time': representation.toTimeString(),
-            'color': route.getColor(representation)
+            'color': route.getColor(representation),
+            'percentage': Math.ceil(representation.speed / route.speedLimit * 100)
         });
     },
 

@@ -14,50 +14,6 @@
 
         <!-- Mustache templates -->
 
-        <!-- Route in de periode/vandaag weergave (één kolom met info, één met waarschuwingen) -->
-        <script id="template-route" type="text/html">
-            <article onclick="toggleGraph.call(this);" class="route" data-route="{{ id }}">
-                <div class="table">
-                    <header>
-                        <h1>{{ name }}</h1>
-                        <h2>{{ description }}</h2>
-                        <h2>{{ length }}</h2>
-                    </header>
-                    <div class="left">
-                        <p class="{{ color }} status">{{ status }}</p>
-                        <p class="speed">{{ title }}</p>
-                        <p class="avg-speed">{{ subtitle }}</p>
-                    </div>
-                    <div class="right">
-                        {{#warnings}}
-                        <p class="warning">{{ . }}</p>
-                        {{/warnings}}
-                    </div>
-                </div>
-            </article>
-        </script>
-
-        <script id="template-compare" type="text/html">
-            <article onclick="toggleGraph.call(this);" class="route" data-route="{{ id }}">
-                <div class="table">
-                    <header>
-                        <h1>{{ name }}</h1>
-                        <h2>{{ description }}</h2>
-                    </header>
-                    <div class="left">
-                        <p class="{{ first.color }} status">{{ first.status }}</p>
-                        <p class="speed">{{ first.title }}</p>
-                        <p class="avg-speed">{{ first.subtitle }}</p>
-                    </div>
-                    <div class="right">
-                        <p class="{{ second.color }} status">{{ second.status }}</p>
-                        <p class="speed">{{ second.title }}</p>
-                        <p class="avg-speed">{{ second.subtitle }}</p>
-                    </div>
-                </div>
-            </article>
-        </script>
-
         <script id="template-search" type="text/html">
            <div id="filter">
                 <input type="text" id="filterInput" placeholder="Zoeken" oninput="Dashboard.filterChanged();" value="{{ filter }}" />
@@ -190,11 +146,12 @@
          <!-- Normal representation template -->
         <script id="template-listbuilder-normal" type="text/html">
             <p class="{{ color }} status">{{ speed }}</p>
-            <p class="speed">{{ time }}</p>
+            <div class="speed-indicator"><div class="{{ color }}" style="width: {{ percentage }}%;"></div></div>
+            <p class="subtitle">{{ time }}</p>
         </script>
          <!-- Normal representation template -->
         <script id="template-listbuilder-average" type="text/html">
-            <p>Gemiddeld {{ time }} aan {{ speed }} rond dit tijdstip</p>
+            <p class="subtitle">Gemiddeld {{ time }} aan {{ speed }} rond dit tijdstip</p>
         </script>
 
     </head>
