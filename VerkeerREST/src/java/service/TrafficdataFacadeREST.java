@@ -334,14 +334,13 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
         if (providerID == null) {
             throw new Exception(MessageState.PIDNP);
         }
-        String queryString = "SELECT x.routeid, round(Avg(routes.length / x.traveltime * 3.6)), round(Avg(traveltime)), Ceil(Count(CASE WHEN routes.length / x.traveltime * 3.6 < routes.speedlimit - ?4 THEN 1 end) / Count(*) * 100), Group_concat(DISTINCT CASE WHEN x.unusual_count > 0.7 THEN concat('\"',x.timestamp,'\"') end ORDER BY unusual_count DESC) FROM( SELECT routeid, FROM_UNIXTIME(FLOOR((UNIX_TIMESTAMP(timestamp)+900)/1800)*1800) as timestamp, avg(traveltime) as traveltime, avg(avgtraveltimeday) as avgtraveltimeday, count(case when traveltime > avgtraveltimeday*2 and avgtraveltimeday != 0 then 1 end) / 5 as unusual_count FROM trafficdata WHERE providerid = ?1 AND timestamp BETWEEN ?2 AND ?3 group by routeid, FROM_UNIXTIME(FLOOR((UNIX_TIMESTAMP(timestamp)+900)/1800)*1800)) x JOIN routes ON x.routeid = routes.id GROUP BY x.routeid, routes.length HAVING x.routeid IS NOT NULL AND routes.length IS NOT NULL; ";
+        String queryString = "SELECT x.routeid, round(Avg(routes.length / x.traveltime * 3.6)), round(Avg(traveltime)), Ceil(Count(CASE WHEN x.traveltime > x.avgtraveltimeday THEN 1 end) / Count(*) * 100), Group_concat(DISTINCT CASE WHEN x.unusual_count > 0.7 THEN concat('\"',x.timestamp,'\"') end ORDER BY unusual_count DESC) FROM( SELECT routeid, FROM_UNIXTIME(FLOOR((UNIX_TIMESTAMP(timestamp)+900)/1800)*1800) as timestamp, avg(traveltime) as traveltime, avg(avgtraveltimeday) as avgtraveltimeday, count(case when traveltime > avgtraveltimeday*2 and avgtraveltimeday != 0 then 1 end) / 5 as unusual_count FROM trafficdata WHERE providerid = ?1 AND timestamp BETWEEN ?2 AND ?3 group by routeid, FROM_UNIXTIME(FLOOR((UNIX_TIMESTAMP(timestamp)+900)/1800)*1800)) x JOIN routes ON x.routeid = routes.id GROUP BY x.routeid, routes.length HAVING x.routeid IS NOT NULL AND routes.length IS NOT NULL; ";
         //System.out.println(queryString);
         Query q = getEntityManager().createNativeQuery(queryString);
 
         q.setParameter(1, providerID);
         q.setParameter(2, from, TemporalType.TIMESTAMP);
         q.setParameter(3, to, TemporalType.TIMESTAMP);
-        q.setParameter(4, slowSpeed);
 
         StringBuilder json = new StringBuilder();
         ArrayList<IntervalTrafficData> lijst = new ArrayList<>();
