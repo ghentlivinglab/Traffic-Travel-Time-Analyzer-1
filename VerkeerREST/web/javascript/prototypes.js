@@ -10,13 +10,15 @@
 var TrafficData = {
 	speed: 0,
 	time: 0,
-	createdOn: null, // instance of Date
+	timestamp: null, // Tijd die bij deze snelheid en tijd hoort op de polling server
+	createdOn: null, // Tijd waarop dit object werd aangemaakt <-> timestamp!
 	empty: false,
 	
-	create: function(speed, time) { // Constructor
+	create: function(speed, time, timestamp) { // Constructor
 		var obj = Object.create(this);
 		obj.speed = speed;
 		obj.time = time;
+		obj.timestamp =  new Date(timestamp);
 		obj.createdOn = new Date();
 		return obj;
 	},

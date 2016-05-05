@@ -282,21 +282,21 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
         if (providerID == null) {
             throw new Exception(MessageState.PIDNP);
         }
-        String queryString = "SELECT x.routeid, Max(x.timestamp), y.length, Round((SELECT Avg(traveltime) FROM   trafficdata WHERE  providerid = x.providerid AND routeid = x.routeid AND timestamp = Max(x.timestamp))), avgtraveltimeday FROM   trafficdata x JOIN routes y ON x.routeid = y.id WHERE  x.providerid = ?3";
+        String queryString = "SELECT x.routeid, Max(x.timestamp), y.length, Round((SELECT Avg(traveltime) FROM trafficdata WHERE providerid = x.providerid AND routeid = x.routeid AND timestamp = Max(x.timestamp))), Round((SELECT Avg(avgtraveltimeday) FROM trafficdata WHERE providerid = x.providerid AND routeid = x.routeid AND timestamp = Max(x.timestamp))) FROM trafficdata x JOIN routes y ON x.routeid = y.id WHERE x.providerid = ?1";
         //String queryString = "select x.routeID, x.timestamp, y.length, x.traveltime, round((select   avg(traveltime) from     trafficdata where    providerID=x.providerID and routeID=x.routeID and timestamp > now() - interval ?1 day and Abs(Minute(Timediff(Time(timestamp), Time(x.timestamp)))) < ?2 and weekday(timestamp) = weekday(x.timestamp) ),0) from trafficdata x join routes y on x.routeID=y.id where x.providerID=?3 ";
         if (routeID != null) {
-            queryString += " and routeID=?4 ";
+            queryString += " and routeID=?2 ";
         }
         queryString += " and avgtraveltimeday != 0 ";
-        queryString += " group by x.routeID, y.length, avgtraveltimeday;";
+        queryString += " group by x.routeID, y.length;";
         
         //System.out.println(queryString);
         Query q = getEntityManager().createNativeQuery(queryString);
-        q.setParameter(1, period);
-        q.setParameter(2, interval);
-        q.setParameter(3, providerID);
+        q.setParameter(1, providerID);
+        /*q.setParameter(2, interval);
+        q.setParameter(3, providerID);*/
         if (routeID != null) {
-            q.setParameter(4, routeID);
+            q.setParameter(2, routeID);
         }
 
         StringBuilder json = new StringBuilder();

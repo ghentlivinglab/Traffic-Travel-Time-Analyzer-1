@@ -163,12 +163,14 @@ var Api = {
             success: function(result, status, jqXHR) {
                 if (result.result === "success") {
                     var data = result.data;
+                    console.log(data);
 
                     routes.forEach(function(route) {
                         var rdata = data[route.id];
+                        console.log(rdata);
                         if (typeof rdata !== "undefined") {
-                            var avgData = TrafficData.create(rdata.avg.speed, rdata.avg.time);
-                            var liveData = TrafficData.create(rdata.live.speed, rdata.live.time);
+                            var avgData = TrafficData.create(rdata.avg.speed, rdata.avg.time, stringToDate(rdata.live.createdOn));
+                            var liveData = TrafficData.create(rdata.live.speed, rdata.live.time, stringToDate(rdata.live.createdOn));
                         } else {
                             var avgData = TrafficData.createEmpty();
                             var liveData = TrafficData.createEmpty();

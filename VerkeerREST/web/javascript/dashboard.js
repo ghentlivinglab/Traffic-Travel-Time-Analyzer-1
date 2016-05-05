@@ -438,7 +438,7 @@ var Dashboard = {
         });
 
         builder.setSortIndexFunction(function(route, liveData, avgData) {
-        	return -liveData.speed;
+        	return route.speedLimit / Math.max(0.01,liveData.speed);
         });
 
 		str += builder.render();

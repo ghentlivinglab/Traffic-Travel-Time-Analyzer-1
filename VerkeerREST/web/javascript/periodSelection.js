@@ -55,6 +55,10 @@ function pad(str){
 // Date.parse functie is heel erg inconsistent en afgeraden door Mozilla foundation
 function stringToDate(dateString) {
 	var reggie = /(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})/;
+	if (!reggie.test(dateString)){
+		console.warn("Invalid date parsed: "+dateString);
+		return new Date();
+	}
 	var dateArray = reggie.exec(dateString); 
 	var dateObject = new Date(
 	    (+dateArray[1]),
