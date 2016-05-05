@@ -159,22 +159,37 @@ var TrafficGraph = {
 		24: instanceof TrafficData
 		*/
 	},
+
+	// will contain the AVERAGE TrafficaData per time interval and day
+	avgData: {
+
+	},
 	
 	// setter for data, changes the creation date
 	setData: function(data){
 		this.data = data;
 		this.createdOn = new Date()
 	},
-	create: function(representation, data) {
+	setAvgData: function(data){
+		this.avgData = data;
+	},
+	create: function(representation, data, avgData) {
 		var obj = Object.create(TrafficGraph);
 		obj.representation = representation;
 		obj.data = null;
+		obj.avgData = null;
 
 		// dont pass data if it's not defined
 		if (data !== undefined){
 			// TODO: Hoe zijn we er zeker van dat de structuur die wordt doorgegeven klopt?
 			obj.data = data;
 			obj.createdOn = new Date();
+		}
+
+		// dont pass data if it's not defined
+		if (avgData !== undefined){
+			// TODO: Hoe zijn we er zeker van dat de structuur die wordt doorgegeven klopt?
+			obj.avgData = avgData;
 		}
 		
 		return obj;
@@ -442,17 +457,41 @@ var Route = {
 
 					data[time] = {
 						value: 0,
-						count: 0
+						avgValue: 0,
+						count: 0,
+						avgCount: 0
 					};
 				}
 				data[time].value += graph.data[time];
 				data[time].count ++;
 			}
+			for (var time in graph.avgData) {
+				
+				if (!data[time]) {
+
+					data[time] = {
+						value: 0,
+						avgValue: 0,
+						count: 0,
+						avgCount: 0
+					};
+				}
+				data[time].avgValue += graph.avgData[time];
+				data[time].avgCount ++;
+			}
 		}
 
 		var result = {};
+		var avgResult = {};
 		for (var time in data) {
-			result[time] = data[time].value / data[time].count;
+			if (data[time].count > 0) {
+				result[time] = data[time].value / data[time].count;
+			}
+		}
+		for (var time in data) {
+			if (data[time].avgCount > 0) {
+				avgResult[time] = data[time].avgValue / data[time].avgCount;
+			}
 		}
 
 		var graph = this.getIntervalData(interval, 7, providerId)
@@ -461,6 +500,7 @@ var Route = {
 			this.setIntervalData(interval, 7, providerId, graph);
 		}
 		graph.data = result;
+		graph.avgData = avgResult;
 	},
 
 	// returns representation for given interval, or null if non-existant

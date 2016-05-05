@@ -22,8 +22,8 @@ public class WeekdayTrafficdata {
         data = new ArrayList<>();
     }
     
-    public void put(String timestamp, double traveltime){
-        data.add(new SimpleTrafficdata(timestamp, traveltime));
+    public void put(String timestamp, double traveltime, double avgtraveltime){
+        data.add(new SimpleTrafficdata(timestamp, traveltime, avgtraveltime));
     }
     
     public String toJson(){

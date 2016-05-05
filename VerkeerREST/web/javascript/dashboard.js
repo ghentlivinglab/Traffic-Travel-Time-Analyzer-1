@@ -272,29 +272,15 @@ var Dashboard = {
 		var callback = function(){
 			Dashboard.openLiveGraph(routeId, element, width, height);
 		};
-		var c = 0;
 
-		if (!route.hasRecentAvgData(this.provider.id)){
-			c++;
-		}
-		if (!route.hasRecentLiveData(this.provider.id)){
-			c++;
-		}
-		if (c == 0){
+		if (route.hasRecentLiveData(this.provider.id)){
 			var data = {
 				'Vandaag': route.liveData[this.provider.id].data,
-				'Gemiddelde': route.avgData[this.provider.id].data,
+				'Gemiddelde': route.liveData[this.provider.id].avgData
 			};
 			drawChart(element, data, width, height, true);
 		}else{
-			Api.newQueue(c);
-			if (!route.hasRecentAvgData(this.provider.id)){
-				Api.syncAvgGraph(route.id, this.provider.id, callback, this);
-			}
-			if (!route.hasRecentLiveData(this.provider.id)){
-				Api.syncLiveGraph(route.id, this.provider.id, callback, this);
-			}
-			Api.endQueue();
+			Api.syncLiveGraph(route.id, this.provider.id, callback, this);
 		}
 	},
 	// Opent de grafiek horende bij 1 interval (met weekdagen etc)
@@ -308,16 +294,21 @@ var Dashboard = {
 
 		var okay = true;
 		var data = {};
-		for (var day = 0; day < 7; day++) {
+		for (var day = 0; day <= 7; day++) {
 			var graph = route.getIntervalData(interval, day, this.provider.id);
 			if (!graph || !graph.data){
 				okay = false;
 				break;
 			}else{
-				data[weekdays[day]] = graph.data;
+				if (day == 7) {
+					data["Altijd"] = graph.data;
+					data["Gemiddelde"] = graph.avgData;
+				} else {
+					data[weekdays[day]] = graph.data;
+				}
 			}	
 		}
-
+		
 		if (!okay) {
 			Api.syncIntervalGraph(interval, routeId, this.provider.id, callback, this);
 			return;
@@ -344,6 +335,8 @@ var Dashboard = {
 		}
 		var data = {};
 		data[dateToDate(day)] = graph.data;
+		data["Gemiddelde"] = graph.avgData;
+
 		drawChart(element, data, width, height);
 	},
 	// Opent de grafiek horende bij 2 intervallen

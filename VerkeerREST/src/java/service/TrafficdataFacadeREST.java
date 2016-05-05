@@ -207,7 +207,7 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
             return processError(MessageState.PIDNP);
         }
 
-        String queryString = "select timestamp - interval extract(second from timestamp) second - interval extract(minute from timestamp)%?1 minute, avg(traveltime) from trafficdata where timestamp between ?2 and ?3 and providerID=?4 and routeID=?5 group by timestamp - interval extract(second from timestamp) second - interval extract(minute from timestamp)%?1 minute order by 1";
+        String queryString = "select timestamp - interval extract(second from timestamp) second - interval extract(minute from timestamp)%?1 minute, avg(traveltime), avg(avgtraveltimeday) from trafficdata where timestamp between ?2 and ?3 and providerID=?4 and routeID=?5 group by timestamp - interval extract(second from timestamp) second - interval extract(minute from timestamp)%?1 minute order by 1";
         Query q = getEntityManager().createNativeQuery(queryString);
         q.setParameter(1, interval);
         q.setParameter(2, from, TemporalType.TIMESTAMP);
@@ -223,7 +223,7 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
             json.append('{');
             String delimiter = "";
             for (Object[] o : (List<Object[]>) q.getResultList()) {
-                json.append(delimiter).append(new SimpleTrafficdata((dateformat.format((Timestamp) o[0])), ((BigDecimal) o[1]).doubleValue()).toJson());
+                json.append(delimiter).append(new SimpleTrafficdata((dateformat.format((Timestamp) o[0])), ((BigDecimal) o[1]).doubleValue(), ((BigDecimal) o[2]).doubleValue()).toJson());
                 delimiter = ",";
             }
             json.append('}');
@@ -235,7 +235,7 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
     }
 
     private String processWeekday(Timestamp from, Timestamp to, Integer routeID, Integer providerID, Integer interval, Integer weekday) throws Exception {
-        String queryString = "SELECT WEEKDAY(TIMESTAMP), DATE_FORMAT(STR_TO_DATE(timestamp - interval extract(second from timestamp) second - interval extract(minute from timestamp)% ?1 minute, '%Y-%m-%d %H:%i:%s'), '%H:%i'), AVG(traveltime) FROM trafficdata WHERE timestamp between ?2 and ?3 ";
+        String queryString = "SELECT WEEKDAY(TIMESTAMP), DATE_FORMAT(STR_TO_DATE(timestamp - interval extract(second from timestamp) second - interval extract(minute from timestamp)% ?1 minute, '%Y-%m-%d %H:%i:%s'), '%H:%i'), AVG(traveltime), AVG(avgtraveltimeday) FROM trafficdata WHERE timestamp between ?2 and ?3 ";
         if (providerID != null) {
             queryString += " and providerID=?4 ";
         }
@@ -262,7 +262,8 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
                 lijst.add(new WeekdayTrafficdata(i));
             }
             for (Object[] o : (List<Object[]>) q.getResultList()) {
-                ((WeekdayTrafficdata) lijst.get(Integer.parseInt(o[0].toString()))).put((String) o[1], ((BigDecimal) o[2]).doubleValue());
+                // Haalt de weekday uit de lijst, en zet de juiste gegevens
+                ((WeekdayTrafficdata) lijst.get(Integer.parseInt(o[0].toString()))).put((String) o[1], ((BigDecimal) o[2]).doubleValue(), ((BigDecimal) o[3]).doubleValue());
             }
             json.append('{');
             String delimiter = "";
