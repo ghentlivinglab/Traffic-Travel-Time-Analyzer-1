@@ -299,6 +299,7 @@ var Api = {
                         var hour = time.getUTCHours();
                         var minutes = time.getUTCMinutes();
                         hour += (minutes / 60);
+
                         if (isNaN(hour)) {
                             console.error('Unreadable date format: "' + key + '" - Make sure the REST server is running the latest version.');
                             continue;
