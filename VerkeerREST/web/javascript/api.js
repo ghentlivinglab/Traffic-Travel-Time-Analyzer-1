@@ -382,7 +382,7 @@ var Api = {
                             var arr = [];
                             if (typeof unusual != "undefined" && unusual) {
                                 for (var i = 0; i < unusual.length; i++) {
-                                    arr[i] = new Date(unusual[i]);
+                                    arr[i] = stringToDate(unusual[i]);
                                 }
                             }
                             
@@ -444,7 +444,7 @@ var Api = {
                             var arr = [];
                             if (typeof unusual != "undefined" && unusual) {
                                 for (var i = 0; i < unusual.length; i++) {
-                                    arr[i] = new Date(unusual[i]);
+                                    arr[i] = stringToDate(unusual[i]);
                                 }
                             }
                             
