@@ -436,6 +436,18 @@ var Dashboard = {
 
 		str += builder.render();
 		dashboard.html(str);
+
+
+		//Bepaald hoe oud deze live data is.
+		var lastupdated = routes[1].liveData[5].representation.timestamp;
+		for(var i=1; i<routes.length; ++i){
+			if(routes[i].liveData[5].representation.createdOn > lastupdated){
+				lastupdated = routes[i].liveData[5].representation.timestamp;
+			}
+		}
+		var diffMins = Math.round(((( new Date()-lastupdated ) / 1000 ) / 60 ) );
+		var lu_str = "(updated " + diffMins + " minutes ago)"
+		$('#lu').html(lu_str);
 	},
 	// Genereert HTML voor periode modus
 	reloadDay: function() {
