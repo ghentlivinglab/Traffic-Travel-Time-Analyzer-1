@@ -180,15 +180,28 @@ var Dashboard = {
 	},
 	setProvider: function(providerId){
 		if (typeof providers[providerId] != "undefined"){
-                    var reload = false;
-                    if (!this.provider || this.provider.id != providerId) {
-                            reload = true;
-                    }
-                    this.provider = providers[providerId];
-                    localStorage.setItem('provider', this.provider.id);
-                    if (reload) {
-                            this.reload();
-                    }
+            var reload = false;
+            if (!this.provider || this.provider.id != providerId) {
+                    reload = true;
+            }
+            this.provider = providers[providerId];
+            localStorage.setItem('provider', this.provider.id);
+            if (reload) {
+            	console.log("Provider changed");
+                this.reload();
+                if (this.mode != this.LIVE) {
+                	var p = this.provider.id;
+                	var hasData = this.routesDoHaveData(function(route) {
+						return route.hasRecentAvgRepresentation(p) && route.hasRecentLiveRepresentation(p);
+					});
+
+					if (!hasData){
+						Api.syncLiveData(p, function() {console.log("Live reload done");}, this); // Dashboard niet reloaden -> niet live
+					} else {
+						reloadMap();
+					}
+	            }
+            }
 		} else {
 			console.error('No provider found with id '+providerId);
 		}
@@ -211,7 +224,7 @@ var Dashboard = {
 
 		if (!this.initialSync){
 			this.initialSync = true;
-			Api.syncLiveData(this.provider.id, Dashboard.reload, this);
+			//Api.syncLiveData(this.provider.id, Dashboard.reload, this);
 		}
 		var dashboard = $('#dashboard .content');
 
@@ -388,6 +401,7 @@ var Dashboard = {
 
 		drawChart(element, data, width, height);
 	},
+
 	//syncIntervalGraph
 	// Genereert HTML voor live modus
 	reloadLive: function() {

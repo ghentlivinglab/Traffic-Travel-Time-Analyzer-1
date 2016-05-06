@@ -147,6 +147,10 @@ function updateColors() {
     var x = 0;
     var providerId = Dashboard.provider.id;
     for (var i in routes) {
+        // Eerst controleren of we deze route wel al hebben
+        if (!routes[i].hasLiveData(providerId)) {
+            continue;
+        }
         var colorStatus = routes[i].getStatus(routes[i].liveData[providerId].representation, routes[i].avgData[providerId].representation);
         switch (colorStatus.color) {
             case 'red':

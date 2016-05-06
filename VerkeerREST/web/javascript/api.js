@@ -139,6 +139,8 @@ var Api = {
     },
     // fetches the live data (= current traffic and an average of last month(s) ) of every route
     syncLiveData: function(provider, callback, context) {
+        loadingMap(true);
+
         var newCallback = function(){
             reloadMap();
             callback.call(this);
@@ -163,11 +165,9 @@ var Api = {
             success: function(result, status, jqXHR) {
                 if (result.result === "success") {
                     var data = result.data;
-                    console.log(data);
 
                     routes.forEach(function(route) {
                         var rdata = data[route.id];
-                        console.log(rdata);
                         if (typeof rdata !== "undefined") {
                             var avgData = TrafficData.create(rdata.avg.speed, rdata.avg.time, stringToDate(rdata.live.createdOn));
                             var liveData = TrafficData.create(rdata.live.speed, rdata.live.time, stringToDate(rdata.live.createdOn));
@@ -202,7 +202,6 @@ var Api = {
         // Bij begin van alle requests uitvoeren. 
         // Hebben deze nodig voor de callback wanneer de request klaar is.
         var qid = this.getQueueId();
-        console.log('start live graph request met id '+qid);
 
         // Hier alle data van de server halen.
         // Uiteindelijk moet dit ongeveer het resultaat zijn: 
@@ -238,7 +237,6 @@ var Api = {
                     var data = {};
                     var avgData = {};
                     var resultdata = result.data;
-                    console.log(resultdata);
 
                     for (var key in resultdata) {
                         var time = new Date(key);
@@ -253,12 +251,6 @@ var Api = {
                         data[hour] = (resultdata[key].traveltime) / 60;
                         avgData[hour] = (resultdata[key].average) / 60;
                     }
-
-                    console.log('liveGraph api data:');
-                    console.log(data);
-
-                    console.log('liveGraph AVERAGE api data:');
-                    console.log(avgData);
 
                     if (route.hasLiveData(providerId)) {
                         route.liveData[providerId].setData(data);
@@ -296,7 +288,7 @@ var Api = {
             success: function(result, status, jqXHR) {
                 if (result.result === "success") {
                     var resultdata = result.data;
-                    //console.log(JSON.stringify(resultdata));
+
                     for (var i = 0; i < resultdata.length; i++) {
                         providers[resultdata[i].id] = Provider.create(resultdata[i].id, resultdata[i].name);
                     }
@@ -327,7 +319,7 @@ var Api = {
             success: function(result, status, jqXHR) {
                 if (result.result === "success") {
                     var resultdata = result.data;
-                    console.log(resultdata);
+
                     routes.forEach(function(route) {
                         var rdata = resultdata[route.id];
                         var representation;
@@ -472,7 +464,7 @@ var Api = {
                     route.generateIntervalAvg(interval, provider);
                     me.callDelayed(qid, callback, context);
                 } else {
-                    console.log(result.reason);
+                    console.error(result.reason);
                 }
             },
             error: handleAjaxError
@@ -505,7 +497,6 @@ var Api = {
             success: function(result, status, jqXHR) {
                 if (result.result === "success") {
                     var resultdata = result.data;
-                    console.log(resultdata);
 
                     var graph = route.getDayData(day, provider);
                     if (!graph) {
@@ -556,6 +547,6 @@ function addHeaders(request) {
 }
 
 function handleAjaxError(jqXHR, textStatus, errorThrown) {
-    console.log("Error while performing request for url : " + jqXHR.url + "\n" + jqXHR.status + " " + errorThrown + ". " + jqXHR.responseText);
+    console.error("Error while performing request for url : " + jqXHR.url + "\n" + jqXHR.status + " " + errorThrown + ". " + jqXHR.responseText);
 }
 
