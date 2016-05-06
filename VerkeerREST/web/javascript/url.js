@@ -99,7 +99,6 @@ var url = {
         this.updateLocation();
     },
     updatePageByParams: function () {
-        console.log("update page by params");
         // Provider hier niet inladen! Pas nadat we alle providers hebben ingeladen
         // => Gebeurt nu in Dashboard loadProviders(), een functie die aangeroepen wordt
         // Nadat we alle providers hebben ingeladen in providers

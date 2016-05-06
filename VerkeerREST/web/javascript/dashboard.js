@@ -344,7 +344,7 @@ var Dashboard = {
 				break;
 			}else{
 				if (day == 7) {
-					data["Altijd"] = graph.data;
+					data[interval.getName()] = graph.data;
 					data["Gemiddelde"] = graph.avgData;
 				} else {
 					data[weekdays[day]] = graph.data;
@@ -501,7 +501,7 @@ var Dashboard = {
         });
 
         builder.setStatusFunction(function(route, liveData, avgData) {
-        	if (route.isExceptional()) {
+        	if (route.isExceptional(p)) {
         		return {
         			name: 'Abnormaal verkeer',
         			index: 10

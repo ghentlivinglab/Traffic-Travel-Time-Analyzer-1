@@ -10,6 +10,10 @@
 var TrafficData = {
 	speed: 0,
 	time: 0,
+
+	// Percentage boven de normale omstandigheden, in het laatste half uur ofzo (bepaalt door server)
+	expceptional: 0,
+
 	timestamp: null, // Tijd die bij deze snelheid en tijd hoort op de polling server
 	createdOn: null, // Tijd waarop dit object werd aangemaakt <-> timestamp!
 	empty: false,
@@ -59,18 +63,18 @@ var TrafficData = {
 var IntervalRepresentation = {
 	speed: 0,
 	time: 0,
-	slowPercentage: 0,
+	unusualPercentage: 0,
 	unusual: null,
 	empty: false,
 
 	createdOn: null, // instance of Date
 	
-	create: function(speed, time, slowPercentage, unusual) { // Constructor
+	create: function(speed, time, unusualPercentage, unusual) { // Constructor
 		var obj = Object.create(this);
 		obj.unusual = unusual.slice();
 		obj.speed = speed;
 		obj.time = time;
-		obj.slowPercentage = slowPercentage;
+		obj.unusualPercentage = unusualPercentage;
 
 		obj.createdOn = new Date();
 		return obj;
@@ -254,24 +258,37 @@ var Route = {
 		return 'green';
 	},
 
+	getUnusualColor: function(representation) {
+		if (representation.empty){
+			return 'gray';
+		}
+		if (representation.unusualPercentage < 40){
+			return 'red';
+		}
+		if (representation.unusualPercentage > 60){
+			return 'green';
+		}
+		return 'orange';
+	},
+
 	getStatusFor: function(representation) {
 		// TODO: hier nieuwe property gebruiken om te bepalen of het traag verkeer is of niet
 		// op bais van de toegelaten snelheid op deze route
 
-		if (representation.speed < this.speedLimit - 30){
+		if (representation.unusualPercentage < 40){
 			return {
-				name: 'Heel traag verkeer',
+				name: 'Trager dan gemiddelde',
 				index: 10
 			};
 		}
-		if (representation.speed < this.speedLimit - 15){
+		if (representation.unusualPercentage > 60){
 			return {
-				name: 'Traag verkeer',
+				name: 'Sneller dan gemiddelde',
 				index: 5
 			};
 		}
 		return {
-				name: 'Vlot verkeer',
+				name: 'Gelijk met gemiddelde',
 				index: 0
 			};
 	},
@@ -308,17 +325,17 @@ var Route = {
 
 	// Geeft terug of de live situatie normaal is of niet
 	isExceptional: function(providerId) {
-		if (!this.hasRecentAvgRepresentation(providerId)) {
+		if (!this.hasAvgData(providerId)) {
 			return false;
 		}
-		if (!this.hasRecentLiveRepresentation(providerId)) {
+		if (!this.hasLiveData(providerId)) {
 			return false;
 		}
 
 		var liveData = this.liveData[providerId].representation;
 		var avgData = this.avgData[providerId].representation;
 
-		return liveData.speed < avgData.speed*0.6;
+		return liveData.speed < this.speedLimit-10 && liveData.speed < avgData.speed * 0.6;
 	},
 
 	// TODO: Moet weg!!
