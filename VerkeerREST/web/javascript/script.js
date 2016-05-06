@@ -146,6 +146,16 @@ function thisReady() {
     $(this).find('.popup-box').click(function (event) {
         clickedOnPopup = true;
     })
+
+    $(this).find('.left .updated').click(function (event) {
+        event.preventDefault();
+
+        $('<div class="update-image"><img src="images/loading.gif" alt="Bezig met laden"></div>').insertBefore(this);
+        $(this).remove();
+        Dashboard.forceLiveReload()
+    })
+
+    
 }
 
 /****************************

@@ -193,6 +193,11 @@ var Dashboard = {
 			console.error('No provider found with id '+providerId);
 		}
 	},
+
+	forceLiveReload: function() {
+		Api.syncLiveData(this.provider.id, Dashboard.reload, this);
+	},
+
 	// Herlaad het dashboard op de huidige stand
 	reload: function() {
 		if (!this.provider){
@@ -393,14 +398,53 @@ var Dashboard = {
 		});
 
 		var dashboard = $('#dashboard .content');
-		var str = this.renderHeader("live", {});
 
 		if (!hasData){
 			Api.syncLiveData(p, Dashboard.reload, this);
+			var str = this.renderHeader("live", {});
 			str += Mustache.renderTemplate("loading", []);
 			dashboard.html(str);
 			return;
 		}
+
+		//Bepaald hoe oud deze live data is.
+		var lastupdated = new Date();
+		for(var i=0; i<routes.length; ++i){
+			if (typeof routes[i] == "undefined" || !routes[i]) {
+				continue;
+			}
+			if(routes[i].hasRecentLiveRepresentation(p) && routes[i].liveData[p].representation.createdOn < lastupdated){
+				lastupdated = routes[i].liveData[p].representation.timestamp;
+			}
+		}
+
+		var today = new Date();
+
+		var lu_str = "";
+		// Als het vandaag is: hoeveel minuten geleden
+		if (today.getFullYear() === lastupdated.getFullYear() &&
+		    today.getMonth() === lastupdated.getMonth() &&
+		    today.getDate() === lastupdated.getDate()) {
+
+			var diffMins = Math.round(((( today - lastupdated ) / 1000 ) / 60 ) );
+			if (diffMins > 0) {
+			    lu_str = diffMins + " minuten geleden";
+			}
+	    } else {
+	    	// Today op gisteren zetten, en kijken of het gisteren was
+	    	today.setDate(today.getDate() - 1);
+		    	if (today.getFullYear() === lastupdated.getFullYear() &&
+			    today.getMonth() === lastupdated.getMonth() &&
+			    today.getDate() === lastupdated.getDate()) {
+
+			    lu_str = "Gisteren om "+ dateToTimeString(lastupdated);
+		    } else {
+		    	lu_str = dateToString(lastupdated);
+		    }
+	    }
+
+	    var str = this.renderHeader("live", {updated: lu_str});
+
 
         var builder = ListBuilder.create();
         builder.setLeft(ListBuilder.DEFAULT_REPRESENTATION, function(route) {
@@ -436,18 +480,6 @@ var Dashboard = {
 
 		str += builder.render();
 		dashboard.html(str);
-
-
-		//Bepaald hoe oud deze live data is.
-		var lastupdated = routes[1].liveData[5].representation.timestamp;
-		for(var i=1; i<routes.length; ++i){
-			if(routes[i].liveData[5].representation.createdOn > lastupdated){
-				lastupdated = routes[i].liveData[5].representation.timestamp;
-			}
-		}
-		var diffMins = Math.round(((( new Date()-lastupdated ) / 1000 ) / 60 ) );
-		var lu_str = "(updated " + diffMins + " minutes ago)"
-		$('#lu').html(lu_str);
 	},
 	// Genereert HTML voor periode modus
 	reloadDay: function() {

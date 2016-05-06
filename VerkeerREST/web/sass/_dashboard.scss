@@ -60,6 +60,24 @@ top: 0;
 					display: inline-block;
 					margin-right: 10px;
 				}
+
+				.updated {
+					display: inline-block;
+					font-size: 10pt;
+					color: $gray;
+					padding-left: 20px;
+					height: 40px;
+					line-height: 40px;
+					vertical-align: middle;
+					background: url('../images/sync.png') no-repeat left center;
+				}
+				.update-image {
+					display: inline-block;
+					padding-left: 20px;
+					height: 40px;
+					line-height: 40px;
+					vertical-align: middle;
+				}
 			}
 
 			.right {
