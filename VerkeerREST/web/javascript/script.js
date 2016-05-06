@@ -78,6 +78,12 @@ function togglePanel() {
         $(".collapse").children().attr({"src": "images/arrow-right.png", "alt": ">"});
         url.setQueryParam("dashboardView");
     } else {
+        openDashboard();
+    }
+}
+
+function openDashboard() {
+    if (!$("#dashboard").hasClass('open')) {
         // Als het dashboard gesloten is, openen we het
         $("#dashboard").addClass('open');
 
@@ -95,7 +101,6 @@ function togglePanel() {
         $(".collapse").children().attr({"src": "images/arrow-left.png", "alt": "<"});
         url.setQueryParam("dashboardView","true");
     }
-
 }
 
 /****************************
