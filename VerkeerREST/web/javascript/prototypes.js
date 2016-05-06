@@ -277,13 +277,13 @@ var Route = {
 
 		if (representation.unusualPercentage < 40){
 			return {
-				name: 'Trager dan gemiddelde',
+				name: 'Trager dan gemiddeld',
 				index: 10
 			};
 		}
 		if (representation.unusualPercentage > 60){
 			return {
-				name: 'Sneller dan gemiddelde',
+				name: 'Sneller dan gemiddeld',
 				index: 5
 			};
 		}
