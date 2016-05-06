@@ -20,6 +20,7 @@ Een mogelijkheid is 'Cygwin64 Terminal': download de cygwin64 terminal: (link: h
   ```sudo perl -MCPAN -e 'install JSON'```
 * Glassfish is noodzakelijk
 * Java
+* Cron
 * Screen commando. Installeren kan via ```sudo apt-get install screen```. [Meer info](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-screen-on-an-ubuntu-cloud-server)
 
 ### Database aanmaken
