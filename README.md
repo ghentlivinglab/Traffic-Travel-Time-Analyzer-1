@@ -18,8 +18,8 @@ Een mogelijkheid is 'Cygwin64 Terminal': download de cygwin64 terminal: (link: h
 * Perl v5.18 of nieuwer. Komt standaard met Ubuntu, kan geïnstalleerd worden / geüpdate worden met ```sudo apt-get install perl```
 * De JSON library voor Perl moet geïnstalleerd zijn. Als ```perl -MJSON -e 1``` geen errors geeft, is deze al geïnstalleerd. Anders kan dit via 
   ```sudo perl -MCPAN -e 'install JSON'```
-* Glassfish is noodzakelijk
-* Java
+* Glassfish 4.0
+* Java 8
 * Cron
 * Screen commando. Installeren kan via ```sudo apt-get install screen```. [Meer info](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-screen-on-an-ubuntu-cloud-server)
 
