@@ -99,14 +99,20 @@ var url = {
         this.updateLocation();
     },
     updatePageByParams: function () {
+        console.log("update page by params");
+        // Provider hier niet inladen! Pas nadat we alle providers hebben ingeladen
+        // => Gebeurt nu in Dashboard loadProviders(), een functie die aangeroepen wordt
+        // Nadat we alle providers hebben ingeladen in providers
+
         this.showDashboardByParam();
+        this.changeMapByParams();
         this.changeFilterByParam();
         this.changeViewByParam();
-        this.changeProviderByParam();
         this.changeDayByParam();
+
+        // Onderstaande functies moeten nog gecontrolleerd worden
         this.changePeriodByParam();
         this.changeComparePeriodByParam();
-        this.changeMapByParams();
     },
     showDashboardByParam: function () {
         // checks if mapView or overview has to be displayed
@@ -130,20 +136,15 @@ var url = {
             $("#mode-" + view).click();
         }
     },
+
     changeProviderByParam: function () {
-        try {
-            var URLProviders = JSON.parse(url.getQueryParam("providers"));
-        } catch (error) {
-            var URLProviders = [0];
-            console.error("incorrect parameter: providers");
-            url.setQueryParam("providers");
-            console.error("has been removed");
+        var providerName = url.getQueryParam("provider");
+        if (providerName === false){
+            return;
         }
-        var providers = $("[name=provider]");
-        for (var i = 0; i < URLProviders.length; i++) {
-            $($(providers[URLProviders[i]])).prop("checked", true);
-        }
+        Dashboard.setProviderName(providerName);
     },
+
     changePeriodByParam: function () {
         var period = url.getQueryParam("periode");
         if (period) {

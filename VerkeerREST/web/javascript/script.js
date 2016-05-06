@@ -188,20 +188,5 @@ $(document).ready(function () {
  ****************************/
 $(window).load(function () {
     url.updatePageByParams();
-    $("[name=dashboard]").on('click',changeURLParamDisplay);
-    $("[name=provider]").on('click',changeURLParamProvider);
 });
 
-function changeURLParamProvider(){
-    var providers = $("[name=provider]");
-    var indices = [];
-    for(var i=0;i<providers.length;i++){
-        if($(providers[i]).is(':checked')){
-            indices.push(i);
-        }
-    }
-    url.setQueryParam("providers","["+indices+"]");
-}
-function changeURLParamDisplay(){
-    url.setQueryParam("weergave",this.id.split('-')[1]);
-}

@@ -27,6 +27,7 @@ var Dashboard = {
 	filterValue: "",
 
 	init: function() {
+		console.log("dashboard.init");
 		this.provider = null;
 		this.loadSelectedIntervals();
 		this.lastKnownIntervals = [Interval.copy(this.selectedIntervals[0]), Interval.copy(this.selectedIntervals[1])];
@@ -81,7 +82,7 @@ var Dashboard = {
 	},
 	dayDidChange: function() {
 		this.reload();
-                url.setQueryParams("periode","","vergelijkPeriode","","dag",dateToDate(this.selectedDay));
+        url.setQueryParams("periode","","vergelijkPeriode","","dag",dateToDate(this.selectedDay));
 	},
 
 	filterChanged: function(){
@@ -154,7 +155,9 @@ var Dashboard = {
 	loadProviders: function() {
 		var str = '';
 
-		if (localStorage.getItem('provider') !== null){
+		url.changeProviderByParam();
+
+		if (!this.provider && localStorage.getItem('provider') !== null){
 			this.setProvider(localStorage.getItem('provider'));
 		}
 
@@ -173,12 +176,29 @@ var Dashboard = {
 
 		$('#providers').html(str);
 	},
+
 	setMode: function(mode){
 		this.mode = mode;
 		localStorage.setItem('mode', this.mode);
 		this.reload();
+
+		url.setQueryParam("weergave",this.mode);
 	},
+
+	setProviderName: function(providerName) {
+		console.log("set provider name "+providerName);
+		for (var id in providers) {
+			var provider = providers[id];
+			if (provider.getUrlString().toLowerCase() == providerName.toLowerCase()) {
+				this.setProvider(id);
+				return true;
+			}
+		}
+		return false;
+	},
+
 	setProvider: function(providerId){
+
 		if (typeof providers[providerId] != "undefined"){
             var reload = false;
             if (!this.provider || this.provider.id != providerId) {
@@ -203,6 +223,9 @@ var Dashboard = {
 				}
 
 				this.reload();
+
+				// Waarom name? -> veel duidelijker voor de gebruiker
+				url.setQueryParam("provider",this.provider.getUrlString());
             }
 		} else {
 			console.error('No provider found with id '+providerId);

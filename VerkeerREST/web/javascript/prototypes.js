@@ -531,6 +531,10 @@ var Provider = {
 		obj.id = id;
 		obj.name = name;
 		return obj;
+	},
+	getUrlString: function() {
+		// Spaties verwijderen (niet leesbaar in url met %20)
+		return this.name.replace(/\s+/g, '');
 	}
 };
 
