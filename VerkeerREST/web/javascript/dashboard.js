@@ -183,6 +183,8 @@ var Dashboard = {
 		this.reload();
 
 		url.setQueryParam("weergave",this.mode);
+
+		openDashboard();
 	},
 
 	setProviderName: function(providerName) {
