@@ -187,8 +187,6 @@ var Dashboard = {
             this.provider = providers[providerId];
             localStorage.setItem('provider', this.provider.id);
             if (reload) {
-            	console.log("Provider changed");
-                this.reload();
                 if (this.mode != this.LIVE) {
                 	var p = this.provider.id;
                 	var hasData = this.routesDoHaveData(function(route) {
@@ -196,11 +194,15 @@ var Dashboard = {
 					});
 
 					if (!hasData){
-						Api.syncLiveData(p, function() {console.log("Live reload done");}, this); // Dashboard niet reloaden -> niet live
+						Api.syncLiveData(p, function() {}, this); // Dashboard niet reloaden -> niet live
 					} else {
 						reloadMap();
 					}
-	            }
+	            } else {
+					reloadMap();
+				}
+
+				this.reload();
             }
 		} else {
 			console.error('No provider found with id '+providerId);
