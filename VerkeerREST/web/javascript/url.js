@@ -135,7 +135,6 @@ var url = {
             $("#mode-" + view).click();
         }
     },
-
     changeProviderByParam: function () {
         var providerName = url.getQueryParam("provider");
         if (providerName === false){
@@ -143,7 +142,6 @@ var url = {
         }
         Dashboard.setProviderName(providerName);
     },
-
     changePeriodByParam: function () {
         var period = url.getQueryParam("periode");
         if (period) {
@@ -276,7 +274,7 @@ var url = {
         if(value!=="false"){
             Dashboard.filterValue = value;
             Dashboard.updateFilter();
-            $("#filter #filterInput").val(Dashboard.initialFilter);
+            $("#filter #filterInput").val(Dashboard.filterValue);
         }
     },
     changeDayByParam: function(){
