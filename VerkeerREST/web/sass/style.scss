@@ -190,13 +190,16 @@ span.sub {
     position: absolute;
 }
 #map-overlay {
-    z-index: 99;
-    position: absolute;
-    top: 0;
-    right: 0;
-    
+	z-index: 99;
+	position: absolute;
+	top: 0;
+	right: 0;
+	background: #FFF;
+	padding: 1em;
+	
     img{
-        margin: 20px;
+		width: 40px;
+		height: 40px;
     }
 }
 #map {
