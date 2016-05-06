@@ -155,8 +155,20 @@ var url = {
                 var to = this.createValidDate(period[2]);
 
                 if (name && from && to) {
-                    var event = Event.create(name, from, to);
-                    Dashboard.selectedIntervals[0] = event;
+                    var eventExists = -1;
+                    for(var i=0;i<events.length;i++){
+                        if(events[i].start.getTime() === from.getTime() && events[i].end.getTime() === to.getTime()){
+                            eventExists = i;
+                            break;
+                        }
+                    }
+                    var event;
+                    if(eventExists===-1){
+                        event = Event.create(name, from, to);
+                        Dashboard.selectedIntervals[1] = event;
+                    } else if(eventExists > -1) {
+                        Dashboard.selectedIntervals[0] = events[i];
+                    }
                     if (!url.getQueryParam("vergelijkPeriode")) {
                         Dashboard.intervalsDidChange();
                     }
@@ -189,8 +201,20 @@ var url = {
                 var to = this.createValidDate(period[2]);
 
                 if (name && from && to) {
-                    var event = Event.create(name, from, to);
-                    Dashboard.selectedIntervals[1] = event;
+                    var eventExists = -1;
+                    for(var i=0;i<events.length;i++){
+                        if(events[i].start.getTime() === from.getTime() && events[i].end.getTime() === to.getTime()){
+                            eventExists = i;
+                            break;
+                        }
+                    }
+                    var event;
+                    if(eventExists===-1){
+                        event = Event.create(name, from, to);
+                        Dashboard.selectedIntervals[1] = event;
+                    } else if(eventExists > -1) {
+                        Dashboard.selectedIntervals[1] = events[i];
+                    }
                     Dashboard.intervalsDidChange();
                 } else if (from && to) {
                     var interval = Interval.create(from, to);
