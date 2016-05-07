@@ -379,7 +379,7 @@ var Dashboard = {
 		// kopie maken
 		var extraProviders = this.extraProviders.slice();
 
-		extraProviders.push(this.provider.id);
+		extraProviders.unshift(this.provider.id);
 		var missing = [];
 
 		for (var i = 0; i < extraProviders.length; i++) {
@@ -553,11 +553,11 @@ var Dashboard = {
 
 			var diffMins = Math.round(((( today - lastupdated ) / 1000 ) / 60 ) );
 			if (diffMins > 0){ 
-                            if(diffMins < 60) {
-                                lu_str = diffMins + " minuten geleden";
-                            } else {
-                                lu_str = Math.floor(diffMins/60) + " uur " + diffMins%60 + " minuten geleden";
-                            }
+                if(diffMins < 60) {
+                    lu_str = diffMins + " minuten geleden";
+                } else {
+                    lu_str = Math.floor(diffMins/60) + " uur " + diffMins%60 + " minuten geleden";
+                }
 			}
 	    } else {
 	    	// Today op gisteren zetten, en kijken of het gisteren was
