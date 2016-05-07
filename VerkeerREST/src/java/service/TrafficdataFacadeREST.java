@@ -207,7 +207,7 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
             return processError(MessageState.PIDNP);
         }
 
-        String queryString = "select timestamp - interval extract(second from timestamp) second - interval extract(minute from timestamp)%?1 minute, avg(traveltime) from trafficdata where timestamp between ?2 and ?3 and providerID=?4 and routeID=?5 group by timestamp - interval extract(second from timestamp) second - interval extract(minute from timestamp)%?1 minute order by 1";
+        String queryString = "select timestamp - interval extract(second from timestamp) second - interval extract(minute from timestamp)%?1 minute, avg(traveltime), avg(avgtraveltimeday) from trafficdata where timestamp between ?2 and ?3 and providerID=?4 and routeID=?5 group by timestamp - interval extract(second from timestamp) second - interval extract(minute from timestamp)%?1 minute order by 1";
         Query q = getEntityManager().createNativeQuery(queryString);
         q.setParameter(1, interval);
         q.setParameter(2, from, TemporalType.TIMESTAMP);
@@ -223,7 +223,7 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
             json.append('{');
             String delimiter = "";
             for (Object[] o : (List<Object[]>) q.getResultList()) {
-                json.append(delimiter).append(new SimpleTrafficdata((dateformat.format((Timestamp) o[0])), ((BigDecimal) o[1]).doubleValue()).toJson());
+                json.append(delimiter).append(new SimpleTrafficdata((dateformat.format((Timestamp) o[0])), ((BigDecimal) o[1]).doubleValue(), ((BigDecimal) o[2]).doubleValue()).toJson());
                 delimiter = ",";
             }
             json.append('}');
@@ -235,7 +235,7 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
     }
 
     private String processWeekday(Timestamp from, Timestamp to, Integer routeID, Integer providerID, Integer interval, Integer weekday) throws Exception {
-        String queryString = "SELECT WEEKDAY(TIMESTAMP), DATE_FORMAT(STR_TO_DATE(timestamp - interval extract(second from timestamp) second - interval extract(minute from timestamp)% ?1 minute, '%Y-%m-%d %H:%i:%s'), '%H:%i'), AVG(traveltime) FROM trafficdata WHERE timestamp between ?2 and ?3 ";
+        String queryString = "SELECT WEEKDAY(TIMESTAMP), DATE_FORMAT(STR_TO_DATE(timestamp - interval extract(second from timestamp) second - interval extract(minute from timestamp)% ?1 minute, '%Y-%m-%d %H:%i:%s'), '%H:%i'), AVG(traveltime), AVG(avgtraveltimeday) FROM trafficdata WHERE timestamp between ?2 and ?3 ";
         if (providerID != null) {
             queryString += " and providerID=?4 ";
         }
@@ -262,7 +262,8 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
                 lijst.add(new WeekdayTrafficdata(i));
             }
             for (Object[] o : (List<Object[]>) q.getResultList()) {
-                ((WeekdayTrafficdata) lijst.get(Integer.parseInt(o[0].toString()))).put((String) o[1], ((BigDecimal) o[2]).doubleValue());
+                // Haalt de weekday uit de lijst, en zet de juiste gegevens
+                ((WeekdayTrafficdata) lijst.get(Integer.parseInt(o[0].toString()))).put((String) o[1], ((BigDecimal) o[2]).doubleValue(), ((BigDecimal) o[3]).doubleValue());
             }
             json.append('{');
             String delimiter = "";
@@ -334,7 +335,7 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
         if (providerID == null) {
             throw new Exception(MessageState.PIDNP);
         }
-        String queryString = "SELECT x.routeid, round(Avg(routes.length / x.traveltime * 3.6)), round(Avg(traveltime)), Ceil(Count(CASE WHEN x.traveltime > x.avgtraveltimeday THEN 1 end) / Count(*) * 100), Group_concat(DISTINCT CASE WHEN x.unusual_count > 0.7 THEN concat('\"',x.timestamp,'\"') end ORDER BY unusual_count DESC) FROM( SELECT routeid, FROM_UNIXTIME(FLOOR((UNIX_TIMESTAMP(timestamp)+900)/1800)*1800) as timestamp, avg(traveltime) as traveltime, avg(avgtraveltimeday) as avgtraveltimeday, count(case when traveltime > avgtraveltimeday*2 and avgtraveltimeday != 0 then 1 end) / 5 as unusual_count FROM trafficdata WHERE providerid = ?1 AND timestamp BETWEEN ?2 AND ?3 group by routeid, FROM_UNIXTIME(FLOOR((UNIX_TIMESTAMP(timestamp)+900)/1800)*1800)) x JOIN routes ON x.routeid = routes.id GROUP BY x.routeid, routes.length HAVING x.routeid IS NOT NULL AND routes.length IS NOT NULL; ";
+        String queryString = "SELECT x.routeid, Round(Avg(routes.length / x.traveltime * 3.6)), Round(Avg(traveltime)), Ceil(Sum(x.difference)/432 + 50), Group_concat(DISTINCT CASE WHEN x.unusual_count > 0.7 THEN Concat('\\\"', x.timestamp, '\\\"') end ORDER BY unusual_count DESC) FROM(SELECT routeid, From_unixtime(Floor(( Unix_timestamp(timestamp) + 900) / 1800) * 1800) AS timestamp, Avg(traveltime) AS traveltime, Avg(avgtraveltimeday) AS avgtraveltimeday, Sum(avgtraveltimeday - traveltime) as difference, Count(CASE WHEN traveltime > avgtraveltimeday * 2 AND avgtraveltimeday != 0 THEN 1 end) / 5 AS unusual_count FROM trafficdata WHERE providerid = ?1 AND timestamp BETWEEN ?2 AND ?3 GROUP BY routeid, From_unixtime(Floor(( Unix_timestamp(timestamp) + 900 ) / 1800) * 1800)) x JOIN routes ON x.routeid = routes.id GROUP BY x.routeid, routes.length HAVING x.routeid IS NOT NULL AND routes.length IS NOT NULL; ";
         //System.out.println(queryString);
         Query q = getEntityManager().createNativeQuery(queryString);
 

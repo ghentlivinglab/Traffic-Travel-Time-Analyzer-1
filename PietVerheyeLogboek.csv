@@ -79,7 +79,7 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 15/04/2016,19:45,20:30,Thuis,Projectwerk,Kijken voor syncIntervalData en presentatie,,Simon had dit al gedaan
 16/04/2016,00:50,01:30,Thuis,Projectwerk,Kijken voor latitude en longitude om te wisselen in databank,,
 16/04/2016,16:45,18:00,Thuis,Projectwerk,Issues bekijken en code nog eens bekijken,,
-16/04/2016,19:30,22:15,Thuis,Projectwerk documentatie,Klassendiagram verkeer maken leren werken met LucidChart,55,
+16/04/2016,19:30,22:15,Thuis,Projectwerk documentatie,Klassendiagram verkeer maken en leren werken met LucidChart,55,
 17/04/2016,10:15,12:40,Thuis,Projectwerk documentatie ,Klassendiagram dbConnectors en providerConnectors maken,55,
 17/04/2016,13:30,16:40,Thuis,Projectwerk documentatie,Klassendiagram REST API,55,Geprutst met Visual Paradigm
 17/04/2016,17:25,18:30,Thuis,Projectwerk documentatie,Klassendiagram REST api met LucidChart,55,
@@ -95,3 +95,7 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 27/04/2016,16:30,17:30,Thuis,Projectwerk,Rest api authenticatie in api javascript,,
 27/04/2016,18:00,20:15,Thuis,Projectwerk,Van getJSON naar ajax in api javascript,,
 28/04/2016,10:30,11:15,Thuis,Projectwerk,Aanpassen logboek,,
+01/05/2016,15:30,18:00,Thuis,Projectwerk,Excepties afhandelen in rest api,31,
+02/05/2016,17:00,18:35,Thuis,Projectwerk,Excepties afhandelen in rest api,31,
+02/05/2016,18:35,19:00,Thuis,Projectwerk,Authorisatie van de REST API,68,Loginscherm cruciaal voor dynamische api keys
+06/05/2016,16:05,17:15,Thuis,Projectwerk,Uittesten applicatie en code bekijken,,

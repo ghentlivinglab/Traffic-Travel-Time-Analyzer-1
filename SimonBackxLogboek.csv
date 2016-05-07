@@ -65,3 +65,6 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 02/05/2016,09:30,16:00,Thuis,Projectwerk,Day selection afwerken + grafieken toevoegen aan day selection,,
 02/05/2016,17:30,19:30,Thuis,Projectwerk,Grafieken toevoegen aan day selection + mergen en api keys toevoegen aan requests,,
 03/05/2016,14:30,20:45,Thuis,Projectwerk,Filter systeem aangepast + layout gegeven,,
+04/05/2016,10:30,20:45,Thuis,Projectwerk,Duplicate code elimineren met oa listbuilder,,
+05/05/2016,10:30,20:45,Thuis,Projectwerk,Database cruncher fixen,,
+06/05/2016,10:30,20:45,Thuis,Projectwerk,Bugfixes in url en unuqual percentage,,

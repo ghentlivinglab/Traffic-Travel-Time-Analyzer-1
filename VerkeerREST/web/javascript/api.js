@@ -139,6 +139,8 @@ var Api = {
     },
     // fetches the live data (= current traffic and an average of last month(s) ) of every route
     syncLiveData: function(provider, callback, context) {
+        loadingMap(true);
+
         var newCallback = function(){
             reloadMap();
             callback.call(this);
@@ -163,11 +165,9 @@ var Api = {
             success: function(result, status, jqXHR) {
                 if (result.result === "success") {
                     var data = result.data;
-                    console.log(data);
 
                     routes.forEach(function(route) {
                         var rdata = data[route.id];
-                        console.log(rdata);
                         if (typeof rdata !== "undefined") {
                             var avgData = TrafficData.create(rdata.avg.speed, rdata.avg.time, stringToDate(rdata.live.createdOn));
                             var liveData = TrafficData.create(rdata.live.speed, rdata.live.time, stringToDate(rdata.live.createdOn));
@@ -195,74 +195,13 @@ var Api = {
             error: handleAjaxError
         });
     },
-    // fetches the graph for average data (= averages for every hour of last month)
-    // Haalt de gemiddelde grafiek op (gemiddelde van de afgelopen maand voor elk uur)
-    syncAvgGraph: function(routeId, providerId, callback, context) {
-        // Bij begin van alle requests uitvoeren. 
-        // Hebben deze nodig voor de callback wanneer de request klaar is.
-        var qid = this.getQueueId();
-        console.log('start avggraph request met id '+qid);
 
-        var route = routes[routeId];
-
-        // Hier alle data van de server halen.
-        // Uiteindelijk moet dit ongeveer het resultaat zijn: 
-
-        var data = {};
-
-        var from = new Date();
-        from.setDate((new Date()).getDate() - 30);
-        var to = new Date();
-
-        var weekday = new Date().getDay();
-        weekday = weekdays_js_to_rest[weekday];
-
-        var me = this;
-
-        $.ajax({
-            type: "GET",
-            url: "/api/trafficdata/weekday",
-            data: {providerID: providerId, routeID: routeId, weekday: weekday, from: dateToRestString(from), to: dateToRestString(to)},
-            beforeSend: function (jqXHR, settings) {
-                jqXHR.url = settings.url;
-                addHeaders(jqXHR);
-            },
-            success: function(result, status, jqXHR) {
-                if (result.result === "success") {
-                    var resultdata = result.data;
-
-                    for (var key in resultdata[weekday]) {
-                        var times = key.split(":");
-                        var hour = parseInt(times[0]);
-                        var minutes = parseInt(times[1]);
-                        hour += (minutes / 60);
-                        data[hour] = (resultdata[weekday][key]) / 60;
-                    }
-
-                    console.log('avgGraph api data:');
-                    console.log(data);
-
-                    if (route.hasAvgData(providerId)) {
-                        route.avgData[providerId].setData(data);
-                        me.callDelayed(qid, callback, context);
-                    } else {
-                        // impossible
-                        console.error('Route ' + route.name + ' has no avgData for provider with id ' + providerId);
-                    }
-                } else {
-                    console.error(result.reason);
-                }
-            },
-            error: handleAjaxError
-        });
-    },
     // fetches graph for today (right up to current time)
     syncLiveGraph: function(routeId, providerId, callback, context) {
     	
         // Bij begin van alle requests uitvoeren. 
         // Hebben deze nodig voor de callback wanneer de request klaar is.
         var qid = this.getQueueId();
-        console.log('start live graph request met id '+qid);
 
         // Hier alle data van de server halen.
         // Uiteindelijk moet dit ongeveer het resultaat zijn: 
@@ -273,6 +212,11 @@ var Api = {
         // Uiteindelijk moet dit ongeveer het resultaat zijn: 
 
         var from = new Date();
+        if (route.hasLiveData(providerId)) {
+            from = new Date(route.liveData[providerId].representation.timestamp.getTime());
+        }
+
+        
         from.setHours(0);
         from.setMinutes(0);
         from.setSeconds(0);
@@ -291,8 +235,8 @@ var Api = {
             success: function(result, status, jqXHR) {
                 if (result.result === "success") {
                     var data = {};
+                    var avgData = {};
                     var resultdata = result.data;
-                    console.log(resultdata);
 
                     for (var key in resultdata) {
                         var time = new Date(key);
@@ -304,14 +248,13 @@ var Api = {
                             console.error('Unreadable date format: "' + key + '" - Make sure the REST server is running the latest version.');
                             continue;
                         }
-                        data[hour] = (resultdata[key]) / 60;
+                        data[hour] = (resultdata[key].traveltime) / 60;
+                        avgData[hour] = (resultdata[key].average) / 60;
                     }
-
-                    console.log('liveGraph api data:');
-                    console.log(data);
 
                     if (route.hasLiveData(providerId)) {
                         route.liveData[providerId].setData(data);
+                        route.liveData[providerId].setAvgData(avgData);
                         me.callDelayed(qid, callback, context);
                     } else {
                         // impossible
@@ -345,7 +288,7 @@ var Api = {
             success: function(result, status, jqXHR) {
                 if (result.result === "success") {
                     var resultdata = result.data;
-                    //console.log(JSON.stringify(resultdata));
+
                     for (var i = 0; i < resultdata.length; i++) {
                         providers[resultdata[i].id] = Provider.create(resultdata[i].id, resultdata[i].name);
                     }
@@ -376,7 +319,7 @@ var Api = {
             success: function(result, status, jqXHR) {
                 if (result.result === "success") {
                     var resultdata = result.data;
-                    console.log(resultdata);
+
                     routes.forEach(function(route) {
                         var rdata = resultdata[route.id];
                         var representation;
@@ -506,19 +449,22 @@ var Api = {
                         }
 
                         var data = {};
+                        var avgData = {};
                         for (var key in resultdata[weekday]) {
                             var times = key.split(":");
                             var hour = parseInt(times[0]);
                             var minutes = parseInt(times[1]);
                             hour += (minutes / 60);
-                            data[hour] = (resultdata[weekday][key]) / 60;
+                            data[hour] = (resultdata[weekday][key].traveltime) / 60;
+                            avgData[hour] = (resultdata[weekday][key].average) / 60;
                         }
                         graph.data = data;
+                        graph.avgData = avgData;
                     }
                     route.generateIntervalAvg(interval, provider);
                     me.callDelayed(qid, callback, context);
                 } else {
-                    console.log(result.reason);
+                    console.error(result.reason);
                 }
             },
             error: handleAjaxError
@@ -551,7 +497,6 @@ var Api = {
             success: function(result, status, jqXHR) {
                 if (result.result === "success") {
                     var resultdata = result.data;
-                    console.log(resultdata);
 
                     var graph = route.getDayData(day, provider);
                     if (!graph) {
@@ -566,19 +511,23 @@ var Api = {
                     // Leeg zetten voor als we geen data tegen komen
                     // Dit vermijdt een infinite loop
                     graph.data = {};
-
+                    graph.avgData = {};
                     for (var weekday in resultdata) {
                         var data = {};
+                        var avgData = {};
                         for (var key in resultdata[weekday]) {
                             var times = key.split(":");
                             var hour = parseInt(times[0]);
                             var minutes = parseInt(times[1]);
                             hour += (minutes / 60);
-                            data[hour] = resultdata[weekday][key] / 60;
+                            data[hour] = resultdata[weekday][key].traveltime / 60;
+                            avgData[hour] = (resultdata[weekday][key].average) / 60;
                         }
                         if (Object.keys(data).length > 0) {
                             // Deze dag bevat data
                             graph.data = data;
+                            graph.avgData = avgData;
+                            break;
                         }
                     }
 
@@ -598,6 +547,6 @@ function addHeaders(request) {
 }
 
 function handleAjaxError(jqXHR, textStatus, errorThrown) {
-    console.log("Error while performing request for url : " + jqXHR.url + "\n" + jqXHR.status + " " + errorThrown + ". " + jqXHR.responseText);
+    console.error("Error while performing request for url : " + jqXHR.url + "\n" + jqXHR.status + " " + errorThrown + ". " + jqXHR.responseText);
 }
 

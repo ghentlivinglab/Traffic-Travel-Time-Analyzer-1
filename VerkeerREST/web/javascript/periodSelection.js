@@ -28,6 +28,16 @@ function dateToString(date){
 	return year+"-"+month+"-"+day+" om "+hours+":"+minutes;
 }
 
+function dateToTimeString(date) {
+	if (!date){
+		return '';
+	}
+    var hours = pad(date.getHours());
+    var minutes = pad(date.getMinutes());
+    
+	return hours+":"+minutes;
+}
+
 // Date naar leesbare string voor onze REST api
 // Gebruik hier dateToString niet omdat deze functie haar output niet mag veranderen moesten we dateToString wijzigen
 function dateToRestString(date){

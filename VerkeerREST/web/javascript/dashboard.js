@@ -27,6 +27,7 @@ var Dashboard = {
 	filterValue: "",
 
 	init: function() {
+		console.log("dashboard.init");
 		this.provider = null;
 		this.loadSelectedIntervals();
 		this.lastKnownIntervals = [Interval.copy(this.selectedIntervals[0]), Interval.copy(this.selectedIntervals[1])];
@@ -81,7 +82,7 @@ var Dashboard = {
 	},
 	dayDidChange: function() {
 		this.reload();
-                url.setQueryParams("periode","","vergelijkPeriode","","dag",dateToDate(this.selectedDay));
+        url.setQueryParams("periode","","vergelijkPeriode","","dag",dateToDate(this.selectedDay));
 	},
 
 	filterChanged: function(){
@@ -154,7 +155,9 @@ var Dashboard = {
 	loadProviders: function() {
 		var str = '';
 
-		if (localStorage.getItem('provider') !== null){
+		url.changeProviderByParam();
+
+		if (!this.provider && localStorage.getItem('provider') !== null){
 			this.setProvider(localStorage.getItem('provider'));
 		}
 
@@ -173,26 +176,68 @@ var Dashboard = {
 
 		$('#providers').html(str);
 	},
+
 	setMode: function(mode){
 		this.mode = mode;
 		localStorage.setItem('mode', this.mode);
 		this.reload();
+
+		url.setQueryParam("weergave",this.mode);
+
+		openDashboard();
 	},
+
+	setProviderName: function(providerName) {
+		console.log("set provider name "+providerName);
+		for (var id in providers) {
+			var provider = providers[id];
+			if (provider.getUrlString().toLowerCase() == providerName.toLowerCase()) {
+				this.setProvider(id);
+				return true;
+			}
+		}
+		return false;
+	},
+
 	setProvider: function(providerId){
+
 		if (typeof providers[providerId] != "undefined"){
-                    var reload = false;
-                    if (!this.provider || this.provider.id != providerId) {
-                            reload = true;
-                    }
-                    this.provider = providers[providerId];
-                    localStorage.setItem('provider', this.provider.id);
-                    if (reload) {
-                            this.reload();
-                    }
+            var reload = false;
+            if (!this.provider || this.provider.id != providerId) {
+                    reload = true;
+            }
+            this.provider = providers[providerId];
+            localStorage.setItem('provider', this.provider.id);
+            if (reload) {
+                if (this.mode != this.LIVE) {
+                	var p = this.provider.id;
+                	var hasData = this.routesDoHaveData(function(route) {
+						return route.hasRecentAvgRepresentation(p) && route.hasRecentLiveRepresentation(p);
+					});
+
+					if (!hasData){
+						Api.syncLiveData(p, function() {}, this); // Dashboard niet reloaden -> niet live
+					} else {
+						reloadMap();
+					}
+	            } else {
+					reloadMap();
+				}
+
+				this.reload();
+
+				// Waarom name? -> veel duidelijker voor de gebruiker
+				url.setQueryParam("provider",this.provider.getUrlString());
+            }
 		} else {
 			console.error('No provider found with id '+providerId);
 		}
 	},
+
+	forceLiveReload: function() {
+		Api.syncLiveData(this.provider.id, Dashboard.reload, this);
+	},
+
 	// Herlaad het dashboard op de huidige stand
 	reload: function() {
 		if (!this.provider){
@@ -206,7 +251,7 @@ var Dashboard = {
 
 		if (!this.initialSync){
 			this.initialSync = true;
-			Api.syncLiveData(this.provider.id, Dashboard.reload, this);
+			//Api.syncLiveData(this.provider.id, Dashboard.reload, this);
 		}
 		var dashboard = $('#dashboard .content');
 
@@ -272,29 +317,15 @@ var Dashboard = {
 		var callback = function(){
 			Dashboard.openLiveGraph(routeId, element, width, height);
 		};
-		var c = 0;
 
-		if (!route.hasRecentAvgData(this.provider.id)){
-			c++;
-		}
-		if (!route.hasRecentLiveData(this.provider.id)){
-			c++;
-		}
-		if (c == 0){
+		if (route.hasRecentLiveData(this.provider.id)){
 			var data = {
 				'Vandaag': route.liveData[this.provider.id].data,
-				'Gemiddelde': route.avgData[this.provider.id].data,
+				'Gemiddelde': route.liveData[this.provider.id].avgData
 			};
 			drawChart(element, data, width, height, true);
 		}else{
-			Api.newQueue(c);
-			if (!route.hasRecentAvgData(this.provider.id)){
-				Api.syncAvgGraph(route.id, this.provider.id, callback, this);
-			}
-			if (!route.hasRecentLiveData(this.provider.id)){
-				Api.syncLiveGraph(route.id, this.provider.id, callback, this);
-			}
-			Api.endQueue();
+			Api.syncLiveGraph(route.id, this.provider.id, callback, this);
 		}
 	},
 	// Opent de grafiek horende bij 1 interval (met weekdagen etc)
@@ -308,16 +339,21 @@ var Dashboard = {
 
 		var okay = true;
 		var data = {};
-		for (var day = 0; day < 7; day++) {
+		for (var day = 0; day <= 7; day++) {
 			var graph = route.getIntervalData(interval, day, this.provider.id);
 			if (!graph || !graph.data){
 				okay = false;
 				break;
 			}else{
-				data[weekdays[day]] = graph.data;
+				if (day == 7) {
+					data[interval.getName()] = graph.data;
+					data["Gemiddelde"] = graph.avgData;
+				} else {
+					data[weekdays[day]] = graph.data;
+				}
 			}	
 		}
-
+		
 		if (!okay) {
 			Api.syncIntervalGraph(interval, routeId, this.provider.id, callback, this);
 			return;
@@ -344,6 +380,8 @@ var Dashboard = {
 		}
 		var data = {};
 		data[dateToDate(day)] = graph.data;
+		data["Gemiddelde"] = graph.avgData;
+
 		drawChart(element, data, width, height);
 	},
 	// Opent de grafiek horende bij 2 intervallen
@@ -390,6 +428,7 @@ var Dashboard = {
 
 		drawChart(element, data, width, height);
 	},
+
 	//syncIntervalGraph
 	// Genereert HTML voor live modus
 	reloadLive: function() {
@@ -400,14 +439,57 @@ var Dashboard = {
 		});
 
 		var dashboard = $('#dashboard .content');
-		var str = this.renderHeader("live", {});
 
 		if (!hasData){
 			Api.syncLiveData(p, Dashboard.reload, this);
+			var str = this.renderHeader("live", {});
 			str += Mustache.renderTemplate("loading", []);
 			dashboard.html(str);
 			return;
 		}
+
+		//Bepaald hoe oud deze live data is.
+		var lastupdated = new Date();
+		for(var i=0; i<routes.length; ++i){
+			if (typeof routes[i] == "undefined" || !routes[i]) {
+				continue;
+			}
+			if(routes[i].hasRecentLiveRepresentation(p) && routes[i].liveData[p].representation.createdOn < lastupdated){
+				lastupdated = routes[i].liveData[p].representation.timestamp;
+			}
+		}
+
+		var today = new Date();
+
+		var lu_str = "";
+		// Als het vandaag is: hoeveel minuten geleden
+		if (today.getFullYear() === lastupdated.getFullYear() &&
+		    today.getMonth() === lastupdated.getMonth() &&
+		    today.getDate() === lastupdated.getDate()) {
+
+			var diffMins = Math.round(((( today - lastupdated ) / 1000 ) / 60 ) );
+			if (diffMins > 0){ 
+                            if(diffMins < 60) {
+                                lu_str = diffMins + " minuten geleden";
+                            } else {
+                                lu_str = Math.floor(diffMins/60) + " uur " + diffMins%60 + " minuten geleden";
+                            }
+			}
+	    } else {
+	    	// Today op gisteren zetten, en kijken of het gisteren was
+	    	today.setDate(today.getDate() - 1);
+		    	if (today.getFullYear() === lastupdated.getFullYear() &&
+			    today.getMonth() === lastupdated.getMonth() &&
+			    today.getDate() === lastupdated.getDate()) {
+
+			    lu_str = "Gisteren om "+ dateToTimeString(lastupdated);
+		    } else {
+		    	lu_str = dateToString(lastupdated);
+		    }
+	    }
+
+	    var str = this.renderHeader("live", {updated: lu_str});
+
 
         var builder = ListBuilder.create();
         builder.setLeft(ListBuilder.DEFAULT_REPRESENTATION, function(route) {
@@ -425,7 +507,7 @@ var Dashboard = {
         });
 
         builder.setStatusFunction(function(route, liveData, avgData) {
-        	if (route.isExceptional()) {
+        	if (route.isExceptional(p)) {
         		return {
         			name: 'Abnormaal verkeer',
         			index: 10
@@ -443,18 +525,6 @@ var Dashboard = {
 
 		str += builder.render();
 		dashboard.html(str);
-
-
-		//Bepaald hoe oud deze live data is.
-		var lastupdated = routes[1].liveData[5].representation.timestamp;
-		for(var i=1; i<routes.length; ++i){
-			if(routes[i].liveData[5].representation.createdOn > lastupdated){
-				lastupdated = routes[i].liveData[5].representation.timestamp;
-			}
-		}
-		var diffMins = Math.round(((( new Date()-lastupdated ) / 1000 ) / 60 ) );
-		var lu_str = "(updated " + diffMins + " minutes ago)"
-		$('#lu').html(lu_str);
 	},
 	// Genereert HTML voor periode modus
 	reloadDay: function() {

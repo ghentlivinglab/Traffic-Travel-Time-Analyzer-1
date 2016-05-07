@@ -25,12 +25,15 @@
             <div class="oneline">
                 <div class="left">
                     <h1>Live</h1>
+                    <a class="updated" href="#">{{ updated }}</a>
                 </div>
-                <div id="lu"></div>
                 <div class="right">
                     {{& search }}
                 </div>
             </div>
+            <p>
+                De gekleurde balken geven het percentage tegenover de toegelaten snelheid aan.
+            </p>
         </script>
 
         <!-- Dashboard periode-view header: titel + periode dropdown -->
@@ -65,12 +68,15 @@
             <div class="oneline">
                 <div class="left">
                     <h1>Vergelijk </h1>
-                    <div class="selection-bundle">{{& period-selection0 }} <span class="sub">EN</span> {{& period-selection1 }}</div>
+                    <div class="selection-bundle">{{& period-selection0 }} <span class="sub">MET</span> {{& period-selection1 }}</div>
                 </div>
                 <div class="right">
                     {{& search }}
                 </div>
             </div>
+            <p>
+                De gekleurde balken geven aan hoe gewoon/ongewoon de drukte van een bepaalde route is in een bepaalde periode.
+            </p>
         </script>
 
         <!-- Dashboard periode-view header: titel + periode dropdown -->
@@ -204,10 +210,7 @@
     <section id="map-container">
         <div id="map"></div>
         <div id="map-overlay">
-            <div class="content">
-                <img src="images/loading.gif" alt="" />
-                <p>Bezig met laden...</p>
-            </div>
+            <img src="images/loading.gif" alt="" />
         </div>
     </section>
     </div>

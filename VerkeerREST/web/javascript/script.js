@@ -78,6 +78,12 @@ function togglePanel() {
         $(".collapse").children().attr({"src": "images/arrow-right.png", "alt": ">"});
         url.setQueryParam("dashboardView");
     } else {
+        openDashboard();
+    }
+}
+
+function openDashboard() {
+    if (!$("#dashboard").hasClass('open')) {
         // Als het dashboard gesloten is, openen we het
         $("#dashboard").addClass('open');
 
@@ -95,7 +101,6 @@ function togglePanel() {
         $(".collapse").children().attr({"src": "images/arrow-left.png", "alt": "<"});
         url.setQueryParam("dashboardView","true");
     }
-
 }
 
 /****************************
@@ -145,7 +150,17 @@ function thisReady() {
 
     $(this).find('.popup-box').click(function (event) {
         clickedOnPopup = true;
-    })
+    });
+
+    $(this).find('.left .updated').click(function (event) {
+        event.preventDefault();
+
+        $('<div class="update-image"><img src="images/loading.gif" alt="Bezig met laden"></div>').insertBefore(this);
+        $(this).remove();
+        Dashboard.forceLiveReload();
+    });
+
+    
 }
 
 /****************************
@@ -178,20 +193,5 @@ $(document).ready(function () {
  ****************************/
 $(window).load(function () {
     url.updatePageByParams();
-    $("[name=dashboard]").on('click',changeURLParamDisplay);
-    $("[name=provider]").on('click',changeURLParamProvider);
 });
 
-function changeURLParamProvider(){
-    var providers = $("[name=provider]");
-    var indices = [];
-    for(var i=0;i<providers.length;i++){
-        if($(providers[i]).is(':checked')){
-            indices.push(i);
-        }
-    }
-    url.setQueryParam("providers","["+indices+"]");
-}
-function changeURLParamDisplay(){
-    url.setQueryParam("weergave",this.id.split('-')[1]);
-}

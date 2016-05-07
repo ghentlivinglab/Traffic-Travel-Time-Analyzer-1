@@ -99,14 +99,19 @@ var url = {
         this.updateLocation();
     },
     updatePageByParams: function () {
+        // Provider hier niet inladen! Pas nadat we alle providers hebben ingeladen
+        // => Gebeurt nu in Dashboard loadProviders(), een functie die aangeroepen wordt
+        // Nadat we alle providers hebben ingeladen in providers
+
         this.showDashboardByParam();
+        this.changeMapByParams();
         this.changeFilterByParam();
         this.changeViewByParam();
-        this.changeProviderByParam();
         this.changeDayByParam();
+
+        // Onderstaande functies moeten nog gecontrolleerd worden
         this.changePeriodByParam();
         this.changeComparePeriodByParam();
-        this.changeMapByParams();
     },
     showDashboardByParam: function () {
         // checks if mapView or overview has to be displayed
@@ -131,18 +136,11 @@ var url = {
         }
     },
     changeProviderByParam: function () {
-        try {
-            var URLProviders = JSON.parse(url.getQueryParam("providers"));
-        } catch (error) {
-            var URLProviders = [0];
-            console.error("incorrect parameter: providers");
-            url.setQueryParam("providers");
-            console.error("has been removed");
+        var providerName = url.getQueryParam("provider");
+        if (providerName === false){
+            return;
         }
-        var providers = $("[name=provider]");
-        for (var i = 0; i < URLProviders.length; i++) {
-            $($(providers[URLProviders[i]])).prop("checked", true);
-        }
+        Dashboard.setProviderName(providerName);
     },
     changePeriodByParam: function () {
         var period = url.getQueryParam("periode");
@@ -155,8 +153,20 @@ var url = {
                 var to = this.createValidDate(period[2]);
 
                 if (name && from && to) {
-                    var event = Event.create(name, from, to);
-                    Dashboard.selectedIntervals[0] = event;
+                    var eventExists = -1;
+                    for(var i=0;i<events.length;i++){
+                        if(events[i].start.getTime() === from.getTime() && events[i].end.getTime() === to.getTime()){
+                            eventExists = i;
+                            break;
+                        }
+                    }
+                    var event;
+                    if(eventExists===-1){
+                        event = Event.create(name, from, to);
+                        Dashboard.selectedIntervals[1] = event;
+                    } else if(eventExists > -1) {
+                        Dashboard.selectedIntervals[0] = events[i];
+                    }
                     if (!url.getQueryParam("vergelijkPeriode")) {
                         Dashboard.intervalsDidChange();
                     }
@@ -189,8 +199,20 @@ var url = {
                 var to = this.createValidDate(period[2]);
 
                 if (name && from && to) {
-                    var event = Event.create(name, from, to);
-                    Dashboard.selectedIntervals[1] = event;
+                    var eventExists = -1;
+                    for(var i=0;i<events.length;i++){
+                        if(events[i].start.getTime() === from.getTime() && events[i].end.getTime() === to.getTime()){
+                            eventExists = i;
+                            break;
+                        }
+                    }
+                    var event;
+                    if(eventExists===-1){
+                        event = Event.create(name, from, to);
+                        Dashboard.selectedIntervals[1] = event;
+                    } else if(eventExists > -1) {
+                        Dashboard.selectedIntervals[1] = events[i];
+                    }
                     Dashboard.intervalsDidChange();
                 } else if (from && to) {
                     var interval = Interval.create(from, to);
@@ -252,7 +274,7 @@ var url = {
         if(value!=="false"){
             Dashboard.filterValue = value;
             Dashboard.updateFilter();
-            $("#filter #filterInput").val(Dashboard.initialFilter);
+            $("#filter #filterInput").val(Dashboard.filterValue);
         }
     },
     changeDayByParam: function(){

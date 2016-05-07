@@ -102,3 +102,9 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 03/05/16,13:30,15:00,Thuis,Projectwerk,Filteren van routes in overzicht,81,elk woord wordt apart geëvalueerd + toevoegen knop in GUI
 03/05/16,15:00,15:30,Thuis,Projectwerk,Toevoegen URL Parameters,78,implementatie filter in url parameter
 03/05/16,16:00,17:30,Thuis,Projectwerk,Toevoegen URL Parameters,78,implementatie filter/dag in url parameter
+06/05/16,15:15,16:45,Thuis,Projectwerk,Toevoegen URL Parameters,78,fix in implementatie van peroides
+06/05/16,16:45,17:00,Thuis,Projectwerk,Toevoegen URL Parameters,78,fix in implementatie van filter
+06/05/16,17:00,17:30,Thuis,Projectwerk,laden-icoontje bij kaartweergave,72,aanpassen opmaak
+06/05/16,17:30,18:00,Thuis,Projectwerk,Filteren van routes in overzicht,81,styling in orde zetten
+06/05/16,18:30,18:45,Thuis,Projectwerk,Filteren van routes in overzicht,81,styling in orde zetten
+06/05/16,18:45,19:00,Thuis,Projectwerk,Timestamp live modus,49,indien meer dan 60 minuten verschil wordt het verschil in uren en minuten getoond

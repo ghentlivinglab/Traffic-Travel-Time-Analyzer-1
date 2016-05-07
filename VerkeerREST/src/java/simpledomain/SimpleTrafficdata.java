@@ -15,10 +15,12 @@ public class SimpleTrafficdata {
 
     String timestamp;
     double traveltime;
+    double avgTraveltime;
     
-    public SimpleTrafficdata(String timestamp, double traveltime) {
+    public SimpleTrafficdata(String timestamp, double traveltime, double avgTraveltime) {
         this.timestamp = timestamp;
         this.traveltime = traveltime;
+        this.avgTraveltime = avgTraveltime;
     }
     
     public SimpleTrafficdata(){}
@@ -28,8 +30,11 @@ public class SimpleTrafficdata {
         
         s.append('"');
         s.append(timestamp);
-        s.append("\": ");
+        s.append("\": { \"traveltime\": ");
         s.append(traveltime);
+        s.append(", \"average\": ");
+        s.append(avgTraveltime);
+        s.append("}");
         return s.toString();
     }
     

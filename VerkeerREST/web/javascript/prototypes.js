@@ -10,6 +10,10 @@
 var TrafficData = {
 	speed: 0,
 	time: 0,
+
+	// Percentage boven de normale omstandigheden, in het laatste half uur ofzo (bepaalt door server)
+	expceptional: 0,
+
 	timestamp: null, // Tijd die bij deze snelheid en tijd hoort op de polling server
 	createdOn: null, // Tijd waarop dit object werd aangemaakt <-> timestamp!
 	empty: false,
@@ -59,18 +63,18 @@ var TrafficData = {
 var IntervalRepresentation = {
 	speed: 0,
 	time: 0,
-	slowPercentage: 0,
+	unusualPercentage: 0,
 	unusual: null,
 	empty: false,
 
 	createdOn: null, // instance of Date
 	
-	create: function(speed, time, slowPercentage, unusual) { // Constructor
+	create: function(speed, time, unusualPercentage, unusual) { // Constructor
 		var obj = Object.create(this);
 		obj.unusual = unusual.slice();
 		obj.speed = speed;
 		obj.time = time;
-		obj.slowPercentage = slowPercentage;
+		obj.unusualPercentage = unusualPercentage;
 
 		obj.createdOn = new Date();
 		return obj;
@@ -159,22 +163,37 @@ var TrafficGraph = {
 		24: instanceof TrafficData
 		*/
 	},
+
+	// will contain the AVERAGE TrafficaData per time interval and day
+	avgData: {
+
+	},
 	
 	// setter for data, changes the creation date
 	setData: function(data){
 		this.data = data;
 		this.createdOn = new Date()
 	},
-	create: function(representation, data) {
+	setAvgData: function(data){
+		this.avgData = data;
+	},
+	create: function(representation, data, avgData) {
 		var obj = Object.create(TrafficGraph);
 		obj.representation = representation;
 		obj.data = null;
+		obj.avgData = null;
 
 		// dont pass data if it's not defined
 		if (data !== undefined){
 			// TODO: Hoe zijn we er zeker van dat de structuur die wordt doorgegeven klopt?
 			obj.data = data;
 			obj.createdOn = new Date();
+		}
+
+		// dont pass data if it's not defined
+		if (avgData !== undefined){
+			// TODO: Hoe zijn we er zeker van dat de structuur die wordt doorgegeven klopt?
+			obj.avgData = avgData;
 		}
 		
 		return obj;
@@ -239,24 +258,37 @@ var Route = {
 		return 'green';
 	},
 
+	getUnusualColor: function(representation) {
+		if (representation.empty){
+			return 'gray';
+		}
+		if (representation.unusualPercentage < 40){
+			return 'red';
+		}
+		if (representation.unusualPercentage > 60){
+			return 'green';
+		}
+		return 'orange';
+	},
+
 	getStatusFor: function(representation) {
 		// TODO: hier nieuwe property gebruiken om te bepalen of het traag verkeer is of niet
 		// op bais van de toegelaten snelheid op deze route
 
-		if (representation.speed < this.speedLimit - 30){
+		if (representation.unusualPercentage < 40){
 			return {
-				name: 'Heel traag verkeer',
+				name: 'Trager dan gemiddeld',
 				index: 10
 			};
 		}
-		if (representation.speed < this.speedLimit - 15){
+		if (representation.unusualPercentage > 60){
 			return {
-				name: 'Traag verkeer',
+				name: 'Sneller dan gemiddeld',
 				index: 5
 			};
 		}
 		return {
-				name: 'Vlot verkeer',
+				name: 'Gelijk met gemiddelde',
 				index: 0
 			};
 	},
@@ -293,17 +325,17 @@ var Route = {
 
 	// Geeft terug of de live situatie normaal is of niet
 	isExceptional: function(providerId) {
-		if (!this.hasRecentAvgRepresentation(providerId)) {
+		if (!this.hasAvgData(providerId)) {
 			return false;
 		}
-		if (!this.hasRecentLiveRepresentation(providerId)) {
+		if (!this.hasLiveData(providerId)) {
 			return false;
 		}
 
 		var liveData = this.liveData[providerId].representation;
 		var avgData = this.avgData[providerId].representation;
 
-		return liveData.speed < avgData.speed*0.6;
+		return liveData.speed < this.speedLimit-10 && liveData.speed < avgData.speed * 0.6;
 	},
 
 	// TODO: Moet weg!!
@@ -442,17 +474,41 @@ var Route = {
 
 					data[time] = {
 						value: 0,
-						count: 0
+						avgValue: 0,
+						count: 0,
+						avgCount: 0
 					};
 				}
 				data[time].value += graph.data[time];
 				data[time].count ++;
 			}
+			for (var time in graph.avgData) {
+				
+				if (!data[time]) {
+
+					data[time] = {
+						value: 0,
+						avgValue: 0,
+						count: 0,
+						avgCount: 0
+					};
+				}
+				data[time].avgValue += graph.avgData[time];
+				data[time].avgCount ++;
+			}
 		}
 
 		var result = {};
+		var avgResult = {};
 		for (var time in data) {
-			result[time] = data[time].value / data[time].count;
+			if (data[time].count > 0) {
+				result[time] = data[time].value / data[time].count;
+			}
+		}
+		for (var time in data) {
+			if (data[time].avgCount > 0) {
+				avgResult[time] = data[time].avgValue / data[time].avgCount;
+			}
 		}
 
 		var graph = this.getIntervalData(interval, 7, providerId)
@@ -461,6 +517,7 @@ var Route = {
 			this.setIntervalData(interval, 7, providerId, graph);
 		}
 		graph.data = result;
+		graph.avgData = avgResult;
 	},
 
 	// returns representation for given interval, or null if non-existant
@@ -491,6 +548,10 @@ var Provider = {
 		obj.id = id;
 		obj.name = name;
 		return obj;
+	},
+	getUrlString: function() {
+		// Spaties verwijderen (niet leesbaar in url met %20)
+		return this.name.replace(/\s+/g, '');
 	}
 };
 
