@@ -200,20 +200,14 @@ var Api = {
 
     // fetches graph for today (right up to current time)
     syncLiveGraph: function(routeId, providerId, callback, context) {
-    	
         // Bij begin van alle requests uitvoeren. 
         // Hebben deze nodig voor de callback wanneer de request klaar is.
         var qid = this.getQueueId();
 
-        // Hier alle data van de server halen.
-        // Uiteindelijk moet dit ongeveer het resultaat zijn: 
-
         var route = routes[routeId];
-        
-        // Hier alle data van de server halen.
-        // Uiteindelijk moet dit ongeveer het resultaat zijn: 
 
         var from = new Date();
+
         if (route.hasLiveDataRepresentation(providerId)) {
             from = new Date(route.liveData[providerId].representation.timestamp.getTime());
         } else {
@@ -224,12 +218,11 @@ var Api = {
                 from = new Date(route.liveData[Dashboard.provider.id].representation.timestamp.getTime());
             } 
         }
+        var to = new Date(from.valueOf());
 
         
-        from.setHours(0);
-        from.setMinutes(0);
-        from.setSeconds(0);
-        var to = new Date();
+        // Vanaf gisteren - zelfde tijdstip
+        from.setDate(from.getDate() - 1);
 
         var me = this;
 
@@ -248,7 +241,7 @@ var Api = {
                     var resultdata = result.data;
 
                     for (var key in resultdata) {
-                        var time = new Date(key);
+                        var time = stringToDate(key);
                         var hour = time.getUTCHours();
                         var minutes = time.getUTCMinutes();
                         hour += (minutes / 60);
@@ -257,7 +250,11 @@ var Api = {
                             console.error('Unreadable date format: "' + key + '" - Make sure the REST server is running the latest version.');
                             continue;
                         }
-                        data[hour] = (resultdata[key].traveltime) / 60;
+                        // Enkel die van vandaag tonen
+                        if (time.getDate() == to.getDate()) {
+                            data[hour] = (resultdata[key].traveltime) / 60;
+                        }
+                        // Gemiddelde toont ook de gemiddeldes van gisteren als voorspelling
                         avgData[hour] = (resultdata[key].average) / 60;
                     }
 

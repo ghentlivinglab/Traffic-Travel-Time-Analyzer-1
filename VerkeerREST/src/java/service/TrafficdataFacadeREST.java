@@ -215,15 +215,12 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
         q.setParameter(4, providerID);
         q.setParameter(5, routeID);
 
-        // dateformat in javascript format ('T' is required)
-        SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-
         StringBuilder json = new StringBuilder();
         try {
             json.append('{');
             String delimiter = "";
             for (Object[] o : (List<Object[]>) q.getResultList()) {
-                json.append(delimiter).append(new SimpleTrafficdata((dateformat.format((Timestamp) o[0])), ((BigDecimal) o[1]).doubleValue(), ((BigDecimal) o[2]).doubleValue()).toJson());
+                json.append(delimiter).append(new SimpleTrafficdata(o[0].toString(), ((BigDecimal) o[1]).doubleValue(), ((BigDecimal) o[2]).doubleValue()).toJson());
                 delimiter = ",";
             }
             json.append('}');

@@ -644,7 +644,7 @@ var Dashboard = {
 	    } else {
 	    	// Today op gisteren zetten, en kijken of het gisteren was
 	    	today.setDate(today.getDate() - 1);
-		    	if (today.getFullYear() === lastupdated.getFullYear() &&
+		    if (today.getFullYear() === lastupdated.getFullYear() &&
 			    today.getMonth() === lastupdated.getMonth() &&
 			    today.getDate() === lastupdated.getDate()) {
 
