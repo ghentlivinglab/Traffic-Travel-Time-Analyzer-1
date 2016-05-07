@@ -46,17 +46,7 @@ var Dashboard = {
 		Api.syncProviders(this.loadProviders, this);
 	},
 	intervalsDidChange: function() {
-                var interval = this.selectedIntervals[0];
-                var param = (interval.hasName ? encodeURIComponent(interval.getName()) : "") + "," + dateToDate(interval.start) + "," + dateToDate(interval.end);
-                if(this.mode===Dashboard.INTERVAL){
-                    url.setQueryParams("periode",param,"vergelijkPeriode","","","dag","");
-                }
-                
-                var interval2 = this.selectedIntervals[1];
-                if (this.mode===Dashboard.COMPARE_INTERVALS) {
-                    var param2 = (interval2.hasName ? encodeURIComponent(interval2.getName()) : "") + "," + dateToDate(interval2.start) + "," + dateToDate(interval2.end);
-                    url.setQueryParams("periode",param,"vergelijkPeriode",param2,"dag","");
-                }
+                url.setIntervals(this.selectedIntervals[0],this.selectedIntervals[1]);
                 
 		var changed = false;
 		for (var i = 0; i < this.selectedIntervals.length; i++) {
@@ -82,7 +72,7 @@ var Dashboard = {
 	},
 	dayDidChange: function() {
 		this.reload();
-        url.setQueryParams("periode","","vergelijkPeriode","","dag",dateToDate(this.selectedDay));
+                url.setQueryParams("dag",dateToDate(this.selectedDay));
 	},
 
 	filterChanged: function(){
@@ -183,6 +173,12 @@ var Dashboard = {
 		this.reload();
 
 		url.setQueryParam("weergave",this.mode);
+                url.setIntervals(this.selectedIntervals[0],this.selectedIntervals[1]);
+                if(this.mode === Dashboard.DAY){
+                    url.setQueryParam("dag",dateToDate(this.selectedDay));
+                } else {
+                    url.setQueryParam("dag","");
+                }
 
 		openDashboard();
 	},
@@ -528,7 +524,6 @@ var Dashboard = {
 	},
 	// Genereert HTML voor periode modus
 	reloadDay: function() {
-		console.log("reload day");
 		var dashboard = $('#dashboard .content');
 		var day = this.selectedDay;
 

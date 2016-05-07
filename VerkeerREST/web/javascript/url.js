@@ -126,7 +126,7 @@ var url = {
         var view = url.getQueryParam("weergave");
         if (view) {
             view = Number(view);
-            if ( !view && view!==0 ) {
+            if (!view && view !== 0) {
                 view = 0;
                 console.error("incorrect parameter: weergave");
                 url.setQueryParam("weergave");
@@ -137,7 +137,7 @@ var url = {
     },
     changeProviderByParam: function () {
         var providerName = url.getQueryParam("provider");
-        if (providerName === false){
+        if (providerName === false) {
             return;
         }
         Dashboard.setProviderName(providerName);
@@ -154,17 +154,17 @@ var url = {
 
                 if (name && from && to) {
                     var eventExists = -1;
-                    for(var i=0;i<events.length;i++){
-                        if(events[i].start.getTime() === from.getTime() && events[i].end.getTime() === to.getTime()){
+                    for (var i = 0; i < events.length; i++) {
+                        if (events[i].start.getTime() === from.getTime() && events[i].end.getTime() === to.getTime()) {
                             eventExists = i;
                             break;
                         }
                     }
                     var event;
-                    if(eventExists===-1){
+                    if (eventExists === -1) {
                         event = Event.create(name, from, to);
                         Dashboard.selectedIntervals[1] = event;
-                    } else if(eventExists > -1) {
+                    } else if (eventExists > -1) {
                         Dashboard.selectedIntervals[0] = events[i];
                     }
                     if (!url.getQueryParam("vergelijkPeriode")) {
@@ -200,17 +200,17 @@ var url = {
 
                 if (name && from && to) {
                     var eventExists = -1;
-                    for(var i=0;i<events.length;i++){
-                        if(events[i].start.getTime() === from.getTime() && events[i].end.getTime() === to.getTime()){
+                    for (var i = 0; i < events.length; i++) {
+                        if (events[i].start.getTime() === from.getTime() && events[i].end.getTime() === to.getTime()) {
                             eventExists = i;
                             break;
                         }
                     }
                     var event;
-                    if(eventExists===-1){
+                    if (eventExists === -1) {
                         event = Event.create(name, from, to);
                         Dashboard.selectedIntervals[1] = event;
-                    } else if(eventExists > -1) {
+                    } else if (eventExists > -1) {
                         Dashboard.selectedIntervals[1] = events[i];
                     }
                     Dashboard.intervalsDidChange();
@@ -269,19 +269,19 @@ var url = {
             map.setZoom(zoom);
         }
     },
-    changeFilterByParam: function(){
+    changeFilterByParam: function () {
         var value = decodeURIComponent(url.getQueryParam("filter"));
-        if(value!=="false"){
+        if (value !== "false") {
             Dashboard.filterValue = value;
             Dashboard.updateFilter();
             $("#filter #filterInput").val(Dashboard.filterValue);
         }
     },
-    changeDayByParam: function(){
+    changeDayByParam: function () {
         var value = url.getQueryParam("dag");
-        if(value){
+        if (value) {
             var date = this.createValidDate(value);
-            if(date){
+            if (date) {
                 Dashboard.setSelectedDay(date);
             } else {
                 console.error("incorrect parameter: dag (wrong format of date)");
@@ -299,5 +299,23 @@ var url = {
             return NaN;
         }
         return new Date(year, month - 1, day);
+    },
+    setIntervals: function (interval, vergelijkInterval) {
+        var param = (interval.hasName ? encodeURIComponent(interval.getName()) : "") + ","
+                + dateToDate(interval.start) + ","
+                + dateToDate(interval.end);
+        
+        if (Dashboard.mode === Dashboard.INTERVAL) {
+            this.setQueryParams("periode", param, "vergelijkPeriode", "", "", "dag", "");
+            
+        } else if (Dashboard.mode === Dashboard.COMPARE_INTERVALS) {
+            var param2 = (vergelijkInterval.hasName ? encodeURIComponent(vergelijkInterval.getName()) : "") + ","
+                    + dateToDate(vergelijkInterval.start) + ","
+                    + dateToDate(vergelijkInterval.end);
+            url.setQueryParams("periode", param, "vergelijkPeriode", param2, "dag", "");
+            
+        } else {
+            url.setQueryParams("periode", "", "vergelijkPeriode", "");
+        }
     }
 };
