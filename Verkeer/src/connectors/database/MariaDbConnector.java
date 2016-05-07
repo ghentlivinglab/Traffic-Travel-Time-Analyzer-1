@@ -132,12 +132,14 @@ public class MariaDbConnector implements IDbConnector {
     public void insert(RouteEntry entry) {
         try {
             PreparedStatement p = connection.prepareStatement(prop.getProperty("INSERT_RE"));
-            p.setInt(1, entry.getLenght());
+            p.setInt(1, entry.getLength());
             p.setString(2, entry.getName());
             p.setDouble(3, entry.getStartCoordinateLatitude());
             p.setDouble(4, entry.getStartCoordinateLongitude());
             p.setDouble(5, entry.getEndCoordinateLatitude());
             p.setDouble(6, entry.getEndCoordinateLongitude());
+            p.setDouble(7, entry.getSpeedLimit());
+            p.setString(8, entry.getDescription());
             p.executeUpdate();
         } catch (SQLException ex) {
             log.error("Couldn't insert RouteEntry " + entry.getName(), ex);
@@ -213,7 +215,7 @@ public class MariaDbConnector implements IDbConnector {
             p.setString(1, name);
             ResultSet rs = p.executeQuery();
             if (rs.next()) {
-                ret = new RouteEntry(rs.getString("name"), rs.getDouble("startlat"), rs.getDouble("startlong"), rs.getDouble("endlat"), rs.getDouble("endlong"), rs.getInt("length"), 0);
+                ret = new RouteEntry(rs.getInt("id"), rs.getString("name"), rs.getString("description"), rs.getDouble("startlat"), rs.getDouble("startlong"), rs.getDouble("endlat"), rs.getDouble("endlong"), rs.getInt("length"), 0);
             }
             //TODO: Als er niks wordt teruggegeven, dan wordt er eentje aangemaakt. Analoog zoals bij provider.
             rs.close();
@@ -237,7 +239,7 @@ public class MariaDbConnector implements IDbConnector {
             p.setInt(1, id);
             ResultSet rs = p.executeQuery();
             if (rs.next()) {
-                ret = new RouteEntry(rs.getString("name"), rs.getDouble("startlat"), rs.getDouble("startlong"), rs.getDouble("endlat"), rs.getDouble("endlong"), rs.getInt("length"), 0);
+                ret = new RouteEntry(rs.getInt(id), rs.getString("name"), rs.getString("description") ,rs.getDouble("startlat"), rs.getDouble("startlong"), rs.getDouble("endlat"), rs.getDouble("endlong"), rs.getInt("length"), rs.getInt("speedLimit"));
                 ret.setId(id);
             }
             rs.close();
@@ -383,6 +385,39 @@ public class MariaDbConnector implements IDbConnector {
         }
         initConnectionURL();
         initConnection();
+    }
+
+    @Override
+    public void delete(DataEntry entry) {
+        try {
+            PreparedStatement p = connection.prepareStatement(prop.getProperty("DELETE_DE"));
+            p.setInt(1, entry.getRoute().getId());
+            p.executeUpdate();
+        } catch (SQLException ex) {
+            log.error("Couldn't delete DataEntry object from database", ex);
+        }
+    }
+
+    @Override
+    public void delete(RouteEntry entry) {
+        try {
+            PreparedStatement p = connection.prepareStatement(prop.getProperty("DELETE_RE"));
+            p.setInt(1, entry.getId());
+            p.executeUpdate();
+        } catch (SQLException ex) {
+            log.error("Couldn't delete RouteEntry object from database", ex);
+        }
+    }
+
+    @Override
+    public void delete(ProviderEntry entry) {
+        try {
+            PreparedStatement p = connection.prepareStatement(prop.getProperty("DELETE_PE"));
+            p.setInt(1, entry.getId());
+            p.executeUpdate();
+        } catch (SQLException ex) {
+            log.error("Couldn't delete ProviderEntry object from database", ex);
+        }
     }
 
 }
