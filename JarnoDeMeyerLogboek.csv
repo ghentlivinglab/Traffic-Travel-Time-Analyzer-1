@@ -108,4 +108,4 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 06/05/16,17:30,18:00,Thuis,Projectwerk,Filteren van routes in overzicht,81,styling in orde zetten
 06/05/16,18:30,18:45,Thuis,Projectwerk,Filteren van routes in overzicht,81,styling in orde zetten
 06/05/16,18:45,19:00,Thuis,Projectwerk,Timestamp live modus,49,indien meer dan 60 minuten verschil wordt het verschil in uren en minuten getoond
-07/05/16,15:00,17:30,Thuis,Projectwerk,Misc bugfixes,,found and fixed some bugs in the map and url system
+07/05/16,15:00,17:45,Thuis,Projectwerk,Misc bugfixes,,found and fixed some bugs in the map and url system
