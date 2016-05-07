@@ -304,16 +304,18 @@ var url = {
         var param = (interval.hasName ? encodeURIComponent(interval.getName()) : "") + ","
                 + dateToDate(interval.start) + ","
                 + dateToDate(interval.end);
-        
+        param = param === ",," ? "" : param;
+
         if (Dashboard.mode === Dashboard.INTERVAL) {
             this.setQueryParams("periode", param, "vergelijkPeriode", "", "", "dag", "");
-            
+
         } else if (Dashboard.mode === Dashboard.COMPARE_INTERVALS) {
             var param2 = (vergelijkInterval.hasName ? encodeURIComponent(vergelijkInterval.getName()) : "") + ","
                     + dateToDate(vergelijkInterval.start) + ","
                     + dateToDate(vergelijkInterval.end);
+            param2 = param2 === ",," ? "" : param2;
             url.setQueryParams("periode", param, "vergelijkPeriode", param2, "dag", "");
-            
+
         } else {
             url.setQueryParams("periode", "", "vergelijkPeriode", "");
         }
