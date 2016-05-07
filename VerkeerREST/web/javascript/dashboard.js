@@ -421,29 +421,69 @@ var Dashboard = {
 			Dashboard.openIntervalGraph(interval, routeId, element, width, height);
 		};
 
-		var okay = true;
+		// kopie maken
+		var extraProviders = this.extraProviders.slice();
+
+
 		var data = {};
-		for (var day = 0; day <= 7; day++) {
-			var graph = route.getIntervalData(interval, day, this.provider.id);
-			if (!graph || !graph.data){
-				okay = false;
-				break;
-			}else{
-				if (day == 7) {
-					data[interval.getName()] = graph.data;
-					data["Gemiddelde"] = graph.avgData;
-				} else {
-					data[weekdays[day]] = graph.data;
-				}
-			}	
-		}
-		
-		if (!okay) {
-			Api.syncIntervalGraph(interval, routeId, this.provider.id, callback, this);
-			return;
+
+		extraProviders.unshift(this.provider.id);
+		var missing = [];
+
+		// weekdagen enkel toevoegen bij 1 provider
+		var end = 7;
+		if (extraProviders.length > 1) {
+			end = -1;
 		}
 
-		drawChart(element, data, width, height);
+		for (var i = 0; i < extraProviders.length; i++) {
+			var providerId = extraProviders[i];
+			var provider = providers[providerId];
+			var okay = true;
+
+			// Kleine hack: we beginnen altijd bij 7, daarna 1, 2 ...
+			// dit doen we om het gemiddelde altijd eerst te tonen, zonder dup code
+			for (var j = -1; j <= end; j++) {
+				var day = j;
+				if (day == -1) {
+					day = 7;
+				}
+
+				var graph = route.getIntervalData(interval, day, providerId);
+				if (!graph || !graph.data){
+					okay = false;
+					break;
+				}else{
+					var pre = '';
+					if (extraProviders.length > 1) {
+						pre = provider.name + ' ';
+					}
+
+					if (day == 7) {
+						data[pre + "Alle dagen"] = graph.data;
+						data[pre + "Gemiddelde"] = graph.avgData;
+					} else {
+						data[weekdays[day]] = graph.data;
+					}
+				}	
+			}
+
+			if (!okay) {
+				missing.push(providerId);
+			}
+		}
+
+		if (missing.length > 0) {
+			Api.newQueue(missing.length);
+			for (var i = 0; i < missing.length; i++) {
+				var providerId = missing[i];
+				Api.syncIntervalGraph(interval, routeId, providerId, callback, this);
+			}
+			Api.endQueue();
+			return;
+		}
+		$(element).parent().find('.extra-content').html(this.extraProvidersList());
+		drawChart(element, data, width, height, 2 * extraProviders.length);
 	},
 	// Opent de grafiek horende bij 1 interval (met weekdagen etc)
 	openDayGraph: function(day, routeId, element, width, height) {

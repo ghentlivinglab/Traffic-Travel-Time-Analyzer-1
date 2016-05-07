@@ -95,7 +95,11 @@ function floatToHour(i){
 	}
 
 */
-function drawChart(element, data, width, height) {
+function drawChart(element, data, width, height, maximumLines) {
+    if (typeof maximumLines == "undefined") {
+        var maximumLines = 4;
+    }
+
 	for (var key in data) {
 
 		// lege keys negeren we
@@ -156,7 +160,7 @@ function drawChart(element, data, width, height) {
 	var defSettings = {'lineWidth': 2, 'curveType': 'function', pointSize: 0, calc: function () {
                             return null;
                         }};
-	var avgSettings = {'lineWidth': 2, 'lineDashStyle':  [4, 4], 'curveType': 'function' };
+	var avgSettings = {'lineWidth': 3, 'lineDashStyle':  [4, 4], 'curveType': 'function' };
 
 	var series = {};
 	var legend = { position: 'top', alignment: 'start' };
@@ -166,6 +170,7 @@ function drawChart(element, data, width, height) {
 		legend = { position: 'right', alignment: 'start' };
 		padding = {left:90,top:20,right:140, bottom: 70};
 	}
+
 
 	for (var i = 0; i < arr[0].length-1; i++) {
 		// Dupliceren
@@ -219,8 +224,8 @@ function drawChart(element, data, width, height) {
         columns.push(i);
     }
 
-    if (columns.length > 5){
-        for (var col = 5; col < columns.length; col++) {
+    if (columns.length > maximumLines+1){
+        for (var col = maximumLines+1; col < columns.length; col++) {
             if (columns[col] == col) {
                 // hide the data series
                 columns[col] = {
