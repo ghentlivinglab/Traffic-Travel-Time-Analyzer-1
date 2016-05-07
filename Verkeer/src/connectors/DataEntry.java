@@ -118,5 +118,18 @@ public class DataEntry {
         String reportDate = df.format(timestamp);
 
         return "DataEntry {\n\troute: \"" + route + "\",\n\ttimestamp: \"" + reportDate + "\",\n\ttravelTime: " + travelTime + ",\n\tprovider: \"" + provider.getName() + "\"\n}";
+    }  
+    
+    @Override
+    public boolean equals(Object other){
+        if(other == null) return false;
+        if(other == this) return true;
+        if(!(other instanceof DataEntry)) return false;
+        DataEntry otherDataEntry = (DataEntry) other;
+        if( /*otherDataEntry.getProvider().getName().equals(getProvider().getName()) &&
+                otherDataEntry.getRoute().getName().equals(getRoute().getId()) &&
+                otherDataEntry.getTimestamp() == getTimestamp()*/ true
+        ) return true;
+        else return false;
     }
 }

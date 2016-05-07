@@ -11,6 +11,9 @@ public interface IDbConnector{
     public void insert(DataEntry entry);
     public void insert(RouteEntry entry);
     public void insert(ProviderEntry entry);
+    public void delete(DataEntry entry);
+    public void delete(RouteEntry entry);
+    public void delete(ProviderEntry entry);
     public ProviderEntry    findProviderEntryByName(String name);
     public ProviderEntry    findProviderEntryByID(int id);
     public RouteEntry       findRouteEntryByName(String name);

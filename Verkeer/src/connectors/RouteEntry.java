@@ -4,31 +4,35 @@ public class RouteEntry {
 
     private int id;
     private String name;
+    private String description;
     private double startCoordinateLatitude;
     private double startCoordinateLongitude;
     private double endCoordinateLatitude;
     private double endCoordinateLongitude;
-    private int lenght;
-    private int idealTravelTime;
+    private int length;
+    private int speedLimit;
 
     /**
-     *
+     * @param id
      * @param name
+     * @param description
      * @param startCoordinateLatitude
      * @param startCoordinateLongitude
      * @param endCoordinateLatitude
      * @param endCoordinateLongitude
-     * @param lenght
-     * @param idealTravelTime
+     * @param length
+     * @param speedLimit
      */
-    public RouteEntry(String name, double startCoordinateLatitude, double startCoordinateLongitude, double endCoordinateLatitude, double endCoordinateLongitude, int lenght, int idealTravelTime) {
+    public RouteEntry(int id, String name, String description, double startCoordinateLatitude, double startCoordinateLongitude, double endCoordinateLatitude, double endCoordinateLongitude, int length, int speedLimit) {
+        this.id = id;
         this.name = name;
+        this.description = description;
         this.startCoordinateLatitude = startCoordinateLatitude;
         this.startCoordinateLongitude = startCoordinateLongitude;
         this.endCoordinateLatitude = endCoordinateLatitude;
         this.endCoordinateLongitude = endCoordinateLongitude;
-        this.lenght = lenght;
-        this.idealTravelTime = idealTravelTime;
+        this.length = length;
+        this.speedLimit = speedLimit;
     }
 
     /**
@@ -77,7 +81,7 @@ public class RouteEntry {
     }
 
     /**
-     * Returns the latitude of the end point.
+     * Gets and sets the latitude of the end point.
      *
      * @return double with latitude of end point
      */
@@ -90,7 +94,7 @@ public class RouteEntry {
     }
 
     /**
-     * Returns the longitude of the end point.
+     * Gets and sets the longitude of the end point.
      *
      * @return double with longitude of end point
      */
@@ -103,33 +107,47 @@ public class RouteEntry {
     }
 
     /**
-     * Returns the lenght of the route.
+     * Gets and sets the length of the route.
      *
-     * @return integer with lenght of the route in meters
+     * @return integer with length of the route in meters
      */
-    public int getLenght() {
-        return lenght;
+    public int getLength() {
+        return length;
     }
 
     public void setLenght(int lenght) {
-        this.lenght = lenght;
+        this.length = lenght;
     }
 
     /**
-     * Returns the ideal travel time of the route for the provider.
+     * Gets and sets the ideal travel time of the route for the provider.
      *
      * @return integer with ideal travel time in seconds
      */
-    public int getIdealTravelTime() {
-        return idealTravelTime;
+    public int getSpeedLimit() {
+        return speedLimit;
     }
 
-    public void setIdealTravelTime(int idealTravelTime) {
-        this.idealTravelTime = idealTravelTime;
+    public void setIdealTravelTime(int speedLimit) {
+        this.speedLimit = speedLimit;
     }
 
     /**
-     * Returns the id of the route
+     * Gets and sets the description of a RouteEntry object. This can be more specific then the name.
+     * 
+     * @return String with description
+     */
+    
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+    
+    /**
+     * Gets and sets the id of the route
      *
      * @return integer with id of the route
      */
@@ -146,4 +164,20 @@ public class RouteEntry {
         return this.getName();
     }
 
+    @Override
+    public boolean equals(Object other){
+        if(other == null) return false;
+        if(other == this) return true;
+        if(!(other instanceof RouteEntry)) return false;
+        RouteEntry otherRouteEntry = (RouteEntry) other;
+        if( otherRouteEntry.getName().equals(name) &&
+                otherRouteEntry.getStartCoordinateLatitude() == startCoordinateLatitude &&
+                otherRouteEntry.getStartCoordinateLongitude() == startCoordinateLongitude &&
+                otherRouteEntry.getEndCoordinateLatitude() == endCoordinateLatitude &&
+                otherRouteEntry.getEndCoordinateLongitude() == endCoordinateLongitude &&
+                otherRouteEntry.getDescription().equals(description) &&
+                otherRouteEntry.getLength() == length &&
+                otherRouteEntry.getSpeedLimit() == speedLimit) return true;
+        else return false;
+    }
 }

@@ -3,7 +3,10 @@ package connectors.database;
 import connectors.DataEntry;
 import connectors.ProviderEntry;
 import connectors.RouteEntry;
+import java.security.Provider;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -14,11 +17,14 @@ import static org.junit.Assert.*;
 
 public class MariaDbConnectorTest {
 
+    static MariaDbConnector instance;
+    
     public MariaDbConnectorTest() {
     }
 
     @BeforeClass
-    public static void setUpClass() {
+    public static void setUpClass() throws ConnectionException {
+        instance = new MariaDbConnector();
     }
 
     @AfterClass
@@ -27,6 +33,7 @@ public class MariaDbConnectorTest {
 
     @Before
     public void setUp() {
+        
     }
 
     @After
@@ -34,42 +41,48 @@ public class MariaDbConnectorTest {
     }
 
     /**
-     * Test of insert method, of class MariaDbConnector.
+     * Test of insert methods, of class MariaDbConnector.
      */
     @Test
-    public void testInsert_DataEntry() throws ConnectionException {
-        System.out.println("insert");
-        DataEntry entry = null;
-        MariaDbConnector instance = new MariaDbConnector();
-        instance.insert(entry);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of insert method, of class MariaDbConnector.
-     */
-    @Test
-    public void testInsert_ProviderEntry() throws ConnectionException {
-        System.out.println("insert");
-        ProviderEntry entry = null;
-        MariaDbConnector instance = new MariaDbConnector();
-        instance.insert(entry);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of insert method, of class MariaDbConnector.
-     */
-    @Test
-    public void testInsert_RouteEntry() throws ConnectionException {
-        System.out.println("insert");
-        RouteEntry entry = null;
-        MariaDbConnector instance = new MariaDbConnector();
-        instance.insert(entry);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testInserts() throws ConnectionException {
+        //adding test ProviderEntry to database
+        ProviderEntry pe = MariaDbConnectorTest.instance.findProviderEntryByName("test");
+        ProviderEntry ppe = MariaDbConnectorTest.instance.findProviderEntryByName("test");
+        assertEquals(pe, ppe); // Passes if insert succeeded
+        
+        
+        //adding test RouteEntry to database
+        RouteEntry re = new RouteEntry();
+        re.setName("test");
+        re.setDescription("test");
+        MariaDbConnectorTest.instance.insert(re);
+        RouteEntry rre = MariaDbConnectorTest.instance.findRouteEntryByName("test");
+        assertEquals(re, rre); // Passes if insert has succeeded
+        
+        //adding test DataEntry to database
+        int traveltime = 1234569;
+        DataEntry de = new DataEntry(traveltime, rre, ppe);
+        MariaDbConnectorTest.instance.insert(de);
+        System.out.println(ppe.getId());
+        System.out.println(rre.getId());
+        System.out.println(de.getTimestamp());
+        DataEntry dde = MariaDbConnectorTest.instance.findDataEntryByID(ppe.getId(), rre.getId(), de.getTimestamp());
+        //assertEquals(de, dde); // Passes if insert has succeeded
+        
+        // Removing all added testdata from database. Removing route & providers suffices
+        MariaDbConnectorTest.instance.delete(ppe);
+        MariaDbConnectorTest.instance.delete(rre);
+        
+        // Check if the provider & route objects are removed from the database
+        RouteEntry rrre = MariaDbConnectorTest.instance.findRouteEntryByID(rre.getId());
+        assertNull(rrre); // Passes if the test RouteEntry object does not exist anymore in the database
+        
+        ProviderEntry pppe = MariaDbConnectorTest.instance.findProviderEntryByID(ppe.getId());
+        assertNull(pppe);
+        
+        
+        
+        
     }
 
     /**
@@ -77,14 +90,8 @@ public class MariaDbConnectorTest {
      */
     @Test
     public void testFindProviderEntryByName() throws ConnectionException {
-        System.out.println("findProviderEntryByName");
-        String name = "";
-        MariaDbConnector instance = new MariaDbConnector();
-        ProviderEntry expResult = null;
-        ProviderEntry result = instance.findProviderEntryByName(name);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        ProviderEntry result = MariaDbConnectorTest.instance.findProviderEntryByName("Waze");
+        assertTrue((result != null)&& (result.getName() != null) && !(result.getName().equals("")) && (result.getName().length() != 0));
     }
 
     /**
@@ -92,14 +99,8 @@ public class MariaDbConnectorTest {
      */
     @Test
     public void testFindProviderEntryByID() throws ConnectionException {
-        System.out.println("findProviderEntryByID");
-        int id = 0;
-        MariaDbConnector instance = new MariaDbConnector();
-        ProviderEntry expResult = null;
-        ProviderEntry result = instance.findProviderEntryByID(id);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        ProviderEntry result = MariaDbConnectorTest.instance.findProviderEntryByID(1);
+        assertTrue((result != null)&& (result.getName() != null) && !(result.getName().equals("")) && (result.getName().length() != 0));
     }
 
     /**
@@ -107,14 +108,8 @@ public class MariaDbConnectorTest {
      */
     @Test
     public void testFindRouteEntryByName() throws ConnectionException {
-        System.out.println("findRouteEntryByName");
-        String name = "";
-        MariaDbConnector instance = new MariaDbConnector();
-        RouteEntry expResult = null;
-        RouteEntry result = instance.findRouteEntryByName(name);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        RouteEntry result = instance.findRouteEntryByName("Gasmeterlaan (R40) eastbound");
+        assertTrue((result != null)&& (result.getName() != null) && !(result.getName().equals("")) && (result.getName().length() != 0));
     }
 
     /**
@@ -122,67 +117,46 @@ public class MariaDbConnectorTest {
      */
     @Test
     public void testFindRouteEntryByID() throws ConnectionException {
-        System.out.println("findRouteEntryByID");
-        int id = 0;
-        MariaDbConnector instance = new MariaDbConnector();
-        RouteEntry expResult = null;
-        RouteEntry result = instance.findRouteEntryByID(id);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        RouteEntry result = MariaDbConnectorTest.instance.findRouteEntryByID(1);
+        assertTrue((result != null)&& (result.getName() != null) && !(result.getName().equals("")) && (result.getName().length() != 0));
     }
-
-    /**
-     * Test of findDataEntryByID method, of class MariaDbConnector.
-     */
-    @Test
-    public void testFindDataEntryByID_4args() throws ConnectionException {
-        System.out.println("findDataEntryByID");
-        int routeId = 0;
-        int providerId = 0;
-        Timestamp timestamp = null;
-        boolean deep = false;
-        MariaDbConnector instance = new MariaDbConnector();
-        DataEntry expResult = null;
-        DataEntry result = instance.findDataEntryByID(routeId, providerId, timestamp, deep);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of findDataEntryByID method, of class MariaDbConnector.
-     */
-    @Test
-    public void testFindDataEntryByID_3args() throws ConnectionException {
-        System.out.println("findDataEntryByID");
-        int routeId = 0;
-        int providerId = 0;
-        Timestamp timestamp = null;
-        MariaDbConnector instance = new MariaDbConnector();
-        DataEntry expResult = null;
-        DataEntry result = instance.findDataEntryByID(routeId, providerId, timestamp);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+    
 
     /**
      * Test of findDataEntryBetween method, of class MariaDbConnector.
      */
     @Test
-    public void testFindDataEntryBetween() throws ConnectionException {
-        System.out.println("findDataEntryBetween");
-        int routeId = 0;
-        int providerId = 0;
-        Timestamp from = null;
-        Timestamp to = null;
-        MariaDbConnector instance = new MariaDbConnector();
-        Collection<DataEntry> expResult = null;
-        Collection<DataEntry> result = instance.findDataEntryBetween(routeId, providerId, from, to);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testFindDataEntryBetween() throws ConnectionException, InterruptedException {
+        //adding test ProviderEntry to database
+        ProviderEntry pe = MariaDbConnectorTest.instance.findProviderEntryByName("test");
+        ProviderEntry ppe = MariaDbConnectorTest.instance.findProviderEntryByName("test");
+        assertEquals(pe, ppe); // Passes if insert succeeded
+        
+        
+        //adding test RouteEntry to database
+        RouteEntry re = new RouteEntry();
+        re.setName("test");
+        re.setDescription("test");
+        MariaDbConnectorTest.instance.insert(re);
+        RouteEntry rre = MariaDbConnectorTest.instance.findRouteEntryByName("test");
+        assertEquals(re, rre); // Passes if insert has succeeded
+        
+        //Adding data
+        Timestamp from = new Timestamp(Calendar.getInstance().getTime().getTime());
+        for(int i=0; i<10; i++){
+            DataEntry de = new DataEntry(i, rre, ppe);
+            MariaDbConnectorTest.instance.insert(de);
+            Thread.sleep(1000);
+        }
+        Timestamp to = new Timestamp(Calendar.getInstance().getTime().getTime());
+        
+        //Checking if 10 dataentries were added
+        int count = MariaDbConnectorTest.instance.findDataEntryBetween(rre.getId(), ppe.getId(), from, to).size();
+        assertEquals(10, count);
+        
+        //Cleaning up
+        MariaDbConnectorTest.instance.delete(ppe);
+        MariaDbConnectorTest.instance.delete(rre);
     }
 
     /**
@@ -191,12 +165,9 @@ public class MariaDbConnectorTest {
     @Test
     public void testFindAllRouteEntries() throws ConnectionException {
         System.out.println("findAllRouteEntries");
-        MariaDbConnector instance = new MariaDbConnector();
-        Collection<RouteEntry> expResult = null;
-        Collection<RouteEntry> result = instance.findAllRouteEntries();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        ArrayList<RouteEntry> result = (ArrayList<RouteEntry>) MariaDbConnectorTest.instance.findAllRouteEntries();
+        boolean b = result != null && result.size() > 0;
+        assertTrue(b);
     }
 
 }

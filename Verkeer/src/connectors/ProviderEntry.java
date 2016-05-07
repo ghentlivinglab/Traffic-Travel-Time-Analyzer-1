@@ -46,5 +46,15 @@ public class ProviderEntry {
     public void setName(String name) {
         this.name = name;
     }
+    
+    @Override
+    public boolean equals(Object other){
+        if(other == null) return false;
+        if(other == this) return true;
+        if(!(other instanceof ProviderEntry)) return false;
+        ProviderEntry otherProviderEntry = (ProviderEntry) other;
+        if( otherProviderEntry.getName().equals(name) ) return true;
+        else return false;
+    }
 
 }

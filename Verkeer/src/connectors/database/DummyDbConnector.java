@@ -168,7 +168,22 @@ public class DummyDbConnector implements IDbConnector {
 
     @Override
     public void reloadProperties() throws ConnectionException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
+    }
+
+    @Override
+    public void delete(DataEntry entry) {
+        
+    }
+
+    @Override
+    public void delete(RouteEntry entry) {
+        
+    }
+
+    @Override
+    public void delete(ProviderEntry entry) {
+        
     }
 
 }
