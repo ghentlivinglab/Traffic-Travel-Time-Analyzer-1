@@ -592,7 +592,7 @@ var Dashboard = {
 		}
 
 		$(element).parent().find('.extra-content').html(this.extraProvidersList());
-		drawChart(element, data, width, height);
+		drawChart(element, data, width, height, extraProviders.length * 2);
 	},
 
 	//syncIntervalGraph
