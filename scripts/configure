@@ -1,0 +1,102 @@
+#! /bin/bash
+
+GLASSFISH_INSTALLATION_DIR="/opt/glassfish4" #Default installation directory
+GLASSFISH_DOMAIN_NAME="domain1"	#Default domain
+
+INSTALL_DIRECTORY="/opt/verkeer" #Default install directory
+
+#-------------MySQL--------------------#
+echo "--------------Configuring database------------------"
+#Aanmaken database en bijhorende tabellen.
+echo "Creating database. Prepare to enter your MySQL root password."
+if mysqlshow --user=root -p "verkeer1" > /dev/null 2>&1; then  
+	echo "The database \"verkeer1\" already exists."
+	read -p "Are you sure you want to override the database? [yes/no] "
+	if [ "$REPLY" == "yes" ]; then
+		mysql -u root -p -f < configured/init_db.sql
+	else
+		echo "Rename the database and re-execute this script."
+		exit;
+	fi;
+else
+	mysql -u root -p -f < configured/init_db.sql
+fi;
+echo ""
+
+#-----------Glassfish--------------#
+echo ""
+echo "-------------Configuring glassfish--------------"
+#Installeren van de MySQL Connector/J
+echo "Installing MySQL connector"
+cp verkeer-backend/lib/com.mysql.jdbc_5.1.5.jar ${GLASSFISH_INSTALLATION_DIR}/glassfish/domains/${GLASSFISH_DOMAIN_NAME}/lib/ext
+
+
+#Herstarten van het domain om zeker te zijn dat de server aan staat.
+echo "Making sure the glassfish domain is up and running."
+${GLASSFISH_INSTALLATION_DIR}/bin/asadmin restart-domain ${GLASSFISH_DOMAIN_NAME}
+
+
+#Aanmaken van connection pool
+echo "Creating connection pool to database"
+${GLASSFISH_INSTALLATION_DIR}/bin/asadmin create-jdbc-connection-pool --datasourceclassname com.mysql.jdbc.jdbc2.optional.MysqlDataSource --restype javax.sql.DataSource --property user=verkeer:password=verkeer:DatabaseName=verkeer1:ServerName=localhost:port=3306 verkeer1
+
+
+#Test deze connectie
+echo "Testing connection"
+${GLASSFISH_INSTALLATION_DIR}/bin/asadmin ping-connection-pool verkeer1
+echo ""
+
+#-----------Verkeer-backend------------
+echo "-----------Configuration of the polling application-----------"
+#Mogelijkheid voorzien om de applicatie ergens anders te installeren.
+read -p "Do you want to change the install directory (default: /opt/verkeer)? [yes/no] ";
+
+if [ "$REPLY" == "yes" ]; then
+	read -p "Where do you want to install the application?" INSTALL_DIRECTORY
+	sed -i 's,INSTALL_DIRECTORY=.*,INSTALL_DIRECTORY=\"'"$INSTALL_DIRECTORY"'\",' configured/verkeer
+else
+	echo "The application will be installed in /opt/verkeer"
+fi;
+
+#Cronjobs toevoegen
+echo "Adding cron jobs"
+read -p "Are you sure you want to add cronjobs? Make sure you didnt do this already. [yes/no] ";
+if [ "$REPLY" == "yes" ]; then
+	crontab -l | { cat; echo '0 6 * * * /bin/bash /bin/verkeer > /root/logs/crontab.log 2>&1'; } | crontab -
+	crontab -l | { cat; echo '*0/2 * * * * mysql -u root -p'"$MYSQL_ROOT_PW"' < '"$INSTALL_DIRECTORY"'/crunch.sql'; } | crontab -
+fi;
+echo ""
+
+#JSON library voor perl installeren
+echo "Installing JSON libraries for Perl"
+sudo yum install libjson-perl || sudo apt-get install libjson-perl
+echo ""
+
+#Screen installeren
+echo "Installing screen"
+sudo yum install screen || sudo apt-get install screen
+echo ""
+
+#Startup script in /bin kopieren
+echo "Making startup script verkeer"
+cp configured/verkeer /usr/bin/verkeer
+chmod +x /usr/bin/verkeer
+
+
+#Jar, War, lib en config filesnaar INSTALL_DIRECTORY kopieren
+echo "Moving files"
+cp -r verkeer-backend ${INSTALL_DIRECTORY}
+cp verkeer-webapp/VerkeerREST.war ${INSTALL_DIRECTORY}/VerkeerREST.war
+echo ""
+
+#-----------Webapplicatie-----------#
+echo "-------------Webapplication-------------"
+read -p "Do you want to deploy the application now? [yes/no] ";
+echo;
+if [ "$REPLY" == "yes" ]; then
+	${GLASSFISH_INSTALLATION_DIR}/bin/asadmin deploy --force verkeer-webapp/VerkeerREST.war
+else
+	echo "Ok. To deploy the application at a later time, execute the following command."
+	echo "verkeer -d"
+fi;
+echo ""
