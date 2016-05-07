@@ -207,9 +207,9 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
             return processError(MessageState.PIDNP);
         }
 
-        String queryString = "select timestamp - interval extract(second from timestamp) second - interval extract(minute from timestamp)%?1 minute, avg(traveltime), avg(avgtraveltimeday) from trafficdata where timestamp between ?2 and ?3 and providerID=?4 and routeID=?5 group by timestamp - interval extract(second from timestamp) second - interval extract(minute from timestamp)%?1 minute order by 1";
+        String queryString = "SELECT From_unixtime(Floor(( Unix_timestamp(timestamp) + ?1 /2) /?1) * ?1), Avg(traveltime), Avg(avgtraveltimeday) FROM trafficdata WHERE timestamp BETWEEN ?2 AND ?3 AND providerid = ?4 AND routeid = ?5 AND avgtraveltimeday is not null and avgtraveltimeday != 0 GROUP BY From_unixtime(Floor(( Unix_timestamp(timestamp) + ?1 /2) /?1) * ?1) ORDER BY 1 ;";
         Query q = getEntityManager().createNativeQuery(queryString);
-        q.setParameter(1, interval);
+        q.setParameter(1, interval*60);
         q.setParameter(2, from, TemporalType.TIMESTAMP);
         q.setParameter(3, to, TemporalType.TIMESTAMP);
         q.setParameter(4, providerID);
