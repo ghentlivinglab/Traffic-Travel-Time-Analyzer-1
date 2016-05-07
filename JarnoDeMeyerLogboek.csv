@@ -98,13 +98,14 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 30/04/16,13:30,14:00,Thuis,Projectwerk,Toevoegen URL parameters,78,paar bugs opgelost
 01/05/16,14:45,15:45,Thuis,Projectwerk,Toevoegen URL parameters,78,herwerken van framework om duidelijker en draagbaarder te zijn.
 02/05/16,08:15,11:45,Thuis,Projectwerk,Filteren van routes in overzicht,81,eerste ruwe implementatie (zoekt letterlijk naar de opgegeven string)
-03/05/16,08:15,12:00,School,Masterproef,Infomoment IBCN,,
+03/05/16,08:15,12:30,School,Masterproef,Infomoment IBCN,,
 03/05/16,13:30,15:00,Thuis,Projectwerk,Filteren van routes in overzicht,81,elk woord wordt apart geëvalueerd + toevoegen knop in GUI
 03/05/16,15:00,15:30,Thuis,Projectwerk,Toevoegen URL Parameters,78,implementatie filter in url parameter
 03/05/16,16:00,17:30,Thuis,Projectwerk,Toevoegen URL Parameters,78,implementatie filter/dag in url parameter
-06/05/16,15:15,16:45,Thuis,Projectwerk,Toevoegen URL Parameters,78,fix in implementatie van peroides
+06/05/16,15:00,16:45,Thuis,Projectwerk,Toevoegen URL Parameters,78,fix in implementatie van peroides
 06/05/16,16:45,17:00,Thuis,Projectwerk,Toevoegen URL Parameters,78,fix in implementatie van filter
 06/05/16,17:00,17:30,Thuis,Projectwerk,laden-icoontje bij kaartweergave,72,aanpassen opmaak
 06/05/16,17:30,18:00,Thuis,Projectwerk,Filteren van routes in overzicht,81,styling in orde zetten
 06/05/16,18:30,18:45,Thuis,Projectwerk,Filteren van routes in overzicht,81,styling in orde zetten
 06/05/16,18:45,19:00,Thuis,Projectwerk,Timestamp live modus,49,indien meer dan 60 minuten verschil wordt het verschil in uren en minuten getoond
+07/05/16,15:00,17:30,Thuis,Projectwerk,Misc bugfixes,,found and fixed some bugs in the map and url system
