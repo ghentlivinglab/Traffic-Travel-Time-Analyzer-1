@@ -19,6 +19,7 @@ var zoomCurrent = 12;
 var normalTrafficColor = '#39D930';
 var mediumTrafficColor = '#e67e22';
 var heavyTrafficColor = '#C10037';
+var unknownColor = '#CCCCCC';
 var selectedColor = '#3333AA';
 // line settings
 var zoomThreshold = 14;
@@ -151,8 +152,8 @@ function updateColors() {
         if (!routes[i].hasLiveData(providerId)) {
             continue;
         }
-        var colorStatus = routes[i].getStatus(routes[i].liveData[providerId].representation, routes[i].avgData[providerId].representation);
-        switch (colorStatus.color) {
+        var colorStatus = routes[i].getColor(routes[i].liveData[providerId].representation);
+        switch (colorStatus) {
             case 'red':
                 colors[i] = heavyTrafficColor; // heavy traffic
                 lines[i].setOptions({strokeColor: heavyTrafficColor, zIndex: getZIndex(heavyTrafficColor)});
@@ -161,6 +162,9 @@ function updateColors() {
                 colors[i] = mediumTrafficColor; // medium traffic
                 lines[i].setOptions({strokeColor: mediumTrafficColor, zIndex: getZIndex(mediumTrafficColor)});
                 break;
+            case 'grey':
+                colors[i] = unknownColor;
+                lines[i].setOptions({strokeColor: mediumTrafficColor, zIndex: getZIndex(unknownColor)});
             default:
                 colors[i] = normalTrafficColor; // normal traffic
                 lines[i].setOptions({strokeColor: normalTrafficColor, zIndex: getZIndex(normalTrafficColor)});
@@ -242,7 +246,12 @@ function lineClicked(event) {
             + '</content>';
     createInfoWindow(event["latLng"], message);
     this.setOptions({strokeWeight: hoverWeight, zIndex: 3, strokeColor: selectedColor}); // add accent to line
-    google.maps.event.addListener(infowindow,'closeclick',generateLines);
+    google.maps.event.addListener(infowindow,'closeclick',closeInfoWindow);
+}
+
+function closeInfoWindow(){
+    infowindow = null;
+    generateLines();
 }
 
 /****************************
