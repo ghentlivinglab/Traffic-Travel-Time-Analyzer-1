@@ -456,7 +456,7 @@ var Dashboard = {
 				}else{
 					var pre = '';
 					if (extraProviders.length > 1) {
-						pre = provider.name + ' ';
+						pre = provider.name + ' - ';
 					}
 
 					if (day == 7) {
@@ -482,6 +482,7 @@ var Dashboard = {
 			Api.endQueue();
 			return;
 		}
+
 		$(element).parent().find('.extra-content').html(this.extraProvidersList());
 		drawChart(element, data, width, height, 2 * extraProviders.length);
 	},
@@ -497,16 +498,43 @@ var Dashboard = {
 			Dashboard.openDayGraph(day, routeId, element, width, height);
 		};
 
-		var graph = route.getDayData(day, this.provider.id);
-		if (graph === null || graph.data === null){
-			Api.syncDayGraph(day, routeId, this.provider.id, callback, this);
+		var extraProviders = this.extraProviders.slice();
+		var data = {};
+
+		extraProviders.unshift(this.provider.id);
+		var missing = [];
+
+		for (var i = 0; i < extraProviders.length; i++) {
+			var providerId = extraProviders[i];
+			var provider = providers[providerId];
+
+			var graph = route.getDayData(day, providerId);
+
+			if (graph !== null && graph.data !== null) {
+				var pre = '';
+				if (extraProviders.length > 1) {
+					pre = provider.name + ' - ';
+				}
+
+				data[pre + dateToDate(day)] = graph.data;
+				data[pre + "Gemiddelde"] = graph.avgData;
+			} else {
+				missing.push(providerId);
+			}
+
+		}
+		if (missing.length > 0) {
+			Api.newQueue(missing.length);
+			for (var i = 0; i < missing.length; i++) {
+				var providerId = missing[i];
+				Api.syncDayGraph(day, routeId, providerId, callback, this);
+			}
+			Api.endQueue();
 			return;
 		}
-		var data = {};
-		data[dateToDate(day)] = graph.data;
-		data["Gemiddelde"] = graph.avgData;
 
-		drawChart(element, data, width, height);
+		$(element).parent().find('.extra-content').html(this.extraProvidersList());
+		drawChart(element, data, width, height, extraProviders.length * 2);
 	},
 	// Opent de grafiek horende bij 2 intervallen
 	openCompareGraph: function(interval0, interval1, routeId, element, width, height) {
@@ -516,40 +544,54 @@ var Dashboard = {
 			Dashboard.openCompareGraph(interval0, interval1, routeId, element, width, height);
 		};
 
-		var okay0 = true;
+		var extraProviders = this.extraProviders.slice();
 		var data = {};
-		var c = 0;
 
-		var graph = route.getIntervalData(interval0, 7, this.provider.id);
-		if (!graph || !graph.data){
-			okay0 = false;
-			c++;
-		}else{
-			data[interval0.getName()] = graph.data;
+		extraProviders.unshift(this.provider.id);
+		var missing0 = [];
+		var missing1 = [];
+
+		for (var i = 0; i < extraProviders.length; i++) {
+			var providerId = extraProviders[i];
+			var provider = providers[providerId];
+
+			var pre = '';
+			if (extraProviders.length > 1) {
+				pre = provider.name + ' - ';
+			}
+
+			var graph = route.getIntervalData(interval0, 7, providerId);
+			if (!graph || !graph.data){
+				missing0.push(providerId);
+			}else{
+				data[pre + interval0.getName()] = graph.data;
+			}
+
+			graph = route.getIntervalData(interval1, 7, providerId);
+			if (!graph || !graph.data){
+				missing1.push(providerId);
+			}else{
+				data[pre + interval1.getName()] = graph.data;
+			}	
 		}
 
-		graph = route.getIntervalData(interval1, 7, this.provider.id)
-		if (!graph || !graph.data){
-			okay1 = false;
-			c++;
-		}else{
-			data[interval1.getName()] = graph.data;
-		}	
+		if (missing0.length > 0 || missing1.length > 0) {
+			Api.newQueue(missing0.length + missing1.length);
 
-		if (c > 0) {
-			Api.newQueue(c);
-
-			if (!okay0)
-				Api.syncIntervalGraph(interval0, routeId, this.provider.id, callback, this);
-
-			if (!okay1)
-				Api.syncIntervalGraph(interval1, routeId, this.provider.id, callback, this);
-
+			for (var i = 0; i < missing0.length; i++) {
+				var providerId = missing0[i];
+				Api.syncIntervalGraph(interval0, routeId, providerId, callback, this);
+			}
+			for (var i = 0; i < missing1.length; i++) {
+				var providerId = missing1[i];
+				Api.syncIntervalGraph(interval1, routeId, providerId, callback, this);
+			}
 			Api.endQueue();
 
 			return;
 		}
 
+		$(element).parent().find('.extra-content').html(this.extraProvidersList());
 		drawChart(element, data, width, height);
 	},
 
