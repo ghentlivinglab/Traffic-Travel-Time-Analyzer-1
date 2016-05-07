@@ -41,9 +41,19 @@ top: 0;
     	padding-left: 40px;
     	padding-right: 20px;
 
+    	.graph-animation-box {
+    		margin-left: -40px;
+			margin-right: -20px;
+    	}
+    	
     	@media screen and (max-width: $responsive-smartphone) {
     		padding-left: 15px;
     		padding-right: 10px;
+
+    		.graph-animation-box {
+	    		margin-left: -15px;
+				margin-right: -10px;
+	    	}
 	    }
 
 		.loading {
@@ -239,8 +249,7 @@ top: 0;
 		.graph-animation-box {
 			overflow: hidden;
 			display: none;
-			margin-left: -40px;
-			margin-right: -20px;
+
 		}
 
 		.graph-box {
