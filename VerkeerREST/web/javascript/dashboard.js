@@ -760,7 +760,7 @@ var Dashboard = {
 
     renderHeader: function(headerName, data) {
     	data.search = Mustache.renderTemplate("search", {filter: this.filterValue});
-    	return Mustache.renderTemplate("header-"+headerName, data);
+    	return '<header>'+ Mustache.renderTemplate("header-"+headerName, data) + '</header>';
     },
 
 
