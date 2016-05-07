@@ -242,8 +242,8 @@ var Api = {
 
                     for (var key in resultdata) {
                         var time = stringToDate(key);
-                        var hour = time.getUTCHours();
-                        var minutes = time.getUTCMinutes();
+                        var hour = time.getHours();
+                        var minutes = time.getMinutes();
                         hour += (minutes / 60);
 
                         if (isNaN(hour)) {
