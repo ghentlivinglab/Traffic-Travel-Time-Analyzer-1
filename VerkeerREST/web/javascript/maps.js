@@ -149,7 +149,7 @@ function updateColors() {
     var providerId = Dashboard.provider.id;
     for (var i in routes) {
         // Eerst controleren of we deze route wel al hebben
-        if (!routes[i].hasLiveData(providerId)) {
+        if (!routes[i].hasLiveDataRepresentation(providerId)) {
             continue;
         }
         var colorStatus = routes[i].getColor(routes[i].liveData[providerId].representation);

@@ -9,6 +9,10 @@ var Dashboard = {
 	mode: null, // Selected mode
 	provider: null, // Selected provider
 
+	// Eeen lijst met extra providers die geselecteerd zijn bij een grafiek
+	// Wordt telkens gereset als een grafiek wordt geopened
+	extraProviders: [],
+
 	// Mogelijke dashboard standen cte's
 	LIVE: 0, // Vandaag
 	INTERVAL: 2, // Periode
@@ -204,7 +208,11 @@ var Dashboard = {
             }
             this.provider = providers[providerId];
             localStorage.setItem('provider', this.provider.id);
+
             if (reload) {
+            	// Noodzakelijk, omdat de geselecteerde provider nooit in extraProviders mag zitten
+            	Dashboard.removeExtraProvider(this.provider.id);
+
                 if (this.mode != this.LIVE) {
                 	var p = this.provider.id;
                 	var hasData = this.routesDoHaveData(function(route) {
@@ -289,7 +297,61 @@ var Dashboard = {
 		var dashboard = $('#dashboard .content');
 		dashboard.html('<p>Deze functie is nog niet geïmplementeerd</p>');
 	},
-	openGraph: function(routeId, element, width, height) {
+
+	// Geeft een HTML string terug om extra providers te selecteren bij een grafiek
+	// Met de providers die nog niet geselecteerd zijn
+	extraProvidersList: function() {
+		var str = '';
+		for(var i in providers) {
+			var provider = providers[i];
+			if (provider.id != this.provider.id && !this.isExtraProvider(provider.id)) {
+				str += '<a class="extra-provider" href="#" onclick="addExtraProvider.call(this);" data-provider="'+ provider.id +'">'+provider.name+'</a>';
+			}
+		}
+
+		var extraStr = '';
+		for(var i in this.extraProviders) {
+			var provider = providers[this.extraProviders[i]];
+			extraStr += '<a class="extra-provider remove" href="#" onclick="removeExtraProvider.call(this);" data-provider="'+ provider.id +'">'+provider.name+'</a>';
+		}
+
+		return '<div class="select-extra-providers"><div class="description">Extra providers tonen</div>'+ str + extraStr + '</div>';
+	},
+
+	// Geeft aan of een provider id gemarkeerd is als extra provider in een grafiek
+	// True / false
+	isExtraProvider: function(providerid) {
+		for(var j in this.extraProviders) {
+			if (this.extraProviders[j] == providerid) {
+				return true;
+			}
+		}
+		return false;
+	},
+
+	removeExtraProvider: function(providerId) {
+		for (var i = 0; i < this.extraProviders.length; i++) {
+	        if (this.extraProviders[i] == providerId) {
+	            this.extraProviders.splice(i, 1);
+	            break;
+	        }
+	    }
+	},
+
+	// Extraprovider bevat een provider die moet worden toegevoegd (= toevoegen provider na openen grafiek)
+	// aan extraProviders. Indien niet opgegeven: geen actie (= openen nieuwe grafiek)
+	// Indien null: extraProviders reset (= providers wissen)
+	openGraph: function(routeId, element, width, height, extraProvider) {
+		if (typeof extraProvider != "undefined") {
+			if (extraProvider) {
+				if (!this.isExtraProvider(extraProvider) && extraProvider != this.provider.id) {
+					this.extraProviders.push(extraProvider);
+				}
+			} else {
+				this.extraProviders = [];
+			}
+		}
+
 		if (this.mode == this.LIVE){
 			this.openLiveGraph(routeId, element, width, height);
 		}
@@ -314,14 +376,40 @@ var Dashboard = {
 			Dashboard.openLiveGraph(routeId, element, width, height);
 		};
 
-		if (route.hasRecentLiveData(this.provider.id)){
-			var data = {
-				'Vandaag': route.liveData[this.provider.id].data,
-				'Gemiddelde': route.liveData[this.provider.id].avgData
-			};
-			drawChart(element, data, width, height, true);
+		// kopie maken
+		var extraProviders = this.extraProviders.slice();
+
+		extraProviders.push(this.provider.id);
+		var missing = [];
+
+		for (var i = 0; i < extraProviders.length; i++) {
+			var providerId = extraProviders[i];
+			if (!route.hasRecentLiveData(providerId)) {
+				missing.push(providerId);
+			}
+		}
+
+		if (missing.length == 0){
+			var data = {};
+
+			for (var i = 0; i < extraProviders.length; i++) {
+				var providerId = extraProviders[i];
+				var provider = providers[providerId];
+				data[provider.name] = route.liveData[providerId].data;
+				data[provider.name + ' gemiddelde'] = route.liveData[providerId].avgData;
+			}
+			// Onderaan lijst toevoegen voor extraProviders
+			$(element).parent().find('.extra-content').html(this.extraProvidersList());
+
+			drawChart(element, data, width, height);
 		}else{
-			Api.syncLiveGraph(route.id, this.provider.id, callback, this);
+			Api.newQueue(missing.length);
+			for (var i = 0; i < missing.length; i++) {
+				var providerId = missing[i];
+				Api.syncLiveGraph(route.id, providerId, callback, this);
+			}
+			Api.endQueue();
+			
 		}
 	},
 	// Opent de grafiek horende bij 1 interval (met weekdagen etc)

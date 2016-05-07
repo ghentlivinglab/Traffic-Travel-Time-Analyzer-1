@@ -264,11 +264,38 @@ top: 0;
 				background: white;
 				overflow: hidden; // Voorkomt vreemd gedrag van grafiek die klikbaar is buiten haar bounding box
 				min-height: 8px; // voorkomt lelijke arrow bij trage uitklap animatie
+				font-size: 10pt;
+				color: $gray;
 
 				p {
 					text-align: center;
 					padding: 30px;
-					font-weight: 500;
+				}
+
+				.select-extra-providers {
+					text-align: right;
+					padding: 10px;
+					background: rgb(242, 242, 242);
+					border-top: 1px solid $light-gray;
+
+					.description {
+						padding-right: 10px;
+						display: inline-block;
+					}
+
+					.extra-provider {
+						font-weight: 500;
+						margin: 2px;
+						padding: 5px;
+						display: inline-block;
+
+						&.remove {
+							color: white;
+							padding: 5px 10px 5px 20px;
+							border-radius: $border-radius;
+							background: $light-gray url('../images/remove.png') no-repeat 8px; // 8px links, vert gecentreerd
+						}
+					}
 				}
 			}
 

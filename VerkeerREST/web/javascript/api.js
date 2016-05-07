@@ -9,7 +9,7 @@ var Api = {
     queues: {},
     currentQueue: null,
     intervalDecimal: .25, // timespan in hours
-
+    queueCount: 1,
     // Stel een callback uit tot meerdere requests zijn afgehandeld
     // Moet beïndigd worden met endQueue nadat alle requests (aantal count) in die queue zijn verzonden
     // Count zou later evt geautomatiseerd kunnen worden, maar is veel dup code
@@ -17,7 +17,9 @@ var Api = {
         if (count == 0) {
             return;
         }
-        var id = Math.floor((Math.random() * 10000000));
+        this.queueCount++;
+
+        var id = this.queueCount;
         var queue = {
             id: id,
             count: count
@@ -212,8 +214,15 @@ var Api = {
         // Uiteindelijk moet dit ongeveer het resultaat zijn: 
 
         var from = new Date();
-        if (route.hasLiveData(providerId)) {
+        if (route.hasLiveDataRepresentation(providerId)) {
             from = new Date(route.liveData[providerId].representation.timestamp.getTime());
+        } else {
+            // Kleine trick voor het laden van de grafiek zonder enige representation
+            // Bij het toevoegen van een provider aan een grafiek
+            // Deze meot dan dezelfde dag zijn als die al werd getoond
+             if (route.hasLiveDataRepresentation(Dashboard.provider.id)) {
+                from = new Date(route.liveData[Dashboard.provider.id].representation.timestamp.getTime());
+            } 
         }
 
         
@@ -252,14 +261,12 @@ var Api = {
                         avgData[hour] = (resultdata[key].average) / 60;
                     }
 
-                    if (route.hasLiveData(providerId)) {
-                        route.liveData[providerId].setData(data);
-                        route.liveData[providerId].setAvgData(avgData);
-                        me.callDelayed(qid, callback, context);
-                    } else {
-                        // impossible
-                        console.error('Route ' + route.name + ' heeft geen liveData voor provider met id ' + providerId);
+                    if (!route.hasLiveData(providerId)) {
+                        route.liveData[providerId] = TrafficGraph.create(null);
                     }
+                    route.liveData[providerId].setData(data);
+                    route.liveData[providerId].setAvgData(avgData);
+                    me.callDelayed(qid, callback, context);
                 } else {
                     console.error(result.reason);
                 }

@@ -10,7 +10,7 @@ function toggleGraph(){
 		// TODO: data doorgeven (moet ook in deze functie enzo)
 
 		if (box.length == 0) {
-			$(this).append('<div class="graph-animation-box"><div class="graph-box"><div class="arrow"></div><div class="graph-shadow"></div><div class="graph"><div class="graph-loading"><img class="loading" src="images/loading.gif" alt="Bezig met laden"></div><div class="graph-content"></div></div></div></div>');
+			$(this).append('<div class="graph-animation-box"><div class="graph-box"><div class="arrow"></div><div class="graph-shadow"></div><div class="graph"><div class="graph-loading"><img class="loading" src="images/loading.gif" alt="Bezig met laden"></div><div class="graph-content"><div class="google-graph"></div><div class="extra-content"></div></div></div></div></div>');
 			box = $(this).find('.graph-animation-box');
 			box.click(function(e) {
 				e.stopPropagation();
@@ -19,7 +19,7 @@ function toggleGraph(){
             // Animatie starten voor het loading screen
             box.css({ 'display': 'block'});
 
-            var graphContent = box.find('.graph-content');
+            var graphContent = box.find('.google-graph');
             var graph_width = box.outerWidth();
             var graph_height = 350;
             var route = $(this).attr('data-route');
@@ -43,14 +43,35 @@ function toggleGraph(){
     		Dashboard.openGraph($(this).attr('data-route'), graphContent[0], width, height);
         }
 	} else{
-        var graph = box.find('.graph');
-		box.slideUp('slow', function() {
-			// Zouden we eigenlijk kunnen houden, maar de grafieken zijn nogal zwaar voor een browser
-			// Het is dus beter om ze te verwijderen en opnieuw aan te maken wanneer nodig
-			// De data die ze bevatten is toch gecached in de objecten
+		box.slideUp('fast', function() {
 			box.remove();
 		});
 	}
+}
+
+function addExtraProvider() {
+    var box = $(this).parents('.graph-animation-box');
+    var route = $(this).parents('article').attr('data-route');
+    var graphContent = box.find('.google-graph');
+
+    var providerId = $(this).attr('data-provider');
+    var graph_width = graphContent.outerWidth();
+    var graph_height = graphContent.outerHeight();
+
+    Dashboard.openGraph(route, graphContent[0], graph_width, graph_height, providerId);
+}
+
+function removeExtraProvider() {
+    var box = $(this).parents('.graph-animation-box');
+    var route = $(this).parents('article').attr('data-route');
+    var graphContent = box.find('.google-graph');
+
+    var providerId = $(this).attr('data-provider');
+    var graph_width = graphContent.outerWidth();
+    var graph_height = graphContent.outerHeight();
+
+    Dashboard.removeExtraProvider(providerId);
+    Dashboard.openGraph(route, graphContent[0], graph_width, graph_height);
 }
 
 // Converteert 6.25 naar 6:15
@@ -74,7 +95,7 @@ function floatToHour(i){
 	}
 
 */
-function drawChart(element, data, width, height, dotted) {
+function drawChart(element, data, width, height) {
 	for (var key in data) {
 
 		// lege keys negeren we
@@ -102,10 +123,6 @@ function drawChart(element, data, width, height, dotted) {
 	      ['Tijdstip'],
 	];
 
-	if (typeof dotted == "undefined"){
-		dotted = false;
-	}
-
 	var minimum = 0;
 
 	// Dit stuk converteert het data object naar hetgene google verwacht (zie hun documentatie hiervoor)
@@ -130,47 +147,36 @@ function drawChart(element, data, width, height, dotted) {
 	}
         console.log(arr);
 
-    console.log('voor omzetten '+Date.now());
 	// data is nu omgezt naar [[yas, title1, title2], [xval, yval1, yval2], ...] formaat
 	// nu kunnen we dit omzetten naar de DataTable die google verwacht met eigen google functie
 	var d = google.visualization.arrayToDataTable
 	    (arr);
 
-    console.log('na omzetten '+Date.now());
-
-	var colors = ['#800024', '#C10037', '#FC4D7E', '#005AC1', '#51A2FF', '#A8A8A8', '#D2D2D2'];
-
 	// Options van de grafiek
-	// TODO: opties staan nu gewoon op die van de live grafiek, moet meegestuurd worden!
-	var defSettings = { color: '#63A7FF', 'lineWidth': 2, 'curveType': 'function', pointSize: 0, calc: function () {
+	var defSettings = {'lineWidth': 2, 'curveType': 'function', pointSize: 0, calc: function () {
                             return null;
                         }};
-	var avgSettings = { color: '#A8A8A8', 'lineWidth': 2, 'lineDashStyle':  [4, 4], 'curveType': 'function' };
+	var avgSettings = {'lineWidth': 2, 'lineDashStyle':  [4, 4], 'curveType': 'function' };
 
 	var series = {};
 	var legend = { position: 'top', alignment: 'start' };
 	var padding = {left:90,top:50,right:20, bottom: 70};
-	if (dotted) {
-		series = {0: defSettings, 1: avgSettings};
-	}else{
-		if (Object.keys(data).length > 2){
-			legend = { position: 'right', alignment: 'start' };
-			padding = {left:90,top:20,right:140, bottom: 70};
-		}else{
-			colors = ['#800024', '#005AC1'];
-		}
 
-		for (var i = 0; i < arr[0].length-1; i++) {
-			// Dupliceren
-			var obj = JSON.parse(JSON.stringify(defSettings));
-			obj.color = colors[i];
+	if (Object.keys(data).length > 2){
+		legend = { position: 'right', alignment: 'start' };
+		padding = {left:90,top:20,right:140, bottom: 70};
+	}
 
-			// weekend in stippellijnen
-			if (i >= 5) {
-				obj.lineDashStyle = [4, 4];
-			}
-			series[i] = obj;
-		}
+	for (var i = 0; i < arr[0].length-1; i++) {
+		// Dupliceren
+        var name = arr[0][i+1];
+        if (name.match(/Gemiddelde/gi)) {
+            var obj = JSON.parse(JSON.stringify(avgSettings));
+        } else {
+            var obj = JSON.parse(JSON.stringify(defSettings));
+        }
+
+		series[i] = obj;
 	}
 
 	var series_copy = JSON.parse(JSON.stringify(series));
@@ -206,18 +212,15 @@ function drawChart(element, data, width, height, dotted) {
 		}
 	};
 
-    console.log('aanmaken ' +Date.now());
 	var chart = new google.visualization.LineChart(element);
-    console.log('na aanmaken '+Date.now());
 
 	var columns = [];
     for (var i = 0; i < d.getNumberOfColumns(); i++) {
         columns.push(i);
     }
 
-    console.log('voor drawen '+Date.now());
-    if (columns.length > 3){
-        for (var col = 2; col < columns.length; col++) {
+    if (columns.length > 5){
+        for (var col = 5; col < columns.length; col++) {
             if (columns[col] == col) {
                 // hide the data series
                 columns[col] = {
@@ -238,8 +241,6 @@ function drawChart(element, data, width, height, dotted) {
     }else{
         chart.draw(d, options);
     }
-    console.log('na drawen '+Date.now());
-
     
     google.visualization.events.addListener(chart, 'select', function () {
         var sel = chart.getSelection();
@@ -274,19 +275,23 @@ function drawChart(element, data, width, height, dotted) {
         }
     });
     
+    var graphContent = $(element).parent();
+    if (graphContent.css('display') != 'block') {
+        var box = $(element).parents('.graph-box');
 
-    var box = $(element).parents('.graph-box');
+        graphContent.css({'display': 'block'});
+        var height = graphContent.outerHeight() ;
 
-    $(element).css({'display': 'block'});
-    var height = $(element).outerHeight() ;
-
-    // Dit stuk voorkomt lag tijdens de animatie door het renderen van de grafiek
-    setTimeout(function(){
-        $(element).parents('.graph').stop().animate({'height': height}, 'fast', function() {
-            console.log('animation done');
-            box.find('.graph-loading').remove();
-            $(element).css({'visibility': 'visible'});
-            $(this).css({height: 'auto'});
-        });
-    }, 100);
+        // Dit stuk voorkomt lag tijdens de animatie door het renderen van de grafiek
+        setTimeout(function(){
+            $(element).parents('.graph').stop().animate({'height': height}, 'fast', function() {
+                box.find('.graph-loading').remove();
+                graphContent.css({'visibility': 'visible'});
+                graphContent.css({'display': 'none'});
+                graphContent.fadeIn('fast', function() {
+                    $(element).parents('.graph').css({height: 'auto'});
+                });
+            });
+        }, 100);
+    }
 }

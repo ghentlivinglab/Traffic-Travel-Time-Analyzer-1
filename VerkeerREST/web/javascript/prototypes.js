@@ -328,7 +328,7 @@ var Route = {
 		if (!this.hasAvgData(providerId)) {
 			return false;
 		}
-		if (!this.hasLiveData(providerId)) {
+		if (!this.hasLiveDataRepresentation(providerId)) {
 			return false;
 		}
 
@@ -377,15 +377,18 @@ var Route = {
 
 	},
 
-
-
 	// LiveData is a mapping of a providerId on a TrafficGraph object that contains the most recent measurements
 	// eg: liveData[providerId] -> TrafficGraph
 	hasLiveData: function(providerId) {
 		return typeof this.liveData[providerId] != "undefined";
 	},
+
+	hasLiveDataRepresentation: function(providerId) {
+		return typeof this.liveData[providerId] != "undefined" && this.liveData[providerId].representation;
+	},
+
 	hasRecentLiveRepresentation: function(providerId) {
-		if (!this.hasLiveData(providerId)){
+		if (!this.hasLiveData(providerId) || !this.liveData[providerId].representation){
 			return false;
 		}
 		if ((new Date) - this.liveData[providerId].representation.createdOn > 5*60*1000) { // Als ouder dan 5 minuten -> false
@@ -394,7 +397,7 @@ var Route = {
 		return true;
 	},
 	hasRecentLiveData: function(providerId) {
-		if (!this.hasLiveData(providerId) && Object.keys(this.liveData[providerId].data).length > 0){
+		if (!this.hasLiveData(providerId) || !this.liveData[providerId].data){
 			return false;
 		}
 		if ((new Date) - this.liveData[providerId].createdOn > 5*60*1000) { // Als ouder dan 5 minuten -> false
