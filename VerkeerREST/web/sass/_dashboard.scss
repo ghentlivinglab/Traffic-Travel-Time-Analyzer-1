@@ -237,6 +237,7 @@ article {
 	.graph-box {
 		display: none;
 		height: $graph-height;
+		min-height: 8px; // voorkomt lelijke arrow bij trage uitklap animatie
 		position: relative;
 		margin-bottom: 50px;
 		overflow: visible !important; // Zorg dat jquery's automatische overflow:hidden genegeerd wordt.
