@@ -160,7 +160,7 @@ function drawChart(element, data, width, height, maximumLines) {
 	var defSettings = {'lineWidth': 2, 'curveType': 'function', pointSize: 0, calc: function () {
                             return null;
                         }};
-	var avgSettings = {'lineWidth': 3, 'lineDashStyle':  [4, 4], 'curveType': 'function' };
+	var avgSettings = {'lineWidth': 2, 'lineDashStyle':  [4, 4], 'curveType': 'function' };
 
 	var series = {};
 	var legend = { position: 'top', alignment: 'start' };

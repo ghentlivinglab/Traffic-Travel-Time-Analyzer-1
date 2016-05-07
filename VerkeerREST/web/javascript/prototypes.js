@@ -249,10 +249,10 @@ var Route = {
 		if (representation.empty){
 			return 'gray';
 		}
-		if (representation.speed < this.speedLimit - 30){
+		if (representation.speed/this.speedLimit < 0.5){
 			return 'red';
 		}
-		if (representation.speed < this.speedLimit - 15){
+		if (representation.speed/this.speedLimit < 0.7){
 			return 'orange';
 		}
 		return 'green';
