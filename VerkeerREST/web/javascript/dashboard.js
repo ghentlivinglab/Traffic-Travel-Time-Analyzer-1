@@ -742,7 +742,10 @@ var Dashboard = {
         });
 
         builder.setSortIndexFunction(function(route, dayData) {
-        	return -dayData.speed;
+        	if (route.getUnusualColor(dayData) == 'red') {
+        		return -dayData.unusualPercentage;
+        	}
+        	return dayData.unusualPercentage;
         });
 
 		str += builder.render();
@@ -803,7 +806,10 @@ var Dashboard = {
         });
 
         builder.setSortIndexFunction(function(route, dayData) {
-        	return -dayData.speed;
+        	if (route.getUnusualColor(dayData) == 'red') {
+        		return -dayData.unusualPercentage;
+        	}
+        	return dayData.unusualPercentage;
         });
 
 		str += builder.render();

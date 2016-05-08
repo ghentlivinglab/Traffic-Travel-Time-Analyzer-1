@@ -63,7 +63,6 @@ var Api = {
         if (!this.currentQueue) {
             return;
         }
-        console.log("end queue " + this.currentQueue.id);
         this.currentQueue = null;
     },
 
