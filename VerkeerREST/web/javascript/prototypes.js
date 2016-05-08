@@ -231,9 +231,58 @@ var Route = {
 		if (waypoints !== undefined && waypoints instanceof Array){
 			obj.waypoints = waypoints.slice();
 		}else{
-			obj.waypoints = []; // Belangrijk!
+			obj.waypoints = []; // Belangrijk! (referentie probleem anders)
 		}
 		return obj;
+	},
+
+	/**
+	 * Maak een route op basis van data uit de localStorage
+	 * 
+	 * @param  {[type]}
+	 * @return {[type]}
+	 */
+	createFromStorage: function(data) {
+		return Route.create(data.id, data.name, data.description, data.length, data.speedLimit, data.waypoints);
+	},
+
+	/**
+	 * Sla alle routes op in de localStorage, maar zonder hun data.
+	 * Enkel de algemene data zoals id, length, .. en waypoints
+	 */
+	saveRoutes: function() {
+		var routesCopy = [];
+		for (var i in routes) {
+			var route = routes[i];
+			var copy = Route.create(route.id, route.name, route.description, route.length, route.speedLimit, route.waypoints);
+			routesCopy.push(copy);
+		}
+
+		localStorage.setItem('routes', JSON.stringify(routesCopy));
+	},
+
+	/**
+	 * Haal routes op uit de local storage.
+	 * Returnt false indien mislukt.
+	 */
+	loadRoutes: function() {
+		var retrievedObject = localStorage.getItem('routes');
+		try{
+			var parsed = JSON.parse(retrievedObject);
+			if (Array.isArray(parsed)){
+				// Na het parsen zijn alle methodes verdwenen. Deze voegen we terug toe
+				routes = [];
+
+				for (var i = 0; i < parsed.length; i++) {
+					var parse = parsed[i];
+					var route = Route.createFromStorage(parse);
+					routes[route.id] = route;
+				}
+			}
+			return routes.length > 0;
+		} catch (e) {
+			return false;
+		}
 	},
 
 	getDescription: function () {
@@ -539,7 +588,6 @@ var Route = {
 
 /****************************
  *
- * note: provider that has data of every provider has an id-value of -1
  ****************************/
 var Provider = {
 	id: 0,
@@ -553,7 +601,57 @@ var Provider = {
 	getUrlString: function() {
 		// Spaties verwijderen (niet leesbaar in url met %20)
 		return this.name.replace(/\s+/g, '');
+	},
+
+	/**
+	 * Maak een Provider op basis van data uit de localStorage
+	 * 
+	 * @param  {[type]}
+	 * @return {[type]}
+	 */
+	createFromStorage: function(data) {
+		return Provider.create(data.id, data.name);
+	},
+
+	/**
+	 * Sla alle Providers op in de localStorage, maar zonder hun data.
+	 * Enkel de algemene data zoals id, length, .. en waypoints
+	 */
+	saveProviders: function() {
+		var providersCopy = [];
+		for (var i in routes) {
+			var provider = providers[i];
+			var copy = Provider.create(provider.id, provider.name);
+			providersCopy.push(copy);
+		}
+
+		localStorage.setItem('providers', JSON.stringify(providersCopy));
+	},
+
+	/**
+	 * Haal Providers op uit de local storage.
+	 * Returnt false indien mislukt.
+	 */
+	loadProviders: function() {
+		var retrievedObject = localStorage.getItem('providers');
+		try{
+			var parsed = JSON.parse(retrievedObject);
+			if (Array.isArray(parsed)){
+				// Na het parsen zijn alle methodes verdwenen. Deze voegen we terug toe
+				providers = [];
+
+				for (var i = 0; i < parsed.length; i++) {
+					var parse = parsed[i];
+					var provider = Provider.createFromStorage(parse);
+					providers[Provider.id] = provider;
+				}
+			}
+			return providers.length > 0;
+		} catch (e) {
+			return false;
+		}
 	}
+
 };
 
 /****************************

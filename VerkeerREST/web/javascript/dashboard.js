@@ -52,7 +52,12 @@ var Dashboard = {
 		url.changeDayByParam();
 
 		this.reload();
-		Api.syncProviders(this.loadProviders, this);
+
+		if (!Provider.loadProviders()) {
+			Api.syncProviders(this.loadProviders, this);
+		} else {
+			this.loadProviders();
+		}
 	},
 	intervalsDidChange: function() {
 		var changed = false;
@@ -252,9 +257,13 @@ var Dashboard = {
 			return;
 		}
 		if (routes.length == 0){
-			Api.syncRoutes(Dashboard.reload, this);
-			this.displayLoading();
-			return;
+			// Laden uit local storage
+			if (!Route.loadRoutes()) {
+				// Nog niet in local storage -> ophalen
+				Api.syncRoutes(Dashboard.reload, this);
+				this.displayLoading();
+				return;
+			}
 		}
 
 		if (!this.initialSync){

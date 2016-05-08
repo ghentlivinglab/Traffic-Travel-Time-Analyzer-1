@@ -154,6 +154,10 @@ var Api = {
                     // Nu alle waypoints van alle routes downloaden.
                     // Als dit ook geslaagd is, dan roepen we de callback aan van de syncRoutes.
                     var waypointsCallback = function() {
+                        // Routes opslaan in local storage
+                        Route.saveRoutes();
+
+                        // Callback van syncRoutes uitvoeren
                         me.callDelayed(qid, callback, context);
                     }
 
@@ -251,6 +255,7 @@ var Api = {
                     for (var i = 0; i < resultdata.length; i++) {
                         providers[resultdata[i].id] = Provider.create(resultdata[i].id, resultdata[i].name);
                     }
+                    Provider.saveProviders();
                     me.callDelayed(qid, callback, context);
                 } else {
                     console.error(result.reason);
