@@ -729,8 +729,6 @@ var Dashboard = {
 		}
 		// Als alles in orde is: resultaat tonen
 
-		str += "<p>Resultaat voor dag: "+ dayString +"</p>";
-
 		var builder = ListBuilder.create();
         builder.setLeft(ListBuilder.DAY_REPRESENTATION, function(route) {
         	if (route.getDayData(day, p) === null) {
