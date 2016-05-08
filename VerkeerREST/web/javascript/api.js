@@ -558,7 +558,7 @@ var Api = {
      * In een queue wordt enkel de callback van de laatst geslaagde aanvraag aangroepen (dus maximum 1).
      * @param {Object} context Object die de callback moet uitvoeren
      */
-	syncIntervalGraph: function(interval, routeId, provider, callback, context) {
+    syncIntervalGraph: function(interval, routeId, provider, callback, context) {
         // Bij begin van alle requests uitvoeren. 
         // Hebben deze nodig voor de callback wanneer de request klaar is.
         var qid = this.getQueueId();
@@ -608,7 +608,7 @@ var Api = {
             error: Api.handleAjaxError
         });   
 
-	},
+    },
 
     /**
      *  Fetches the day graph of this route
