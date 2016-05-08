@@ -74,12 +74,12 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 17/04/16,13:45,14:15,Thuis,Projectwerk,infopaneel default gesloten,65,issue fixed + kleine bugfix voor z-index van lijnen
 17/04/16,14:30,15:00,Thuis,Projectwerk,ingeklapt infopaneel,64,issue opgelost
 17/04/16,15:00,15:45,Thuis,Projectwerk,bespreking en op orde zetten issues op github,,
-17/04/16,20:15,23:15,Thuis,Projectwerk,Presentatie sprint 2,58,aanmaken presentatie
+17/04/16,20:15,23:15,Thuis,Communicatie,Presentatie sprint 2,58,aanmaken presentatie
 18/04/16,14:15,17:00,Thuis,Projectwerk,opstellen testplan,56,uitschrijven van gedetailleerde informatie over de testen (back-end)
 18/04/16,17:45,18:30,Thuis,Projectwerk,opstellen testplan,56,uitschrijven van gedetailleerde informatie over de testen (front-end / unit en usability testen)
 18/04/16,21:29,22:00,Thuis,Projectwerk,opstellen testplan,56,uitschrijven van gedetailleerde informatie over de testen (front-end / integration testen)
 18/04/16,22:00,23:15,Thuis,Projectwerk,opstellen use cases,52,uitschrijven van use cases
-18/04/16,23:15,23:59,Thuis,Projectwerk,documentatie sprint 2,50,varia documenten nakijken/samenvoegen/uitbreiden
+18/04/16,23:15,23:59,Thuis,Communicatie,documentatie sprint 2,50,varia documenten nakijken/samenvoegen/uitbreiden
 19/04/16,09:45,10:30,School,Communicatie,voorstelling einde sprint 2 en begin sprint 3,,korte voorbereiding inbegrepen
 20/04/16,15:15,16:45,Thuis,Projectwerk,laden-icoontje bij kaartweergave,72,ook debuggen hiervan in verschillende browsers
 20/04/16,17:30,17:45,Thuis,Projectwerk,correcte afronding van tijden en afstanden op de kaart,73,
@@ -109,3 +109,6 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 06/05/16,18:30,18:45,Thuis,Projectwerk,Filteren van routes in overzicht,81,styling in orde zetten
 06/05/16,18:45,19:00,Thuis,Projectwerk,Timestamp live modus,49,indien meer dan 60 minuten verschil wordt het verschil in uren en minuten getoond
 07/05/16,15:00,17:45,Thuis,Projectwerk,Misc bugfixes,,found and fixed some bugs in the map and url system
+08/05/16,14:00,17:00,Thuis,Communicatie,Presentatie voor klant,84,overleg + aanmaken presentatie
+08/05/16,17:00,18:15,Thuis,Projectwerk,Misc bugfixes,,fixing incompatibilities with IE and Firefox
+08/05/16,22:45,23:45,Thuis,Projectwerk,Fix faulty commits,,paar foute commits die moesten ongedaan worden
