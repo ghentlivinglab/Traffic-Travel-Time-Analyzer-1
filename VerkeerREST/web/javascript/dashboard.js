@@ -35,7 +35,6 @@ var Dashboard = {
 		this.provider = null;
 		this.loadSelectedIntervals();
 		this.lastKnownIntervals = [Interval.copy(this.selectedIntervals[0]), Interval.copy(this.selectedIntervals[1])];
-
 		this.mode = this.LIVE;
 		if (localStorage.getItem('mode') !== null){
 			this.mode = parseInt(localStorage.getItem('mode'));
@@ -43,16 +42,19 @@ var Dashboard = {
 		}
 		url.changeViewByParam();
 
+		// Aanroepen als de mode juist staat
+		url.changePeriodByParam();
+		url.changeComparePeriodByParam();
+
 		if (localStorage.getItem('selectedDay') !== null){
 			this.selectedDay = new Date(localStorage.getItem('selectedDay'));
 		}
+		url.changeDayByParam();
 
 		this.reload();
 		Api.syncProviders(this.loadProviders, this);
 	},
 	intervalsDidChange: function() {
-                url.setIntervals(this.selectedIntervals[0],this.selectedIntervals[1]);
-                
 		var changed = false;
 		for (var i = 0; i < this.selectedIntervals.length; i++) {
 			var sel = this.selectedIntervals[i];
@@ -66,6 +68,7 @@ var Dashboard = {
 		}
 
 		if (changed) {
+			url.setIntervals(this.selectedIntervals[0],this.selectedIntervals[1]);
 			this.reload();
 		}
 		this.saveSelectedIntervals();

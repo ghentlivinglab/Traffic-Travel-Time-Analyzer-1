@@ -106,11 +106,6 @@ var url = {
         this.showDashboardByParam();
         this.changeMapByParams();
         this.changeFilterByParam();
-        this.changeDayByParam();
-
-        // Onderstaande functies moeten nog gecontrolleerd worden
-        this.changePeriodByParam();
-        this.changeComparePeriodByParam();
     },
     showDashboardByParam: function () {
         // checks if mapView or overview has to be displayed
@@ -149,27 +144,21 @@ var url = {
                 if (name && from && to) {
                     var eventExists = -1;
                     for (var i = 0; i < events.length; i++) {
-                        if (events[i].start.getTime() === from.getTime() && events[i].end.getTime() === to.getTime()) {
+                        if (events[i].start.getTime() == from.getTime() && events[i].end.getTime() == to.getTime()) {
                             eventExists = i;
                             break;
                         }
                     }
-                    var event;
-                    if (eventExists === -1) {
-                        event = Event.create(name, from, to);
-                        Dashboard.selectedIntervals[1] = event;
-                    } else if (eventExists > -1) {
+                    if (eventExists == -1) {
+                        var event = Event.create(name, from, to);
+                        Dashboard.selectedIntervals[0] = event;
+                    } else {
                         Dashboard.selectedIntervals[0] = events[i];
                     }
-                    if (!url.getQueryParam("vergelijkPeriode")) {
-                        Dashboard.intervalsDidChange();
-                    }
+
                 } else if (from && to) {
                     var interval = Interval.create(from, to);
                     Dashboard.selectedIntervals[0] = interval;
-                    if (!url.getQueryParam("vergelijkPeriode")) {
-                        Dashboard.intervalsDidChange();
-                    }
                 } else {
                     console.error("incorrect parameter: periode (wrong format of date)");
                     url.setQueryParam("periode");
@@ -200,9 +189,8 @@ var url = {
                             break;
                         }
                     }
-                    var event;
                     if (eventExists === -1) {
-                        event = Event.create(name, from, to);
+                        var event = Event.create(name, from, to);
                         Dashboard.selectedIntervals[1] = event;
                     } else if (eventExists > -1) {
                         Dashboard.selectedIntervals[1] = events[i];
