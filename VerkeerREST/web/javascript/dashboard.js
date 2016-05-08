@@ -31,7 +31,6 @@ var Dashboard = {
 	filterValue: "",
 
 	init: function() {
-		console.log("dashboard.init");
 		this.provider = null;
 		this.loadSelectedIntervals();
 		this.lastKnownIntervals = [Interval.copy(this.selectedIntervals[0]), Interval.copy(this.selectedIntervals[1])];
@@ -199,7 +198,6 @@ var Dashboard = {
 	},
 
 	setProviderName: function(providerName) {
-		console.log("set provider name "+providerName);
 		for (var id in providers) {
 			var provider = providers[id];
 			if (provider.getUrlString().toLowerCase() == providerName.toLowerCase()) {

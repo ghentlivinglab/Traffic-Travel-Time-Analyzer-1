@@ -135,7 +135,6 @@ function drawChart(element, data, width, height, maximumLines) {
 		// lege keys negeren we
 		arr[0].push(key);
 	}
-         console.log(data);
 	for (var i = 6; i <= 24; i+= Api.intervalDecimal) {
 
 		var a = [floatToHour(i)];
@@ -149,7 +148,6 @@ function drawChart(element, data, width, height, maximumLines) {
 		}
 		arr.push(a);
 	}
-        console.log(arr);
 
 	// data is nu omgezt naar [[yas, title1, title2], [xval, yval1, yval2], ...] formaat
 	// nu kunnen we dit omzetten naar de DataTable die google verwacht met eigen google functie
@@ -253,7 +251,6 @@ function drawChart(element, data, width, height, maximumLines) {
         if (sel.length > 0) {
             // if row is undefined, we clicked on the legend
             if (sel[0].row === null) {
-            	console.log("clicked");
                 var col = sel[0].column;
                 if (columns[col] == col) {
                     // hide the data series

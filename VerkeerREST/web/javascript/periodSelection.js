@@ -308,13 +308,11 @@ function bindPeriodSelection() {
 }
 
 function bindDaySelection() {
-	console.log('bindDaySelection');
 	var w = $(this).find('#day-selection');
 	if (w.length == 0) {
-		console.log('w not found');
 		return;
 	}
-	
+
 	w.change(function() {
 		if (ignoreChangePickadate) {
 			// we hebben het programatisch aangepast
