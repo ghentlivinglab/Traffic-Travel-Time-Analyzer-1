@@ -78,15 +78,16 @@ var Dashboard = {
 		this.saveSelectedIntervals();
 	},
 	setSelectedDay: function(date){
-		if (!this.selectedDay || this.selectedDay.getTime() !== date.getTime()) {
+		if (!this.selectedDay || date === null || this.selectedDay.getTime() !== date.getTime()) {
 			this.selectedDay = date;
-			localStorage.setItem('selectedDay', date.toJSON());
 			this.dayDidChange();
+			localStorage.setItem('selectedDay', date.toJSON());
 		}
 	},
+	
 	dayDidChange: function() {
 		this.reload();
-                url.setQueryParams("dag",dateToDate(this.selectedDay));
+        url.setQueryParams("dag",dateToDate(this.selectedDay));
 	},
 
 	filterChanged: function(){
