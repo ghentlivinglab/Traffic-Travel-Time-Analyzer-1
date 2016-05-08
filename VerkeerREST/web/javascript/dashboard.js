@@ -79,9 +79,11 @@ var Dashboard = {
 		this.saveSelectedIntervals();
 	},
 	setSelectedDay: function(date){
-		this.selectedDay = date;
-		localStorage.setItem('selectedDay', date.toJSON());
-		this.dayDidChange();
+		if (!this.selectedDay || this.selectedDay.getTime() !== date.getTime()) {
+			this.selectedDay = date;
+			localStorage.setItem('selectedDay', date.toJSON());
+			this.dayDidChange();
+		}
 	},
 	dayDidChange: function() {
 		this.reload();
