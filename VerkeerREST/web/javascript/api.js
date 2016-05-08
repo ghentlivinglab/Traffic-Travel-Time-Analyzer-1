@@ -30,7 +30,7 @@ var Api = {
     queues: {},
     currentQueue: null,
     queueCount: 1,
-    intervalDecimal: .5,
+    intervalDecimal: .25,
 
     /**
      * Start een nieuwe Queue, zodat de callback enkel zal worden uitgevoerd als alle requests uit deze

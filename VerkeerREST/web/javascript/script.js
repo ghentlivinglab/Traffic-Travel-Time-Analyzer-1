@@ -61,41 +61,53 @@ Mustache.renderTemplate = function (template_name, view) {
 /****************************
  * toggles the display of the overview panel
  ****************************/
-function togglePanel() {
+function togglePanel(animated) {
+    if (typeof animated == "undefined") {
+        animated = true;
+    }
+
     if ($("#dashboard").hasClass('open')) {
         // Als het dashboard open is, sluiten we het terug
         $("#dashboard").removeClass('open');
 
-        // Animeer dat het naar links opschuift, dit is niet stabiel.
-        // Als de breedte van het dashboard wijzigt tijdens het animeren
-        // zal het op het einde niet op de juiste plaats staan.
-        $("#dashboard").animate({'margin-left': -$("#dashboard").outerWidth()}, function () {
-            // Als het terug gesloten is, zorgen we dat de CSS terug 'stabiel' is
+        if (!animated) {
             $("#dashboard").css({'left': 'auto', 'margin-left': 0, 'right': 0});
-        });
+        } else {
+            // Animeer dat het naar links opschuift, dit is niet stabiel.
+            // Als de breedte van het dashboard wijzigt tijdens het animeren
+            // zal het op het einde niet op de juiste plaats staan.
+            $("#dashboard").animate({'margin-left': -$("#dashboard").outerWidth()}, function () {
+                // Als het terug gesloten is, zorgen we dat de CSS terug 'stabiel' is
+                $("#dashboard").css({'left': 'auto', 'margin-left': 0, 'right': 0});
+            });
+        }
 
         // changes the display of the button
         $(".collapse").children().attr({"src": "images/arrow-right.png", "alt": ">"});
         url.setQueryParam("dashboardView");
     } else {
-        openDashboard();
+        openDashboard(animated);
     }
 }
 
-function openDashboard() {
+function openDashboard(animated) {
     if (!$("#dashboard").hasClass('open')) {
         // Als het dashboard gesloten is, openen we het
         $("#dashboard").addClass('open');
 
-        // We verwijderen right: 0 en stappen over op margin-left, zodat we die kunnen animeren
-        // (right en left tergelijk animeren kan niet zonder jump)
-        // De gebruiker merkt hier niets van, het scherm blijft exact hetzelfde.
-        // We zijn wel niet meer 'stabiel', wijzigingen in de breedte van het dashboard zullen de animatie
-        // beïnvloeden, maar dat blijft heel erg beperkt
-        $("#dashboard").css({'left': '100%', 'right': 'auto', 'margin-left': -$("#dashboard").outerWidth()});
+        if (!animated) {
+            $("#dashboard").css({'left': '100%', 'right': 'auto', 'margin-left': 0});
+        } else {
+            // We verwijderen right: 0 en stappen over op margin-left, zodat we die kunnen animeren
+            // (right en left tergelijk animeren kan niet zonder jump)
+            // De gebruiker merkt hier niets van, het scherm blijft exact hetzelfde.
+            // We zijn wel niet meer 'stabiel', wijzigingen in de breedte van het dashboard zullen de animatie
+            // beïnvloeden, maar dat blijft heel erg beperkt
+            $("#dashboard").css({'left': '100%', 'right': 'auto', 'margin-left': -$("#dashboard").outerWidth()});
 
-        // Animeren, op het einde hiervan zijn we terug 'stabiel'
-        $("#dashboard").animate({'margin-left': 0});
+            // Animeren, op het einde hiervan zijn we terug 'stabiel'
+            $("#dashboard").animate({'margin-left': 0});
+        }
 
         // changes the display of the button
         $(".collapse").children().attr({"src": "images/arrow-left.png", "alt": "<"});
@@ -185,13 +197,6 @@ $(document).ready(function () {
     });
 
     // initialises dashboard
+    url.updatePageByParams();
     Dashboard.init();
 });
-
-/****************************
- * runs when DOM-tree is finished and all objects from it are loaded
- ****************************/
-$(window).load(function () {
-    url.updatePageByParams();
-});
-

@@ -106,7 +106,6 @@ var url = {
         this.showDashboardByParam();
         this.changeMapByParams();
         this.changeFilterByParam();
-        this.changeViewByParam();
         this.changeDayByParam();
 
         // Onderstaande functies moeten nog gecontrolleerd worden
@@ -119,20 +118,15 @@ var url = {
         var dashboardShown = $("#dashboard").hasClass('open'); // checks in which state the dashboard currently resides
 
         if (showDashboard ? !dashboardShown : dashboardShown) { // showDashboard XOR dashboardShown
-            togglePanel();
+            togglePanel(false);
         }
     },
     changeViewByParam: function () {
         var view = url.getQueryParam("weergave");
         if (view) {
             view = Number(view);
-            if (!view && view !== 0) {
-                view = 0;
-                console.error("incorrect parameter: weergave");
-                url.setQueryParam("weergave");
-                console.error("has been removed");
-            }
-            $("#mode-" + view).click();
+            Dashboard.mode = view;
+            $('#mode-'+Dashboard.mode).prop("checked", true);
         }
     },
     changeProviderByParam: function () {

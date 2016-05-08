@@ -41,6 +41,7 @@ var Dashboard = {
 			this.mode = parseInt(localStorage.getItem('mode'));
 			$('#mode-'+this.mode).prop("checked", true);
 		}
+		url.changeViewByParam();
 
 		if (localStorage.getItem('selectedDay') !== null){
 			this.selectedDay = new Date(localStorage.getItem('selectedDay'));
