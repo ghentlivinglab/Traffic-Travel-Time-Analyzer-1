@@ -144,8 +144,6 @@ var IntervalRepresentation = {
  * In de dag weergave (bv 12/08/2015) houden we het gemiddelde van de dag bij
  ****************************/
 var TrafficGraph = {
-	start: 6,
-	end: 24,
 	interval: 0.25, // every 15 minutes
 	createdOn: null,  // instance of Date
 	representation: null, // instance of TrafficData or IntervalRepresentation

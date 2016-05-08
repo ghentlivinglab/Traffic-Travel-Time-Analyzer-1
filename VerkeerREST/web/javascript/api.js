@@ -1,18 +1,45 @@
-// Api bevat alle methodes die de communicatie met de server regelt
-
-/****************************
- * Dummy object that mimics the API-communication
- * contains functions for the most part
- ****************************/
+/**
+ * Api is een globale instantie die we gebruiken om data van onze REST API te downloaden.
+ * Bij elke aanvraag geven we een callback en context mee. Een callback is een functie 
+ * die we uitvoeren bij het voltooien van de aanvraag. De context is het object waarop
+ * we de functie moeten uitvoeren. (zie javascript documentatie Function.prototype.call)
+ * https://developer.mozilla.org/nl/docs/Web/JavaScript/Reference/Global_Objects/Function/call
+ *
+ * Soms is het noodzakelijk om meerdere aanvragen tergelijk te starten, maar slechts een callback
+ * te krijgen als deze allemaal klaar zijn. Bv. Als we een grafiek tonen waarvoor we meerdere data
+ * moeten agregeren. Hiervoor starten we een Queue. (zie Api.newQueue)
+ *
+ * @property {Object[]} queues Bevat een lijst met alle huidige queues die bezig zijn.
+ * Elk object bevat een id en een count, die aangeeft hoeveel aanvragen er nog bezig zijn
+ * in deze queue.
+ *
+ * @property {Object} currentQueue Is niet null tussen Api.newQueue(Integer) en Api.endQueue().
+ * Bevat de queue (referentie naar queues object) waarin de aanvragen moeten worden toegevoegd. 
+ * Indien null worden de aanvragen niet toegevoegd aan een queue, en wordt hun callback altijd 
+ * uitgevoerd.
+ *
+ * @property {number} queueCount Counter om telkens een uniek id te kunnen 
+ * genereren voor nieuwe queues.
+ *
+ * @property {number} intervalDecimal Decimaal getal in uren die aangeeft om de hoeveel minuten
+ * de grafiek een punt moet zetten. 
+ * 
+ * @type {Object}
+ */
 var Api = {
-    // Counter
     queues: {},
     currentQueue: null,
-    intervalDecimal: .25, // timespan in hours
     queueCount: 1,
-    // Stel een callback uit tot meerdere requests zijn afgehandeld
-    // Moet beïndigd worden met endQueue nadat alle requests (aantal count) in die queue zijn verzonden
-    // Count zou later evt geautomatiseerd kunnen worden, maar is veel dup code
+    intervalDecimal: .5,
+
+    /**
+     * Start een nieuwe Queue, zodat de callback enkel zal worden uitgevoerd als alle requests uit deze
+     * queue zijn afgehandeld. Alle aanvragen die gestart worden tussen Api.newQueue en Api.endQueue
+     * behoren tot deze queue.
+     * 
+     * @param  {number} Aantal requests die moet worden voltooid voor de callback zal worden aangroepen.
+     * Neem hiervoor telkens het aantal aanvragen die je zal starten tussen Api.newQueue en Api.endQueue
+     */
     newQueue: function(count) {
         if (count == 0) {
             return;
@@ -25,87 +52,84 @@ var Api = {
             count: count
         };
 
-        console.log("Nieuwe queue " + id + " met " + count + " requests");
-
         this.queues[id] = queue;
         this.currentQueue = queue;
     },
+
+    /**
+     * Aanvragen gestart na endQueue worden niet meer toegevoegd aan de queue.
+     */
     endQueue: function() {
         if (!this.currentQueue) {
-            console.log("end queue, geen queue om te sluiten");
             return;
         }
         console.log("end queue " + this.currentQueue.id);
         this.currentQueue = null;
     },
+
+    /**
+     * @param  {number} Id van de gevraagde Queue.
+     * @return {Object} Het queue object dat bij dit id hoort, of null.
+     */
     getQueue: function(id) {
         if (typeof this.queues[id] == "undefined") {
             return null;
         }
         return this.queues[id];
     },
+
+    /**
+     * @param  {number} Id van de te verwijderen Queue.
+     */
     deleteQueue: function(id) {
         delete this.queues[id];
     },
+
+    /**
+     * @return {number} Het id van de huidige queue (indien tussen Api.newQueue en Api.endQueue) of -1
+     * indien in geen queue.
+     */
     getQueueId: function() {
         var qid = -1;
         if (this.currentQueue) {
             qid = this.currentQueue.id;
-            console.log("request toegevoegd aan queue " + qid);
         }
         return qid;
     },
+
     // calls callback with a delay to test the async aspect of the code
     // Als een request klaar is moet deze methode uitgevoerd worden
     // qid = queue id bij het begin van de request!
+
+    /**
+     * Roep deze functie aan als een aanvraag klaar is. Deze zal er voor zorgen dat de callback
+     * al dan niet wordt aangroepen op basis van het queue systeem.
+     * 
+     * @param  {number} Het queue id waartoe de aanvraag behoort (of -1 indien geen queue). 
+     * Vraag dit id op bij het starten van de aanvraag.
+     * @param  {Function} De callback die moet worden uitgevoerd als de queue leeg is of als er geen queue is.
+     * @param  {Object} Het object waarop de callback moet worden uitgevoerd.
+     */
     callDelayed: function(qid, callback, context) {
         var q = this.getQueue(qid);
         if (!q) {
-            //console.log("request klaar zonder queue ");
             callback.call(context);
         } else {
             q.count = Math.max(0, q.count - 1);
             if (q.count == 0) {
-                console.log("request klaar (queue = " + q.id + ") queue beïndigd");
-
                 this.deleteQueue(q.id);
                 callback.call(context);
-            } else {
-                console.log("request klaar (queue = " + q.id + "), moet wachten op " + q.count + " request(s)");
             }
         }
     },
-    syncWaypoints: function(id) {
-        $.ajax({
-            type: "GET",
-            url: "/api/waypoints",
-            data: {routeID: id},
-            beforeSend: function (jqXHR, settings) {
-                jqXHR.url = settings.url;
-                addHeaders(jqXHR);
-            },
-            success: function(result, status, jqXHR) {
-                if (result.result === "success") {
-                    var resultdata = result.data;
-                    //console.log(JSON.stringify(resultdata));
-                    if (resultdata.length !== 0) { // lengte van 0 waypoints wordt eigenlijk al opgevangen in REST API door error & reason terug te geven
-                        var array = [];
-                        resultdata.sort(function(a, b) {
-                            return a.sequence - b.sequence;
-                        });
-                        for (var i in resultdata) {
-                            array.push({"lat": resultdata[i].latitude, "lng": resultdata[i].longitude});
-                        }
-                        routes[resultdata[0].routeID].waypoints = array;
-                    }
-                } else {
-                    console.error(result.reason);
-                }
-            },
-            error: handleAjaxError
-        });
-    },
-    // fetches all routes of the API and places them in routes[]
+
+    /**
+     * Fetches all routes of the API and places them in routes[]
+     * 
+     * @param {Function} callback De functie uit te voeren indien geslaagd en queue leeg is.
+     * In een queue wordt enkel de callback van de laatst geslaagde aanvraag aangroepen (dus maximum 1).
+     * @param {Object} context Object die de callback moet uitvoeren
+     */
     syncRoutes: function(callback, context) {
         // Bij begin van alle requests uitvoeren. 
         // Hebben deze nodig voor de callback wanneer de request klaar is.
@@ -122,24 +146,131 @@ var Api = {
             url: "/api/routes",
             beforeSend: function (jqXHR, settings) {
                 jqXHR.url = settings.url;
-                addHeaders(jqXHR);
+                Api.addHeaders(jqXHR);
             },
             success: function(result, status, jqXHR) {
                 if (result.result === "success") {
                     var resultdata = result.data;
+
+                    // Nu alle waypoints van alle routes downloaden.
+                    // Als dit ook geslaagd is, dan roepen we de callback aan van de syncRoutes.
+                    var waypointsCallback = function() {
+                        me.callDelayed(qid, callback, context);
+                    }
+
+                    // Hierna alle waypoints van alle routes opslaan
+                    Api.newQueue(resultdata.length);
                     for (var i = 0; i < resultdata.length; i++) {
                         routes[resultdata[i].id] = Route.create(resultdata[i].id, resultdata[i].name, resultdata[i].description, resultdata[i].length, resultdata[i].speedLimit);
-                        Api.syncWaypoints(resultdata[i].id);
+                        Api.syncWaypoints(resultdata[i].id, waypointsCallback, Api);
+                    }
+                    Api.endQueue();
+                    
+                } else {
+                    console.error(result.reason);
+                }
+            },
+            error: Api.handleAjaxError
+        });
+    },
+
+    /**
+     * Haalt de waypoints op van een route en plaatst deze in het overeenkomstige route object in routes[]
+     * 
+     * @param  {number} routeId waarvoor we de waypoints willen ophalen.
+     * @param {Function} callback De functie uit te voeren indien geslaagd en queue leeg is.
+     * In een queue wordt enkel de callback van de laatst geslaagde aanvraag aangroepen (dus maximum 1).
+     * @param {Object} context Object die de callback moet uitvoeren
+     */
+    syncWaypoints: function(id, callback, context) {
+        // Queue id opvragen, om aan Api.callDelayed door te geven
+        var qid = this.getQueueId();
+
+        var me = this;
+
+        $.ajax({
+            type: "GET",
+            url: "/api/waypoints",
+            data: {routeID: id},
+            beforeSend: function (jqXHR, settings) {
+                jqXHR.url = settings.url;
+                Api.addHeaders(jqXHR);
+            },
+            success: function(result, status, jqXHR) {
+                if (result.result === "success") {
+                    var resultdata = result.data;
+
+                    // lengte van 0 waypoints wordt eigenlijk al opgevangen in REST API door error & reason terug te geven
+                    if (resultdata.length != 0) {
+                        var array = [];
+                        resultdata.sort(function(a, b) {
+                            return a.sequence - b.sequence;
+                        });
+                        for (var i in resultdata) {
+                            array.push({"lat": resultdata[i].latitude, "lng": resultdata[i].longitude});
+                        }
+                        routes[resultdata[0].routeID].waypoints = array;
+                        me.callDelayed(qid, callback, context);
+                    }
+                } else {
+                    console.error(result.reason);
+                }
+            },
+            error: Api.handleAjaxError
+        });
+    },
+
+    /**
+     * Haalt alle mogelijke providers van de server en slaat ze op in providers[]
+     *
+     * @param {Function} callback De functie uit te voeren indien geslaagd en queue leeg is.
+     * In een queue wordt enkel de callback van de laatst geslaagde aanvraag aangroepen (dus maximum 1).
+     * @param {Object} context Object die de callback moet uitvoeren
+     */
+    syncProviders: function(callback, context) {
+        // Bij begin van alle requests uitvoeren. 
+        // Hebben deze nodig voor de callback wanneer de request klaar is.
+        var qid = this.getQueueId();
+
+        // Hier alle data van de server halen.
+        // Uiteindelijk moet dit ongeveer het resultaat zijn:
+        providers = [];
+        
+        var me = this;
+        
+        $.ajax({
+            type: "GET",
+            url: "/api/providers",
+            beforeSend: function (jqXHR, settings) {
+                jqXHR.url = settings.url;
+                Api.addHeaders(jqXHR);
+            },
+            success: function(result, status, jqXHR) {
+                if (result.result === "success") {
+                    var resultdata = result.data;
+
+                    for (var i = 0; i < resultdata.length; i++) {
+                        providers[resultdata[i].id] = Provider.create(resultdata[i].id, resultdata[i].name);
                     }
                     me.callDelayed(qid, callback, context);
                 } else {
                     console.error(result.reason);
                 }
             },
-            error: handleAjaxError
+            error: Api.handleAjaxError
         });
     },
+
     // fetches the live data (= current traffic and an average of last month(s) ) of every route
+
+     /**
+     * fetches the live data (= current traffic and an average of last month(s) ) of every route
+     * 
+     * @param  {number} provider waarvan we data willen opvragen
+     * @param {Function} callback De functie uit te voeren indien geslaagd en queue leeg is.
+     * In een queue wordt enkel de callback van de laatst geslaagde aanvraag aangroepen (dus maximum 1).
+     * @param {Object} context Object die de callback moet uitvoeren
+     */
     syncLiveData: function(provider, callback, context) {
         loadingMap(true);
 
@@ -162,7 +293,7 @@ var Api = {
             data: {providerID: provider},
             beforeSend: function (jqXHR, settings) {
                 jqXHR.url = settings.url;
-                addHeaders(jqXHR);
+                Api.addHeaders(jqXHR);
             },
             success: function(result, status, jqXHR) {
                 if (result.result === "success") {
@@ -194,11 +325,19 @@ var Api = {
                 me.callDelayed(qid, newCallback, context);
                 
             },
-            error: handleAjaxError
+            error: Api.handleAjaxError
         });
     },
 
-    // fetches graph for today (right up to current time)
+    /**
+     * fetches graph for today (right up to current time)
+     *
+     * @param {number} routeId Id van de route waarvoor we de grafiek willen tonen
+     * @param  {number} provider waarvan we data willen opvragen
+     * @param {Function} callback De functie uit te voeren indien geslaagd en queue leeg is.
+     * In een queue wordt enkel de callback van de laatst geslaagde aanvraag aangroepen (dus maximum 1).
+     * @param {Object} context Object die de callback moet uitvoeren
+     */
     syncLiveGraph: function(routeId, providerId, callback, context) {
         // Bij begin van alle requests uitvoeren. 
         // Hebben deze nodig voor de callback wanneer de request klaar is.
@@ -229,10 +368,10 @@ var Api = {
         $.ajax({
             type: "GET",
             url: "/api/trafficdata",
-            data: {providerID: providerId, routeID: routeId, from: dateToRestString(from), to: dateToRestString(to)},
+            data: {providerID: providerId, routeID: routeId, from: dateToRestString(from), to: dateToRestString(to), interval: this.intervalDecimal*60},
             beforeSend: function (jqXHR, settings) {
                 jqXHR.url = settings.url;
-                addHeaders(jqXHR);
+                Api.addHeaders(jqXHR);
             },
             success: function(result, status, jqXHR) {
                 if (result.result === "success") {
@@ -261,6 +400,7 @@ var Api = {
                     if (!route.hasLiveData(providerId)) {
                         route.liveData[providerId] = TrafficGraph.create(null);
                     }
+                    route.liveData[providerId].intervalDecimal = me.intervalDecimal;
                     route.liveData[providerId].setData(data);
                     route.liveData[providerId].setAvgData(avgData);
                     me.callDelayed(qid, callback, context);
@@ -268,43 +408,19 @@ var Api = {
                     console.error(result.reason);
                 }
             },
-            error: handleAjaxError
+            error: Api.handleAjaxError
         });
     },
-    syncProviders: function(callback, context) {
-        // Bij begin van alle requests uitvoeren. 
-        // Hebben deze nodig voor de callback wanneer de request klaar is.
-        var qid = this.getQueueId();
 
-        // Hier alle data van de server halen.
-        // Uiteindelijk moet dit ongeveer het resultaat zijn:
-        providers = [];
-        
-        var me = this;
-        
-        $.ajax({
-            type: "GET",
-            url: "/api/providers",
-            beforeSend: function (jqXHR, settings) {
-                jqXHR.url = settings.url;
-                addHeaders(jqXHR);
-            },
-            success: function(result, status, jqXHR) {
-                if (result.result === "success") {
-                    var resultdata = result.data;
-
-                    for (var i = 0; i < resultdata.length; i++) {
-                        providers[resultdata[i].id] = Provider.create(resultdata[i].id, resultdata[i].name);
-                    }
-                    me.callDelayed(qid, callback, context);
-                } else {
-                    console.error(result.reason);
-                }
-            },
-            error: handleAjaxError
-        });
-    },
-    // fetches the live data (= current traffic and an average of last month(s) ) of every route
+    /**
+     * Fetches the interval data of every route
+     *
+     * @param {Interval} interval waarvoor we data willen ophalen
+     * @param  {number} provider id waarvan we data willen opvragen
+     * @param {Function} callback De functie uit te voeren indien geslaagd en queue leeg is.
+     * In een queue wordt enkel de callback van de laatst geslaagde aanvraag aangroepen (dus maximum 1).
+     * @param {Object} context Object die de callback moet uitvoeren
+     */
     syncIntervalData: function(interval, provider, callback, context) {
         // Bij begin van alle requests uitvoeren. 
         // Hebben deze nodig voor de callback wanneer de request klaar is.
@@ -318,7 +434,7 @@ var Api = {
             data: {providerID: provider, from: dateToRestString(interval.start), to: dateToRestString(interval.end), slowSpeed: consideredSlowSpeed},
             beforeSend: function (jqXHR, settings) {
                 jqXHR.url = settings.url;
-                addHeaders(jqXHR);
+                Api.addHeaders(jqXHR);
             },
             success: function(result, status, jqXHR) {
                 if (result.result === "success") {
@@ -356,11 +472,20 @@ var Api = {
                     console.error(result.reason);
                 }
             },
-            error: handleAjaxError
+            error: Api.handleAjaxError
         });
         
     },
 
+    /**
+     * Fetches the day data of every route
+     *
+     * @param {Interval} interval waarvoor we data willen ophalen
+     * @param  {number} provider id waarvan we data willen opvragen
+     * @param {Function} callback De functie uit te voeren indien geslaagd en queue leeg is.
+     * In een queue wordt enkel de callback van de laatst geslaagde aanvraag aangroepen (dus maximum 1).
+     * @param {Object} context Object die de callback moet uitvoeren
+     */
     syncDayData: function(day, provider, callback, context) {
         // Bij begin van alle requests uitvoeren. 
         // Hebben deze nodig voor de callback wanneer de request klaar is.
@@ -381,7 +506,7 @@ var Api = {
             data: {providerID: provider, from: dateToRestString(start), to: dateToRestString(end), slowSpeed: consideredSlowSpeed},
             beforeSend: function (jqXHR, settings) {
                 jqXHR.url = settings.url;
-                addHeaders(jqXHR);
+                Api.addHeaders(jqXHR);
             },
             success: function(result, status, jqXHR) {
                 if (result.result === "success") {
@@ -418,29 +543,37 @@ var Api = {
                     console.error(result.reason);
                 }
             },
-            error: handleAjaxError
+            error: Api.handleAjaxError
         });
         
     },
 
-    // fetches the acumulated data of every route
+    /**
+     *  Fetches the acumulated interval graph of this route
+     *
+     * @param {Interval} interval waarvoor we data willen ophalen
+     * @param {number} routeid waarvoor we data willen ophalen
+     * @param  {number} provider id waarvan we data willen opvragen
+     * @param {Function} callback De functie uit te voeren indien geslaagd en queue leeg is.
+     * In een queue wordt enkel de callback van de laatst geslaagde aanvraag aangroepen (dus maximum 1).
+     * @param {Object} context Object die de callback moet uitvoeren
+     */
 	syncIntervalGraph: function(interval, routeId, provider, callback, context) {
+        // Bij begin van alle requests uitvoeren. 
+        // Hebben deze nodig voor de callback wanneer de request klaar is.
         var qid = this.getQueueId();
 
         var route = routes[routeId];
-
-        // Hier alle data van de server halen.
-        // Uiteindelijk moet dit ongeveer het resultaat zijn: 
 
         var me = this;
 
         $.ajax({
             type: "GET",
             url: "/api/trafficdata/weekday",
-            data: {providerID: provider, routeID: routeId, from: dateToRestString(interval.start), to: dateToRestString(interval.end)},
+            data: {providerID: provider, routeID: routeId, from: dateToRestString(interval.start), to: dateToRestString(interval.end), interval: this.intervalDecimal*60},
             beforeSend: function (jqXHR, settings) {
                 jqXHR.url = settings.url;
-                addHeaders(jqXHR);
+                Api.addHeaders(jqXHR);
             },
             success: function(result, status, jqXHR) {
                 if (result.result === "success") {
@@ -462,6 +595,7 @@ var Api = {
                             data[hour] = (resultdata[weekday][key].traveltime) / 60;
                             avgData[hour] = (resultdata[weekday][key].average) / 60;
                         }
+                        graph.intervalDecimal = me.intervalDecimal;
                         graph.data = data;
                         graph.avgData = avgData;
                     }
@@ -471,11 +605,21 @@ var Api = {
                     console.error(result.reason);
                 }
             },
-            error: handleAjaxError
+            error: Api.handleAjaxError
         });   
 
 	},
 
+    /**
+     *  Fetches the day graph of this route
+     *
+     * @param {Date} day waarvoor we data willen ophalen
+     * @param {number} routeid waarvoor we data willen ophalen
+     * @param  {number} provider id waarvan we data willen opvragen
+     * @param {Function} callback De functie uit te voeren indien geslaagd en queue leeg is.
+     * In een queue wordt enkel de callback van de laatst geslaagde aanvraag aangroepen (dus maximum 1).
+     * @param {Object} context Object die de callback moet uitvoeren
+     */
     syncDayGraph: function(day, routeId, provider, callback, context) {
         var qid = this.getQueueId();
 
@@ -493,10 +637,10 @@ var Api = {
         $.ajax({
             type: "GET",
             url: "/api/trafficdata/weekday",
-            data: {providerID: provider, routeID: routeId, from: dateToRestString(start), to: dateToRestString(end)},
+            data: {providerID: provider, routeID: routeId, from: dateToRestString(start), to: dateToRestString(end), interval: this.intervalDecimal*60},
             beforeSend: function (jqXHR, settings) {
                 jqXHR.url = settings.url;
-                addHeaders(jqXHR);
+                Api.addHeaders(jqXHR);
             },
             success: function(result, status, jqXHR) {
                 if (result.result === "success") {
@@ -534,23 +678,35 @@ var Api = {
                             break;
                         }
                     }
+                    graph.intervalDecimal = me.intervalDecimal;
 
                     me.callDelayed(qid, callback, context);
                 } else {
                     console.error(result.reason);
                 }
             },
-            error: handleAjaxError
+            error: Api.handleAjaxError
         });   
+    },
 
+    /**
+     *  Voegt de noodzakelijk api key toe aan een aanvraag zijn headers. 
+     *  Deze is momenteel hardcoded.
+     *
+     * @param {jqXHR} request jQuery request waarop toe te passen
+     */
+    addHeaders: function(request) {
+        request.setRequestHeader("x-api-key", "6qKKfkX7u2lmJqxd8RrpLk7m");
+    },
+
+    /**
+     *  Handel een error af van een request.
+     *
+     * @param {jqXHR} jqXHR jQuery request
+     * @param {jqXHR} textStatus 
+     * @param {jqXHR} errorThrown
+     */
+    handleAjaxError: function(jqXHR, textStatus, errorThrown) {
+        console.error("Error while performing request for url : " + jqXHR.url + "\n" + jqXHR.status + " " + errorThrown + ". " + jqXHR.responseText);
     }
 };
-
-function addHeaders(request) {
-    request.setRequestHeader("x-api-key", "6qKKfkX7u2lmJqxd8RrpLk7m");
-}
-
-function handleAjaxError(jqXHR, textStatus, errorThrown) {
-    console.error("Error while performing request for url : " + jqXHR.url + "\n" + jqXHR.status + " " + errorThrown + ". " + jqXHR.responseText);
-}
-
