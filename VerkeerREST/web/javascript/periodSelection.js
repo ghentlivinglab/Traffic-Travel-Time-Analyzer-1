@@ -89,31 +89,23 @@ function fillPeriodSelectionInputs(){
 
 	// Popup inhoud juist zetten
 
-	// TODO: Alle events toevoegen
-
 	// Edit properties juist zetten
 	var fromDate = $(this).find('.from.datepicker');
-	var fromTime = $(this).find('.from.timepicker');
 	var toDate = $(this).find('.to.datepicker');
-	var toTime = $(this).find('.to.timepicker');
 
 	ignoreChangePickadate = true;
 	if (interval.start){
 		fromDate.pickadate('picker').set('select', interval.start);
-		fromTime.pickatime('picker').set('select', interval.start);
 	}
 	else {
 		fromDate.pickadate('picker').clear();
-		fromTime.pickatime('picker').clear();
 	}
 
 	if (interval.end){
 		toDate.pickadate('picker').set('select', interval.end);
-		toTime.pickatime('picker').set('select', interval.end);
 	}
 	else {
 		toDate.pickadate('picker').clear();
-		toTime.pickatime('picker').clear();
 	}
 	ignoreChangePickadate = false;
 
@@ -137,23 +129,10 @@ function savePeriodSelectionInputs() {
 	}
 
 	var fromDate = $(this).find('.from.datepicker').pickadate('picker').get('select');
-	var fromTime = $(this).find('.from.timepicker').pickatime('picker').get('select');
 	var toDate = $(this).find('.to.datepicker').pickadate('picker').get('select');
-	var toTime = $(this).find('.to.timepicker').pickatime('picker').get('select');
 
-	if (fromDate && fromTime){
-		interval.setStart(new Date(fromDate.year, fromDate.month, fromDate.date, fromTime.hour, fromTime.mins));
-	} else if(fromDate) {
-		interval.setStart(new Date(fromDate.year, fromDate.month, fromDate.date));
-	}
-
-	if (toDate && toTime){
-		interval.setEnd(new Date(toDate.year, toDate.month, toDate.date, toTime.hour, toTime.mins));
-	} else if(toDate) {
-		// TODO: Dit werkt niet (wordt genegeerd en tijd wordt 0)
-		interval.setEnd(new Date(toDate.year, toDate.month, toDate.date, 23, 59));
-	}
-
+	interval.setStart(new Date(fromDate.year, fromDate.month, fromDate.date));
+	interval.setEnd(new Date(toDate.year, toDate.month, toDate.date));
 }
 
 // Zet de name van de input
@@ -326,7 +305,6 @@ function bindPeriodSelection() {
 		labelYearSelect: 'Selecteer een jaar',
 		format: 'dd/mm/yyyy'
 	});
-	$(this).find('.timepicker').pickatime({format: 'H:i'});
 }
 
 function bindDaySelection() {

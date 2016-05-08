@@ -427,11 +427,15 @@ var Api = {
         var qid = this.getQueueId();
 
         var me = this;
+
+        var end = new Date(interval.end.getTime());
+        // volgende dag nemen om 0:00
+        end.setDate(end.getDate() + 1);
         
         $.ajax({
             type: "GET",
             url: "/api/trafficdata/interval",
-            data: {providerID: provider, from: dateToRestString(interval.start), to: dateToRestString(interval.end), slowSpeed: consideredSlowSpeed},
+            data: {providerID: provider, from: dateToRestString(interval.start), to: dateToRestString(end), slowSpeed: consideredSlowSpeed},
             beforeSend: function (jqXHR, settings) {
                 jqXHR.url = settings.url;
                 Api.addHeaders(jqXHR);
@@ -567,10 +571,14 @@ var Api = {
 
         var me = this;
 
+        var end = new Date(interval.end.getTime());
+        // volgende dag nemen om 0:00
+        end.setDate(end.getDate() + 1);
+
         $.ajax({
             type: "GET",
             url: "/api/trafficdata/weekday",
-            data: {providerID: provider, routeID: routeId, from: dateToRestString(interval.start), to: dateToRestString(interval.end), interval: this.intervalDecimal*60},
+            data: {providerID: provider, routeID: routeId, from: dateToRestString(interval.start), to: dateToRestString(end), interval: this.intervalDecimal*60},
             beforeSend: function (jqXHR, settings) {
                 jqXHR.url = settings.url;
                 Api.addHeaders(jqXHR);
