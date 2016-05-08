@@ -1,5 +1,20 @@
 /* global Dashboard, Interval, Event, url, Mustache */
 
+// polyfill to make the filter work
+if (!String.prototype.includes) {
+    String.prototype.includes = function (search, start) {
+        'use strict';
+        if (typeof start !== 'number') {
+            start = 0;
+        }
+
+        if (start + search.length > this.length) {
+            return false;
+        } else {
+            return this.indexOf(search, start) !== -1;
+        }
+    };
+}
 /****************************
  * global variables
  * API fills these once only
@@ -111,7 +126,7 @@ function openDashboard(animated) {
 
         // changes the display of the button
         $(".collapse").children().attr({"src": "images/arrow-left.png", "alt": "<"});
-        url.setQueryParam("dashboardView","true");
+        url.setQueryParam("dashboardView", "true");
     }
 }
 
@@ -172,7 +187,7 @@ function thisReady() {
         Dashboard.forceLiveReload();
     });
 
-    
+
 }
 
 /****************************
