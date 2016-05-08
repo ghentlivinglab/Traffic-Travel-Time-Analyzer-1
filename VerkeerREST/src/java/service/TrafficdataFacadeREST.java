@@ -307,9 +307,9 @@ public class TrafficdataFacadeREST extends AbstractFacade<Trafficdata> {
                     LiveTrafficdata l = new LiveTrafficdata(Integer.parseInt(o[0].toString()));
 
                     l.live.put("createdOn", o[1].toString());
-                    l.live.put("speed", "" + Math.round(Integer.parseInt(o[2].toString()) / Integer.parseInt(o[3].toString()) * 3.6 * 10.0) / 10.0);
+                    l.live.put("speed", "" + Math.round(Integer.parseInt(o[2].toString()) / (double) Integer.parseInt(o[3].toString()) * 3.6 * 10.0) / 10.0);
                     l.live.put("time", "" + Double.parseDouble(o[3].toString()) / 60);
-                    l.avg.put("speed", "" + Math.round(Integer.parseInt(o[2].toString()) / Integer.parseInt(o[4].toString()) * 3.6 * 10.0) / 10.0);
+                    l.avg.put("speed", "" + Math.round(Integer.parseInt(o[2].toString()) / (double) Integer.parseInt(o[4].toString()) * 3.6 * 10.0) / 10.0);
                     l.avg.put("time", "" + Double.parseDouble(o[4].toString()) / 60);
                     lijst.add(l);
                 }
