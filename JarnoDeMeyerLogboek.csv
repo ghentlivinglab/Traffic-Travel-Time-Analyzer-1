@@ -111,4 +111,5 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 07/05/16,15:00,17:45,Thuis,Projectwerk,Misc bugfixes,,found and fixed some bugs in the map and url system
 08/05/16,14:00,17:00,Thuis,Communicatie,Presentatie voor klant,84,overleg + aanmaken presentatie
 08/05/16,17:00,18:15,Thuis,Projectwerk,Misc bugfixes,,fixing incompatibilities with IE and Firefox
-08/05/16,22:45,23:45,Thuis,Projectwerk,Fix faulty commits,,paar foute commits die moesten ongedaan worden
+08/05/16,22:30,23:45,Thuis,Projectwerk,Fix faulty commits,,paar foute commits die moesten ongedaan worden
+09/05/16,14:45,16:30,Thuis,Projectwerk,Misc tasks,,added auto-refresh + fixed minor grammatical error
