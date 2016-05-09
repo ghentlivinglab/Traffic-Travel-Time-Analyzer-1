@@ -236,7 +236,11 @@ var Dashboard = {
         }
     },
     forceLiveReload: function () {
-        Api.syncLiveData(this.provider.id, Dashboard.reload, this);
+        Api.syncLiveData(this.provider.id, function() {
+        	if (this.mode == this.LIVE) {
+        		Dashboard.reload();
+        	}
+        }, this);
     },
     // Herlaad het dashboard op de huidige stand
     reload: function () {
