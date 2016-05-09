@@ -106,6 +106,7 @@ var url = {
         this.showDashboardByParam();
         this.changeMapByParams();
         this.changeFilterByParam();
+        this.changeAutoReloadByParam();
     },
     showDashboardByParam: function () {
         // checks if mapView or overview has to be displayed
@@ -162,12 +163,12 @@ var url = {
                 } else {
                     console.error("incorrect parameter: periode (wrong format of date)");
                     url.setQueryParam("periode");
-                    console.error("has been removed");
+                    console.info("has been removed");
                 }
             } else {
                 console.error("incorrect parameter: periode (wrong number of arguments)");
                 url.setQueryParam("periode");
-                console.error("has been removed");
+                console.info("has been removed");
             }
         }
     },
@@ -203,12 +204,12 @@ var url = {
                 } else {
                     console.error("incorrect parameter: vergelijkPeriode (wrong format of date)");
                     url.setQueryParam("vergelijkPeriode");
-                    console.error("has been removed");
+                    console.info("has been removed");
                 }
             } else {
                 console.error("incorrect parameter: vergelijkPeriode (wrong number of arguments)");
                 url.setQueryParam("vergelijkPeriode");
-                console.error("has been removed");
+                console.info("has been removed");
             }
         }
     },
@@ -228,12 +229,12 @@ var url = {
                 } else {
                     console.error("incorrect parameter: mapCenter (coords are not numbers)");
                     url.setQueryParam("mapCenter");
-                    console.error("has been removed");
+                    console.info("has been removed");
                 }
             } else {
                 console.error("incorrect parameter: mapCenter (wrong number of coords)");
                 url.setQueryParam("mapCenter");
-                console.error("has been removed");
+                console.info("has been removed");
             }
         }
     },
@@ -245,7 +246,7 @@ var url = {
                 zoom = zoomCurrent;
                 console.error("incorrect parameter: mapZoom");
                 url.setQueryParam("mapZoom");
-                console.error("has been removed");
+                console.info("has been removed");
             }
             zoomCurrent = zoom;
             map.setZoom(zoom);
@@ -268,7 +269,22 @@ var url = {
             } else {
                 console.error("incorrect parameter: dag (wrong format of date)");
                 url.setQueryParam("dag");
-                console.error("has been removed");
+                console.info("has been removed");
+            }
+        }
+    },
+    changeAutoReloadByParam: function(){
+        var value = url.getQueryParam("autoReload");
+        var input = $("#auto-reload");
+        $(input).prop("checked",false);
+        
+        if(value){
+            if(value==="true"){
+                $(input).click();
+            } else{
+                console.error("incorrect parameter: autoReload (value can only be true)");
+                url.setQueryParam("autoReload");
+                console.info("has been removed");
             }
         }
     },

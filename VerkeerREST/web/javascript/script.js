@@ -190,6 +190,31 @@ function thisReady() {
 
 }
 
+var autoReloadTimer;
+
+function autoReloadChanged(){
+    var button = $("#auto-reload");
+    if( $(button).is(":checked") ) {
+        if( !autoReloadTimer ){
+            autoReloadTimer = setInterval(function(){
+                Dashboard.reload();
+                console.info("dashboard automatically reloaded");
+            },1000*60*5); // 1000 ms/s * 60 s/min * 5 min
+            console.info("auto-reload enabled");
+            url.setQueryParam("autoReload",true);
+            
+        } else {
+            console.info("auto-reload already running");
+        }
+        
+    } else if(autoReloadTimer) {
+        clearInterval(autoReloadTimer);
+        autoReloadTimer=null;
+        console.info("auto-reload disabled");
+        url.setQueryParam("autoReload","");
+    }
+}
+
 /****************************
  * runs when DOM-tree is finished
  ****************************/
