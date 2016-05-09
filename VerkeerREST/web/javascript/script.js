@@ -197,20 +197,15 @@ function autoReloadChanged(){
     if( $(button).is(":checked") ) {
         if( !autoReloadTimer ){
             autoReloadTimer = setInterval(function(){
-                Dashboard.reload();
-                console.info("dashboard automatically reloaded");
-            },1000*60*5); // 1000 ms/s * 60 s/min * 5 min
-            console.info("auto-reload enabled");
+                Dashboard.forceLiveReload();
+            }, 1000*60*5); // 1000 ms/s * 60 s/min * 5 min
             url.setQueryParam("autoReload",true);
             
-        } else {
-            console.info("auto-reload already running");
         }
         
     } else if(autoReloadTimer) {
         clearInterval(autoReloadTimer);
         autoReloadTimer=null;
-        console.info("auto-reload disabled");
         url.setQueryParam("autoReload","");
     }
 }
