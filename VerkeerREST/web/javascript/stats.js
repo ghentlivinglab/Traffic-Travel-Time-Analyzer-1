@@ -7,7 +7,6 @@ function toggleGraph(){
 	var box = $(this).find('.graph-animation-box');
 	if(box.length == 0 || !box.is(":visible")){
 		// Grafiek toevoegen
-		// TODO: data doorgeven (moet ook in deze functie enzo)
 
 		if (box.length == 0) {
 			$(this).append('<div class="graph-animation-box"><div class="graph-box"><div class="arrow"></div><div class="graph-shadow"></div><div class="graph"><div class="graph-loading"><img class="loading" src="images/loading.gif" alt="Bezig met laden"></div><div class="graph-content"><div class="google-graph"></div><div class="extra-content"></div></div></div></div></div>');
