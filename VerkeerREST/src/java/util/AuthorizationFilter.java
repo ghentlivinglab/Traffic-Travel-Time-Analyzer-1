@@ -15,9 +15,13 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 
 /**
- * Filter that checks the authorization header of all requests made to the REST API.
+ * Filters all requests made to the REST API and 
+ * checks a custom header (X-API-KEY) for the authorization of the requests.
  * Depending on the API-KEY delivired by the request, 
  * returns the data or an UNAUTHORIZED (http-status code 401) response.
+ * <p>
+ * A custom header is being used because the authorization 
+ * header is already being used for basic auth, by the server.
  * 
  * @author Piet
  */
@@ -39,12 +43,12 @@ public class AuthorizationFilter implements ContainerRequestFilter {
         
         String authorization = requestContext.getHeaderString(AUTHORIZATION_PROPERTY);
         
-        // checking if there was an authorization header
+        // checking if there was an x-api-key header
         if(authorization == null){
             throw new WebApplicationException(ACCESS_DENIED.entity("Unauthorized. Authorization header is required to perform this request.").build());
         }
                 
-        // TODO : having multiple API-KEYS stored and checking them here
+        // checking if the x-api-key header is valid
         if(!authorization.equals("6qKKfkX7u2lmJqxd8RrpLk7m")){
             throw new WebApplicationException(ACCESS_DENIED.entity(authorization + " is an invalid API-key. Use a valid API-key.").build());
         }         
