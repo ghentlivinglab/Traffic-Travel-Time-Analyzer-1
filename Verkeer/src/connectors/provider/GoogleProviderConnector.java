@@ -50,15 +50,15 @@ public class GoogleProviderConnector extends AProviderConnector {
         super(dbConnector, "Google Maps");
         this.providerEntry = dbConnector.findProviderEntryByName(providerName); // gets the provider-information from the database
         updateInterval = Integer.parseInt(prop.getProperty("GOOGLE_UPDATE_INTERVAL"));
-        
+
         int count = Integer.parseInt(prop.getProperty("GOOGLE_API_KEYS"));
         ApiKeys = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            ApiKeys.add(prop.getProperty("GOOGLE_API_KEY"+i));
+            ApiKeys.add(prop.getProperty("GOOGLE_API_KEY" + i));
         }
-        
+
     }
-    
+
     /**
      * Sets the required HTTP headers for a request to the Here API: - Disable
      * cache - Accept gzip - Set origin to waze.com - Accept language: Dutch,
@@ -72,7 +72,6 @@ public class GoogleProviderConnector extends AProviderConnector {
         request.setRequestProperty("Accept-Encoding", "deflate");
         request.setRequestProperty("Accept", "*/*");
     }
-    
 
     public DataEntry getData(RouteEntry route) throws RouteUnavailableException {
         String url = generateURL(route);
@@ -88,7 +87,7 @@ public class GoogleProviderConnector extends AProviderConnector {
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
             setHeaders(con);
-            
+
             // optional default is GET
             con.setRequestMethod("GET");
 
@@ -104,7 +103,7 @@ public class GoogleProviderConnector extends AProviderConnector {
                 response.append(inputLine);
             }
             in.close();
-            
+
             if (responseCode == 200) { // Alles OK
                 Map<String, Object> rawData = fetchDataFromJSON(response.toString());
                 DataEntry data = processData(route, rawData);
@@ -182,8 +181,10 @@ public class GoogleProviderConnector extends AProviderConnector {
      * route
      * @param rawData Map&lt;String,Object&gt; that contains the raw JSON-data
      * @return Entry that contains all the data about current route
+     * @throws connectors.provider.RouteUnavailableException when data is not
+     * valid
      */
-    protected DataEntry processData(RouteEntry route, Map<String, Object> rawData) {
+    protected DataEntry processData(RouteEntry route, Map<String, Object> rawData) throws RouteUnavailableException {
         DataEntry data = new DataEntry(-1, route, providerEntry);
         // get all routes
         List<Object> routes = (List<Object>) rawData.get("routes");
@@ -203,11 +204,41 @@ public class GoogleProviderConnector extends AProviderConnector {
                 distance += Math.toIntExact((long) distanceObject.get("value"));
                 duration += Math.toIntExact((long) durationObject.get("value"));
             }
-            if (true) { // TODO add condition to check if route is correct one (probably via distance or shortest route)
+
+            // condition to check if route is correct via a margin on the distance. 
+            // this is to compensate for minor changes in the road that will occur.
+            // if we don't compensate for this, we would have to correct our distance with every change Google pushes
+            if (DistanceTolerated(distance, route)) {
                 data.setTravelTime(duration);
+                return data;
             }
         }
-        return data;
+        // no route has a tolerated distance, hence no valid route is found
+        throw new RouteUnavailableException(providerName, "No route found");
+
+    }
+
+    /**
+     * Calculates if the given distance can be considered correct for the given
+     * route.<br><br>
+     * Calculation is based on the idea that most detours will add more than 100
+     * meter to the distance. Thus this distance can be rejected when it is not
+     * within this margin
+     *
+     * @param distance integer which contains distance in meter
+     * @param route RouteEntry to which the distance should be checked
+     * @return true when tolerated, false when not
+     */
+    private boolean DistanceTolerated(int distance, RouteEntry route) {
+        int correctDistance = route.getLength();
+        int correctionDistance = 100; // difference can be maximum 100 meter
+        int maxDistance = correctDistance + correctionDistance;
+        int minDistance = correctDistance - correctionDistance;
+
+        if (minDistance < distance && distance < maxDistance) { // the distance may vary anywhere between -100 and 100 meter from the route length to be considered correct
+            return true;
+        }
+        return false;
     }
 
     /**

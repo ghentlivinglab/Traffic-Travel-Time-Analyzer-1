@@ -117,22 +117,26 @@ public class DummyDbConnector implements IDbConnector {
     }
 
     public void vulRoutesOp() {
-        RouteEntry traject1 = new RouteEntry();
-        traject1.setId(1);
-        traject1.setName("R40 Drongensesteenweg -> Palinghuizen");
-        traject1.setStartCoordinateLatitude(51.0560905);
-        traject1.setStartCoordinateLongitude(3.6951634);
-        traject1.setEndCoordinateLatitude(51.0663037);
-        traject1.setEndCoordinateLongitude(3.6996797);
-        routeEntries.add(traject1);
+        RouteEntry traject = new RouteEntry();
+        traject.setName("Rooigemlaan (R40) northbound");
+        traject.setDescription("Drongensesteenweg - Palinghuizen");
+        traject.setId(27);
+        traject.setStartCoordinateLatitude(51.05627181);
+        traject.setStartCoordinateLongitude(3.6960078200000006);
+        traject.setEndCoordinateLatitude(51.065875);
+        traject.setEndCoordinateLongitude(3.699119);
+        traject.setLenght(1352);
+        routeEntries.add(traject);
 
         RouteEntry traject2 = new RouteEntry();
-        traject2.setId(2);
-        traject2.setName("R40 Drongensesteenweg -> Palinghuizen - kopie");
-        traject2.setStartCoordinateLatitude(51.0560905);
-        traject2.setStartCoordinateLongitude(3.6951634);
-        traject2.setEndCoordinateLatitude(51.0663037);
-        traject2.setEndCoordinateLongitude(3.6996797);
+        traject2.setId(30);
+        traject2.setDescription("E17 - Kennedylaan");
+        traject2.setName("Eisenhowerlaan (R4) northbound");
+        traject2.setLenght(18823);
+        traject2.setStartCoordinateLatitude(51.0137);
+        traject2.setStartCoordinateLongitude(3.7182109922981295);
+        traject2.setEndCoordinateLatitude(51.08736629632179);
+        traject2.setEndCoordinateLongitude(3.7569708390424417);
         routeEntries.add(traject2);
     }
 
