@@ -31,7 +31,7 @@ public class CustomWebApplicationExceptionMapper implements  ExceptionMapper<Exc
      * 
      * @param exception the exception thrown in the REST API
      * @return Response with a proper http-error code and 
-     * and an appropriate message for the client which 
+     * and an appropriate message for the client who
      * performed the request to the REST API.
      */
     @Override
