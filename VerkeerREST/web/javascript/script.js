@@ -1,7 +1,10 @@
 /* global Dashboard, Interval, Event, url, Mustache */
 
-// polyfill to make the filter work
-if (!String.prototype.includes) {
+/****************************
+ * polyfill to make the filter work on browsers that not support the 'includes'-function of string prototypes
+ * source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes#Polyfill
+ ****************************/
+if (!String.prototype.includes) { 
     String.prototype.includes = function (search, start) {
         'use strict';
         if (typeof start !== 'number') {
@@ -15,6 +18,7 @@ if (!String.prototype.includes) {
         }
     };
 }
+
 /****************************
  * global variables
  * API fills these once only
@@ -23,20 +27,22 @@ var providers = [];
 var routes = [];
 var events = [];
 
-// Snelheid trager dan de toegelaten snelheid, die we beschouwen als traag
-var consideredSlowSpeed = 10; // bv toegalten = 50; traag = 50 - 15 => 35 km/h
 
-
+// speeds slower than the allowed speed is considered as slow
+// eg: max speed is 50; slow is 50 - 10 = 40 km/h
+var consideredSlowSpeed = 10; 
 // Weekdays
 var weekdays = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag', 'Zaterdag', 'Zondag'];
 var weekdays_short = ['ma', 'di', 'wo', 'do', 'vr', 'za', 'zo'];
-
+// mapping of api days to javascript days
 var weekdays_js_to_rest = [6, 0, 1, 2, 3, 4, 5];
 
-// Inladen van local storage
+// loading of localStorage
 Event.loadLocalStorage();
 
-
+/****************************
+ * gets the index of an event, given by name
+ ****************************/
 function getEventIndex(name) {
     for (var i = 0; i < events.length; i++) {
         if (events[i].getName() === name) {
@@ -46,6 +52,7 @@ function getEventIndex(name) {
     return -1;
 }
 
+// mapping of XML-entities to their characters
 var entityMap = {
     "&": "&amp;",
     "<": "&lt;",
@@ -55,6 +62,9 @@ var entityMap = {
     "/": '&#x2F;'
 };
 
+/****************************
+ * function to escape characters that are HTML-specific
+ ****************************/
 function escapeHtml(string) {
     return String(string).replace(/[&<>"'\/]/g, function (s) {
         return entityMap[s];
@@ -75,24 +85,24 @@ Mustache.renderTemplate = function (template_name, view) {
 
 /****************************
  * toggles the display of the overview panel
+ * if false is given as an argument, there is no animation
  ****************************/
 function togglePanel(animated) {
-    if (typeof animated == "undefined") {
+    if (typeof animated == "undefined") { // when no parameter is given, display animation
         animated = true;
     }
 
     if ($("#dashboard").hasClass('open')) {
-        // Als het dashboard open is, sluiten we het terug
+        // close dashboard when open
         $("#dashboard").removeClass('open');
 
-        if (!animated) {
+        if (!animated) { // do not animate transition
             $("#dashboard").css({'left': 'auto', 'margin-left': 0, 'right': 0});
         } else {
-            // Animeer dat het naar links opschuift, dit is niet stabiel.
-            // Als de breedte van het dashboard wijzigt tijdens het animeren
-            // zal het op het einde niet op de juiste plaats staan.
+            // animate to move panel to the left
+            // this part is unstable, the panel will be positioned incorrectly when the view changes width
             $("#dashboard").animate({'margin-left': -$("#dashboard").outerWidth()}, function () {
-                // Als het terug gesloten is, zorgen we dat de CSS terug 'stabiel' is
+                // when panel is hidden, make css truly stable
                 $("#dashboard").css({'left': 'auto', 'margin-left': 0, 'right': 0});
             });
         }
@@ -100,27 +110,27 @@ function togglePanel(animated) {
         // changes the display of the button
         $(".collapse").children().attr({"src": "images/arrow-right.png", "alt": ">"});
         url.setQueryParam("dashboardView");
-    } else {
+    } else { // displays the panel
         openDashboard(animated);
     }
 }
 
+/****************************
+ * displays the panel, with or without animation
+ ****************************/
 function openDashboard(animated) {
     if (!$("#dashboard").hasClass('open')) {
-        // Als het dashboard gesloten is, openen we het
+        // if panel is closed, open it
         $("#dashboard").addClass('open');
 
-        if (!animated) {
+        if (!animated) { // do not animate
             $("#dashboard").css({'left': '100%', 'right': 'auto', 'margin-left': 0});
         } else {
-            // We verwijderen right: 0 en stappen over op margin-left, zodat we die kunnen animeren
-            // (right en left tergelijk animeren kan niet zonder jump)
-            // De gebruiker merkt hier niets van, het scherm blijft exact hetzelfde.
-            // We zijn wel niet meer 'stabiel', wijzigingen in de breedte van het dashboard zullen de animatie
-            // beïnvloeden, maar dat blijft heel erg beperkt
+            // remove 'right: 0' and use margin-left in the css so we can animate
+            // again this is an unstable action if the window is resized during the transition
             $("#dashboard").css({'left': '100%', 'right': 'auto', 'margin-left': -$("#dashboard").outerWidth()});
 
-            // Animeren, op het einde hiervan zijn we terug 'stabiel'
+            // animate and become stable in the end
             $("#dashboard").animate({'margin-left': 0});
         }
 
@@ -131,15 +141,15 @@ function openDashboard(animated) {
 }
 
 /****************************
- * Open / sluit popup in popupable element
- * optionele parameter close om sluiten te forceren (maakt niet uit welke waarde die krijgt, zodra gegeven -> sluiten)
+ * open/close popup in popupable element
+ * optional parameter close to force closing (value has no importance, the popup will be closed)
  ****************************/
 function togglePopup(close) {
     var anchor = $(this).find('.popup-anchor');
     if (close === undefined && !anchor.hasClass('open')) {
         anchor.addClass('open');
     } else {
-        // Voorkomen dat Dashboard.intervalsDidChange bij elke klik wordt uitgevoerd -> enkel bij sluiten
+        // prevent activation of Dashboard.intervalsDidChange at every click, activates only on close
         if (anchor.hasClass('open')) {
             if ($(this).hasClass('period-selection')) {
                 onClosePeriodSelection.call(this);
@@ -149,16 +159,18 @@ function togglePopup(close) {
     }
 }
 
+
+// simulates event.stopPropagation(); without breaking the date picker (which should receive events)
+var clickedOnPopup = false;
+
 /****************************
+ * executes when new content is being loaded
+ * this is always the root of the changing elements
  * Wordt uitgevoerd als er nieuwe content wordt toegevoegd of herladen. Hierbij is this altijd de root element die alle aanpassingen omvat.
  * Alles bindings moeten hierop dus opnieuw uitgevoerd worden
  ****************************/
-
-// simuleert event.stopPropagation(); zonder de datepicker kapot te maken (die moet namelijk ook events ontvangen!)
-var clickedOnPopup = false;
-
 function thisReady() {
-    // Propagation disablen op popup box (dat deze ook niet sluit bij onlick van de popupable parent)
+    // Propagation disablen on popup box (no closing on onclick of popupable parent)
     $(this).find('.popupable').click(function (event) {
         if (!clickedOnPopup) {
             if ($(this).hasClass('period-selection')) {
@@ -170,8 +182,8 @@ function thisReady() {
         }
     });
 
-    // Alle functinaliteiten toevoegen (= binds) bv. onClick, onChange, ...
-    // voor period selections in this
+    // adds all functionalities (= binds) eg: onClick, onChange...
+    // to period selections in this
     bindPeriodSelection.call(this);
     bindDaySelection.call(this);
 
@@ -190,12 +202,16 @@ function thisReady() {
 
 }
 
-var autoReloadTimer;
 
+var autoReloadTimer; // stores the timer for auto reload
+/****************************
+ * manages auto reload features by reading the state of the checkbox
+ * stores the timer in autoReloadTimer
+ ****************************/
 function autoReloadChanged(){
-    var button = $("#auto-reload");
-    if( $(button).is(":checked") ) {
-        if( !autoReloadTimer ){
+    var button = $("#auto-reload"); // get checkbox
+    if( $(button).is(":checked") ) { // if checked, enable timer
+        if( !autoReloadTimer ){ // if timer not yet running start timer to force reload and add parameter to url
             autoReloadTimer = setInterval(function(){
                 Dashboard.forceLiveReload();
             }, 1000*60*5); // 1000 ms/s * 60 s/min * 5 min
@@ -203,10 +219,10 @@ function autoReloadChanged(){
             
         }
         
-    } else if(autoReloadTimer) {
-        clearInterval(autoReloadTimer);
-        autoReloadTimer=null;
-        url.setQueryParam("autoReload","");
+    } else if(autoReloadTimer) { // not checked but timer is running
+        clearInterval(autoReloadTimer); // stip timer
+        autoReloadTimer=null; // clear timer
+        url.setQueryParam("autoReload",""); // remove url parameter
     }
 }
 
@@ -219,8 +235,8 @@ $(document).ready(function () {
     // adds a click listener to the collapse-button
     $(".collapse").click(togglePanel);
 
-    // Popups sluiten als er naast wordt geklikt 
-    // (door stop propagation zal dit nooit uitgevoerd worden als er op de popup geklikt wordt)
+    // closes popups if clicked on another element 
+    // won't execute with a click on popup thanks to the stop propagation
     $(document).click(function () {
         if (clickedOnPopup) {
             clickedOnPopup = false;

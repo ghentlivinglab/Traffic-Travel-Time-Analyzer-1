@@ -115,3 +115,9 @@ Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
 09/05/16,14:45,16:30,Thuis,Projectwerk,Misc tasks,,added auto-refresh + fixed minor grammatical error
 09/05/16,16:30,17:30,Thuis,Communicatie,Presentatie voor klant,84,voorbereiden presentatie
 09/05/16,18:00,18:30,Thuis,Communicatie,Presentatie voor klant,84,voorbereiden presentatie
+09/05/16,22:00,23:00,Thuis,Communicatie,Presentatie voor klant,84,voorbereiden presentatie
+10/05/16,08:15,09:30,Thuis,Communicatie,Presentatie voor klant,84,voorbereiden presentatie (zorgen voor backup-systeem als internet faalt)
+10/05/16,11:00,12:30,School,Communicatie,Presentatie voor klant,84,presentatie geven en andere bijwonen
+11/05/16,13:15,14:00,Thuis,Projectwerk,Google-connector klasse,5,toevoegen controle voor correcte route
+11/05/16,14:00,18:00,Thuis,Projectwerk,Google-connector klasse,5,schrijven en proberen toevoegen andere Google API in 2de klasse (distance matrix) maar niet haalbaar wegens te veel problemen
+11/05/16,20:15,22:00,Thuis,Projectwerk,Code op orde zetten,69,extra commentaar toevoegen en vertalingen maken naar het Engels
