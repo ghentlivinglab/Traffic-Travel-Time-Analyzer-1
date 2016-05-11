@@ -1,8 +1,6 @@
 /****************************
  * initialisers to set scope
  ****************************/
-// coords and labels are hard coded for now, will be dynamically loaded with AJAX
-// TODO: AJAX-request
 var colors = []; // will be filled with color for each route
 var infowindow; // the info window for extra info about a route
 var markers = []; // will be filled with the markers for events
@@ -142,7 +140,6 @@ function deleteLines() {
 
 /****************************
  * generate the correct color for each route
- * TODO: make dynamically based on timing differences and not random
  ****************************/
 function updateColors() {
     var x = 0;
