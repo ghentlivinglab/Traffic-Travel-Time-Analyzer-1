@@ -58,8 +58,8 @@ verkeer -d
 ```
 
 Extra opties om aan het 'verkeer'-script mee te geven:
- -a : verbind met de terminal waar de polling applicatie in draait.
- -i : start de applicatie en verbind meteen met de terminal waar de polling applicatie in draait.
- -f : forceer de start van de polling applicatie. Als de applicatie al draait wordt deze herstart.
- -s : stop de polling applicatie
- -d : deploy de webapplicatie in glassfish
+* -a : verbind met de terminal waar de polling applicatie in draait.
+* -i : start de applicatie en verbind meteen met de terminal waar de polling applicatie in draait.
+* -f : forceer de start van de polling applicatie. Als de applicatie al draait wordt deze herstart.
+* -s : stop de polling applicatie
+* -d : deploy de webapplicatie in glassfish
