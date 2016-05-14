@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package connectors.provider;
 
 import com.owlike.genson.Genson;
@@ -18,27 +13,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Future;
 import org.apache.log4j.Logger;
 
-/**
- *
- * @author jarno
- */
 public class GoogleProviderConnector extends AProviderConnector {
 
     private static final Logger log = Logger.getLogger(GoogleProviderConnector.class);
     private List<String> ApiKeys;
     private int alternator = 0;
-
-    /**
-     * List of all Future instances from last triggerUpdate (check
-     * java.util.concurrent library). ± sort of threads Use f.get(); to wait the
-     * thread to finish and return its value Future<ReturnType>
-     * Used in the test classes to wait for the threads to finish and return its
-     * DataEntry (or null if failed)
-     */
-    protected List<Future<DataEntry>> buzyRequests;
 
     /**
      * Constructs a new GoogleProviderConnector with an IDbConnector to write
@@ -61,8 +42,7 @@ public class GoogleProviderConnector extends AProviderConnector {
 
     /**
      * Sets the required HTTP headers for a request to the Here API: - Disable
-     * cache - Accept gzip - Set origin to waze.com - Accept language: Dutch,
-     * Accept all media types
+     * cache - Accept gzip - Accept all media types
      *
      * @param request to set headers of
      */
@@ -73,29 +53,35 @@ public class GoogleProviderConnector extends AProviderConnector {
         request.setRequestProperty("Accept", "*/*");
     }
 
+    /**
+     * Method that makes the connection with google and fetches the data
+     *
+     * @param route
+     * @return the generated data
+     * @throws RouteUnavailableException when an error with the connection or
+     * the data occurs
+     */
     public DataEntry getData(RouteEntry route) throws RouteUnavailableException {
         String url = generateURL(route);
 
         URL obj;
         try {
-            obj = new URL(url);
+            obj = new URL(url); // generate url based on the string with the specific url
         } catch (MalformedURLException ex) {
             throw new RouteUnavailableException(providerName, "Failed getting data: Url malformed " + url);
         }
 
         try {
+            // fetch the data from the google-servers and stores it in a buffer
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
             setHeaders(con);
-
-            // optional default is GET
+            // optional, default should be GET
             con.setRequestMethod("GET");
 
             int responseCode = con.getResponseCode();
             String responseMessage = con.getResponseMessage();
 
-            BufferedReader in = new BufferedReader(
-                    new InputStreamReader(con.getInputStream()));
+            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
             String inputLine;
             StringBuilder response = new StringBuilder();
 
@@ -104,9 +90,9 @@ public class GoogleProviderConnector extends AProviderConnector {
             }
             in.close();
 
-            if (responseCode == 200) { // Alles OK
-                Map<String, Object> rawData = fetchDataFromJSON(response.toString());
-                DataEntry data = processData(route, rawData);
+            if (responseCode == 200) { // Data has been fetched from the server and is stored in the response-object
+                Map<String, Object> rawData = fetchDataFromJSON(response.toString()); // translate json to java-object
+                DataEntry data = processData(route, rawData); // fetch data from java object and store in data
                 return data;
             } else {
                 throw new RouteUnavailableException(providerName, "Something went wrong. Statuscode: " + responseCode + " " + responseMessage);
@@ -136,17 +122,22 @@ public class GoogleProviderConnector extends AProviderConnector {
      * @return String that contains the URL to get info about current route
      */
     protected String generateURL(RouteEntry route) {
+        // get start address
         StringBuilder urlBuilder = new StringBuilder(prop.getProperty("GOOGLE_API_URL"));
+        // get key
         urlBuilder.append("?key=");
         urlBuilder.append(getAPIKey());
+        // get start point
         urlBuilder.append("&origin=");
         urlBuilder.append(route.getStartCoordinateLatitude());
         urlBuilder.append(",");
         urlBuilder.append(route.getStartCoordinateLongitude());
+        // get destination point
         urlBuilder.append("&destination=");
         urlBuilder.append(route.getEndCoordinateLatitude());
         urlBuilder.append(",");
         urlBuilder.append(route.getEndCoordinateLongitude());
+        // set timing for this moment so real time data is used
         urlBuilder.append("&departure_time=now");
 
         return urlBuilder.toString();
@@ -164,11 +155,10 @@ public class GoogleProviderConnector extends AProviderConnector {
      * @return Google-dataset about current route
      */
     protected Map<String, Object> fetchDataFromJSON(String json) throws RouteUnavailableException {
+        // translation is done via Genson
         Genson genson = new Genson();
-        Map<String, Object> map = genson.deserialize(json, Map.class
-        );
-        if (!map.get(
-                "status").equals("OK")) { // google data is not correct
+        Map<String, Object> map = genson.deserialize(json, Map.class);
+        if (!map.get("status").equals("OK")) { // google data is not correct
             throw new RouteUnavailableException(providerName, (String) map.get("status"));
         }
         return map;
@@ -220,7 +210,7 @@ public class GoogleProviderConnector extends AProviderConnector {
 
     /**
      * Calculates if the given distance can be considered correct for the given
-     * route.<br><br>
+     * route.<p>
      * Calculation is based on the idea that most detours will add more than 100
      * meter to the distance. Thus this distance can be rejected when it is not
      * within this margin
@@ -242,8 +232,8 @@ public class GoogleProviderConnector extends AProviderConnector {
     }
 
     /**
-     * A temporary functions that switches between API keys
-     *
+     * A functions that switches between API keys
+     * this because of limitations of free accounts
      * @return String an API Key
      */
     private String getAPIKey() {

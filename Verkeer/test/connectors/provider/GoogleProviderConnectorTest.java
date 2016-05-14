@@ -1,48 +1,27 @@
 package connectors.provider;
 
-import connectors.RouteEntry;
 import connectors.database.DummyDbConnector;
-import java.util.ArrayList;
-import java.util.List;
 import static org.junit.Assert.fail;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class GoogleProviderConnectorTest {
 
-    static List<RouteEntry> trajecten;
-
     public GoogleProviderConnectorTest() {
-    }
-
-    /**
-     * add a route to check the information from
-     */
-    @BeforeClass
-    public static void setUpClass() {
-        RouteEntry traject = new RouteEntry();
-        traject.setName("R40 Drongensesteenweg -> Palinghuizen");
-        traject.setStartCoordinateLatitude(51.0560905);
-        traject.setStartCoordinateLongitude(3.6951634);
-        traject.setEndCoordinateLatitude(51.0663037);
-        traject.setEndCoordinateLongitude(3.6996797);
-        trajecten = new ArrayList<>();
-        trajecten.add(traject);
     }
 
     @Test
     public void triggerTest() {
-        DummyDbConnector dummy = new DummyDbConnector();
-        int voor = dummy.getDataEntriesSize();
-        int loops = 1;
-        GoogleProviderConnector connector = new GoogleProviderConnector(dummy);
+        DummyDbConnector dummy = new DummyDbConnector(); // add new dummy database
+        int before = dummy.getDataEntriesSize(); // get number of entries before test
+        int loops = 1; // run test once
+        GoogleProviderConnector connector = new GoogleProviderConnector(dummy); // generate provider
 
         for (int i = 0; i < loops; i++) {
-            connector.triggerUpdate();
+            connector.triggerUpdate(); // run test (= 1 query per route in the database)
         }
-        // Check database count
-        if (dummy.getDataEntriesSize() - voor != connector.routes.size() * loops) {
-            fail("Expected " + (connector.routes.size() * loops) + " dataEntries, " + (dummy.getDataEntriesSize() - voor) + " given.");
+        // Check database count and fail if the wrong number of entries has been added
+        if (dummy.getDataEntriesSize() - before != connector.routes.size() * loops) {
+            fail("Expected " + (connector.routes.size() * loops) + " dataEntries, " + (dummy.getDataEntriesSize() - before) + " given.");
         }
     }
 }

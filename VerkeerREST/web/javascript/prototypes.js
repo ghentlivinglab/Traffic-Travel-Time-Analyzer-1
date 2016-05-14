@@ -95,7 +95,6 @@ var IntervalRepresentation = {
 		return Math.floor(this.time)+' min. '+this.speed+' km/h';
 	},
 
-	// TODO: overerving toevoegen
 	toSpeedString: function() {
 		if (this.empty) {
 			return '';
@@ -107,39 +106,12 @@ var IntervalRepresentation = {
 			return '';
 		}
 		return Math.floor(this.time*10)/10+' minuten';
-	},
-
-	// TODO: moet hier weg
-	getStatus: function () {
-		if (this.empty){
-			return {
-				text: 'Niet beschikbaar',
-				color: 'gray'
-			};
-		}
-		if (this.speed < 25){
-			return {
-				text: 'Stilstaand verkeer',
-				color: 'red'
-			};
-		}
-		if (this.speed < 40){
-			return {
-				text: 'Traag verkeer',
-				color: 'orange'
-			};
-		}
-		return {
-			text: 'Vlot verkeer',
-			color: 'green'
-		};
 	}
 };
 
 /****************************
  * object which keeps a TrafficData per time interval and day
  * also maintains a TrafficData which represents the whole graph
- * TODO: translate lines below
  * In de vandaag weergave is dit de laatste bekende 
  * In de dag weergave (bv 12/08/2015) houden we het gemiddelde van de dag bij
  ****************************/
@@ -183,14 +155,12 @@ var TrafficGraph = {
 
 		// dont pass data if it's not defined
 		if (data !== undefined){
-			// TODO: Hoe zijn we er zeker van dat de structuur die wordt doorgegeven klopt?
 			obj.data = data;
 			obj.createdOn = new Date();
 		}
 
 		// dont pass data if it's not defined
 		if (avgData !== undefined){
-			// TODO: Hoe zijn we er zeker van dat de structuur die wordt doorgegeven klopt?
 			obj.avgData = avgData;
 		}
 		
@@ -319,9 +289,6 @@ var Route = {
 	},
 
 	getStatusFor: function(representation) {
-		// TODO: hier nieuwe property gebruiken om te bepalen of het traag verkeer is of niet
-		// op bais van de toegelaten snelheid op deze route
-
 		if (representation.unusualPercentage < 40){
 			return {
 				name: 'Trager dan gemiddeld',
@@ -340,7 +307,6 @@ var Route = {
 			};
 	},
 
-	// TODO: deze moet weg!
 	// Returnt status voor live situatie indien geen paramters gegeven
 	// Geeft anders een status voor de opgegeven representatie(s)
 	getStatus: function(liveData,  avgData){
@@ -385,15 +351,6 @@ var Route = {
 		return liveData.speed < this.speedLimit-10 && liveData.speed < avgData.speed * 0.6;
 	},
 
-	// TODO: Moet weg!!
-	getWarnings: function(liveData, avgData){
-		if (liveData.speed < avgData.speed*0.7){
-			return ['Uitzonderlijk traag'];
-		}
-		return [];
-	},
-
-	// TODO: translate lines below
 	// avgData is een mapping van de providerId op een TrafficGraph object
 	// We kunnen dus altijd een bepaalde gemiddelde snelheid en tijd lezen voor een bepaalde provider (of alles)
 	// Bv. stel Waze heeft id = 2, dan kunnen we de laatst gesynchroniseerde avgData halen door avgData[2],
@@ -657,7 +614,6 @@ var Provider = {
 /****************************
  * Event is an interval saved in memory, localstorage and on the server
  ****************************/
- // TODO: Event van Interval laten erven
 var Event = {
 	// id wordt enkel gebruikt voor communicatie met de server
 	id: -1, // Van de server gehaald, anders -1 (niet gesynct)
@@ -697,12 +653,9 @@ var Event = {
 		// Toevoegen aan events, en naam aanvullen als deze al in gebruik is:
 		obj.setName(name);
 
-		// TODO: Hier code om het aan server toe te voegen (als id niet opgegeven)
-
 		return obj;
 	},
 	isValid: function() {
-		// TODO: additional checks
 		return typeof this.end != "undefined" && typeof this.start != "undefined" && this.start && this.end;
 	},
 	setStart: function(start) {
@@ -790,7 +743,6 @@ var Event = {
 		}
 	},
 
-	// TODO: beter maken!!
 	toString: function() {
 		return dateToDate(this.start)+' > '+dateToDate(this.end); 
 	}
@@ -820,22 +772,18 @@ var Interval = {
 		return obj;
 	},
 	isValid: function() {
-		// TODO: additional checks
 		return typeof this.end != "undefined" && typeof this.start != "undefined" && this.start && this.end;
 	},
 	isEmpty: function() {
-		// TODO: additional checks
 		return (typeof this.end == "undefined" || !this.end) && typeof (this.start == "undefined" || !this.start);
 	},
 	getName: function() {
 		if (!this.isValid()){
 			return 'Selecteer een periode'; 
 		}
-		// TODO: aanpassen
 		return dateToDate(this.start)+' > '+dateToDate(this.end); 
 	},
 	copy: function(object) {
-		// copy obj
 		var obj = Object.create(Interval);
 
 		if (!object.start || typeof object.start == "undefined"){
@@ -872,7 +820,6 @@ var Interval = {
 		this.end = end;
 	},
 
-	// TODO: beter maken!!
 	toString: function() {
 		return dateToString(this.start)+' > '+dateToString(this.end); 
 	}

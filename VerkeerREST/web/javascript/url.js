@@ -3,15 +3,13 @@
 var url = {
     query: "",
     /****************************
-     * 
-     * 
+     * Gets the query from the current location and stores it locally in url.query
      ***************************/
     getQuery: function () {
-        this.query = window.location.search.substring(1);  // removes '?'
+        this.query = window.location.search.substring(1);  // removes '?' 
     },
     /****************************
-     * 
-     * 
+     * updates the current location with the new query parameters and adds it to the history of the browser
      ***************************/
     updateLocation: function () {
         // build new location
@@ -35,7 +33,7 @@ var url = {
                 return pair[1];
             } //returns value when requested key has been found
         }
-        return false;
+        return false; // else returns false
     },
     /****************************
      * returns all key-value pairs in query string
@@ -86,92 +84,130 @@ var url = {
         }
         this.query = this.query.slice(0, -1); // removes trailing '&'
     },
+    /****************************
+     * sets the given name/value-parameters in the URL
+     * odd arguments are the name, even arguments are the value
+     ***************************/
     setQueryParams: function () {
-        this.getQuery();
+        this.getQuery(); // refresh local query-string
         for (var i = 0; i < arguments.length; i += 2) {
-            this.changeQueryParam(arguments[i], arguments[i + 1]);
+            this.changeQueryParam(arguments[i], arguments[i + 1]); // update 1 pair of parameters
         }
-        this.updateLocation();
+        this.updateLocation(); // store new values
     },
+    /****************************
+     * sets the given name and value in the parameters of the URL
+     ***************************/
     setQueryParam: function (name, value) {
         this.getQuery();
         this.changeQueryParam(name, value);
         this.updateLocation();
     },
+    /****************************
+     * method to load the information from the URL query parameters and set the relevant values
+     ***************************/
     updatePageByParams: function () {
-        // Provider hier niet inladen! Pas nadat we alle providers hebben ingeladen
-        // => Gebeurt nu in Dashboard loadProviders(), een functie die aangeroepen wordt
-        // Nadat we alle providers hebben ingeladen in providers
+        /* this.changeProviderByParam()
+         * Provider settings are being loaded when all providers are loaded from the backend (Dashboard.loadProviders())
+         * */
 
-        this.showDashboardByParam();
-        this.changeMapByParams();
-        this.changeFilterByParam();
-        this.changeAutoReloadByParam();
+        /* this.changeViewByParam()
+         * display settings are being loaded in the initialisation of the dashboard (Dashboard.init())
+         * */
+
+        /* this.changePeriodByParam() this.changeComparePeriodByParam() and this.changeDayByParam()
+         * interval settings are being loade after mode/view is set and relevant data has been retrieved (Dashboard.init())
+         * */
+
+        this.showDashboardByParam(); // toggle visibility of panel
+        this.changeMapByParams(); // update map-zoom and center
+        this.changeFilterByParam(); // update filter
+        this.changeAutoReloadByParam(); // update auto reload feature
     },
+    /****************************
+     * sets visibility of the dashboard panel
+     ***************************/
     showDashboardByParam: function () {
         // checks if mapView or overview has to be displayed
         var showDashboard = url.getQueryParam("dashboardView") === "true"; // checks if URL contains directives
         var dashboardShown = $("#dashboard").hasClass('open'); // checks in which state the dashboard currently resides
 
         if (showDashboard ? !dashboardShown : dashboardShown) { // showDashboard XOR dashboardShown
-            togglePanel(false);
+            togglePanel(false); // show panel with no animation
         }
     },
+    /****************************
+     * sets the mode of the dashboard panel
+     ***************************/
     changeViewByParam: function () {
-        var view = url.getQueryParam("weergave");
-        if (view) {
-            view = Number(view);
-            Dashboard.mode = view;
-            $('#mode-'+Dashboard.mode).prop("checked", true);
+        var view = url.getQueryParam("weergave"); // get view-settings from url
+        if (view) { // only if view-settings has a value
+            view = Number(view); // parse view number
+            Dashboard.mode = view; // set dashboard mode to the number
+            $('#mode-' + Dashboard.mode).prop("checked", true); // set the relevant radio button active
         }
     },
+    /****************************
+     * sets the selected provider
+     ***************************/
     changeProviderByParam: function () {
-        var providerName = url.getQueryParam("provider");
-        if (providerName === false) {
+        var providerName = url.getQueryParam("provider"); // get provider settings from url
+        if (providerName === false) { // no value given
             return;
         }
-        Dashboard.setProviderName(providerName);
+        Dashboard.setProviderName(providerName); // activate the chosen provider
     },
+    /****************************
+     * sets the first period on the dashboard
+     * compares with existing periods and uses one of them if the start and end date match
+     * if no matching period exists, creates a new one
+     ***************************/
     changePeriodByParam: function () {
-        var period = url.getQueryParam("periode");
-        if (period) {
-            period = period.split(',');
-            if (period.length === 3) {
-                var name = decodeURIComponent(period[0]);
+        var period = url.getQueryParam("periode"); // get period-settings
+        if (period) { // if the period has a value
+            period = period.split(','); // split in name, start date and end date
+            if (period.length === 3) { // must have only these 3 parameters
+                var name = decodeURIComponent(period[0]); // decode encoded uri-string
 
-                var from = this.createValidDate(period[1]);
-                var to = this.createValidDate(period[2]);
+                var from = this.createValidDate(period[1]); // generate start date
+                var to = this.createValidDate(period[2]); // generate end date
 
-                if (name && from && to) {
+                if (name && from && to) { // if valid dates and has a name -> look for event
                     var eventExists = -1;
-                    for (var i = 0; i < events.length; i++) {
+                    for (var i = 0; i < events.length; i++) { // look for existing events and remember last matching one
                         if (events[i].start.getTime() == from.getTime() && events[i].end.getTime() == to.getTime()) {
                             eventExists = i;
                             break;
                         }
                     }
-                    if (eventExists == -1) {
+                    if (eventExists == -1) { // no existing event, create new event
                         var event = Event.create(name, from, to);
                         Dashboard.selectedIntervals[0] = event;
-                    } else {
+                    } else { // event exists, use this one
                         Dashboard.selectedIntervals[0] = events[i];
                     }
 
-                } else if (from && to) {
-                    var interval = Interval.create(from, to);
-                    Dashboard.selectedIntervals[0] = interval;
-                } else {
+                } else if (from && to) { // no name but valid dates -> create interval
+                    var interval = Interval.create(from, to); // create interval
+                    Dashboard.selectedIntervals[0] = interval; // and select it
+
+                } else { // one of the dates is incorrect
                     console.error("incorrect parameter: periode (wrong format of date)");
-                    url.setQueryParam("periode");
+                    url.setQueryParam("periode"); // remove faulty parameter
                     console.info("has been removed");
                 }
-            } else {
+            } else { // wrong number of arguments
                 console.error("incorrect parameter: periode (wrong number of arguments)");
-                url.setQueryParam("periode");
+                url.setQueryParam("periode"); // remove faulty parameter
                 console.info("has been removed");
             }
         }
     },
+    /****************************
+     * sets the second period on the dashboard
+     * works completely analogous to this.changePeriodByParam() 
+     * documentation can thus be found in that method
+     ***************************/
     changeComparePeriodByParam: function () {
         var period = url.getQueryParam("vergelijkPeriode");
         if (period) {
@@ -213,108 +249,135 @@ var url = {
             }
         }
     },
+    /****************************
+     * updates map center and zoom level
+     ***************************/
     changeMapByParams: function () {
         this.changeMapCenterByParam();
         this.changeMapZoomByParam();
     },
+    /****************************
+     * sets the center of the map
+     ***************************/
     changeMapCenterByParam: function () {
-        var center = url.getQueryParam("mapCenter");
-        if (center) {
-            center = center.split(',');
-            if (center.length === 2) {
+        var center = url.getQueryParam("mapCenter"); // get center settings
+        if (center) { // only if a value is given
+            center = center.split(','); // split coordinate in components
+            if (center.length === 2) { // should have 2 components
                 var latitude = Number(center[0]);
                 var longitude = Number(center[1]);
-                if (latitude && longitude) {
+                if (latitude && longitude) { // set center to the latitude and longitude, only if they are correct numbers
                     map.setCenter({lat: latitude, lng: longitude});
                 } else {
                     console.error("incorrect parameter: mapCenter (coords are not numbers)");
-                    url.setQueryParam("mapCenter");
+                    url.setQueryParam("mapCenter"); // remove faulty parameter
                     console.info("has been removed");
                 }
             } else {
                 console.error("incorrect parameter: mapCenter (wrong number of coords)");
-                url.setQueryParam("mapCenter");
+                url.setQueryParam("mapCenter"); // remove faulty parameter
                 console.info("has been removed");
             }
         }
     },
+    /****************************
+     * sets the zoom level of the map
+     ***************************/
     changeMapZoomByParam: function () {
-        var zoom = url.getQueryParam("mapZoom");
-        if (zoom) {
+        var zoom = url.getQueryParam("mapZoom"); // get zoom settings
+        if (zoom) { // only if value is given
             zoom = Number(zoom);
-            if (!zoom) {
-                zoom = zoomCurrent;
+            if (!zoom) { // only if zoom is not a valid number
+                zoom = zoomCurrent; // keep current zoom
                 console.error("incorrect parameter: mapZoom");
-                url.setQueryParam("mapZoom");
+                url.setQueryParam("mapZoom"); // remove faulty parameter
                 console.info("has been removed");
             }
+            // set current zoom to new value
             zoomCurrent = zoom;
             map.setZoom(zoom);
         }
     },
+    /****************************
+     * sets the filter for the dashboard
+     ***************************/
     changeFilterByParam: function () {
-        var value = decodeURIComponent(url.getQueryParam("filter"));
-        if (value !== "false") {
-            Dashboard.filterValue = value;
-            Dashboard.updateFilter();
-            $("#filter #filterInput").val(Dashboard.filterValue);
+        var value = decodeURIComponent(url.getQueryParam("filter")); // get and decode the filter settings
+        if (value !== "false") { // only if a value is given
+            Dashboard.filterValue = value; // set filter
+            Dashboard.updateFilter(); // update filter
+            $("#filter #filterInput").val(Dashboard.filterValue); // display new value in the text field
         }
     },
+    /****************************
+     * sets the selected day
+     ***************************/
     changeDayByParam: function () {
-        var value = url.getQueryParam("dag");
-        if (value) {
-            var date = this.createValidDate(value);
-            if (date) {
-                Dashboard.setSelectedDay(date);
+        var value = url.getQueryParam("dag"); // get day settings
+        if (value) { // only if value is given
+            var date = this.createValidDate(value); // create date
+            if (date) { // if date is valid
+                Dashboard.setSelectedDay(date); // set the day in the dashboard
             } else {
                 console.error("incorrect parameter: dag (wrong format of date)");
-                url.setQueryParam("dag");
+                url.setQueryParam("dag"); // remove faulty parameter
                 console.info("has been removed");
             }
         }
     },
-    changeAutoReloadByParam: function(){
-        var value = url.getQueryParam("autoReload");
-        var input = $("#auto-reload");
-        $(input).prop("checked",false);
-        
-        if(value){
-            if(value==="true"){
-                $(input).click();
-            } else{
+    /****************************
+     * set auto reload of the data
+     ***************************/
+    changeAutoReloadByParam: function () {
+        var value = url.getQueryParam("autoReload"); // get auto reload settings
+        var input = $("#auto-reload"); // get the checkbox
+        $(input).prop("checked", false); // unset checkbox 
+
+        if (value) { // only if value is given
+            if (value === "true") { // value has to be true
+                $(input).click(); // start auto reload and set checkbox
+            } else {
                 console.error("incorrect parameter: autoReload (value can only be true)");
-                url.setQueryParam("autoReload");
+                url.setQueryParam("autoReload"); // remove faulty parameter
                 console.info("has been removed");
             }
         }
     },
+    /****************************
+     * creates a Date object from a valid "dd/MM/yyyy"
+     ***************************/
     createValidDate: function (dateString) {
-        var dateString = dateString.split("/");
+        var dateString = dateString.split("/"); // split day, month and year
+        // get the numeric value from the string
         var day = Number(dateString[0]);
         var month = Number(dateString[1]);
         var year = Number(dateString[2]);
+        // do very basic check for the date
         if ((day < 1 || 31 < day) || (month < 1 || 12 < month) || (year === NaN)) {
             return NaN;
         }
-        return new Date(year, month - 1, day);
+        return new Date(year, month - 1, day); // generate date (gives NaN when impossible)
     },
+    /****************************
+     * adds the current intervals in the url
+     ***************************/
     setIntervals: function (interval, vergelijkInterval) {
         var param = (interval.hasName ? encodeURIComponent(interval.getName()) : "") + ","
                 + dateToDate(interval.start) + ","
-                + dateToDate(interval.end);
-        param = param === ",," ? "" : param;
+                + dateToDate(interval.end); // generate parameter value "name,from,to"
+        param = param === ",," ? "" : param; // make string empty if interval has no information
 
-        if (Dashboard.mode === Dashboard.INTERVAL) {
+        if (Dashboard.mode === Dashboard.INTERVAL) { // if interval mode, only set first interval and remove second interval and day
             this.setQueryParams("periode", param, "vergelijkPeriode", "", "", "dag", "");
 
-        } else if (Dashboard.mode === Dashboard.COMPARE_INTERVALS) {
+        } else if (Dashboard.mode === Dashboard.COMPARE_INTERVALS) { // if compare mode, create second interval, set both intervals and remove day
             var param2 = (vergelijkInterval.hasName ? encodeURIComponent(vergelijkInterval.getName()) : "") + ","
                     + dateToDate(vergelijkInterval.start) + ","
-                    + dateToDate(vergelijkInterval.end);
-            param2 = param2 === ",," ? "" : param2;
+                    + dateToDate(vergelijkInterval.end); // generate paremeter value
+            param2 = param2 === ",," ? "" : param2; // empty interval
             url.setQueryParams("periode", param, "vergelijkPeriode", param2, "dag", "");
 
-        } else {
+        } else { // remove intervals when not in an interval mode
             url.setQueryParams("periode", "", "vergelijkPeriode", "");
         }
     }

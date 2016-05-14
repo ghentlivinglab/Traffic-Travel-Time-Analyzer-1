@@ -1,8 +1,8 @@
+/* global url */
+
 /****************************
  * initialisers to set scope
  ****************************/
-// coords and labels are hard coded for now, will be dynamically loaded with AJAX
-// TODO: AJAX-request
 var colors = []; // will be filled with color for each route
 var infowindow; // the info window for extra info about a route
 var markers = []; // will be filled with the markers for events
@@ -58,9 +58,13 @@ function initMap() {
         }
     });
     map.addListener('zoom_changed', zoomChanged); // change line weight on different zoom levels
-    map.idleAdder = map.addListener('idle',addIdleListener);
+    map.idleAdder = map.addListener('idle',addIdleListener); // adds a listener to the map that executes when it becomes idle
 }
 
+/****************************
+ * this adds a function to the map that generates the url parameters for the map-center and zoom level when the onIdle of the map is fired
+ * this setup is needed because the default value should not be stored in the url (no changes to the view == no parameters needed)
+ ****************************/
 function addIdleListener(event){
     map.addListener('idle', function(event){
         var center = map.getCenter();
@@ -68,16 +72,22 @@ function addIdleListener(event){
         url.setQueryParam("mapZoom",map.getZoom());
     });
     
-    google.maps.event.removeListener(map.idleAdder);
+    google.maps.event.removeListener(map.idleAdder); // removes the idleListener-adder
 }
 
+/****************************
+ * reloads the map to update the data
+ ****************************/
 function reloadMap() {
-    loadingMap(true);
-    generateLines();
-    updateColors();
-    loadingMap(false);
+    loadingMap(true); // show loading icon
+    generateLines(); // generates the data for all routes
+    updateColors(); // generate new colors for the lines
+    loadingMap(false); // hide loading icon
 }
 
+/****************************
+ * shows/hides the loading icon on the map based on boolean (true/false respectively)
+ ****************************/
 function loadingMap(boolean) {
     var overlay = $('#map-overlay');
     var content = $(overlay).find("#content");
@@ -96,9 +106,9 @@ function loadingMap(boolean) {
  ****************************/
 function zoomChanged(event) {
     zoomCurrent = this.getZoom();
-    var weight = getWeight();
+    var weight = getWeight(); // get the weight of the lines for this zoom level
     for (var i in lines) {
-        lines[i].setOptions({strokeWeight: weight});
+        lines[i].setOptions({strokeWeight: weight}); // set new weight on all lines
     }
 }
 
@@ -108,7 +118,7 @@ function zoomChanged(event) {
  ****************************/
 function generateLines() {
     if (lines.length !== 0) { // lines already exist
-        deleteLines();
+        deleteLines(); // remove them all
     }
     var weight = getWeight();
     for (var i in routes) { // for each route
@@ -142,17 +152,15 @@ function deleteLines() {
 
 /****************************
  * generate the correct color for each route
- * TODO: make dynamically based on timing differences and not random
  ****************************/
 function updateColors() {
-    var x = 0;
     var providerId = Dashboard.provider.id;
     for (var i in routes) {
-        // Eerst controleren of we deze route wel al hebben
+        // check if route data is available
         if (!routes[i].hasLiveDataRepresentation(providerId)) {
             continue;
         }
-        var colorStatus = routes[i].getColor(routes[i].liveData[providerId].representation);
+        var colorStatus = routes[i].getColor(routes[i].liveData[providerId].representation); // get the new color
         switch (colorStatus) {
             case 'red':
                 colors[i] = heavyTrafficColor; // heavy traffic
@@ -218,22 +226,23 @@ function createInfoWindow(latLng, message) {
  * shows an info window about the route
  ****************************/
 function lineClicked(event) {
-    if (infowindow != null) {// if an infoWindow is shown
-        updateColors();
+    if (infowindow != null) {// if an infoWindow is already shown
+        updateColors(); // change colors
     }
-    
+    // get the current time that is needed for the current route and format it
     var currentTime = Number(routes[this['id']].liveData[Dashboard.provider.id].representation.time);
     var currentMinutes = Math.floor(currentTime);
     var currentSeconds = currentTime - currentMinutes;
     currentMinutes += (currentSeconds < .5) ? 0 : 1;
-    
+    // get the average time that is needed for the current route and format it
     var averageTime = Number(routes[this['id']].avgData[Dashboard.provider.id].representation.time);
     var averageMinutes = Math.floor(averageTime);
     var averageSeconds = averageTime - averageMinutes;
     averageMinutes += (averageSeconds < .5) ? 0 : 1;
-    
+    // get the length of the current route
     var distance = routes[this['id']].length;
     
+    // generate the contents of the info window
     var message = '<content id="infoWindow">'
             + '<h1>' + routes[this['id']].name + ' </h1>'
             + '<h2>' + routes[this['id']].description + '</h2>'
@@ -244,11 +253,18 @@ function lineClicked(event) {
             + '<p class="infoWindowRouteLenght">Lengte van traject:</p>'
             + '<p class="infoWindowRouteLenght value">' + Math.round(distance/10)/100 + ' kilometer</p>'
             + '</content>';
+    // generate the info window on the clicked location
     createInfoWindow(event["latLng"], message);
-    this.setOptions({strokeWeight: hoverWeight, zIndex: 3, strokeColor: selectedColor}); // add accent to line
+    
+    // add accent to line
+    this.setOptions({strokeWeight: hoverWeight, zIndex: 3, strokeColor: selectedColor});
+    // add the close event to the 'x'-button
     google.maps.event.addListener(infowindow,'closeclick',closeInfoWindow);
 }
 
+/****************************
+ * closes the current infowindow and regenerates the lines
+ ****************************/
 function closeInfoWindow(){
     infowindow = null;
     generateLines();
