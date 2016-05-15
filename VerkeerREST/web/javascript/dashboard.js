@@ -8,7 +8,7 @@ var Dashboard = {
     mode: null, // Selected mode
     provider: null, // Selected provider
 
-    // Eeen lijst met extra providers die geselecteerd zijn bij een grafiek
+    // Eeen lijst met extra provider ids die geselecteerd zijn bij een grafiek
     // Wordt telkens gereset als een grafiek wordt geopened
     extraProviders: [],
     // Mogelijke dashboard standen cte's
@@ -913,6 +913,8 @@ var Dashboard = {
         str += builder.render();
         dashboard.html(str);
     },
+
+    // deze functie hoort eigenlijk in het route object
     routeSatisfiesFilter: function (route) {
         var filter = this.filterValue.trim().split(" ");
         for (var i = 0; i < filter.length; i++) {
@@ -923,11 +925,13 @@ var Dashboard = {
         }
         return false;
     },
+
     selectFilterInput: function (currentPos) {
         var input = $("#dashboard #filterInput");
         input[0].selectionStart = input[0].selectionEnd = currentPos;
         input.focus();
     },
+    
     renderHeader: function (headerName, data) {
         data.search = Mustache.renderTemplate("search", {filter: this.filterValue});
         return '<header>' + Mustache.renderTemplate("header-" + headerName, data) + '</header>';
