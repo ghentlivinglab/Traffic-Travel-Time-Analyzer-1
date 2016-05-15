@@ -12,5 +12,6 @@ package service;
 public class MessageState {
     public final static String PIDNP = "Parameter 'providerID' is required in default mode. Make sure both providerID and routeID are provided.";
     public final static String RIDNP = "Parameter 'routeID' is required in default mode. Make sure both providerID and routeID are provided.";
+    public final static String PIDNP_I = "Parameter 'providerID' is required in interval mode. Make sure providerID is provided.";
     public final static String MDNE = "This mode does not exist.";
 }
