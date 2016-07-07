@@ -8,14 +8,3 @@ ssh root@146.185.150.100
 
 Glassfish: admin/aeSqFPbpUl
 MySQL: root/root
-
-
-OLD CONFIG:
------------
-PROJECT_URL: verkeer-1.bp.tiwi.be
-PROJECT_PROXY: tiwibp1.ugent.be
-PROJECT_SSHPORT: 30022
-ROOT_PASSWORD: aeSqFPbpUl
-
-ssh student@tiwibp1.ugent.be --> vop2016
-ssh -p 30022 root@localhost --> aeSqFPbpUl
