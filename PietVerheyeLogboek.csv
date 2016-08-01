@@ -1,0 +1,113 @@
+Datum,Start,Einde,Plaats,Categorie,Omschrijving,Issue #,Opmerkingen
+09/02/2016,08:30,12:30,School,Projectwerk,Uitlegsessie bachelorproef en doornemen documentatie,,
+11/02/2016,13:30,17:45,School,Projectwerk,Opstellen analysedocumenten en taakverdeling begin,,
+16/02/2016,08:15,12:30,School,Communicatie,Infomoment met klant,,presentatie van onderwerp door klant en mogelijkheid tot vragen
+16/02/2016,21:00,23:00,Thuis,Projectwerk,Bijleren over de databank,,
+18/02/2016,10:30,11:00,School,Communicatie,Lezing door bedrijven,,
+18/02/2016,13:15,17:45,School,Communicatie,Job en stagebeurs,,
+22/02/2016,00:30,01:30,Thuis,Projectwerk,Werking github herhalen,,
+22/02/2016,17:00,20:00,Thuis,Projectwerk,Bekijken van alle code en starten van code DummyDbConnector,,
+23/02/2016,08:15,12:30,School,Projectwerk,Werken aan VM werkend krijgen,,
+23/02/2016,20:15,23:00,Thuis,Projectwerk,Afwerken DummyDbConnectore en werking github wat uittesten,,github problemen oplossen
+25/02/2016,13:30,15:00,School,Communicatie,Module 4 eindwerken schrijven,,
+25/02/2016,15:15,17:45,School,Projectwerk,,,Contacturen
+26/02/2016,09:45,12:00,Thuis,Projectwerk,Proberen pushen naar branch,,Github werkt tegen met detached head
+27/02/2016,10:15,12:15,Thuis,Projectwerk,Github eindelijk kunnen committen,,
+27/02/2016,19:45,20:45,Thuis,Projectwerk,Opzoeken hoe project naar Proxy krijgen,22,
+28/02/2016,10:45,13:10,Thuis,Projectwerk,Project executable jar maken en kijken voor exporteren,22,
+28/02/2016,13:45,14:35,Thuis,Projectwerk,Project naar proxy proberen krijgen,22,
+28/02/2016,17:20,20:45,Thuis,Projectwerk,Script zoeken om project naar Proxy te krijgen,22,
+01/03/2016,08:15,12:30,School,Projectwerk,Script via ssh en scp van een zip naar proxy en VM sturen,22,Contacturen
+01/03/2016,19:15,22:25,Thuis,Projectwerk,Uitzoeken hoe best logging realiseren,,
+02/03/2016,10:25,12:00,Thuis,Projectwerk,Logging beginnen programmeren,25,
+02/03/2016,18:45,20:50,Thuis,Projectwerk,Verderwerken logging,25,
+03/03/2016,13:30,17:45,School,Communicatie en Projectwerk,,,Communicatieles en contacturen
+03/03/2016,20:45,23:30,Thuis,Projectwerk,verderwerken logging,25,
+04/03/2016,11:00,16:30,Thuis,Projectwerk,Afwerken logging,25,probleem met duplicate logging 
+04/03/2016,19:00,21:20,Thuis,Projectwerk,Afwerken geheel na logging,25,probleem met logbestanden
+04/03/2016,22:40,23:59,Thuis,Projectwerk,Meren van lokaal naar master,,Github merge die lastig doet
+04/03/2016,00:00,01:00,Thuis,Projectwerk,Mergen van lokaal naar master,,Github merge die lastig doet
+06/03/2016,14:10,15:45,Thuis,Projectwerk documentatie,Indelig repository in README,,
+06/03/2016,16:40,17:50,Thuis,Projectwerk documentatie,Richtlijnen in README,,
+07/03/2016,13:50,16:40,Thuis,Projectwerk documentatie,Voor wiki en analysedocumenten kijken,,
+08/03/2016,08:00,10:30,School,Projectwerk,Voorstelling en ontmoeting klant voor einde sprint 1,,Presentatie
+10/03/2016,13:30,17:45,School,Projectwerk,begin sprint 2 en kijken voor REST API,31,Contacturen 
+11/03/2016,12:30,14:45,Thuis,Projectwerk,Proberen JSON ipv XML te produceren met REST API,31,
+12/03/2016,10:00,12:00,School,Projectwerk,Werken aan project als voorstelling opendeurdag,,Verplicht aanwezig
+12/03/2016,14:45,17:30,Thuis,Projectwerk,Verderwerken REST API,31,
+13/03/2016,11:15,13:00,Thuis,Projectwerk,Verderwerken REST API,31,
+13/03/2016,23:00,23:59,Thuis,Projectwerk,Basisfunctionaliteit REST API getest en gepusht,31,
+13/03/2016,00:00,01:30,Thuis,Projectwerk,Basisfunctionaliteit REST API getest en gepusht,31,
+15/03/2016,08:15,12:30,School,Projectwerk,Peerassessment presentaties,,Contacturen
+15/03/2016,20:30,21:45,Thuis,Communicatie en Projectwerk,Presentaties bekijken en properties gebruiken voor JPA Query's in REST API,31,Contacturen en communicatie
+16/03/2016,00:30,02:00,Thuis,Projectwerk,Verderwerken properties en moeilijke query voor REST API,31,
+17/03/2016,13:30,17:30,School,Projectwerk,,31,Contacturen
+17/03/2016,18:00,19:15,Thuis,Projectwerk,API query uittesten,31,
+18/03/2016,21:50,23:59,Thuis,Projectwerk,API query vervangen door soort CTE met nieuwe tabellen,31,
+19/03/2016,00:00,01:10,Thuis,Projectwerk,Oplossen van REST API probleem,31,Het was fout in mijn variabelen
+22/03/2016,08:15,12:30,School,Communicatie en Projectwerk,Presentatie geven en pushen van correcte REST API,31,Contacturen en communicatie
+24/03/2016,21:45,23:30,Thuis,Projectwerk,Rest api ? voor goede query strings proberen,31,
+25/03/2016,11:00,13:40,Thuis,Projectwerk,REST API authentication en empty path problemen,31,
+25/03/2016,14:50,17:10,Thuis,Projectwerk,Zoeken naar mogelijke oplossing voor URL-probleem,31,
+25/03/2016,23:30,23:59,Thuis,Projectwerk,Robin's REST oplossing bekijken en mogelijke aanpassingen,31,
+25/03/2016,00:00,01:30,Thuis,Projectwerk,Robin's REST oplossing bekijken en mogelijke aanpassingen,31,
+26/03/2016,10:00,11:50,Thuis,Projectwerk,REST API query strings en opschonen code,31,
+27/03/2016,16:00,17:30,Thuis,Projectwerk,REST API verderwerken,31,
+27/03/2016,20:30,23:15,Thuis,Projectwerk,Verderwerken REST API,31,
+28/03/2016,10:15,12:30,Thuis,Projectwerk,Verderwerken REST API,31,Samenvatten url's en output's
+28/03/2016,13:30,15:00,Thuis,Projectwerk,Probleem oplossen met weekday's casten naar long,31,
+30/03/2016,15:30,18:00,Thuis,Projectwerk,Zoeken naar mogelijkheden api authentication,31,
+31/03/2016,09:00,12:15,Thuis,Projectwerk,Mogelijkheden vergelijken api authentication,31,
+31/03/2016,20:45,23:59,Thuis,Projectwerk,Uitwerken mogelijkheid met containerrequestfilter,31,
+31/03/2016,00:00,00:30,Thuis,Projectwerk,Uitwerken mogelijkheid met  containerrequestfilter,31,
+01/04/2016,16:30,18:30,Thuis,Projectwerk,Verderwerken api authentication met containerrequestfilter,31,
+01/04/2016,19:45,21:15,Thuis,Projectwerk,Verderwerken api authentication met containerrequestfilter,31,
+02/04/2016,00:30,01:45,Thuis,Projectwerk,Api authentication met web service security bekijken en proberen,31,
+02/04/2016,10:30,11:30,Thuis,Projectwerk,Api authentication met api keys weer uit proberen werken,31,
+04/04/2016,09:00,12:00,Thuis,Projectwerk,Code van project lezen,,
+04/04/2016,14:45,17:00,Thuis,Projectwerk,Alle requests opvangen met een containerrequestfilter bekijken,31,
+05/04/2016,10:00,13:00,Thuis,Projectwerk,Zorgen dat mijn project weer werkt mbv Robin,,
+05/04/2016,16:00,17:45,Thuis,Projectwerk,Verderkijken naar mogelijke authenticatie met filters,,
+07/04/2016,12:00,13:00,Thuis,Projectwerk,Kijken voor query waar alle providers worden opgehaald,,
+10/04/2016,22:30,23:45,Thuis,Projectwerk,javascript code project bekijken,,
+12/04/2016,08:15,12:30,School,Projectwerk,Taakverdeling voor einde sprint2,,Contacturen
+12/04/2016,19:30,20:15,Thuis,Projectwerk,Bekijken ajax en hoe calls worden gemaakt,,
+13/04/2016,12:30,13:45,Thuis,Projectwerk,Via ajax routes en providers ophalen,,
+13/04/2016,14:45,17:40,Thuis,Projectwerk,Via ajax proberen trafficdata ophalen,,
+14/04/2016,13:30,18:00,School,Projectwerk,Api javascript ophalen van data via rest api,,Contacturen
+15/04/2016,13:00,16:40,Thuis,Projectwerk,Kijken voor dump en testen lokaal,,
+15/04/2016,19:45,20:30,Thuis,Projectwerk,Kijken voor syncIntervalData en presentatie,,Simon had dit al gedaan
+16/04/2016,00:50,01:30,Thuis,Projectwerk,Kijken voor latitude en longitude om te wisselen in databank,,
+16/04/2016,16:45,18:00,Thuis,Projectwerk,Issues bekijken en code nog eens bekijken,,
+16/04/2016,19:30,22:15,Thuis,Projectwerk documentatie,Klassendiagram verkeer maken en leren werken met LucidChart,55,
+17/04/2016,10:15,12:40,Thuis,Projectwerk documentatie,Klassendiagram dbConnectors en providerConnectors maken,55,
+17/04/2016,13:30,16:40,Thuis,Projectwerk documentatie,Klassendiagram REST API,55,Geprutst met Visual Paradigm
+17/04/2016,17:25,18:30,Thuis,Projectwerk documentatie,Klassendiagram REST api met LucidChart,55,
+18/04/2016,10:45,13:00,Thuis,Projectwerk documentatie,Klassendiagrammen en databankdiagram,55,
+18/04/2016,15:15,19:30,Thuis,Projectwerk documentatie,Presentatie en databankdiagram,58,
+18/04/2016,20:30,22:00,Thuis,Projectwerk,Documentatie API,31,
+18/04/2016,22:45,23:59,Thuis,Projectwerk,Documentatie API,31,
+21/04/2016,13:30,17:50,School,Projectwerk,begin sprint 3,,Contacturen
+21/04/2016,20:30,21:50,Thuis,Projectwerk,verderwerken aan documentatie van rest api,31,
+21/04/2016,12:30,13:15,Thuis,Projectwerk,Rest api verderwerken,31,
+21/04/2016,16:00,19:45,Thuis,Projectwerk,Rest api verderwerken,31, 
+26/04/2016,08:15,12:20,School,Projectwerk,Rest api authenticatie met AuthorizationFilter,31,Contacturen
+27/04/2016,16:30,17:30,Thuis,Projectwerk,Rest api authenticatie in api javascript,,
+27/04/2016,18:00,20:15,Thuis,Projectwerk,Van getJSON naar ajax in api javascript,,
+28/04/2016,10:30,11:15,Thuis,Projectwerk,Aanpassen logboek,,
+01/05/2016,15:30,18:00,Thuis,Projectwerk,Excepties afhandelen in rest api,31,
+02/05/2016,17:00,18:35,Thuis,Projectwerk,Excepties afhandelen in rest api,31,
+02/05/2016,18:35,19:00,Thuis,Projectwerk,Authorisatie van de REST API,68,Loginscherm cruciaal voor dynamische api keys
+06/05/2016,16:05,17:15,Thuis,Projectwerk,Uittesten applicatie en code bekijken,,
+13/05/2016,13:30,13:45,Thuis,Projectwerk documentatie,databankdiagram & rest api documentatie,93,
+13/05/2016,13:30,17:45,Thuis,Projectwerk documentatie,Databankdiagram & rest api documentatie,93,
+14/05/2016,12:30,19:15,Thuis,Projectwerk documentatie,Rest api documentatie,93,
+14/05/2016,22:55,23:35,Thuis,Projectwerk documentatie,Abstract eng bekijken,93,
+15/05/2016,10:45,12:05,Thuis,Projectwerk documentatie,Klassendiagram rest api,93,
+15/05/2016,13:15,14:30,Thuis,Projectwerk documentatie,Klassendiagram verkeer,93,
+15/05/2016,16:45,18:15,Thuis,Projectwerk documentatie,Taakverdeling,89,
+15/05/2016,19:30,20:30,Thuis,Projectwerk documentatie,Taakverdeling,89,
+15/05/2016,21:15,22:10,Thuis,Projectwerk documentatie,Taakverdeling,89,
+16/05/2016,13:30,18:30,Thuis,Projectwerk documentatie,Statusverslag,90,
+16/05/2016,20:30,10:15,Thuis,Projectwerk documentatie,Presentatie,,
+16/05/2016,00:30,01:15,Thuis,Projectwerk documentatie,Wat lezen van projectdossier,,
